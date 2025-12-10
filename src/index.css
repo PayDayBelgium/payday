@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Default theme (Navy Blue) */
+  --color-primary: rgb(30, 58, 138);
+  --color-primary-hover: rgb(23, 37, 84);
+  --color-primary-light: rgb(59, 130, 246);
+  --color-primary-dark: rgb(29, 78, 216);
+}
+
+@layer base {
+  body {
+    @apply bg-gray-50 dark:bg-trading-dark-900 text-gray-900 dark:text-gray-100;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* Theme-aware button classes */
+.btn-primary {
+  background-color: var(--color-primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+}
+
+/* Theme-aware icon background */
+.icon-bg-primary {
+  background-color: color-mix(in srgb, var(--color-primary-light) 20%, transparent);
+}
+
+.dark .icon-bg-primary {
+  background-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
+}
+
+/* Theme-aware icon color */
+.icon-text-primary {
+  color: var(--color-primary);
+}
+
+.dark .icon-text-primary {
+  color: var(--color-primary-light);
+}
+
+/* Theme-aware active states */
+.bg-primary-50 {
+  background-color: color-mix(in srgb, var(--color-primary-light) 10%, transparent);
+}
+
+.dark .bg-primary-50 {
+  background-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
+}
+
+.text-primary-700 {
+  color: var(--color-primary);
+}
+
+.dark .text-primary-700 {
+  color: var(--color-primary-light);
+}
+
+@layer utilities {
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    @apply bg-gray-200 dark:bg-trading-dark-700;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-gray-400 dark:bg-trading-dark-500 rounded-full;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-500 dark:bg-gray-600;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  @keyframes slide-in {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-slide-in {
+    animation: slide-in 0.3s ease-out;
+  }
+}

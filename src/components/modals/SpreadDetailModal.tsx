@@ -1,0 +1,405 @@
+import React, { useState, useEffect } from 'react';
+import { X, Save, TrendingUp, TrendingDown, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
+import { getCurrencySymbol } from '../../utils/currency';
+import { formatCurrency, formatNumber } from '../../utils/numberFormat';
+import { formatNumberInput, parseNumberInput } from '../../utils/inputFormat';
+import type { Position, CallOption, PutOption, CurrencyType } from '../../types';
+import { PnLCurve } from '../widgets/PnLCurve';
+
+interface SpreadDetailModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (updatedLegs: Position[]) => void;
+  legs: Position[];
+  currency: CurrencyType;
+  currentStockPrice?: number; // Optional: current stock price for P&L curve
+}
+
+export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
+  isOpen,
+  onClose,
+  onSave,
+  legs,
+  currency,
+  currentStockPrice: propCurrentStockPrice,
+}) => {
+  const currencySymbol = getCurrencySymbol(currency);
+  const [activeTab, setActiveTab] = useState<'overview' | 'pnl'>('overview');
+
+  // State for both legs
+  const longLeg = legs.find(leg => (leg as CallOption | PutOption).action === 'buy') as CallOption | PutOption | undefined;
+  const shortLeg = legs.find(leg => (leg as CallOption | PutOption).action === 'sell') as CallOption | PutOption | undefined;
+
+  const [longCurrentPremium, setLongCurrentPremium] = useState('');
+  const [shortCurrentPremium, setShortCurrentPremium] = useState('');
+  const [notes, setNotes] = useState('');
+
+  useEffect(() => {
+    if (isOpen && longLeg && shortLeg) {
+      // Set initial values
+      const longPremium = Math.abs(longLeg.currentValue / (longLeg.contracts * 100));
+      const shortPremium = Math.abs(shortLeg.currentValue / (shortLeg.contracts * 100));
+      setLongCurrentPremium(formatNumberInput(longPremium, 2));
+      setShortCurrentPremium(formatNumberInput(shortPremium, 2));
+
+      // Use notes from the first leg (they should be the same)
+      setNotes(longLeg.notes || '');
+    }
+  }, [isOpen, longLeg, shortLeg]);
+
+  if (!isOpen || !longLeg || !shortLeg) return null;
+
+  const isCredit = shortLeg.premium > longLeg.premium;
+  const spreadType = isCredit ? 'credit' : 'debit';
+  const ticker = longLeg.ticker;
+  const contracts = longLeg.contracts;
+
+  // Calculate spread metrics
+  const spreadWidth = Math.abs(shortLeg.strike - longLeg.strike);
+  const netPremium = (shortLeg.premium - longLeg.premium) * contracts * 100;
+  const totalCostBasis = longLeg.costBasis + shortLeg.costBasis;
+  const totalCurrentValue = longLeg.currentValue + shortLeg.currentValue;
+  const totalPnL = totalCurrentValue - totalCostBasis;
+  const isProfitable = totalPnL >= 0;
+
+  const maxProfit = isCredit
+    ? netPremium
+    : (spreadWidth - Math.abs(netPremium / (contracts * 100))) * contracts * 100;
+
+  const maxLoss = isCredit
+    ? (spreadWidth - Math.abs(netPremium / (contracts * 100))) * contracts * 100
+    : Math.abs(netPremium);
+
+  const collateral = isCredit ? spreadWidth * contracts * 100 : 0;
+
+  // Calculate DTE
+  const calculateDTE = (): number => {
+    if (!longLeg.expiration) return 0;
+    const today = new Date();
+    const expiry = new Date(longLeg.expiration);
+    const diffTime = expiry.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return Math.max(0, diffDays);
+  };
+
+  const daysToExpiration = calculateDTE();
+
+  // Use provided stock price or calculate approximation
+  const currentStockPrice = propCurrentStockPrice || shortLeg.strike;
+
+  const handleSave = () => {
+    // Update both legs
+    const updatedLegs: Position[] = [];
+
+    // Update long leg
+    const parsedLongPrice = parseNumberInput(longCurrentPremium);
+    if (parsedLongPrice > 0) {
+      const updatedLong = {
+        ...longLeg,
+        currentValue: parsedLongPrice * longLeg.contracts * 100,
+        notes,
+      };
+      updatedLegs.push(updatedLong);
+    } else {
+      updatedLegs.push({ ...longLeg, notes });
+    }
+
+    // Update short leg
+    const parsedShortPrice = parseNumberInput(shortCurrentPremium);
+    if (parsedShortPrice > 0) {
+      const updatedShort = {
+        ...shortLeg,
+        currentValue: -(parsedShortPrice * shortLeg.contracts * 100),
+        notes,
+      };
+      updatedLegs.push(updatedShort);
+    } else {
+      updatedLegs.push({ ...shortLeg, notes });
+    }
+
+    onSave(updatedLegs);
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+              <span className="px-2 py-1 text-xs font-semibold rounded bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400">
+                {longLeg.type.toUpperCase()} SPREAD
+              </span>
+              <span className={`px-2 py-1 text-xs font-semibold rounded ${
+                spreadType === 'credit'
+                  ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                  : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
+              }`}>
+                {spreadType === 'credit' ? 'CREDIT' : 'DEBIT'}
+              </span>
+            </h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              {contracts}x {ticker} ${Math.min(longLeg.strike, shortLeg.strike)}-${Math.max(longLeg.strike, shortLeg.strike)}
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+
+        {/* Tabs */}
+        <div className="border-b border-gray-200 dark:border-gray-700">
+          <div className="flex px-6">
+            <button
+              onClick={() => setActiveTab('overview')}
+              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === 'overview'
+                  ? 'border-purple-600 text-purple-600 dark:text-purple-400'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+              }`}
+            >
+              Overview
+            </button>
+            <button
+              onClick={() => setActiveTab('pnl')}
+              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === 'pnl'
+                  ? 'border-purple-600 text-purple-600 dark:text-purple-400'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+              }`}
+            >
+              P&L Curve
+            </button>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-6 min-h-[600px]">
+          {activeTab === 'overview' ? (
+            <div className="space-y-6">
+              {/* Spread Summary */}
+              <div className={`p-4 rounded-lg border-2 ${
+                isProfitable
+                  ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                  : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+              }`}>
+                <div className="flex items-center gap-3 mb-4">
+                  {isProfitable ? (
+                    <TrendingUp className="w-8 h-8 text-green-600 dark:text-green-400" />
+                  ) : (
+                    <TrendingDown className="w-8 h-8 text-red-600 dark:text-red-400" />
+                  )}
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Totale Winst/Verlies
+                    </p>
+                    <p className={`text-2xl font-bold ${
+                      isProfitable
+                        ? 'text-green-600 dark:text-green-400'
+                        : 'text-red-600 dark:text-red-400'
+                    }`}>
+                      {isProfitable ? '+' : ''}{formatCurrency(totalPnL, currencySymbol)}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Return %</p>
+                    <p className={`text-lg font-semibold ${
+                      isProfitable
+                        ? 'text-green-600 dark:text-green-400'
+                        : 'text-red-600 dark:text-red-400'
+                    }`}>
+                      {isProfitable ? '+' : ''}{formatNumber((totalPnL / Math.abs(totalCostBasis)) * 100)}%
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-4 gap-6 text-sm">
+                  <div className="flex flex-col">
+                    <p className="text-gray-500 dark:text-gray-400 mb-1">Net Premium</p>
+                    <p className={`font-semibold text-base ${
+                      isCredit ? 'text-green-600 dark:text-green-400' : 'text-blue-600 dark:text-blue-400'
+                    }`}>
+                      {isCredit ? '+' : '-'}{formatCurrency(Math.abs(netPremium), currencySymbol)}
+                    </p>
+                  </div>
+                  <div className="flex flex-col">
+                    <p className="text-gray-500 dark:text-gray-400 mb-1">Max Winst</p>
+                    <p className="font-semibold text-base text-green-600 dark:text-green-400">
+                      +{formatCurrency(maxProfit, currencySymbol)}
+                    </p>
+                  </div>
+                  <div className="flex flex-col">
+                    <p className="text-gray-500 dark:text-gray-400 mb-1">Max Verlies</p>
+                    <p className="font-semibold text-base text-red-600 dark:text-red-400">
+                      -{formatCurrency(maxLoss, currencySymbol)}
+                    </p>
+                  </div>
+                  <div className="flex flex-col">
+                    <p className="text-gray-500 dark:text-gray-400 mb-1">Spread Breedte</p>
+                    <p className="font-semibold text-base text-gray-900 dark:text-white">
+                      ${formatNumber(spreadWidth, 2)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Spread Details */}
+              <div className="grid grid-cols-2 gap-4">
+                {/* Long Leg */}
+                <div className="p-4 border-2 border-blue-200 dark:border-blue-800 rounded-lg bg-blue-50/50 dark:bg-blue-900/10">
+                  <div className="flex items-center gap-2 mb-3">
+                    <ArrowUpCircle className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Long Leg (KOPEN)</h3>
+                  </div>
+
+                  <div className="space-y-3 text-sm">
+                    <div>
+                      <p className="text-gray-500 dark:text-gray-400">Strike</p>
+                      <p className="font-semibold text-gray-900 dark:text-white">
+                        {formatCurrency(longLeg.strike, currencySymbol)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-gray-500 dark:text-gray-400">Fill Premium (per aandeel)</p>
+                      <p className="font-semibold text-gray-900 dark:text-white">
+                        {formatCurrency(longLeg.premium, currencySymbol)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-gray-500 dark:text-gray-400 mb-1">Huidige Premium (per aandeel)</p>
+                      <input
+                        type="text"
+                        value={longCurrentPremium}
+                        onChange={(e) => setLongCurrentPremium(e.target.value)}
+                        className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-sm"
+                        placeholder="0,00"
+                      />
+                    </div>
+                    <div>
+                      <p className="text-gray-500 dark:text-gray-400">Totale kost</p>
+                      <p className="font-semibold text-gray-900 dark:text-white">
+                        {formatCurrency(longLeg.premium * contracts * 100, currencySymbol)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Short Leg */}
+                <div className="p-4 border-2 border-orange-200 dark:border-orange-800 rounded-lg bg-orange-50/50 dark:bg-orange-900/10">
+                  <div className="flex items-center gap-2 mb-3">
+                    <ArrowDownCircle className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Short Leg (VERKOPEN)</h3>
+                  </div>
+
+                  <div className="space-y-3 text-sm">
+                    <div>
+                      <p className="text-gray-500 dark:text-gray-400">Strike</p>
+                      <p className="font-semibold text-gray-900 dark:text-white">
+                        {formatCurrency(shortLeg.strike, currencySymbol)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-gray-500 dark:text-gray-400">Fill Premium (per aandeel)</p>
+                      <p className="font-semibold text-gray-900 dark:text-white">
+                        {formatCurrency(shortLeg.premium, currencySymbol)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-gray-500 dark:text-gray-400 mb-1">Huidige Premium (per aandeel)</p>
+                      <input
+                        type="text"
+                        value={shortCurrentPremium}
+                        onChange={(e) => setShortCurrentPremium(e.target.value)}
+                        className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-sm"
+                        placeholder="0,00"
+                      />
+                    </div>
+                    <div>
+                      <p className="text-gray-500 dark:text-gray-400">Totale Opbrengst</p>
+                      <p className="font-semibold text-gray-900 dark:text-white">
+                        {formatCurrency(shortLeg.premium * contracts * 100, currencySymbol)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional Info */}
+              <div className="grid grid-cols-3 gap-4 text-sm">
+                <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                  <p className="text-gray-500 dark:text-gray-400">Expiratie</p>
+                  <p className="font-semibold text-gray-900 dark:text-white">
+                    {longLeg.expiration ? new Date(longLeg.expiration).toLocaleDateString('nl-NL') : 'N/A'}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{daysToExpiration} dagen</p>
+                </div>
+                <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                  <p className="text-gray-500 dark:text-gray-400">Contracten</p>
+                  <p className="font-semibold text-gray-900 dark:text-white">{contracts}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{contracts * 100} aandelen</p>
+                </div>
+                {collateral > 0 && (
+                  <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                    <p className="text-gray-500 dark:text-gray-400">Onderpand</p>
+                    <p className="font-semibold text-orange-600 dark:text-orange-400">
+                      {formatCurrency(collateral, currencySymbol)}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Vereist</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Notes */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Notities
+                </label>
+                <textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  rows={4}
+                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-sm"
+                  placeholder="Voeg notities toe over deze spread..."
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="h-96">
+              <PnLCurve
+                type={longLeg.type === 'call' ? 'call-spread' : 'put-spread'}
+                longStrike={longLeg.strike}
+                shortStrike={shortLeg.strike}
+                longPremium={longLeg.premium}
+                shortPremium={shortLeg.premium}
+                contracts={contracts}
+                actualCurrentPrice={currentStockPrice}
+                currency={currency}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Footer Actions */}
+        <div className="sticky bottom-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-end gap-3">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg font-medium transition-colors"
+          >
+            Annuleren
+          </button>
+          <button
+            onClick={handleSave}
+            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+          >
+            <Save className="w-4 h-4" />
+            Opslaan
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};

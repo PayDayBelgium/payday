@@ -1,0 +1,689 @@
+import React, { useState } from 'react';
+import { ChevronDown, ChevronRight, AlertCircle, CheckCircle, Search, Edit2, Check, X, TrendingDown, Target } from 'lucide-react';
+import type { StockPosition, PriceAlert, Portfolio } from '../../types';
+import { formatCurrency } from '../../utils/currencyHelpers';
+import { formatNumber } from '../../utils/numberFormat';
+import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { updatePosition, markPriceAlertAsRead } from '../../store/slices/positionsSlice';
+import { updateTickerPrice } from '../../store/slices/tickersSlice';
+// import { SellStockModal } from '../modals/SellStockModal';
+// import { ConfirmModal } from '../modals/ConfirmModal';
+
+export interface StrategyAlert {
+  id: string;
+  message: string;
+  category: 'alert' | 'opportunity';
+}
+
+interface GroupedStockListProps {
+  positions: StockPosition[];
+  alerts: PriceAlert[];
+  strategyAlertsMap?: Map<string, StrategyAlert[]>;
+  allPortfolios: Portfolio[];
+  onEditPosition: (position: StockPosition) => void;
+  onDismissStrategyAlert?: (alertId: string) => void;
+}
+
+interface TickerGroup {
+  ticker: string;
+  type: 'stock' | 'etf';
+  positions: StockPosition[];
+  totalShares: number;
+  averageCost: number; // GAK - Gemiddelde aankoopkoers
+  totalValue: number;
+  totalCostBasis: number;
+  profitLoss: number;
+  profitLossPercentage: number;
+  alerts: PriceAlert[];
+  strategyAlerts: StrategyAlert[];
+}
+
+export const GroupedStockList: React.FC<GroupedStockListProps> = ({
+  positions,
+  alerts,
+  strategyAlertsMap = new Map(),
+  allPortfolios,
+  onEditPosition,
+  onDismissStrategyAlert,
+}) => {
+  const dispatch = useAppDispatch();
+  const [expandedTickers, setExpandedTickers] = useState<Set<string>>(new Set());
+  const [searchQuery, setSearchQuery] = useState('');
+  const [editingTicker, setEditingTicker] = useState<string | null>(null);
+  const [editPrice, setEditPrice] = useState('');
+  const [sellModalTicker, setSellModalTicker] = useState<string | null>(null);
+  const [dismissConfirm, setDismissConfirm] = useState<{ isOpen: boolean; alert: PriceAlert | null }>({
+    isOpen: false,
+    alert: null,
+  });
+  const [dismissStrategyConfirm, setDismissStrategyConfirm] = useState<{ isOpen: boolean; alertId: string | null; message: string }>({
+    isOpen: false,
+    alertId: null,
+    message: '',
+  });
+
+  // Group positions by ticker (only open positions)
+  const groupedPositions = positions
+    .filter(position => position.status === 'open')
+    .reduce<Record<string, TickerGroup>>((acc, position) => {
+      if (!acc[position.ticker]) {
+        acc[position.ticker] = {
+          ticker: position.ticker,
+          type: position.type,
+          positions: [],
+          totalShares: 0,
+          averageCost: 0,
+          totalValue: 0,
+          totalCostBasis: 0,
+          profitLoss: 0,
+          profitLossPercentage: 0,
+          alerts: [],
+          strategyAlerts: [],
+        };
+      }
+
+      acc[position.ticker].positions.push(position);
+      acc[position.ticker].totalShares += position.shares;
+      acc[position.ticker].totalValue += position.currentValue;
+      acc[position.ticker].totalCostBasis += position.costBasis;
+
+      // Get alerts for this position
+      const positionAlerts = alerts.filter(a => a.positionId === position.id && !a.isRead);
+      acc[position.ticker].alerts.push(...positionAlerts);
+
+      // Get strategy alerts for this position
+      const posStrategyAlerts = strategyAlertsMap.get(position.id) || [];
+      acc[position.ticker].strategyAlerts.push(...posStrategyAlerts);
+
+      return acc;
+    }, {});
+
+  // Calculate GAK and P&L for each group
+  Object.values(groupedPositions).forEach(group => {
+    group.averageCost = group.totalCostBasis / group.totalShares;
+    group.profitLoss = group.totalValue - group.totalCostBasis;
+    group.profitLossPercentage = group.totalCostBasis > 0
+      ? (group.profitLoss / group.totalCostBasis) * 100
+      : 0;
+
+    // Sort positions by date (oldest first)
+    group.positions.sort((a, b) =>
+      new Date(a.openDate).getTime() - new Date(b.openDate).getTime()
+    );
+  });
+
+  // Filter groups by search query
+  const filteredGroups = Object.values(groupedPositions).filter(group =>
+    group.ticker.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Sort groups alphabetically by ticker
+  filteredGroups.sort((a, b) => a.ticker.localeCompare(b.ticker));
+
+  const toggleExpanded = (ticker: string) => {
+    setExpandedTickers(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(ticker)) {
+        newSet.delete(ticker);
+      } else {
+        newSet.add(ticker);
+      }
+      return newSet;
+    });
+  };
+
+  const startEditingPrice = (ticker: string, currentPrice: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingTicker(ticker);
+    setEditPrice(currentPrice.toString());
+  };
+
+  const cancelEditingPrice = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingTicker(null);
+    setEditPrice('');
+  };
+
+  const savePrice = (ticker: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const newPrice = parseFloat(editPrice);
+    if (isNaN(newPrice) || newPrice <= 0) {
+      return;
+    }
+
+    // First update the ticker price in tickersSlice - this will trigger middleware
+    // to update all positions and portfolio values automatically
+    dispatch(updateTickerPrice({ symbol: ticker, price: newPrice }));
+
+    // Also update positions directly for immediate UI feedback
+    const group = groupedPositions[ticker];
+    if (group) {
+      group.positions.forEach(position => {
+        const updatedPosition = {
+          ...position,
+          currentPrice: newPrice,
+          currentValue: newPrice * position.shares,
+        };
+        dispatch(updatePosition(updatedPosition));
+      });
+    }
+
+    setEditingTicker(null);
+    setEditPrice('');
+  };
+
+  const handlePriceKeyDown = (ticker: string, e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      savePrice(ticker, e as any);
+    } else if (e.key === 'Escape') {
+      cancelEditingPrice(e as any);
+    }
+  };
+
+  const handleDismissAlert = (alert: PriceAlert) => {
+    dispatch(markPriceAlertAsRead(alert.id));
+    setDismissConfirm({ isOpen: false, alert: null });
+  };
+
+  const handleDismissStrategyAlert = (e: React.MouseEvent, alertId: string, message: string) => {
+    e.stopPropagation();
+    setDismissStrategyConfirm({ isOpen: true, alertId, message });
+  };
+
+  const confirmDismissStrategyAlert = () => {
+    if (dismissStrategyConfirm.alertId && onDismissStrategyAlert) {
+      onDismissStrategyAlert(dismissStrategyConfirm.alertId);
+    }
+    setDismissStrategyConfirm({ isOpen: false, alertId: null, message: '' });
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Search Bar */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Zoek ticker..."
+          className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
+      </div>
+
+      {/* Grouped List */}
+      {filteredGroups.length > 0 ? (
+        <div className="space-y-3">
+          {filteredGroups.map((group) => {
+            const isExpanded = expandedTickers.has(group.ticker);
+            const isProfit = group.profitLoss >= 0;
+            const hasUnreadAlerts = group.alerts.length > 0;
+            const ruleAlerts = group.strategyAlerts.filter(a => a.category === 'alert');
+            const ruleOpportunities = group.strategyAlerts.filter(a => a.category === 'opportunity');
+
+            // Check if any position can write covered calls
+            // First check if the portfolio supports options
+            const portfolio = allPortfolios.find(b => b.name === group.positions[0].portfolio);
+            const portfolioSupportsOptions = portfolio?.hasOptions ?? false;
+
+            const canWriteCoveredCalls = portfolioSupportsOptions && group.positions.some(pos => {
+              const minShares = pos.miniContractsSupported ? 10 : 100;
+              return pos.shares >= minShares && pos.optionsSupported;
+            });
+
+            return (
+              <div
+                key={group.ticker}
+                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden"
+              >
+                {/* Group Header */}
+                <div
+                  className="p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors"
+                  onClick={() => toggleExpanded(group.ticker)}
+                >
+                  <div className="flex items-center gap-4">
+                    {/* Left: Chevron + All data fields */}
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      {/* Chevron */}
+                      <div className="text-gray-500 dark:text-gray-400 flex-shrink-0">
+                        {isExpanded ? (
+                          <ChevronDown className="w-5 h-5" />
+                        ) : (
+                          <ChevronRight className="w-5 h-5" />
+                        )}
+                      </div>
+
+                      {/* Content container */}
+                      <div className="flex-1 min-w-0">
+                        {/* Ticker row */}
+                        <div className="flex items-center gap-2 mb-2">
+                          <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                            {group.ticker}
+                          </h3>
+                          <span
+                            className={`px-2 py-0.5 rounded text-xs font-medium ${
+                              group.type === 'etf'
+                                ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400'
+                                : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
+                            }`}
+                          >
+                            {group.type === 'etf' ? 'ETF' : 'Stock'}
+                          </span>
+                          {hasUnreadAlerts && (
+                            <div
+                              className="flex items-center gap-1 px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-full text-xs font-medium"
+                              title="Prijs waarschuwingen - De prijs is significant veranderd"
+                            >
+                              <AlertCircle className="w-3.5 h-3.5" />
+                              {group.alerts.length}
+                            </div>
+                          )}
+                          {ruleAlerts.length > 0 && (
+                            <div
+                              className="flex items-center gap-1 px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-full text-xs font-medium"
+                              title="Waarschuwingen - Regels die aandacht vereisen"
+                            >
+                              <AlertCircle className="w-3.5 h-3.5" />
+                              {ruleAlerts.length}
+                            </div>
+                          )}
+                          {ruleOpportunities.length > 0 && (
+                            <div
+                              className="flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-xs font-medium"
+                              title="Kansen - Mogelijkheden om te handelen"
+                            >
+                              <Target className="w-3.5 h-3.5" />
+                              {ruleOpportunities.length}
+                            </div>
+                          )}
+                          {canWriteCoveredCalls && (
+                            <div
+                              className="flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-xs font-medium"
+                              title="Covered Calls mogelijk - Voldoende aandelen om covered calls te schrijven"
+                            >
+                              <CheckCircle className="w-3.5 h-3.5" />
+                              CC
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Data fields in a flex layout */}
+                        <div className="flex items-end gap-6 text-sm">
+                          <div className="w-24 flex-shrink-0">
+                            <p className="text-gray-500 dark:text-gray-400 text-xs mb-1">Eerste positie op</p>
+                            <p className="text-gray-900 dark:text-white font-medium text-xs">
+                              {new Date(group.positions[0].openDate).toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                            </p>
+                          </div>
+                          <div className="w-16 flex-shrink-0">
+                            <p className="text-gray-500 dark:text-gray-400 text-xs mb-1">Aantal</p>
+                            <p className="text-gray-900 dark:text-white font-medium">{group.totalShares}</p>
+                          </div>
+                          <div className="w-20 flex-shrink-0">
+                            <p className="text-gray-500 dark:text-gray-400 text-xs mb-1">GAK</p>
+                            <p className="text-gray-900 dark:text-white font-medium">{formatCurrency(group.averageCost, allPortfolios)}</p>
+                          </div>
+                          <div className="w-28 flex-shrink-0">
+                            <p className="text-gray-500 dark:text-gray-400 text-xs mb-1">Aankoopwaarde</p>
+                            <p className="text-gray-900 dark:text-white font-medium">{formatCurrency(group.totalCostBasis, allPortfolios)}</p>
+                          </div>
+                          <div className="w-24 flex-shrink-0">
+                            <p className="text-gray-500 dark:text-gray-400 text-xs mb-1">Huidige Prijs</p>
+                            {editingTicker === group.ticker ? (
+                              <div className="flex items-center" onClick={(e) => e.stopPropagation()}>
+                                <input
+                                  type="number"
+                                  step="0.01"
+                                  value={editPrice}
+                                  onChange={(e) => setEditPrice(e.target.value)}
+                                  onKeyDown={(e) => handlePriceKeyDown(group.ticker, e)}
+                                  onBlur={(e) => savePrice(group.ticker, e as any)}
+                                  className="w-full px-2 py-1 text-sm font-bold border-2 border-blue-500 dark:border-blue-400 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                  autoFocus
+                                />
+                              </div>
+                            ) : (
+                              <p
+                                onClick={(e) => startEditingPrice(group.ticker, group.positions[0].currentPrice, e)}
+                                className="text-gray-900 dark:text-white font-bold text-base cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                              >
+                                {formatCurrency(group.positions[0].currentPrice, allPortfolios)}
+                              </p>
+                            )}
+                          </div>
+                          <div className="w-28 flex-shrink-0">
+                            <p className="text-gray-500 dark:text-gray-400 text-xs mb-1">Huidige Waarde</p>
+                            <p className="text-gray-900 dark:text-white font-medium">{formatCurrency(group.totalValue, allPortfolios)}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Spacer */}
+                    <div className="flex-1"></div>
+
+                    {/* Right: P&L indicator */}
+                    <div className="text-center flex-shrink-0">
+                      <p
+                        className={`text-2xl font-bold ${
+                          isProfit ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                        }`}
+                      >
+                        {isProfit ? '+' : ''}{formatCurrency(Math.abs(group.profitLoss), allPortfolios)}
+                      </p>
+                      <p
+                        className={`text-sm font-medium ${
+                          isProfit ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                        }`}
+                      >
+                        {isProfit ? '+' : ''}{formatNumber(group.profitLossPercentage, 2)}%
+                      </p>
+                    </div>
+
+                    {/* Sell button in gray zone */}
+                    <div className="flex-shrink-0 bg-gray-100 dark:bg-gray-700/50 rounded-lg px-3 py-3">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSellModalTicker(group.ticker);
+                        }}
+                        className="w-8 h-8 flex items-center justify-center bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-200 rounded font-semibold text-sm transition-colors"
+                        title="Verkoop"
+                      >
+                        S
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Expanded Content - Individual Positions */}
+                {isExpanded && (
+                  <div className="border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+                    <div className="divide-y divide-gray-200 dark:divide-gray-700">
+                      {group.positions.map((position) => {
+                        const posProfit = position.currentValue - position.costBasis;
+                        const posProfitPct = position.costBasis > 0
+                          ? (posProfit / position.costBasis) * 100
+                          : 0;
+                        const isPosProfit = posProfit >= 0;
+
+                        // Get alerts for this specific position
+                        const positionAlerts = alerts.filter(a => a.positionId === position.id && !a.isRead);
+                        const positionStrategyAlerts = strategyAlertsMap.get(position.id) || [];
+
+                        return (
+                          <div key={position.id}>
+                            <div
+                              onClick={() => onEditPosition(position)}
+                              className="p-4 hover:bg-white dark:hover:bg-gray-800 cursor-pointer transition-colors"
+                            >
+                              <div className="flex items-center gap-4">
+                                {/* Left: Chevron spacer + Data fields matching header */}
+                                <div className="flex items-center gap-3 flex-1">
+                                  {/* Spacer for chevron alignment */}
+                                  <div className="w-5 flex-shrink-0">
+                                    {/* Alert/Opportunity indicators */}
+                                    {(positionAlerts.length > 0 || positionStrategyAlerts.length > 0) && (
+                                      <div className="flex flex-col gap-0.5">
+                                        {positionAlerts.some(a => !a.category || a.category === 'alert') && (
+                                          <AlertCircle className="w-3.5 h-3.5 text-red-600 dark:text-red-400" />
+                                        )}
+                                        {positionStrategyAlerts.some(a => a.category === 'alert') && (
+                                          <AlertCircle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                                        )}
+                                        {(positionAlerts.some(a => a.category === 'opportunity') || positionStrategyAlerts.some(a => a.category === 'opportunity')) && (
+                                          <Target className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  {/* Data fields matching header layout */}
+                                  <div className="flex items-center gap-6 text-sm">
+                                    <div className="w-24 flex-shrink-0">
+                                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                        {new Date(position.openDate).toLocaleDateString('nl-NL')}
+                                      </p>
+                                    </div>
+                                    <div className="w-16 flex-shrink-0">
+                                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                        {position.shares}
+                                      </p>
+                                    </div>
+                                    <div className="w-20 flex-shrink-0">
+                                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                        {formatCurrency(position.purchasePrice, allPortfolios)}
+                                      </p>
+                                    </div>
+                                    <div className="w-28 flex-shrink-0">
+                                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                        {formatCurrency(position.costBasis, allPortfolios)}
+                                      </p>
+                                    </div>
+                                    <div className="w-24 flex-shrink-0">
+                                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                        {formatCurrency(position.currentPrice, allPortfolios)}
+                                      </p>
+                                    </div>
+                                    <div className="w-28 flex-shrink-0">
+                                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                        {formatCurrency(position.currentValue, allPortfolios)}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* P&L - right-aligned */}
+                                <div className="flex-shrink-0 text-right" style={{ width: '180px' }}>
+                                  <p
+                                    className={`text-lg font-bold ${
+                                      isPosProfit ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                                    }`}
+                                  >
+                                    {isPosProfit ? '+' : ''}{formatCurrency(Math.abs(posProfit), allPortfolios)}
+                                  </p>
+                                  <p
+                                    className={`text-xs font-medium ${
+                                      isPosProfit ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                                    }`}
+                                  >
+                                    {isPosProfit ? '+' : ''}{formatNumber(posProfitPct, 2)}%
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Position-specific alerts */}
+                            {(positionAlerts.length > 0 || positionStrategyAlerts.length > 0) && (
+                              <div className="px-4 pb-3 space-y-2">
+                                {/* Price Alerts */}
+                                {positionAlerts.map((alert) => {
+                                  const isOpportunity = alert.category === 'opportunity';
+                                  const bgColor = isOpportunity
+                                    ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                                    : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800';
+                                  const iconColor = isOpportunity
+                                    ? 'text-green-600 dark:text-green-400'
+                                    : 'text-red-600 dark:text-red-400';
+                                  const textColor = isOpportunity
+                                    ? 'text-green-800 dark:text-green-200'
+                                    : 'text-red-800 dark:text-red-200';
+
+                                  return (
+                                    <div
+                                      key={alert.id}
+                                      className={`flex items-start gap-2 p-2 ml-8 ${bgColor} border rounded text-xs`}
+                                    >
+                                      {isOpportunity ? (
+                                        <Target className={`w-3.5 h-3.5 ${iconColor} mt-0.5 flex-shrink-0`} />
+                                      ) : (
+                                        <AlertCircle className={`w-3.5 h-3.5 ${iconColor} mt-0.5 flex-shrink-0`} />
+                                      )}
+                                      <p className={`${textColor} flex-1`}>{alert.message}</p>
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setDismissConfirm({ isOpen: true, alert });
+                                        }}
+                                        className={`p-0.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors flex-shrink-0`}
+                                        title="Alert sluiten"
+                                      >
+                                        <X className="w-3.5 h-3.5" />
+                                      </button>
+                                    </div>
+                                  );
+                                })}
+
+                                {/* Strategy Alerts */}
+                                {positionStrategyAlerts.map((alert) => {
+                                  const isAlert = alert.category === 'alert';
+                                  const Icon = isAlert ? AlertCircle : Target;
+                                  const bgColor = isAlert
+                                    ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800'
+                                    : 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800';
+                                  const iconColor = isAlert
+                                    ? 'text-amber-600 dark:text-amber-400'
+                                    : 'text-green-600 dark:text-green-400';
+                                  const textColor = isAlert
+                                    ? 'text-amber-800 dark:text-amber-200'
+                                    : 'text-green-800 dark:text-green-200';
+
+                                  return (
+                                    <div
+                                      key={alert.id}
+                                      className={`flex items-start gap-2 p-2 ml-8 ${bgColor} border rounded text-xs`}
+                                    >
+                                      <Icon className={`w-3.5 h-3.5 ${iconColor} mt-0.5 flex-shrink-0`} />
+                                      <p className={`${textColor} flex-1`}>{alert.message}</p>
+                                      {onDismissStrategyAlert && (
+                                        <button
+                                          onClick={(e) => handleDismissStrategyAlert(e, alert.id, alert.message)}
+                                          className={`p-0.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors flex-shrink-0`}
+                                          title="Alert sluiten"
+                                        >
+                                          <X className="w-3.5 h-3.5" />
+                                        </button>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Alerts Display */}
+                {hasUnreadAlerts && !isExpanded && (
+                  <div className="border-t border-gray-200 dark:border-gray-700 p-3 bg-red-50 dark:bg-red-900/20">
+                    <div className="space-y-2">
+                      {group.alerts.slice(0, 2).map((alert) => {
+                        // Fallback to 'alert' if category is not set (for backwards compatibility)
+                        const isOpportunity = alert.category === 'opportunity';
+                        const bgColor = isOpportunity
+                          ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                          : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800';
+                        const iconColor = isOpportunity
+                          ? 'text-green-600 dark:text-green-400'
+                          : 'text-red-600 dark:text-red-400';
+                        const textColor = isOpportunity
+                          ? 'text-green-800 dark:text-green-200'
+                          : 'text-red-800 dark:text-red-200';
+
+                        return (
+                          <div
+                            key={alert.id}
+                            className={`flex items-start gap-2 p-2 ${bgColor} border rounded text-xs`}
+                          >
+                            {isOpportunity ? (
+                              <Target className={`w-3.5 h-3.5 ${iconColor} mt-0.5 flex-shrink-0`} />
+                            ) : (
+                              <AlertCircle className={`w-3.5 h-3.5 ${iconColor} mt-0.5 flex-shrink-0`} />
+                            )}
+                            <p className={`${textColor} flex-1`}>{alert.message}</p>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setDismissConfirm({ isOpen: true, alert });
+                              }}
+                              className={`p-0.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors flex-shrink-0`}
+                              title="Alert sluiten"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        );
+                      })}
+                      {group.alerts.length > 2 && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                          +{group.alerts.length - 2} meer
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+          {searchQuery ? (
+            <>
+              <p className="text-lg font-medium">Geen resultaten gevonden</p>
+              <p className="text-sm mt-1">Probeer een andere zoekterm</p>
+            </>
+          ) : (
+            <p>Geen posities beschikbaar</p>
+          )}
+        </div>
+      )}
+
+      {/* Sell Stock Modal */}
+      {/* {sellModalTicker && (
+        <SellStockModal
+          isOpen={true}
+          onClose={() => setSellModalTicker(null)}
+          ticker={sellModalTicker}
+          positions={groupedPositions[sellModalTicker]?.positions || []}
+          allPortfolios={allPortfolios}
+        />
+      )} */}
+
+      {/* Confirm Dismiss Alert Modal */}
+      {/* {dismissConfirm.isOpen && dismissConfirm.alert && (
+        <ConfirmModal
+          isOpen={dismissConfirm.isOpen}
+          onClose={() => setDismissConfirm({ isOpen: false, alert: null })}
+          onConfirm={() => {
+            if (dismissConfirm.alert) {
+              handleDismissAlert(dismissConfirm.alert);
+            }
+          }}
+          title={dismissConfirm.alert.category === 'opportunity' ? 'Opportuniteit Sluiten' : 'Alert Sluiten'}
+          message={`Weet je zeker dat je deze ${dismissConfirm.alert.category === 'opportunity' ? 'opportuniteit' : 'alert'} wilt sluiten?`}
+          confirmText="Sluiten"
+          cancelText="Annuleren"
+          variant={dismissConfirm.alert.category === 'opportunity' ? 'warning' : 'danger'}
+        />
+      )} */}
+
+      {/* Confirm Dismiss Strategy Alert Modal */}
+      {/* {dismissStrategyConfirm.isOpen && (
+        <ConfirmModal
+          isOpen={dismissStrategyConfirm.isOpen}
+          onClose={() => setDismissStrategyConfirm({ isOpen: false, alertId: null, message: '' })}
+          onConfirm={confirmDismissStrategyAlert}
+          title="Alert Verwijderen"
+          message={`Weet je zeker dat je deze alert wilt sluiten?\n\n"${dismissStrategyConfirm.message}"\n\nDeze komt niet meer terug.`}
+          confirmText="Verwijderen"
+          cancelText="Annuleren"
+          variant="danger"
+        />
+      )} */}
+    </div>
+  );
+};
