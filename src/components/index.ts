@@ -21,3 +21,6 @@ export { UpcomingEvents } from './widgets/UpcomingEvents';
 export { LoadingOverlay } from './common/LoadingOverlay';
 export { IBConnectionStatus } from './common/IBConnectionStatus';
 export { NumberInput } from './common/NumberInput';
+
+// Features
+export { FeatureGate, FeatureLockIndicator, withFeatureGate } from './features/FeatureGate';

@@ -23,6 +23,7 @@ import {
   TickersOverview,
   Analytics,
   HelpPortal,
+  MissionStatement,
 } from './pages';
 import { AdminLayout } from './components/layout/AdminLayout';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
@@ -84,6 +85,7 @@ function AppContent() {
         <Route path="settings" element={<Settings />} />
         <Route path="settings/portfolios" element={<PortfolioManagement />} />
         <Route path="help" element={<HelpPortal />} />
+        <Route path="mission" element={<MissionStatement />} />
         {/* TODO: Add more routes */}
         <Route path="*" element={<ComingSoon />} />
       </Route>

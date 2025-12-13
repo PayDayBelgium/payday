@@ -19,6 +19,8 @@ import {
   Banknote,
   Receipt,
   LineChart,
+  Mountain,
+  HelpCircle,
 } from 'lucide-react';
 import type { PortfolioName } from '../../types';
 import { useAppSelector } from '../../hooks/useAppSelector';
@@ -288,6 +290,45 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '', isCollapsed, o
           >
             <Settings className="w-5 h-5" />
             {!isCollapsed && <span className="font-medium">Instellingen</span>}
+          </NavLink>
+        </div>
+
+        {/* Learning & Help Section */}
+        <div className="mt-6">
+          {!isCollapsed && (
+            <h3 className="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+              Leren
+            </h3>
+          )}
+          <NavLink
+            to="/mission"
+            onClick={() => handleMenuClick('/mission', 'Jouw Reis')}
+            className={({ isActive }) =>
+              `flex items-center ${isCollapsed ? 'justify-center p-2' : 'gap-3 px-3'} py-2.5 rounded-lg mb-1 transition-colors ${
+                isActive
+                  ? 'bg-primary-50 text-gray-900 dark:text-white'
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700'
+              }`
+            }
+            title={isCollapsed ? 'Jouw Reis' : ''}
+          >
+            <Mountain className="w-5 h-5" />
+            {!isCollapsed && <span className="font-medium">Jouw Reis</span>}
+          </NavLink>
+          <NavLink
+            to="/help"
+            onClick={() => handleMenuClick('/help', 'Help')}
+            className={({ isActive }) =>
+              `flex items-center ${isCollapsed ? 'justify-center p-2' : 'gap-3 px-3'} py-2.5 rounded-lg mb-1 transition-colors ${
+                isActive
+                  ? 'bg-primary-50 text-gray-900 dark:text-white'
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700'
+              }`
+            }
+            title={isCollapsed ? 'Help' : ''}
+          >
+            <HelpCircle className="w-5 h-5" />
+            {!isCollapsed && <span className="font-medium">Help</span>}
           </NavLink>
         </div>
       </nav>

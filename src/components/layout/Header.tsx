@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { User, LogOut, ChevronLeft, Menu, Globe, Palette, Info, HelpCircle, ArrowLeft, Download, Upload, Bot, AlertCircle } from 'lucide-react';
+import { User, LogOut, ChevronLeft, Menu, Globe, Palette, Info, HelpCircle, ArrowLeft, Download, Upload, Bot, AlertCircle, Mountain, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import logo from '../../assets/app/logo.png';
@@ -19,6 +19,7 @@ import type { BackupData } from '../../utils/backup';
 import { selectAllTickers } from '../../store/slices/tickersSlice';
 import { selectPositions } from '../../store/slices/positionsSlice';
 import { formatNumber } from '../../utils/numberFormat';
+import { selectUserProgress, selectCurrentLevelConfig } from '../../store/slices/userProgressSlice';
 
 interface HeaderProps {
   pageTitle?: string;
@@ -56,6 +57,8 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription, isSi
   const username = useAppSelector((state) => state.auth.user);
   const tickers = useAppSelector(selectAllTickers);
   const positions = useAppSelector(selectPositions);
+  const userProgress = useAppSelector(selectUserProgress);
+  const currentLevelConfig = useAppSelector(selectCurrentLevelConfig);
 
   // Select specific slices needed for backup instead of entire state
   const portfoliosState = useAppSelector((state) => state.portfolios);
@@ -343,6 +346,44 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription, isSi
                       <p className="text-sm text-gray-500 dark:text-gray-400">Options Trader</p>
                     </div>
                   </div>
+                </div>
+
+                {/* Level Progress */}
+                <div className="p-3 border-b border-gray-200 dark:border-slate-700">
+                  <button
+                    onClick={() => {
+                      setShowUserMenu(false);
+                      navigate('/mission');
+                    }}
+                    className="w-full hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors p-2"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`
+                        w-10 h-10 rounded-full flex items-center justify-center text-lg
+                        ${currentLevelConfig.slopeColor === 'green' ? 'bg-green-100 dark:bg-green-900/30' :
+                          currentLevelConfig.slopeColor === 'blue' ? 'bg-blue-100 dark:bg-blue-900/30' :
+                          currentLevelConfig.slopeColor === 'red' ? 'bg-red-100 dark:bg-red-900/30' :
+                          'bg-gray-100 dark:bg-gray-700'}
+                      `}>
+                        {currentLevelConfig.icon}
+                      </div>
+                      <div className="flex-1 text-left">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">
+                            {currentLevelConfig.slopeName}
+                          </span>
+                          <span className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                            <Star className="w-3 h-3" />
+                            {userProgress.credits}
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {currentLevelConfig.name} niveau
+                        </p>
+                      </div>
+                      <Mountain className="w-4 h-4 text-gray-400" />
+                    </div>
+                  </button>
                 </div>
 
                 {/* Language Selector */}

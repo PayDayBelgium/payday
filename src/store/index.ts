@@ -16,6 +16,7 @@ import tickersReducer from './slices/tickersSlice';
 import strategiesReducer from './slices/strategiesSlice';
 import wheelsReducer from './slices/wheelsSlice';
 import connectivityReducer from './slices/connectivitySlice';
+import userProgressReducer from './slices/userProgressSlice';
 import { tickerPriceMiddleware } from './middleware/tickerPriceMiddleware';
 import { tradeMiddleware } from './middleware/tradeMiddleware';
 import { positionValueMiddleware } from './middleware/positionValueMiddleware';
@@ -36,6 +37,7 @@ const rootReducer = combineReducers({
   strategies: strategiesReducer,
   wheels: wheelsReducer,
   connectivity: connectivityReducer,
+  userProgress: userProgressReducer,
 });
 
 // Create store factory to support per-user persistence
@@ -44,7 +46,7 @@ export const createAppStore = (username?: string) => {
   const persistConfig = {
     key: username ? `payday-${username}` : 'payday-root',
     storage,
-    whitelist: ['auth', 'adminAuth', 'portfolios', 'positions', 'trades', 'rules', 'journal', 'todos', 'tickers', 'strategies', 'wheels'], // Persist auth and adminAuth to remember sessions
+    whitelist: ['auth', 'adminAuth', 'portfolios', 'positions', 'trades', 'rules', 'journal', 'todos', 'tickers', 'strategies', 'wheels', 'userProgress'], // Persist auth and adminAuth to remember sessions
     // blacklist: ['alerts', 'ibConnection'], // Don't persist these
     version: 1,
     migrate: (state: any) => {

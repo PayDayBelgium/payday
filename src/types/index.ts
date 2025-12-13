@@ -489,3 +489,98 @@ export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'er
 // Data mode for the price feed
 export type DataMode = 'demo' | 'demo-feed' | 'live';
 
+// =====================================================
+// USER LEVEL SYSTEM - Ski Slope Analogy
+// =====================================================
+
+// User Experience Levels (like ski slopes)
+export type UserLevel = 'beginner' | 'medior' | 'senior' | 'expert';
+
+// Level configuration with ski slope names
+export interface LevelConfig {
+  level: UserLevel;
+  name: string;          // Display name (e.g., "Beginner")
+  slopeName: string;     // Ski slope analogy (e.g., "Baby Slope")
+  slopeColor: string;    // Ski slope color (green, blue, red, black)
+  icon: string;          // Emoji or icon identifier
+  description: string;   // What this level includes
+  features: FeatureId[]; // Features unlocked at this level
+  creditsRequired: number; // Credits needed to unlock (0 for beginner)
+  priceEUR?: number;     // Optional price to unlock immediately
+}
+
+// Feature identifiers for gating
+export type FeatureId =
+  // Beginner features
+  | 'broker_setup'
+  | 'stocks'
+  | 'etfs'
+  | 'dividends'
+  | 'portfolio_tracking'
+  | 'basic_analytics'
+  // Medior features
+  | 'covered_calls'
+  | 'cash_secured_puts'
+  | 'wheel_strategy'
+  | 'options_basics'
+  | 'premium_tracking'
+  // Senior features
+  | 'leaps'
+  | 'delta_management'
+  | 'pmcc'
+  | 'advanced_analytics'
+  | 'roll_management'
+  // Expert features
+  | 'spreads'
+  | 'iron_condors'
+  | 'kaching'
+  | 'complex_strategies'
+  | 'paper_trading'
+  | 'ai_assistant';
+
+// User progress and credits
+export interface UserProgress {
+  currentLevel: UserLevel;
+  credits: number;
+  unlockedLevels: UserLevel[];
+  completedLessons: string[];
+  achievements: Achievement[];
+  paperTradingEnabled: boolean;
+  joinedAt: string;
+  lastActiveAt: string;
+}
+
+// Achievement system
+export interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  earnedAt: string;
+  creditsAwarded: number;
+}
+
+// Credit transaction history
+export interface CreditTransaction {
+  id: string;
+  type: 'earned' | 'spent' | 'purchased';
+  amount: number;
+  reason: string;
+  timestamp: string;
+  relatedAchievementId?: string;
+  relatedLevelId?: UserLevel;
+}
+
+// Lesson/Tutorial structure
+export interface Lesson {
+  id: string;
+  level: UserLevel;
+  title: string;
+  description: string;
+  duration: string;      // e.g., "15 min"
+  contentType: 'video' | 'article' | 'interactive' | 'quiz';
+  creditsAwarded: number;
+  order: number;
+  prerequisites?: string[];
+}
+

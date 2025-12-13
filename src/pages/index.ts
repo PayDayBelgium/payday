@@ -42,6 +42,9 @@ export { Analytics } from './analytics/Analytics';
 // Help
 export { HelpPortal } from './help/HelpPortal';
 
+// Mission
+export { MissionStatement } from './mission/MissionStatement';
+
 // Admin
 export { AdminDashboard } from './admin/AdminDashboard';
 export { UsersList } from './admin/UsersList';
