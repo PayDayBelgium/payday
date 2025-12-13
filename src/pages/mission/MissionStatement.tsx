@@ -28,6 +28,7 @@ import {
   unlockLevel,
   spendCredits,
 } from '../../store/slices/userProgressSlice';
+import { LearningResources } from '../../components/learning/LearningResources';
 import type { UserLevel, LevelConfig } from '../../types';
 
 // Ski slope visual component
@@ -446,6 +447,15 @@ export const MissionStatement: React.FC = () => {
             <p className="text-sm text-gray-600 dark:text-gray-400">Of ontgrendel direct met €</p>
           </div>
         </div>
+      </div>
+
+      {/* Learning Resources Section */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+          <GraduationCap className="w-6 h-6 icon-text-primary" />
+          Tips, Boeken & Tutorials
+        </h2>
+        <LearningResources showAllLevels />
       </div>
 
       {/* Belgian Fiscal Info Teaser */}

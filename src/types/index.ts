@@ -584,3 +584,67 @@ export interface Lesson {
   prerequisites?: string[];
 }
 
+// =====================================================
+// LEARNING RESOURCES - Tips, Books, Tutorials per Level
+// =====================================================
+
+// Tip or Trick
+export interface TradingTip {
+  id: string;
+  level: UserLevel;
+  title: string;
+  content: string;
+  category: 'strategy' | 'risk' | 'psychology' | 'tax' | 'tool' | 'general';
+  icon?: string;
+  relatedFeatures?: FeatureId[];
+}
+
+// Recommended Book
+export interface RecommendedBook {
+  id: string;
+  level: UserLevel;
+  title: string;
+  author: string;
+  description: string;
+  coverImage?: string;
+  amazonUrl?: string;
+  bolUrl?: string;       // Bol.com for Belgian/Dutch users
+  category: 'beginner' | 'options' | 'leaps' | 'income' | 'psychology' | 'tax';
+  rating?: number;       // 1-5 stars
+  difficulty: 'easy' | 'medium' | 'advanced';
+}
+
+// Video Tutorial
+export interface VideoTutorial {
+  id: string;
+  level: UserLevel;
+  title: string;
+  description: string;
+  duration: string;      // e.g., "15:30"
+  thumbnailUrl?: string;
+  videoUrl?: string;     // YouTube, Vimeo, etc.
+  platform: 'youtube' | 'vimeo' | 'internal' | 'external';
+  category: 'basics' | 'strategy' | 'platform' | 'analysis';
+  creditsAwarded?: number;
+}
+
+// External Resource Link
+export interface ExternalResource {
+  id: string;
+  level: UserLevel;
+  title: string;
+  description: string;
+  url: string;
+  type: 'website' | 'tool' | 'calculator' | 'community' | 'broker';
+  isFree: boolean;
+}
+
+// Learning Resource Collection per Level
+export interface LevelResources {
+  level: UserLevel;
+  tips: TradingTip[];
+  books: RecommendedBook[];
+  videos: VideoTutorial[];
+  externalResources: ExternalResource[];
+}
+
