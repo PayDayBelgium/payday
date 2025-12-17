@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Trash2, Save, X, Upload, ArrowLeft, GripVertical, Briefcase, Image as ImageIcon, ChevronDown, ExternalLink } from 'lucide-react';
+import { Plus, Trash2, Save, X, Upload, GripVertical, Briefcase, Image as ImageIcon, ChevronDown, ExternalLink } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { usePageTitle } from '../../contexts/PageTitleContext';
@@ -20,7 +20,7 @@ import { formatNumber } from '../../utils/numberFormat';
 export const PortfolioManagement: React.FC = () => {
   const { t } = useTranslation();
   const { setPageTitle } = usePageTitle();
-  const { goBack } = useNavigation();
+  const { goBack, pushNavigation, clearNavigation } = useNavigation();
   const dispatch = useAppDispatch();
   const location = useLocation();
   const navigate = useNavigate();
@@ -68,8 +68,14 @@ export const PortfolioManagement: React.FC = () => {
   }, [showDefaultPortfolios]);
 
   useEffect(() => {
-    setPageTitle(t('portfolios.pageTitle'), t('portfolios.pageSubtitle'));
-  }, [setPageTitle, t]);
+    if (editingPortfolioId === 'new') {
+      setPageTitle(t('portfolios.addNewPortfolio'), '');
+    } else if (editingPortfolioId) {
+      setPageTitle(t('portfolios.editPortfolio'), '');
+    } else {
+      setPageTitle(t('portfolios.pageTitle'), t('portfolios.pageSubtitle'));
+    }
+  }, [setPageTitle, t, editingPortfolioId]);
 
   // Auto-open add portfolio form ONLY if coming from dashboard with addPortfolio flag
   // OR auto-open edit form if editPortfolioId is provided
@@ -91,6 +97,8 @@ export const PortfolioManagement: React.FC = () => {
     setLogoPreview(null);
     setLogoOriginal(null);
     setLogoMetadata(undefined);
+    // Push navigation so back button appears in header
+    pushNavigation('/settings/portfolios/new', t('portfolios.addNewPortfolio'));
   };
 
   const handleEditPortfolio = (portfolio: Portfolio) => {
@@ -111,6 +119,8 @@ export const PortfolioManagement: React.FC = () => {
     setLogoPreview(portfolio.logo);
     setLogoOriginal(portfolio.logoOriginal || portfolio.logo); // Use original if available, otherwise use logo
     setLogoMetadata(portfolio.logoMetadata);
+    // Push navigation so back button appears in header
+    pushNavigation(`/settings/portfolios/${portfolio.id}`, t('portfolios.editPortfolio'));
   };
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -226,6 +236,8 @@ export const PortfolioManagement: React.FC = () => {
     setLogoPreview(null);
     setLogoOriginal(null);
     setLogoMetadata(undefined);
+    // Clear navigation stack and stay on portfolio list (component will re-render to show list)
+    clearNavigation();
   };
 
   const handleCancelEdit = () => {
@@ -239,16 +251,8 @@ export const PortfolioManagement: React.FC = () => {
     setLogoPreview(null);
     setLogoOriginal(null);
     setLogoMetadata(undefined);
-  };
-
-  const handleBackNavigation = () => {
-    // If we came from another page (like PortfolioDetail), use navigation context
-    if (location.state?.editPortfolioId || location.state?.fromPage) {
-      goBack();
-    } else {
-      // Otherwise, use normal cancel behavior
-      handleCancelEdit();
-    }
+    // Go back in navigation
+    goBack();
   };
 
   const handleDeletePortfolio = (id: string, name: string) => {
@@ -310,29 +314,13 @@ export const PortfolioManagement: React.FC = () => {
     setDragOverPortfolioId(null);
   };
 
-  // If editing, show edit form
+  // If editing, show edit form - full page integration without extra padding
   if (editingPortfolioId) {
     return (
-      <div className="space-y-6">
-        {/* Edit Form */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-          {/* Title with Back Button */}
-          <div className="flex items-center gap-3 mb-4">
-            {portfolios.length > 0 && (
-              <button
-                onClick={handleCancelEdit}
-                className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                title={t('navigation.goBack')}
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </button>
-            )}
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              {editingPortfolioId === 'new' ? t('portfolios.addNewPortfolio') : t('portfolios.editPortfolio')}
-            </h3>
-          </div>
-
-          <div className="space-y-6">
+      <div className="-m-6 min-h-[calc(100vh-4rem)]">
+        {/* Edit Form - Full page layout */}
+        <div className="bg-white dark:bg-gray-800 p-6 min-h-full">
+          <div className="space-y-6 max-w-4xl">
             {/* Basic Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -531,26 +519,27 @@ export const PortfolioManagement: React.FC = () => {
                 rows={4}
               />
             </div>
-          </div>
 
-          <div className="flex justify-end gap-3 mt-6">
-            {portfolios.length > 0 && (
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
+              {portfolios.length > 0 && (
+                <button
+                  onClick={handleCancelEdit}
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg font-medium transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                  {t('common.cancel')}
+                </button>
+              )}
               <button
-                onClick={handleCancelEdit}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg font-medium transition-colors"
+                onClick={handleSavePortfolio}
+                disabled={!formData.name || !formData.logo}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
               >
-                <X className="w-4 h-4" />
-                {t('common.cancel')}
+                <Save className="w-4 h-4" />
+                {t('portfolios.savePortfolio')}
               </button>
-            )}
-            <button
-              onClick={handleSavePortfolio}
-              disabled={!formData.name || !formData.logo}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
-            >
-              <Save className="w-4 h-4" />
-              {t('portfolios.savePortfolio')}
-            </button>
+            </div>
           </div>
         </div>
 
@@ -711,7 +700,7 @@ export const PortfolioManagement: React.FC = () => {
         confirmText={t('common.delete')}
         cancelText={t('common.cancel')}
         onConfirm={confirmDeletePortfolio}
-        onCancel={cancelDeletePortfolio}
+        onClose={cancelDeletePortfolio}
         variant="danger"
       />
 

@@ -4,9 +4,15 @@ import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { PageTitleProvider, usePageTitle } from '../../contexts/PageTitleContext';
 import { NavigationProvider } from '../../contexts/NavigationContext';
+import { OnboardingWizard, shouldShowWizard } from '../onboarding/OnboardingWizard';
+import { useAppSelector } from '../../hooks/useAppSelector';
+import { selectCurrentLevel } from '../../store/slices/userProgressSlice';
+import type { UserLevel } from '../../types';
 
 const LayoutContent: React.FC = () => {
   const { pageTitle, pageDescription, showInfoIcon, isInfoActive, onInfoClick, showWarningIcon, isWarningActive, onWarningClick, titleIcon } = usePageTitle();
+  const currentLevel = useAppSelector(selectCurrentLevel);
+
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Check localStorage or system preference
     const saved = localStorage.getItem('darkMode');
@@ -21,6 +27,37 @@ const LayoutContent: React.FC = () => {
     const saved = localStorage.getItem('sidebarCollapsed');
     return saved === 'true';
   });
+
+  // Onboarding wizard state
+  const [wizardOpen, setWizardOpen] = useState(false);
+  const [wizardLevel, setWizardLevel] = useState<UserLevel>(currentLevel);
+  const [lastShownLevel, setLastShownLevel] = useState<UserLevel | null>(() => {
+    const saved = localStorage.getItem('wizard-last-shown-level');
+    return saved as UserLevel | null;
+  });
+
+  // Show wizard on first visit or when level changes
+  useEffect(() => {
+    // Check if we should show the wizard for the current level
+    if (shouldShowWizard(currentLevel) && currentLevel !== lastShownLevel) {
+      // Small delay to let the page render first
+      const timer = setTimeout(() => {
+        setWizardLevel(currentLevel);
+        setWizardOpen(true);
+        setLastShownLevel(currentLevel);
+        localStorage.setItem('wizard-last-shown-level', currentLevel);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [currentLevel, lastShownLevel]);
+
+  const handleWizardClose = () => {
+    setWizardOpen(false);
+  };
+
+  const handleWizardComplete = () => {
+    setWizardOpen(false);
+  };
 
   useEffect(() => {
     // Update document class and save preference
@@ -63,6 +100,14 @@ const LayoutContent: React.FC = () => {
       <main className={`flex-1 ${isSidebarCollapsed ? 'ml-16' : 'ml-64'} mt-16 p-6 bg-gray-50 dark:bg-slate-900 transition-all duration-300`}>
         <Outlet />
       </main>
+
+      {/* Onboarding Wizard - shows on first visit and level unlock */}
+      <OnboardingWizard
+        level={wizardLevel}
+        isOpen={wizardOpen}
+        onClose={handleWizardClose}
+        onComplete={handleWizardComplete}
+      />
     </div>
   );
 };

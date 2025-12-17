@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { usePageTitle } from '../../contexts/PageTitleContext';
 import { useNavigation } from '../../contexts/NavigationContext';
@@ -7,6 +7,7 @@ import { DollarSign, Banknote, ShieldAlert, TrendingUp, TrendingDown, ExternalLi
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { selectTransactionsByPortfolio, addTransaction, selectDailyData } from '../../store/slices/portfoliosSlice';
+import { selectUnlockedLevels, isFeatureAvailable } from '../../store/slices/userProgressSlice';
 import { useAlerts } from '../../hooks/useAlerts';
 import { StatCard } from '../../components/widgets/StatCard';
 import { TransactionLog } from '../../components/widgets/TransactionLog';
@@ -56,6 +57,7 @@ export const PortfolioDetail: React.FC = () => {
   const { t } = useTranslation();
   const { portfolioName } = useParams<{ portfolioName: string }>();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { setPageTitle, setTitleIcon } = usePageTitle();
   const { canGoBack, pushNavigation } = useNavigation();
   const portfolios = useAppSelector((state) => state.portfolios.portfolios);
@@ -63,6 +65,10 @@ export const PortfolioDetail: React.FC = () => {
   const portfolio = portfolios.find((b) => b.name === portfolioName);
   const transactions = useAppSelector((state) => selectTransactionsByPortfolio(state, portfolioName || ''));
   const dailyData = useAppSelector(selectDailyData);
+  const unlockedLevels = useAppSelector(selectUnlockedLevels);
+
+  // Check feature access for options
+  const hasOptionsAccess = isFeatureAvailable('covered_calls', unlockedLevels);
 
   // Use central alerts hook with portfolio filter
   const { alerts, opportunities } = useAlerts(portfolioName);
@@ -275,7 +281,8 @@ export const PortfolioDetail: React.FC = () => {
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 flex flex-col flex-1 min-h-0">
         {/* Tab Navigation */}
         <div className="border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-          <nav className="flex -mb-px">
+          <nav className="flex -mb-px justify-between">
+            <div className="flex">
             <button
               onClick={() => setActiveTab('portfolio')}
               className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
@@ -287,28 +294,32 @@ export const PortfolioDetail: React.FC = () => {
               <Briefcase className="w-4 h-4" />
               Portfolio ({portfolioStats.positionCount})
             </button>
-            <button
-              onClick={() => setActiveTab('campaigns')}
-              className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === 'campaigns'
-                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
-              }`}
-            >
-              <Layers className="w-4 h-4" />
-              Campagnes
-            </button>
-            <button
-              onClick={() => setActiveTab('freecash')}
-              className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === 'freecash'
-                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
-              }`}
-            >
-              <Banknote className="w-4 h-4" />
-              Free cash
-            </button>
+            {hasOptionsAccess && (
+              <button
+                onClick={() => setActiveTab('campaigns')}
+                className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
+                  activeTab === 'campaigns'
+                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
+                }`}
+              >
+                <Layers className="w-4 h-4" />
+                Campagnes
+              </button>
+            )}
+            {hasOptionsAccess && (
+              <button
+                onClick={() => setActiveTab('freecash')}
+                className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
+                  activeTab === 'freecash'
+                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
+                }`}
+              >
+                <Banknote className="w-4 h-4" />
+                Free cash
+              </button>
+            )}
             <button
               onClick={() => setActiveTab('chart')}
               className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
@@ -331,44 +342,51 @@ export const PortfolioDetail: React.FC = () => {
               <History className="w-4 h-4" />
               Transaction log
             </button>
-            <button
-              onClick={() => setActiveTab('information')}
-              className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === 'information'
-                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
-              }`}
-            >
-              <Info className="w-4 h-4" />
-              Information
-            </button>
-            <button
-              onClick={() => setActiveTab('insights')}
-              className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === 'insights'
-                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
-              }`}
-            >
-              <BarChart3 className="w-4 h-4" />
-              Virtueel portfolio
-            </button>
-            <button
-              onClick={() => setActiveTab('alerts')}
-              className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === 'alerts'
-                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
-              }`}
-            >
-              <AlertCircle className="w-4 h-4" />
-              Alerts & Opportunities
-              {(alertsData.alerts.length > 0 || alertsData.opportunities.length > 0) && (
-                <span className="px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900/30 rounded-full text-xs font-semibold text-amber-600 dark:text-amber-400">
-                  {alertsData.alerts.length + alertsData.opportunities.length}
-                </span>
-              )}
-            </button>
+            {hasOptionsAccess && (
+              <button
+                onClick={() => setActiveTab('information')}
+                className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
+                  activeTab === 'information'
+                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
+                }`}
+              >
+                <Info className="w-4 h-4" />
+                Information
+              </button>
+            )}
+            {hasOptionsAccess && (
+              <button
+                onClick={() => setActiveTab('insights')}
+                className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
+                  activeTab === 'insights'
+                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
+                }`}
+              >
+                <BarChart3 className="w-4 h-4" />
+                Virtueel portfolio
+              </button>
+            )}
+            {hasOptionsAccess && (
+              <button
+                onClick={() => setActiveTab('alerts')}
+                className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
+                  activeTab === 'alerts'
+                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
+                }`}
+              >
+                <AlertCircle className="w-4 h-4" />
+                Alerts & Opportunities
+                {(alertsData.alerts.length > 0 || alertsData.opportunities.length > 0) && (
+                  <span className="px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900/30 rounded-full text-xs font-semibold text-amber-600 dark:text-amber-400">
+                    {alertsData.alerts.length + alertsData.opportunities.length}
+                  </span>
+                )}
+              </button>
+            )}
+            </div>
           </nav>
         </div>
 
@@ -388,25 +406,29 @@ export const PortfolioDetail: React.FC = () => {
                     </span>
                   </button>
 
-                  <button
-                    onClick={() => setIsCallOptionWizardOpen(true)}
-                    className="flex items-center gap-2 px-3 py-2 bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-lg border border-green-200 dark:border-green-800 hover:border-green-400 dark:hover:border-green-600 transition-all text-left cursor-pointer w-36"
-                  >
-                    <Plus className="w-4 h-4 text-green-600 dark:text-green-400 flex-shrink-0" />
-                    <span className="text-sm font-medium text-green-700 dark:text-green-300 truncate">
-                      Call Optie
-                    </span>
-                  </button>
+                  {hasOptionsAccess && (
+                    <button
+                      onClick={() => setIsCallOptionWizardOpen(true)}
+                      className="flex items-center gap-2 px-3 py-2 bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-lg border border-green-200 dark:border-green-800 hover:border-green-400 dark:hover:border-green-600 transition-all text-left cursor-pointer w-36"
+                    >
+                      <Plus className="w-4 h-4 text-green-600 dark:text-green-400 flex-shrink-0" />
+                      <span className="text-sm font-medium text-green-700 dark:text-green-300 truncate">
+                        Call Optie
+                      </span>
+                    </button>
+                  )}
 
-                  <button
-                    onClick={() => setIsPutOptionWizardOpen(true)}
-                    className="flex items-center gap-2 px-3 py-2 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/30 rounded-lg border border-purple-200 dark:border-purple-800 hover:border-purple-400 dark:hover:border-purple-600 transition-all text-left cursor-pointer w-36"
-                  >
-                    <Plus className="w-4 h-4 text-purple-600 dark:text-purple-400 flex-shrink-0" />
-                    <span className="text-sm font-medium text-purple-700 dark:text-purple-300 truncate">
-                      Put Optie
-                    </span>
-                  </button>
+                  {hasOptionsAccess && (
+                    <button
+                      onClick={() => setIsPutOptionWizardOpen(true)}
+                      className="flex items-center gap-2 px-3 py-2 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/30 rounded-lg border border-purple-200 dark:border-purple-800 hover:border-purple-400 dark:hover:border-purple-600 transition-all text-left cursor-pointer w-36"
+                    >
+                      <Plus className="w-4 h-4 text-purple-600 dark:text-purple-400 flex-shrink-0" />
+                      <span className="text-sm font-medium text-purple-700 dark:text-purple-300 truncate">
+                        Put Optie
+                      </span>
+                    </button>
+                  )}
 
                   <button
                     onClick={() => setIsTransactionModalOpen(true)}

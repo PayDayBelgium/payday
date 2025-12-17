@@ -4,6 +4,8 @@ import type { RootState } from '../index';
 import type { UserLevel, UserProgress, Achievement, CreditTransaction, LevelConfig, FeatureId } from '../../types';
 
 // Level configurations with ski slope analogy
+// Note: priceEUR is set to 0 for all levels - unlock only via credits
+// Credits requirements are set low for easy testing
 export const LEVEL_CONFIGS: LevelConfig[] = [
   {
     level: 'beginner',
@@ -24,8 +26,8 @@ export const LEVEL_CONFIGS: LevelConfig[] = [
     icon: '🔵',
     description: 'Ontdek inkomensstrategieën met covered calls, cash secured puts en de Wheel strategie.',
     features: ['covered_calls', 'cash_secured_puts', 'wheel_strategy', 'options_basics', 'premium_tracking'],
-    creditsRequired: 500,
-    priceEUR: 29,
+    creditsRequired: 0,
+    priceEUR: 0,
   },
   {
     level: 'senior',
@@ -35,8 +37,8 @@ export const LEVEL_CONFIGS: LevelConfig[] = [
     icon: '🔴',
     description: 'Beheers geavanceerde strategieën met LEAPS, delta management en PMCC.',
     features: ['leaps', 'delta_management', 'pmcc', 'advanced_analytics', 'roll_management'],
-    creditsRequired: 1500,
-    priceEUR: 49,
+    creditsRequired: 0,
+    priceEUR: 0,
   },
   {
     level: 'expert',
@@ -46,8 +48,8 @@ export const LEVEL_CONFIGS: LevelConfig[] = [
     icon: '⚫',
     description: 'Toegang tot alle strategieën inclusief spreads, iron condors, KaChing en AI-assistent.',
     features: ['spreads', 'iron_condors', 'kaching', 'complex_strategies', 'paper_trading', 'ai_assistant'],
-    creditsRequired: 3000,
-    priceEUR: 99,
+    creditsRequired: 0,
+    priceEUR: 0,
   },
 ];
 

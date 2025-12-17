@@ -1,14 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { Calculator, TrendingUp, AlertTriangle, ArrowRight } from 'lucide-react';
+import { Calculator, TrendingUp, AlertTriangle, ArrowRight, Plus, X, Info } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../hooks/useAppSelector';
+import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { usePageTitle } from '../../contexts/PageTitleContext';
 import { useNavigation } from '../../contexts/NavigationContext';
 import { FridayDatePicker } from '../../components/common/FridayDatePicker';
 import { TickerSelector } from '../../components/widgets/TickerSelector';
+import { PortalTooltip } from '../../components/common/PortalTooltip';
+import { addTicker } from '../../store/slices/tickersSlice';
 import { formatNumber } from '../../utils/numberFormat';
 import type { Ticker } from '../../types';
+
+// Tooltip explanations for PMCC calculations
+const TOOLTIPS = {
+  initialInvestment: 'Initiële Investering = LEAP Premium × 100\n\nDit is het bedrag dat je betaalt voor de LEAP call optie. Het is je maximale risico in deze strategie.',
+  leapBreakEven: 'Break-Even = LEAP Strike + LEAP Premium\n\nDe koers die het aandeel moet bereiken zodat je LEAP call op expiratie break-even is.',
+  periods: 'Aantal periodes dat je covered calls kunt verkopen voordat de LEAP expireert.\n\nPeriodes = Dagen tot LEAP expiratie / Dagen per periode',
+  extrinsicValue: 'Extrinsieke Waarde = LEAP Premium - Intrinsieke Waarde\n\nIntrinsieke Waarde = max(0, Koers - Strike)\n\nDit is het tijdswaarde-gedeelte dat je betaalt en dat langzaam vervalt.',
+  residualValue: 'Restwaarde = max(0, Koers - Strike) × 100\n\nDe intrinsieke waarde van je LEAP op expiratie als de koers gelijk blijft.',
+  premiumCollected: 'Ontvangen Premium = Premium per Call × 100 × Aantal Periodes\n\nDe totale premium die je ontvangt door het verkopen van covered calls.',
+  netPnL: 'Netto Winst/Verlies = Restwaarde + Ontvangen Premium - Initiële Investering\n\nJe totale rendement op de PMCC strategie.',
+  roi: 'ROI = (Netto Winst/Verlies / Initiële Investering) × 100%\n\nHet procentuele rendement op je investering.',
+  annualizedROI: 'Annualized ROI = ROI × (365 / Dagen)\n\nHet rendement genormaliseerd naar een volledig jaar. Dit geeft een betere vergelijking tussen strategieën met verschillende looptijden.',
+};
 
 interface PMCCInputs {
   // Stock
@@ -44,7 +60,7 @@ const MULTIPLIER = 100; // Standard option contract size
 
 export const PMCCCalculator: React.FC = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const dispatch = useAppDispatch();
   const { setPageTitle } = usePageTitle();
   const { pushNavigation } = useNavigation();
   const portfolios = useAppSelector((state) => state.portfolios.portfolios);
@@ -64,6 +80,16 @@ export const PMCCCalculator: React.FC = () => {
   const [warnings, setWarnings] = useState<string[]>([]);
   const [showPortfolioDialog, setShowPortfolioDialog] = useState(false);
 
+  // New ticker creation state
+  const [isCreatingTicker, setIsCreatingTicker] = useState(false);
+  const [newTickerData, setNewTickerData] = useState({
+    symbol: '',
+    name: '',
+    type: 'stock' as 'stock' | 'etf',
+    optionsAvailable: true,
+    miniContractsAvailable: false,
+  });
+
   // Set page title
   useEffect(() => {
     setPageTitle("Poor Man's Covered Call simulator", "Calculate potential returns for your Poor Man's Covered Call strategy");
@@ -79,6 +105,38 @@ export const PMCCCalculator: React.FC = () => {
       ...prev,
       [field]: value,
     }));
+  };
+
+  // Handle creating a new ticker
+  const handleCreateTicker = () => {
+    if (!newTickerData.symbol || !newTickerData.name) return;
+
+    const ticker: Ticker = {
+      ...newTickerData,
+      symbol: newTickerData.symbol.toUpperCase(),
+      lastUsed: new Date().toISOString(),
+      currentPrice: inputs.underlyingPrice || 0,
+    };
+
+    dispatch(addTicker(ticker));
+    handleInputChange('ticker', ticker.symbol);
+    setIsCreatingTicker(false);
+    setNewTickerData({
+      symbol: '',
+      name: '',
+      type: 'stock',
+      optionsAvailable: true,
+      miniContractsAvailable: false,
+    });
+  };
+
+  // Handle opening the create ticker form
+  const handleOpenCreateTicker = (symbol: string) => {
+    setNewTickerData(prev => ({
+      ...prev,
+      symbol: symbol.toUpperCase(),
+    }));
+    setIsCreatingTicker(true);
   };
 
   const calculateResults = () => {
@@ -196,21 +254,173 @@ export const PMCCCalculator: React.FC = () => {
               Stock
             </h2>
             <div className="space-y-3">
-              <div>
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Ticker
-                </label>
-                <TickerSelector
-                  value={inputs.ticker}
-                  onChange={(ticker: Ticker) => {
-                    handleInputChange('ticker', ticker.symbol);
-                    if (ticker.currentPrice) {
-                      handleInputChange('underlyingPrice', ticker.currentPrice);
-                    }
-                  }}
-                  placeholder="Zoek ticker..."
-                />
-              </div>
+              {!isCreatingTicker ? (
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Ticker
+                  </label>
+                  <TickerSelector
+                    value={inputs.ticker}
+                    onChange={(ticker: Ticker) => {
+                      handleInputChange('ticker', ticker.symbol);
+                      if (ticker.currentPrice) {
+                        handleInputChange('underlyingPrice', ticker.currentPrice);
+                      }
+                    }}
+                    onCreateNew={handleOpenCreateTicker}
+                    placeholder="Zoek ticker..."
+                  />
+                </div>
+              ) : (
+                <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="font-semibold text-blue-900 dark:text-blue-300 flex items-center gap-2">
+                      <Plus className="w-4 h-4" />
+                      Nieuwe ticker toevoegen
+                    </h4>
+                    <button
+                      onClick={() => {
+                        setIsCreatingTicker(false);
+                        setNewTickerData({
+                          symbol: '',
+                          name: '',
+                          type: 'stock',
+                          optionsAvailable: true,
+                          miniContractsAvailable: false,
+                        });
+                      }}
+                      className="p-1 hover:bg-blue-200 dark:hover:bg-blue-800 rounded transition-colors"
+                    >
+                      <X className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    </button>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Ticker Symbool *
+                        </label>
+                        <input
+                          type="text"
+                          value={newTickerData.symbol}
+                          onChange={(e) =>
+                            setNewTickerData({
+                              ...newTickerData,
+                              symbol: e.target.value.toUpperCase(),
+                            })
+                          }
+                          placeholder="AAPL"
+                          className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 p-1.5 text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Type
+                        </label>
+                        <select
+                          value={newTickerData.type}
+                          onChange={(e) =>
+                            setNewTickerData({
+                              ...newTickerData,
+                              type: e.target.value as 'stock' | 'etf',
+                            })
+                          }
+                          className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 p-1.5 text-sm"
+                        >
+                          <option value="stock">Aandeel</option>
+                          <option value="etf">ETF</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Bedrijfsnaam *
+                      </label>
+                      <input
+                        type="text"
+                        value={newTickerData.name}
+                        onChange={(e) =>
+                          setNewTickerData({
+                            ...newTickerData,
+                            name: e.target.value,
+                          })
+                        }
+                        placeholder="Apple Inc."
+                        className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 p-1.5 text-sm"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={newTickerData.optionsAvailable}
+                          onChange={(e) =>
+                            setNewTickerData({
+                              ...newTickerData,
+                              optionsAvailable: e.target.checked,
+                            })
+                          }
+                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                        />
+                        <span className="text-sm text-gray-700 dark:text-gray-300">
+                          Opties beschikbaar
+                        </span>
+                      </label>
+
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={newTickerData.miniContractsAvailable}
+                          onChange={(e) =>
+                            setNewTickerData({
+                              ...newTickerData,
+                              miniContractsAvailable: e.target.checked,
+                            })
+                          }
+                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                        />
+                        <span className="text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                          Mini contracts beschikbaar
+                          <div className="group relative">
+                            <Info className="w-4 h-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-help" />
+                            <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 z-50">
+                              Sommige aandelen hebben mini-contracten van 10 aandelen per contract in plaats van de standaard 100.
+                            </div>
+                          </div>
+                        </span>
+                      </label>
+                    </div>
+
+                    <div className="flex gap-3 pt-2">
+                      <button
+                        onClick={handleCreateTicker}
+                        disabled={!newTickerData.symbol || !newTickerData.name}
+                        className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors text-sm"
+                      >
+                        Ticker Toevoegen
+                      </button>
+                      <button
+                        onClick={() => {
+                          setIsCreatingTicker(false);
+                          setNewTickerData({
+                            symbol: '',
+                            name: '',
+                            type: 'stock',
+                            optionsAvailable: true,
+                            miniContractsAvailable: false,
+                          });
+                        }}
+                        className="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg font-medium transition-colors text-sm"
+                      >
+                        Annuleren
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -352,25 +562,45 @@ export const PMCCCalculator: React.FC = () => {
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <p className="text-xs font-medium text-gray-700 dark:text-gray-300">Initial Investment</p>
+                      <p className="text-xs font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
+                        Initial Investment
+                        <PortalTooltip content={<pre className="whitespace-pre-wrap text-xs max-w-xs">{TOOLTIPS.initialInvestment}</pre>}>
+                          <Info className="w-3 h-3 text-gray-400 hover:text-primary-500 cursor-help" />
+                        </PortalTooltip>
+                      </p>
                       <p className="text-base font-bold text-gray-900 dark:text-white">
                         {formatCurrency(results.initialInvestment)}
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs font-medium text-gray-700 dark:text-gray-300">LEAP Break-Even</p>
+                      <p className="text-xs font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
+                        LEAP Break-Even
+                        <PortalTooltip content={<pre className="whitespace-pre-wrap text-xs max-w-xs">{TOOLTIPS.leapBreakEven}</pre>}>
+                          <Info className="w-3 h-3 text-gray-400 hover:text-primary-500 cursor-help" />
+                        </PortalTooltip>
+                      </p>
                       <p className="text-base font-bold text-gray-900 dark:text-white">
                         {formatCurrency(results.leapBreakEven)}
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs font-medium text-gray-700 dark:text-gray-300">Calculated Periods</p>
+                      <p className="text-xs font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
+                        Calculated Periods
+                        <PortalTooltip content={<pre className="whitespace-pre-wrap text-xs max-w-xs">{TOOLTIPS.periods}</pre>}>
+                          <Info className="w-3 h-3 text-gray-400 hover:text-primary-500 cursor-help" />
+                        </PortalTooltip>
+                      </p>
                       <p className="text-base font-bold text-gray-900 dark:text-white">
                         {results.periods} {inputs.premiumFrequency === 'weekly' ? 'weeks' : 'months'}
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs font-medium text-gray-700 dark:text-gray-300">Premium Paid (LEAP)</p>
+                      <p className="text-xs font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
+                        Premium Paid (LEAP)
+                        <PortalTooltip content={<pre className="whitespace-pre-wrap text-xs max-w-xs">{TOOLTIPS.extrinsicValue}</pre>}>
+                          <Info className="w-3 h-3 text-gray-400 hover:text-primary-500 cursor-help" />
+                        </PortalTooltip>
+                      </p>
                       <p className="text-base font-bold text-gray-900 dark:text-white">
                         {formatCurrency(results.extrinsicValue)}
                       </p>
@@ -384,8 +614,11 @@ export const PMCCCalculator: React.FC = () => {
                 {/* P&L Section */}
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
                       LEAP Residual Value
+                      <PortalTooltip content={<pre className="whitespace-pre-wrap text-xs max-w-xs">{TOOLTIPS.residualValue}</pre>}>
+                        <Info className="w-3 h-3 text-gray-400 hover:text-primary-500 cursor-help" />
+                      </PortalTooltip>
                     </span>
                     <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                       {formatCurrency(results.residualValue)}
@@ -393,8 +626,11 @@ export const PMCCCalculator: React.FC = () => {
                   </div>
 
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
                       Premium Collected
+                      <PortalTooltip content={<pre className="whitespace-pre-wrap text-xs max-w-xs">{TOOLTIPS.premiumCollected}</pre>}>
+                        <Info className="w-3 h-3 text-gray-400 hover:text-primary-500 cursor-help" />
+                      </PortalTooltip>
                     </span>
                     <span className="text-sm font-semibold text-green-600 dark:text-green-400">
                       +{formatCurrency(results.premiumCollected)}
@@ -403,8 +639,11 @@ export const PMCCCalculator: React.FC = () => {
 
                   <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
                     <div className="flex justify-between items-baseline mb-1">
-                      <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
+                      <span className="text-sm font-bold text-gray-900 dark:text-gray-100 flex items-center gap-1">
                         Net Profit / Loss
+                        <PortalTooltip content={<pre className="whitespace-pre-wrap text-xs max-w-xs">{TOOLTIPS.netPnL}</pre>}>
+                          <Info className="w-3 h-3 text-gray-400 hover:text-primary-500 cursor-help" />
+                        </PortalTooltip>
                       </span>
                       <span className={`text-xl font-bold ${results.netPnL >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                         {formatCurrency(results.netPnL)}
@@ -417,8 +656,11 @@ export const PMCCCalculator: React.FC = () => {
 
                   <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
                     <div className="flex justify-between items-baseline">
-                      <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
+                      <span className="text-sm font-bold text-gray-900 dark:text-gray-100 flex items-center gap-1">
                         ROI
+                        <PortalTooltip content={<pre className="whitespace-pre-wrap text-xs max-w-xs">{TOOLTIPS.roi}</pre>}>
+                          <Info className="w-3 h-3 text-gray-400 hover:text-primary-500 cursor-help" />
+                        </PortalTooltip>
                       </span>
                       <span className={`text-xl font-bold ${results.roi >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                         {formatPercentage(results.roi)}
@@ -433,6 +675,9 @@ export const PMCCCalculator: React.FC = () => {
                         <span className="text-sm font-bold text-gray-900 dark:text-white">
                           Annualized ROI
                         </span>
+                        <PortalTooltip content={<pre className="whitespace-pre-wrap text-xs max-w-xs">{TOOLTIPS.annualizedROI}</pre>}>
+                          <Info className="w-3 h-3 text-gray-400 hover:text-primary-500 cursor-help" />
+                        </PortalTooltip>
                       </div>
                       <span className={`text-2xl font-bold ${results.annualizedROI >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                         {formatPercentage(results.annualizedROI)}

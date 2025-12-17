@@ -12,9 +12,26 @@ import { WizardModal, type WizardStep } from './WizardModal';
 import { TickerSelector } from '../widgets/TickerSelector';
 import { PnLCurve } from '../widgets/PnLCurve';
 import { FridayDatePicker } from '../common/FridayDatePicker';
-import { parseLocalizedNumber, getDecimalSeparator, getThousandSeparator, formatNumber } from '../../utils/numberFormat';
-import type { CallOption, Ticker, PortfolioName, CurrencyType, Position, StockPosition, WheelCampaign } from '../../types';
+import { parseLocalizedNumber, formatNumber, getDecimalSeparator } from '../../utils/numberFormat';
+import type { CallOption, Ticker, PortfolioName, CurrencyType, Position, StockPosition } from '../../types';
 import type { RootState } from '../../store';
+import {
+  type OptionAction,
+  type OptionLegData,
+  validateNumberInput,
+  calculateDTE,
+  calculateCallBreakEven,
+  calculateSpreadCollateral,
+  calculateCashReserved,
+  calculateCallValues,
+  validateCallSpread,
+  getCallPnLType,
+  calculateCallSpreadSummary,
+  generateCallOptionId,
+  generateSpreadId,
+  generateTransactionId,
+  DEFAULT_NEW_TICKER_DATA,
+} from './optionWizardUtils';
 
 interface CallOptionWizardProps {
   isOpen: boolean;
@@ -29,15 +46,6 @@ interface CallOptionWizardProps {
   initialTicker?: Ticker;
   initialStep?: number;
   initialWheelId?: string;
-}
-
-type OptionAction = 'buy' | 'sell' | 'credit-spread' | 'debit-spread';
-
-interface OptionLegData {
-  strike: number;
-  expiration: string;
-  premium: number;
-  contracts: number;
 }
 
 export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
@@ -155,91 +163,8 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
   // Check if covered call option should be available
   const hasCoveredCallEligible = eligibleUnderlyings.stocks.length > 0 || eligibleUnderlyings.leaps.length > 0;
 
-  // Helper function to validate number input based on browser locale
-  const validateNumberInput = (value: string): boolean => {
-    if (!value) return true;
-
-    const decimalSep = getDecimalSeparator();
-    const thousandSep = getThousandSeparator();
-
-    // Create pattern that allows digits and locale-specific separators
-    const separators = [decimalSep, thousandSep].filter(s => s).map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('');
-    const pattern = new RegExp(`^[\\d${separators}]*$`);
-
-    if (!pattern.test(value)) return false;
-
-    // Only one decimal separator allowed
-    const decimals = value.split(decimalSep).length - 1;
-    if (decimals > 1) return false;
-
-    return true;
-  };
-
-  // Calculate DTE (days to expiration)
-  const calculateDTE = (expirationDate: string): number => {
-    if (!expirationDate) return 0;
-    const today = new Date();
-    const expiry = new Date(expirationDate);
-    const diffTime = expiry.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return Math.max(0, diffDays);
-  };
-
-  // Calculate break-even for single options
-  const calculateBreakEven = (strike: number, premium: number): number => {
-    // For call options:
-    // - Buy (long call): strike + premium (need stock to rise above strike + premium)
-    // - Sell (short call): strike + premium (break-even is strike + premium)
-    return strike + premium;
-  };
-
-  // Calculate collateral for spreads (CALL credit spreads need collateral)
-  const calculateCollateral = (higherStrike: number, lowerStrike: number, contracts: number): number => {
-    return (higherStrike - lowerStrike) * contracts * 100;
-  };
-
-  // Calculate cash reserved for covered calls (if selling calls with stock backing)
-  const calculateCashReserved = (strike: number, contracts: number): number => {
-    // For covered calls, you need to own the stock
-    // For naked calls, broker may require significant margin
-    // Simplified: we'll treat sold calls like CSPs in terms of collateral requirements
-    return strike * contracts * 100;
-  };
-
-  // Calculate cost basis and current value
-  const calculateValues = () => {
-    const contractMultiplier = 100; // Standard options contract = 100 shares
-
-    if (action === 'credit-spread') {
-      // Credit Spread: Sell lower strike (short), buy higher strike (long) for protection
-      // We receive net premium (credit)
-      const creditReceived = (shortLeg.premium - longLeg.premium) * longLeg.contracts * contractMultiplier;
-      const costBasis = -creditReceived; // Negative because we receive credit
-      const currentValue = costBasis; // Start with cost basis, will be updated with market prices
-      const collateral = calculateCollateral(longLeg.strike, shortLeg.strike, longLeg.contracts);
-
-      return { costBasis, currentValue, cashReserved: collateral };
-    } else if (action === 'debit-spread') {
-      // Debit Spread: Buy lower strike (long), sell higher strike (short)
-      // We pay net premium (debit)
-      const debitPaid = (longLeg.premium - shortLeg.premium) * longLeg.contracts * contractMultiplier;
-      const costBasis = debitPaid; // Positive because we pay debit
-      const currentValue = costBasis;
-
-      return { costBasis, currentValue, cashReserved: 0 };
-    } else if (action === 'buy') {
-      // Buying calls: Pay premium
-      const costBasis = longLeg.premium * longLeg.contracts * contractMultiplier;
-      return { costBasis, currentValue: costBasis, cashReserved: 0 };
-    } else {
-      // Selling calls (including covered calls): Collect premium but may need collateral
-      const premiumCollected = longLeg.premium * longLeg.contracts * contractMultiplier;
-      const costBasis = -premiumCollected; // Negative because we received money
-      // For covered calls, collateral is the underlying position, but we still track it for margin purposes
-      const cashReserved = calculateCashReserved(longLeg.strike, longLeg.contracts);
-      return { costBasis, currentValue: costBasis, cashReserved };
-    }
-  };
+  // Use shared utility for cost/value calculations
+  const calculateValues = () => calculateCallValues(action, longLeg, shortLeg);
 
   const handleCreateTicker = () => {
     if (!newTickerData.symbol || !newTickerData.name) return;

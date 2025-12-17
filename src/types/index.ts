@@ -648,3 +648,88 @@ export interface LevelResources {
   externalResources: ExternalResource[];
 }
 
+// =====================================================
+// EDUCATION CURRICULUM - Structured Learning Path
+// =====================================================
+
+// Education Chapter - Groups related lessons
+export interface EducationChapter {
+  id: string;
+  level: UserLevel;
+  title: string;
+  description: string;
+  icon: string;
+  order: number;
+  lessons: EducationLesson[];
+  estimatedDuration: string; // e.g., "45 min"
+}
+
+// Individual Lesson within a Chapter
+export interface EducationLesson {
+  id: string;
+  chapterId: string;
+  title: string;
+  order: number;
+  content: EducationContent[];
+  quiz?: EducationQuiz;
+  creditsAwarded: number;
+  estimatedDuration: string;
+}
+
+// Content block types for lessons
+export type EducationContentType =
+  | 'text'           // Regular text paragraph
+  | 'heading'        // Section heading
+  | 'callout'        // Important info box (info, warning, tip)
+  | 'definition'     // Term definition box
+  | 'comparison'     // Side-by-side comparison
+  | 'diagram'        // Visual diagram/image
+  | 'example'        // Practical example with numbers
+  | 'formula'        // Mathematical formula
+  | 'list'           // Bulleted or numbered list
+  | 'table'          // Data table
+  | 'analogy'        // Real-world analogy box
+  | 'video';         // Embedded video
+
+export interface EducationContent {
+  type: EducationContentType;
+  content: string;
+  // Optional properties based on type
+  variant?: 'info' | 'warning' | 'tip' | 'success'; // For callout
+  term?: string;           // For definition
+  items?: string[];        // For list
+  leftTitle?: string;      // For comparison
+  rightTitle?: string;     // For comparison
+  leftItems?: string[];    // For comparison
+  rightItems?: string[];   // For comparison
+  columns?: string[];      // For table
+  rows?: string[][];       // For table
+  imageUrl?: string;       // For diagram
+  caption?: string;        // For diagram/example
+  videoUrl?: string;       // For video
+  duration?: string;       // For video
+}
+
+// Quiz for lesson completion
+export interface EducationQuiz {
+  questions: QuizQuestion[];
+  passingScore: number; // Percentage needed to pass (e.g., 70)
+}
+
+export interface QuizQuestion {
+  id: string;
+  question: string;
+  options: string[];
+  correctIndex: number;
+  explanation: string;
+}
+
+// User's education progress
+export interface EducationProgress {
+  completedLessons: string[]; // Lesson IDs
+  completedChapters: string[]; // Chapter IDs
+  quizScores: Record<string, number>; // Lesson ID -> Score
+  currentLesson?: string; // Currently active lesson ID
+  lastAccessedAt: string;
+}
+

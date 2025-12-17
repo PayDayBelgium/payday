@@ -17,9 +17,11 @@ import {
   Play,
   CreditCard,
   Gift,
+  RefreshCw,
 } from 'lucide-react';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { useNavigation } from '../../contexts/NavigationContext';
 import {
   selectUserProgress,
   selectCurrentLevelConfig,
@@ -29,6 +31,8 @@ import {
   spendCredits,
 } from '../../store/slices/userProgressSlice';
 import { LearningResources } from '../../components/learning/LearningResources';
+import { EducationCurriculum } from '../../components/learning/EducationCurriculum';
+import { OnboardingWizard, resetWizardForLevel } from '../../components/onboarding/OnboardingWizard';
 import type { UserLevel, LevelConfig } from '../../types';
 
 // Ski slope visual component
@@ -37,10 +41,10 @@ const SkiSlope: React.FC<{ activeLevel: UserLevel; unlockedLevels: UserLevel[] }
   unlockedLevels,
 }) => {
   const levels: { level: UserLevel; position: { top: string; left: string } }[] = [
-    { level: 'beginner', position: { top: '80%', left: '15%' } },
-    { level: 'medior', position: { top: '60%', left: '35%' } },
+    { level: 'beginner', position: { top: '75%', left: '15%' } },
+    { level: 'medior', position: { top: '55%', left: '35%' } },
     { level: 'senior', position: { top: '35%', left: '60%' } },
-    { level: 'expert', position: { top: '10%', left: '80%' } },
+    { level: 'expert', position: { top: '18%', left: '80%' } },
   ];
 
   const getSlopeColor = (level: UserLevel) => {
@@ -85,7 +89,7 @@ const SkiSlope: React.FC<{ activeLevel: UserLevel; unlockedLevels: UserLevel[] }
       {/* Ski path (dashed line connecting levels) */}
       <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
         <path
-          d="M 15 80 Q 25 70 35 60 Q 48 45 60 35 Q 70 25 80 10"
+          d="M 15 75 Q 25 65 35 55 Q 48 45 60 35 Q 70 26 80 18"
           fill="none"
           stroke="currentColor"
           strokeWidth="0.5"
@@ -146,8 +150,9 @@ const LevelCard: React.FC<{
   isUnlocked: boolean;
   isCurrent: boolean;
   onUnlock: () => void;
+  onRestartWizard: () => void;
   userCredits: number;
-}> = ({ config, isUnlocked, isCurrent, onUnlock, userCredits }) => {
+}> = ({ config, isUnlocked, isCurrent, onUnlock, onRestartWizard, userCredits }) => {
   const canAfford = userCredits >= config.creditsRequired;
 
   const getSlopeColorClasses = () => {
@@ -236,15 +241,30 @@ const LevelCard: React.FC<{
           </div>
         </div>
 
+        {/* Restart wizard button for unlocked levels */}
+        {isUnlocked && (
+          <div className="border-t border-gray-200 dark:border-gray-600 pt-4">
+            <button
+              onClick={onRestartWizard}
+              className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Herstart introductie wizard
+            </button>
+          </div>
+        )}
+
         {/* Unlock section */}
-        {!isUnlocked && config.creditsRequired > 0 && (
+        {!isUnlocked && (
           <div className="border-t border-gray-200 dark:border-gray-600 pt-4 space-y-3">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500 dark:text-gray-400">Credits nodig:</span>
-              <span className={`font-bold ${canAfford ? 'text-green-600' : 'text-gray-600 dark:text-gray-300'}`}>
-                {config.creditsRequired}
-              </span>
-            </div>
+            {config.creditsRequired > 0 && (
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-500 dark:text-gray-400">Credits nodig:</span>
+                <span className={`font-bold ${canAfford ? 'text-green-600' : 'text-gray-600 dark:text-gray-300'}`}>
+                  {config.creditsRequired}
+                </span>
+              </div>
+            )}
 
             {config.priceEUR && config.priceEUR > 0 && (
               <div className="flex items-center justify-between text-sm">
@@ -262,7 +282,7 @@ const LevelCard: React.FC<{
                   className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium text-sm transition-colors"
                 >
                   <Star className="w-4 h-4" />
-                  Ontgrendel met credits
+                  {config.creditsRequired === 0 ? 'Ontgrendel nu' : 'Ontgrendel met credits'}
                 </button>
               )}
               {config.priceEUR && config.priceEUR > 0 && (
@@ -284,9 +304,19 @@ const LevelCard: React.FC<{
 export const MissionStatement: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { pushNavigation } = useNavigation();
   const progress = useAppSelector(selectUserProgress);
   const currentLevelConfig = useAppSelector(selectCurrentLevelConfig);
   const nextLevel = useAppSelector(selectNextLevel);
+
+  // Wizard state
+  const [wizardOpen, setWizardOpen] = useState(false);
+  const [wizardLevel, setWizardLevel] = useState<UserLevel>('beginner');
+
+  const handleNavigate = (path: string, title: string) => {
+    pushNavigation(path, title);
+    navigate(path);
+  };
 
   const handleUnlockLevel = (level: UserLevel) => {
     const config = LEVEL_CONFIGS.find(c => c.level === level);
@@ -294,6 +324,20 @@ export const MissionStatement: React.FC = () => {
       dispatch(spendCredits({ amount: config.creditsRequired, reason: `Level ${config.name} ontgrendeld`, levelId: level }));
       dispatch(unlockLevel(level));
     }
+  };
+
+  const handleRestartWizard = (level: UserLevel) => {
+    resetWizardForLevel(level);
+    setWizardLevel(level);
+    setWizardOpen(true);
+  };
+
+  const handleWizardClose = () => {
+    setWizardOpen(false);
+  };
+
+  const handleWizardComplete = () => {
+    setWizardOpen(false);
   };
 
   return (
@@ -405,6 +449,7 @@ export const MissionStatement: React.FC = () => {
               isUnlocked={progress.unlockedLevels.includes(config.level)}
               isCurrent={progress.currentLevel === config.level}
               onUnlock={() => handleUnlockLevel(config.level)}
+              onRestartWizard={() => handleRestartWizard(config.level)}
               userCredits={progress.credits}
             />
           ))}
@@ -449,10 +494,23 @@ export const MissionStatement: React.FC = () => {
         </div>
       </div>
 
-      {/* Learning Resources Section */}
+      {/* Education Curriculum Section */}
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
           <GraduationCap className="w-6 h-6 icon-text-primary" />
+          Leertraject
+        </h2>
+        <p className="text-gray-600 dark:text-gray-400 mb-6">
+          Volg ons gestructureerde leertraject om stap voor stap een betere belegger te worden.
+          Elke les bouwt voort op de vorige en is afgestemd op jouw niveau.
+        </p>
+        <EducationCurriculum />
+      </div>
+
+      {/* Learning Resources Section */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+          <BookOpen className="w-6 h-6 icon-text-primary" />
           Tips, Boeken & Tutorials
         </h2>
         <LearningResources showAllLevels />
@@ -474,7 +532,7 @@ export const MissionStatement: React.FC = () => {
               inclusief meerwaardebelasting, TOB en roerende voorheffing.
             </p>
             <button
-              onClick={() => navigate('/tools/capital-gains-tax')}
+              onClick={() => handleNavigate('/tools/capital-gains-tax', 'Meerwaardebelasting')}
               className="flex items-center gap-2 text-yellow-700 dark:text-yellow-400 font-medium hover:underline"
             >
               Bekijk de belastingcalculator
@@ -494,25 +552,24 @@ export const MissionStatement: React.FC = () => {
             Je hebt nog <strong>{nextLevel.creditsRequired - progress.credits}</strong> credits nodig
             om de {nextLevel.slopeName} te ontgrendelen.
           </p>
-          <div className="flex items-center justify-center gap-4">
+          {nextLevel.priceEUR && nextLevel.priceEUR > 0 && (
             <button
-              onClick={() => navigate('/help')}
-              className="flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors"
+              className="flex items-center justify-center gap-2 px-6 py-3 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg font-medium transition-colors text-gray-700 dark:text-gray-300 mx-auto"
             >
-              <BookOpen className="w-5 h-5" />
-              Start met Leren
+              <CreditCard className="w-5 h-5" />
+              Ontgrendel voor €{nextLevel.priceEUR}
             </button>
-            {nextLevel.priceEUR && nextLevel.priceEUR > 0 && (
-              <button
-                className="flex items-center gap-2 px-6 py-3 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg font-medium transition-colors text-gray-700 dark:text-gray-300"
-              >
-                <CreditCard className="w-5 h-5" />
-                Ontgrendel voor €{nextLevel.priceEUR}
-              </button>
-            )}
-          </div>
+          )}
         </div>
       )}
+
+      {/* Onboarding Wizard */}
+      <OnboardingWizard
+        level={wizardLevel}
+        isOpen={wizardOpen}
+        onClose={handleWizardClose}
+        onComplete={handleWizardComplete}
+      />
     </div>
   );
 };

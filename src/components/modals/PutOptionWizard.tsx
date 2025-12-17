@@ -4,16 +4,33 @@ import { TrendingUp, TrendingDown, ArrowRightLeft, Info, BarChart3, RefreshCw } 
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useSelector } from 'react-redux';
 import { addPosition } from '../../store/slices/positionsSlice';
-import { addTransaction, addTicker, updatePortfolioValue } from '../../store/slices/portfoliosSlice';
+import { addTransaction, addTicker } from '../../store/slices/portfoliosSlice';
 import { ensureTicker, selectAllTickers } from '../../store/slices/tickersSlice';
-import { selectWheelsByTicker, selectActiveWheels, updateWheelPremium } from '../../store/slices/wheelsSlice';
+import { selectActiveWheels, updateWheelPremium } from '../../store/slices/wheelsSlice';
 import { WizardModal, type WizardStep } from './WizardModal';
 import { TickerSelector } from '../widgets/TickerSelector';
 import { PnLCurve } from '../widgets/PnLCurve';
 import { FridayDatePicker } from '../common/FridayDatePicker';
-import { parseLocalizedNumber, getDecimalSeparator, getThousandSeparator, formatNumber } from '../../utils/numberFormat';
-import type { PutOption, Ticker, PortfolioName, CurrencyType, WheelCampaign } from '../../types';
+import { parseLocalizedNumber, formatNumber, getDecimalSeparator } from '../../utils/numberFormat';
+import type { PutOption, Ticker, PortfolioName, CurrencyType } from '../../types';
 import type { RootState } from '../../store';
+import {
+  type OptionAction,
+  type OptionLegData,
+  validateNumberInput,
+  calculateDTE,
+  calculatePutBreakEven,
+  calculateSpreadCollateral,
+  calculateCashReserved,
+  calculatePutValues,
+  validatePutSpread,
+  getPutPnLType,
+  calculatePutSpreadSummary,
+  generatePutOptionId,
+  generateSpreadId,
+  generateTransactionId,
+  DEFAULT_NEW_TICKER_DATA,
+} from './optionWizardUtils';
 
 interface PutOptionWizardProps {
   isOpen: boolean;
@@ -29,15 +46,6 @@ interface PutOptionWizardProps {
   initialStep?: number;
   // Auto-link to specific wheel when opened from campaign
   initialWheelId?: string;
-}
-
-type OptionAction = 'buy' | 'sell' | 'credit-spread' | 'debit-spread';
-
-interface OptionLegData {
-  strike: number;
-  expiration: string;
-  premium: number;
-  contracts: number;
 }
 
 export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
@@ -120,88 +128,8 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
     }
   }, [currentStepIndex]);
 
-  // Helper function to validate number input based on browser locale
-  const validateNumberInput = (value: string): boolean => {
-    if (!value) return true;
-
-    const decimalSep = getDecimalSeparator();
-    const thousandSep = getThousandSeparator();
-
-    // Create pattern that allows digits and locale-specific separators
-    const separators = [decimalSep, thousandSep].filter(s => s).map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('');
-    const pattern = new RegExp(`^[\\d${separators}]*$`);
-
-    if (!pattern.test(value)) return false;
-
-    // Only one decimal separator allowed
-    const decimals = value.split(decimalSep).length - 1;
-    if (decimals > 1) return false;
-
-    return true;
-  };
-
-  // Calculate DTE (days to expiration)
-  const calculateDTE = (expirationDate: string): number => {
-    if (!expirationDate) return 0;
-    const today = new Date();
-    const expiry = new Date(expirationDate);
-    const diffTime = expiry.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return Math.max(0, diffDays);
-  };
-
-  // Calculate break-even for single options
-  const calculateBreakEven = (strike: number, premium: number): number => {
-    // For put options:
-    // - Buy (long put): strike - premium (you paid premium, need stock to fall below strike - premium)
-    // - Sell (short put): strike - premium (you received premium, break-even is strike - premium)
-    return strike - premium;
-  };
-
-  // Calculate cash reserved for CSP (Cash Secured Put)
-  const calculateCashReserved = (strike: number, contracts: number): number => {
-    return strike * contracts * 100; // Cash needed to buy shares if assigned
-  };
-
-  // Calculate collateral for spreads
-  const calculateCollateral = (higherStrike: number, lowerStrike: number, contracts: number): number => {
-    return (higherStrike - lowerStrike) * contracts * 100;
-  };
-
-  // Calculate cost basis and current value
-  const calculateValues = () => {
-    const contractMultiplier = 100; // Standard options contract = 100 shares
-
-    if (action === 'credit-spread') {
-      // Credit Spread: Sell higher strike (short), buy lower strike (long)
-      // We receive net premium (credit)
-      const creditReceived = (shortLeg.premium - longLeg.premium) * longLeg.contracts * contractMultiplier;
-      const costBasis = -creditReceived; // Negative because we receive credit
-      const currentValue = costBasis; // Start with cost basis, will be updated with market prices
-      const collateral = calculateCollateral(shortLeg.strike, longLeg.strike, longLeg.contracts);
-
-      return { costBasis, currentValue, cashReserved: collateral };
-    } else if (action === 'debit-spread') {
-      // Debit Spread: Buy higher strike (long), sell lower strike (short)
-      // We pay net premium (debit)
-      const debitPaid = (longLeg.premium - shortLeg.premium) * longLeg.contracts * contractMultiplier;
-      const costBasis = debitPaid; // Positive because we pay debit
-      const currentValue = costBasis;
-
-      return { costBasis, currentValue, cashReserved: 0 };
-    } else if (action === 'buy') {
-      // Buying puts: Pay premium
-      const costBasis = longLeg.premium * longLeg.contracts * contractMultiplier;
-      return { costBasis, currentValue: costBasis, cashReserved: 0 };
-    } else {
-      // Selling puts (CSP): Collect premium but reserve cash
-      const premiumCollected = longLeg.premium * longLeg.contracts * contractMultiplier;
-      const costBasis = -premiumCollected; // Negative because we received money
-      const cashReserved = calculateCashReserved(longLeg.strike, longLeg.contracts);
-      // Note: costBasis is negative for accounting, but represents premium received
-      return { costBasis, currentValue: costBasis, cashReserved };
-    }
-  };
+  // Use shared utility for cost/value calculations
+  const calculateValues = () => calculatePutValues(action, longLeg, shortLeg);
 
   const handleCreateTicker = () => {
     if (!newTickerData.symbol || !newTickerData.name) return;

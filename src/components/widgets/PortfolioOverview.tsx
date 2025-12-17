@@ -7,7 +7,7 @@ import { useAlerts } from '../../hooks/useAlerts';
 import { formatCurrency, formatNumber } from '../../utils/numberFormat';
 import { getCurrencySymbol } from '../../utils/currency';
 import { AlertTooltipContent } from '../common/AlertTooltipContent';
-import { TrendingUp, TrendingDown, RotateCcw, AlertCircle, Target } from 'lucide-react';
+import { TrendingUp, TrendingDown, RotateCcw, AlertCircle, Target, Plus, Settings } from 'lucide-react';
 import type { CallOption, PutOption } from '../../types';
 
 type TimePeriod = '1W' | '1M' | '3M' | 'YTD' | '1Y' | 'ALL';
@@ -56,16 +56,37 @@ export const PortfolioOverview: React.FC = memo(() => {
     return null;
   }
 
+  const handleAddPortfolio = () => {
+    pushNavigation('/settings/portfolios', 'Portfolio Beheer');
+    navigate('/settings/portfolios', { state: { addPortfolio: true } });
+  };
+
+  const handleEditPortfolio = (portfolioId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    pushNavigation('/settings/portfolios', 'Portfolio Beheer');
+    navigate('/settings/portfolios', { state: { editPortfolioId: portfolioId, fromPage: 'dashboard' } });
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-          Portefeuilles
-        </h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-          {summaries.length} {summaries.length === 1 ? 'portefeuille' : 'portefeuilles'}
-        </p>
+      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Portefeuilles
+          </h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            {summaries.length} {summaries.length === 1 ? 'portefeuille' : 'portefeuilles'}
+          </p>
+        </div>
+        <button
+          onClick={handleAddPortfolio}
+          className="flex items-center gap-2 px-3 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-medium transition-colors"
+          title="Portfolio beheren"
+        >
+          <Plus className="w-4 h-4" />
+          <span className="hidden sm:inline">Beheer</span>
+        </button>
       </div>
 
       {/* Portfolio Cards */}
@@ -234,6 +255,21 @@ export const PortfolioOverview: React.FC = memo(() => {
                             )}
                           </div>
                         )}
+                        <div
+                          onClick={(e) => handleEditPortfolio(portfolio.id, e)}
+                          className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors cursor-pointer"
+                          title="Bewerk portfolio"
+                          role="button"
+                          tabIndex={0}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              handleEditPortfolio(portfolio.id, e as unknown as React.MouseEvent);
+                            }
+                          }}
+                        >
+                          <Settings className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                        </div>
                         <div
                           onClick={(e) => toggleFlip(summary.portfolio, e)}
                           className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors cursor-pointer"

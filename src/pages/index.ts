@@ -23,6 +23,7 @@ export { KaChingCalculator } from './tools/KaChingCalculator';
 export { MonthlyIncomeCalculator } from './tools/MonthlyIncomeCalculator';
 export { CapitalGainsTaxCalculator } from './tools/CapitalGainsTaxCalculator';
 export { PnLSimulator } from './tools/PnLSimulator';
+export { CoveredCallSimulator } from './tools/CoveredCallSimulator';
 
 // Settings
 export { Settings } from './settings/Settings';

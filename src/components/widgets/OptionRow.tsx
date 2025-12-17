@@ -1,47 +1,12 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { createPortal } from 'react-dom';
 import { ArrowUpCircle, ArrowDownCircle, MessageSquare, Target, AlertCircle } from 'lucide-react';
 import type { CallOption, PutOption, CurrencyType, Ticker } from '../../types';
 import { formatCurrency, formatNumber } from '../../utils/numberFormat';
 import { getDaysToExpiration } from '../../utils/dateHelpers';
 import { calculateOptionUnrealizedPnL, calculatePnLPercentage } from '../../utils/pnlCalculations';
 import { PositionActionButtons } from './PositionActionButtons';
-
-// Portal Tooltip Component
-const PortalTooltip: React.FC<{
-  children: React.ReactNode;
-  triggerRef: React.RefObject<HTMLDivElement>;
-  show: boolean;
-}> = ({ children, triggerRef, show }) => {
-  const [position, setPosition] = useState({ top: 0, left: 0 });
-
-  useEffect(() => {
-    if (show && triggerRef.current) {
-      const rect = triggerRef.current.getBoundingClientRect();
-      setPosition({
-        top: rect.top - 8,
-        left: rect.left,
-      });
-    }
-  }, [show, triggerRef]);
-
-  if (!show) return null;
-
-  return createPortal(
-    <div
-      className="fixed z-[9999] pointer-events-none"
-      style={{
-        top: `${position.top}px`,
-        left: `${position.left}px`,
-        transform: 'translateY(-100%)',
-      }}
-    >
-      {children}
-    </div>,
-    document.body
-  );
-};
+import { PortalTooltip } from '../common/PortalTooltip';
 
 export type CollateralType = 'stock' | 'leaps' | 'cash' | 'put' | 'call' | 'none';
 

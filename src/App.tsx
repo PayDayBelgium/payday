@@ -17,6 +17,7 @@ import {
   MonthlyIncomeCalculator,
   CapitalGainsTaxCalculator,
   PnLSimulator,
+  CoveredCallSimulator,
   Settings,
   Journal,
   Todos,
@@ -31,6 +32,7 @@ import { UsersList } from './pages/admin/UsersList';
 import { UserDetail } from './pages/admin/UserDetail';
 import { AddUser } from './pages/admin/AddUser';
 import { Layout } from './components';
+import { FeatureGate } from './components/features/FeatureGate';
 import { useIBConnection } from './hooks/useIBConnection';
 import { useAppSelector } from './hooks/useAppSelector';
 import { useAppDispatch } from './hooks/useAppDispatch';
@@ -67,21 +69,22 @@ function AppContent() {
         <Route index element={<HomeRedirect />} />
         <Route path="portfolio/:portfolioName" element={<PortfolioDetail />} />
         <Route path="portfolio/:portfolio/stocks-etfs" element={<StocksETFsStrategy />} />
-        <Route path="portfolio/:portfolio/leaps" element={<LEAPSStrategy />} />
-        <Route path="portfolio/:portfolio/covered-calls" element={<CoveredCallsStrategy />} />
-        <Route path="portfolio/:portfolio/csp" element={<CSPStrategy />} />
-        <Route path="portfolio/:portfolio/pmcc" element={<PMCCStrategy />} />
-        <Route path="portfolio/:portfolio/spreads" element={<SpreadsStrategy />} />
-        <Route path="portfolio/:portfolio/kaching" element={<KaChingStrategy />} />
+        <Route path="portfolio/:portfolio/leaps" element={<FeatureGate feature="leaps"><LEAPSStrategy /></FeatureGate>} />
+        <Route path="portfolio/:portfolio/covered-calls" element={<FeatureGate feature="covered_calls"><CoveredCallsStrategy /></FeatureGate>} />
+        <Route path="portfolio/:portfolio/csp" element={<FeatureGate feature="cash_secured_puts"><CSPStrategy /></FeatureGate>} />
+        <Route path="portfolio/:portfolio/pmcc" element={<FeatureGate feature="pmcc"><PMCCStrategy /></FeatureGate>} />
+        <Route path="portfolio/:portfolio/spreads" element={<FeatureGate feature="spreads"><SpreadsStrategy /></FeatureGate>} />
+        <Route path="portfolio/:portfolio/kaching" element={<FeatureGate feature="kaching"><KaChingStrategy /></FeatureGate>} />
         <Route path="tickers" element={<TickersOverview />} />
         <Route path="analytics" element={<Analytics />} />
         <Route path="journal" element={<Journal />} />
         <Route path="todos" element={<Todos />} />
-        <Route path="tools/pmcc-calculator" element={<PMCCCalculator />} />
-        <Route path="tools/kaching-calculator" element={<KaChingCalculator />} />
-        <Route path="tools/income-calculator" element={<MonthlyIncomeCalculator />} />
+        <Route path="tools/pmcc-calculator" element={<FeatureGate feature="pmcc"><PMCCCalculator /></FeatureGate>} />
+        <Route path="tools/kaching-calculator" element={<FeatureGate feature="kaching"><KaChingCalculator /></FeatureGate>} />
+        <Route path="tools/income-calculator" element={<FeatureGate feature="covered_calls"><MonthlyIncomeCalculator /></FeatureGate>} />
         <Route path="tools/capital-gains-tax" element={<CapitalGainsTaxCalculator />} />
-        <Route path="tools/pnl-simulator" element={<PnLSimulator />} />
+        <Route path="tools/pnl-simulator" element={<FeatureGate feature="advanced_analytics"><PnLSimulator /></FeatureGate>} />
+        <Route path="tools/covered-call-simulator" element={<FeatureGate feature="covered_calls"><CoveredCallSimulator /></FeatureGate>} />
         <Route path="settings" element={<Settings />} />
         <Route path="settings/portfolios" element={<PortfolioManagement />} />
         <Route path="help" element={<HelpPortal />} />

@@ -24,3 +24,6 @@ export { NumberInput } from './common/NumberInput';
 
 // Features
 export { FeatureGate, FeatureLockIndicator, withFeatureGate } from './features/FeatureGate';
+
+// Onboarding
+export { OnboardingWizard, shouldShowWizard, resetWizardForLevel, resetAllWizards } from './onboarding/OnboardingWizard';

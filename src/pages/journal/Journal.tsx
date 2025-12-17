@@ -798,7 +798,7 @@ export const Journal: React.FC = () => {
         confirmText="Delete"
         cancelText="Cancel"
         onConfirm={handleDeleteEntry}
-        onCancel={() => setEntryToDelete(null)}
+        onClose={() => setEntryToDelete(null)}
         variant="danger"
       />
 
@@ -809,7 +809,7 @@ export const Journal: React.FC = () => {
         confirmText="Delete"
         cancelText="Cancel"
         onConfirm={handleDeleteGoal}
-        onCancel={() => setGoalToDelete(null)}
+        onClose={() => setGoalToDelete(null)}
         variant="danger"
       />
     </div>

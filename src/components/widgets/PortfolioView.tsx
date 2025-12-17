@@ -4,6 +4,7 @@ import { TrendingUp, Building2, X as XIcon, ArrowUpCircle, ArrowDownCircle, Mess
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { closePosition, updatePosition } from '../../store/slices/positionsSlice';
+import { selectUnlockedLevels, isFeatureAvailable } from '../../store/slices/userProgressSlice';
 import { addTransaction } from '../../store/slices/portfoliosSlice';
 import { selectAllTickers } from '../../store/slices/tickersSlice';
 import { useAlerts } from '../../hooks/useAlerts';
@@ -28,6 +29,7 @@ import { OptionRow } from './OptionRow';
 import type { CollateralType } from './OptionRow';
 import { calculateOptionUnrealizedPnL, calculatePnLPercentage } from '../../utils/pnlCalculations';
 import { AlertTooltipContent } from '../common/AlertTooltipContent';
+import { PortalTooltip } from '../common/PortalTooltip';
 
 type SortField = 'expiration' | 'ticker' | 'strike' | 'premium' | 'dte' | 'pnl';
 type SortDirection = 'asc' | 'desc';
@@ -55,41 +57,6 @@ interface GroupedPosition {
   unrealizedPnLPercent: number;
 }
 
-// Portal Tooltip Component
-const PortalTooltip: React.FC<{
-  children: React.ReactNode;
-  triggerRef: React.RefObject<HTMLDivElement>;
-  show: boolean;
-}> = ({ children, triggerRef, show }) => {
-  const [position, setPosition] = useState({ top: 0, left: 0 });
-
-  useEffect(() => {
-    if (show && triggerRef.current) {
-      const rect = triggerRef.current.getBoundingClientRect();
-      setPosition({
-        top: rect.top - 8, // Position above the trigger
-        left: rect.left,
-      });
-    }
-  }, [show, triggerRef]);
-
-  if (!show) return null;
-
-  return createPortal(
-    <div
-      className="fixed z-[9999] pointer-events-none"
-      style={{
-        top: `${position.top}px`,
-        left: `${position.left}px`,
-        transform: 'translateY(-100%)', // Move fully above
-      }}
-    >
-      {children}
-    </div>,
-    document.body
-  );
-};
-
 export const PortfolioView: React.FC<PortfolioViewProps> = ({
   positions,
   currency,
@@ -102,6 +69,8 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   const tickers = useAppSelector(selectAllTickers);
   const portfolios = useAppSelector((state) => state.portfolios.portfolios);
   const storePositions = useAppSelector((state) => state.positions.positions);
+  const unlockedLevels = useAppSelector(selectUnlockedLevels);
+  const hasOptionsAccess = isFeatureAvailable('covered_calls', unlockedLevels);
   const currencySymbol = getCurrencySymbol(currency);
 
   // Use central alerts hook for this portfolio
@@ -1242,7 +1211,8 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                 />
               </div>
 
-              {/* Filter Button with Popup */}
+              {/* Filter Button with Popup (only for users with options access) */}
+              {hasOptionsAccess && (
               <div>
                 <button
                   ref={filterButtonRef}
@@ -1362,21 +1332,24 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                   document.body
                 )}
               </div>
+              )}
 
             </div>
 
-            {/* Group By Dropdown - Right aligned */}
-            <select
-              value={groupBy}
-              onChange={(e) => setGroupBy(e.target.value as GroupBy)}
-              className="px-3 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-sm"
-            >
-              <option value="none">Geen groepering</option>
-              <option value="strategy">Groepeer op type</option>
-              <option value="expiry">Groepeer op expiry</option>
-              <option value="ticker">Groepeer op ticker</option>
-              <option value="action">Groepeer op long/short</option>
-            </select>
+            {/* Group By Dropdown - Right aligned (only for users with options access) */}
+            {hasOptionsAccess && (
+              <select
+                value={groupBy}
+                onChange={(e) => setGroupBy(e.target.value as GroupBy)}
+                className="px-3 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-sm"
+              >
+                <option value="none">Geen groepering</option>
+                <option value="strategy">Groepeer op type</option>
+                <option value="expiry">Groepeer op expiry</option>
+                <option value="ticker">Groepeer op ticker</option>
+                <option value="action">Groepeer op long/short</option>
+              </select>
+            )}
           </div>
         </div>
       )}
@@ -2285,9 +2258,9 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                         onClose={(pos) => setPositionToClose(pos)}
                         onView={(pos) => setPositionToView(pos)}
                         showActions={true}
-                        showOpportunityBadge={true}
+                        showOpportunityBadge={hasOptionsAccess}
                         coveredCallContracts={coveredCallContracts}
-                        hasOpportunity={hasStockOpportunity}
+                        hasOpportunity={hasOptionsAccess && hasStockOpportunity}
                         opportunityMessage={stockOpportunityMessage}
                       />
                     );

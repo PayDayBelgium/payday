@@ -50,26 +50,32 @@ const portfoliosSlice = createSlice({
 
         // If name changed, update all references in summaries, dailyData, and transactions
         if (oldName !== newName) {
-          // Update summaries
-          state.summaries = state.summaries.map((summary) =>
-            summary.portfolio === oldName
-              ? { ...summary, portfolio: newName }
-              : summary
-          );
+          // Update summaries (ensure array exists)
+          if (state.summaries && Array.isArray(state.summaries)) {
+            state.summaries = state.summaries.map((summary) =>
+              summary.portfolio === oldName
+                ? { ...summary, portfolio: newName }
+                : summary
+            );
+          }
 
-          // Update dailyData
-          state.dailyData = state.dailyData.map((data) =>
-            data.portfolio === oldName
-              ? { ...data, portfolio: newName }
-              : data
-          );
+          // Update dailyData (ensure array exists)
+          if (state.dailyData && Array.isArray(state.dailyData)) {
+            state.dailyData = state.dailyData.map((data) =>
+              data.portfolio === oldName
+                ? { ...data, portfolio: newName }
+                : data
+            );
+          }
 
-          // Update transactions
-          state.transactions = state.transactions.map((transaction) =>
-            transaction.portfolio === oldName
-              ? { ...transaction, portfolio: newName }
-              : transaction
-          );
+          // Update transactions (ensure array exists)
+          if (state.transactions && Array.isArray(state.transactions)) {
+            state.transactions = state.transactions.map((transaction) =>
+              transaction.portfolio === oldName
+                ? { ...transaction, portfolio: newName }
+                : transaction
+            );
+          }
         }
       }
     },
