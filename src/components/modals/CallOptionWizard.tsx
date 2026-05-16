@@ -246,7 +246,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
         costBasis: longLeg.premium * longLeg.contracts * 100,
         currentValue: longLeg.premium * longLeg.contracts * 100,
         dte,
-        breakEven: calculateBreakEven(longLeg.strike, longLeg.premium),
+        breakEven: calculateCallBreakEven(longLeg.strike, longLeg.premium),
         notes: notes ? `${notes}\nSpread ID: ${spreadId}` : `Spread ID: ${spreadId}`,
       };
 
@@ -267,7 +267,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
         currentValue: -(shortLeg.premium * shortLeg.contracts * 100),
         cashReserved: action === 'credit-spread' ? cashReserved : 0, // Only credit spreads need collateral
         dte,
-        breakEven: calculateBreakEven(shortLeg.strike, shortLeg.premium),
+        breakEven: calculateCallBreakEven(shortLeg.strike, shortLeg.premium),
         notes: notes ? `${notes}\nSpread ID: ${spreadId}` : `Spread ID: ${spreadId}`,
       };
 
@@ -323,7 +323,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
         cashReserved: action === 'sell' ? cashReserved : undefined,
         wheelId: shouldLinkToWheel ? selectedWheelId : undefined,
         dte,
-        breakEven: calculateBreakEven(longLeg.strike, longLeg.premium),
+        breakEven: calculateCallBreakEven(longLeg.strike, longLeg.premium),
         notes,
       };
 
@@ -1163,7 +1163,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                       <div>
                         <p className="text-sm text-gray-600 dark:text-gray-400">{t('callWizard.detailsStep.breakEvenPrice')}</p>
                         <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                          ${formatNumber(calculateBreakEven(longLeg.strike, longLeg.premium), 2)}
+                          ${formatNumber(calculateCallBreakEven(longLeg.strike, longLeg.premium), 2)}
                         </p>
                       </div>
                       <div>
