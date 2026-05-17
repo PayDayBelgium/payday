@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Mountain,
   Target,
-  Rocket,
   GraduationCap,
   TrendingUp,
   Shield,
@@ -13,15 +11,14 @@ import {
   Check,
   Lock,
   Star,
-  BookOpen,
   Play,
   CreditCard,
-  Gift,
   RefreshCw,
 } from 'lucide-react';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useNavigation } from '../../contexts/NavigationContext';
+import { usePageTitle } from '../../contexts/PageTitleContext';
 import {
   selectUserProgress,
   selectCurrentLevelConfig,
@@ -35,111 +32,305 @@ import { EducationCurriculum } from '../../components/learning/EducationCurricul
 import { OnboardingWizard, resetWizardForLevel } from '../../components/onboarding/OnboardingWizard';
 import type { UserLevel, LevelConfig } from '../../types';
 
-// Ski slope visual component
+// ─────────────────────────────────────────────────────────────────
+// PayDay Mountain — illustrated alpine scene with working ski-lift.
+// Gondolas travel up the cable on a continuous loop, snow falls,
+// and authentic piste-markers (green ●, blue ▪, red ◆, black ◆◆)
+// mark each level on the route. Your current level pulses softly.
+// ─────────────────────────────────────────────────────────────────
 const SkiSlope: React.FC<{ activeLevel: UserLevel; unlockedLevels: UserLevel[] }> = ({
   activeLevel,
   unlockedLevels,
 }) => {
-  const levels: { level: UserLevel; position: { top: string; left: string } }[] = [
-    { level: 'beginner', position: { top: '75%', left: '15%' } },
-    { level: 'medior', position: { top: '55%', left: '35%' } },
-    { level: 'senior', position: { top: '35%', left: '60%' } },
-    { level: 'expert', position: { top: '18%', left: '80%' } },
+  // Station positions along the cable path (used both for sign placement and the cable curve)
+  // Path goes from valley (bottom-left) up to the summit (top-right).
+  const stations: Array<{
+    level: UserLevel;
+    x: number; y: number;            // coordinates inside the 800×420 viewBox
+    pisteColor: string;              // CSS color of the piste marker
+    pisteShape: 'circle' | 'square' | 'diamond' | 'double-diamond';
+    label: string;
+    sub: string;
+  }> = [
+    { level: 'beginner', x: 130, y: 340, pisteColor: '#0F9D58', pisteShape: 'circle',         label: 'Groene piste', sub: 'Fundamenten' },
+    { level: 'medior',   x: 320, y: 240, pisteColor: '#2F6CAE', pisteShape: 'square',         label: 'Blauwe piste', sub: 'Premium-inkomen' },
+    { level: 'senior',   x: 510, y: 150, pisteColor: '#D14343', pisteShape: 'diamond',        label: 'Rode piste',   sub: 'Spreads & PMCC' },
+    { level: 'expert',   x: 680, y: 110, pisteColor: '#0F1E36', pisteShape: 'double-diamond', label: 'Zwarte piste', sub: 'Mastery' },
   ];
 
-  const getSlopeColor = (level: UserLevel) => {
-    switch (level) {
-      case 'beginner': return 'bg-green-500';
-      case 'medior': return 'bg-blue-500';
-      case 'senior': return 'bg-red-500';
-      case 'expert': return 'bg-gray-900 dark:bg-gray-100';
-      default: return 'bg-gray-400';
-    }
+  const SnowFlake: React.FC<{ index: number }> = ({ index }) => {
+    const left = (index * 73) % 100;
+    const size = (index % 3) + 1.5;
+    const delay = (index * 0.6) % 8;
+    const duration = 7 + (index % 4) * 1.5;
+    return (
+      <div
+        className="absolute rounded-full bg-white pointer-events-none"
+        style={{
+          width: `${size}px`,
+          height: `${size}px`,
+          left: `${left}%`,
+          top: '-8px',
+          opacity: 0.85,
+          animation: `snow-fall ${duration}s linear ${delay}s infinite`,
+          boxShadow: '0 0 4px rgba(255,255,255,0.6)',
+        }}
+      />
+    );
   };
 
-  const getSlopeRingColor = (level: UserLevel) => {
-    switch (level) {
-      case 'beginner': return 'ring-green-500';
-      case 'medior': return 'ring-blue-500';
-      case 'senior': return 'ring-red-500';
-      case 'expert': return 'ring-gray-900 dark:ring-gray-100';
-      default: return 'ring-gray-400';
+  const PisteMarker: React.FC<{ shape: typeof stations[number]['pisteShape']; color: string }> = ({ shape, color }) => {
+    if (shape === 'circle') {
+      return <circle cx="0" cy="0" r="6" fill={color} stroke="#fff" strokeWidth="1.5" />;
     }
+    if (shape === 'square') {
+      return <rect x="-5.5" y="-5.5" width="11" height="11" fill={color} stroke="#fff" strokeWidth="1.5" />;
+    }
+    if (shape === 'diamond') {
+      return <rect x="-5" y="-5" width="10" height="10" fill={color} stroke="#fff" strokeWidth="1.5" transform="rotate(45)" />;
+    }
+    return (
+      <g>
+        <rect x="-9" y="-4" width="8" height="8" fill={color} stroke="#fff" strokeWidth="1.5" transform="rotate(45 -5 0)" />
+        <rect x="1"  y="-4" width="8" height="8" fill={color} stroke="#fff" strokeWidth="1.5" transform="rotate(45 5 0)" />
+      </g>
+    );
   };
+
+  // Cable path expressed once — used for the visible line AND the gondola motion.
+  const CABLE_PATH = 'M 60 360 Q 220 220, 380 140 T 720 40';
 
   return (
-    <div className="relative w-full h-64 bg-gradient-to-br from-blue-100 via-white to-blue-50 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 rounded-xl overflow-hidden">
-      {/* Mountain silhouette */}
-      <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
-        <polygon
-          points="0,100 50,20 100,100"
-          className="fill-blue-200/50 dark:fill-gray-700/50"
-        />
-        <polygon
-          points="20,100 70,30 100,100"
-          className="fill-blue-300/30 dark:fill-gray-600/30"
-        />
-        {/* Snow cap */}
-        <polygon
-          points="45,20 50,20 55,25 45,25"
-          className="fill-white"
-        />
-      </svg>
-
-      {/* Ski path (dashed line connecting levels) */}
-      <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
-        <path
-          d="M 15 75 Q 25 65 35 55 Q 48 45 60 35 Q 70 26 80 18"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="0.5"
-          strokeDasharray="2,2"
-          className="text-gray-400 dark:text-gray-500"
-        />
-      </svg>
-
-      {/* Level markers */}
-      {levels.map(({ level, position }) => {
-        const isUnlocked = unlockedLevels.includes(level);
-        const isActive = activeLevel === level;
-        const config = LEVEL_CONFIGS.find(c => c.level === level);
-
-        return (
-          <div
-            key={level}
-            className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
-            style={{ top: position.top, left: position.left }}
-          >
-            <div
-              className={`
-                w-10 h-10 rounded-full flex items-center justify-center
-                ${isUnlocked ? getSlopeColor(level) : 'bg-gray-300 dark:bg-gray-600'}
-                ${isActive ? `ring-4 ${getSlopeRingColor(level)} ring-opacity-50` : ''}
-                transition-all duration-300
-                ${isUnlocked ? 'shadow-lg' : ''}
-              `}
-            >
-              {isUnlocked ? (
-                <span className="text-white dark:text-gray-900 text-lg">{config?.icon}</span>
-              ) : (
-                <Lock className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-              )}
-            </div>
-            <span className={`
-              mt-1 text-xs font-medium
-              ${isUnlocked ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-500'}
-            `}>
-              {config?.slopeName}
-            </span>
-          </div>
-        );
-      })}
-
-      {/* Decorative elements */}
-      <div className="absolute bottom-4 left-4 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-        <Mountain className="w-4 h-4" />
-        <span>PayDay Mountain</span>
+    <div className="relative w-full rounded-xl overflow-hidden border border-[var(--line)] bg-sky-fade">
+      {/* Snow flakes (HTML overlay — covers the full container) */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
+        {Array.from({ length: 28 }).map((_, i) => <SnowFlake key={i} index={i} />)}
       </div>
+
+      {/* The mountain scene — aspect-ratio container ensures no clipping at any width */}
+      <svg
+        viewBox="0 0 800 420"
+        className="relative w-full block"
+        style={{ aspectRatio: '800 / 420' }}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <defs>
+          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"  stopColor="#E8F0FA" />
+            <stop offset="100%" stopColor="#F4F7FB" />
+          </linearGradient>
+          <linearGradient id="far-range" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"  stopColor="#B6CDEA" />
+            <stop offset="100%" stopColor="#DCE7F5" />
+          </linearGradient>
+          <linearGradient id="mid-range" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"  stopColor="#86AED9" />
+            <stop offset="100%" stopColor="#B6CDEA" />
+          </linearGradient>
+          <linearGradient id="near-range" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"  stopColor="#5188C2" />
+            <stop offset="100%" stopColor="#86AED9" />
+          </linearGradient>
+          <linearGradient id="snow-cap" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"  stopColor="#FFFFFF" />
+            <stop offset="100%" stopColor="#E8F0FA" />
+          </linearGradient>
+          <linearGradient id="shadow" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%"  stopColor="rgba(11,74,143,0.20)" />
+            <stop offset="100%" stopColor="rgba(11,74,143,0)" />
+          </linearGradient>
+          <filter id="soft-shadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3" />
+          </filter>
+        </defs>
+
+        {/* Sky */}
+        <rect x="0" y="0" width="800" height="420" fill="url(#sky)" />
+
+        {/* Sun glow */}
+        <circle cx="745" cy="55" r="38" fill="rgba(255, 231, 170, 0.5)" />
+        <circle cx="745" cy="55" r="18" fill="rgba(255, 231, 170, 0.8)" />
+
+        {/* Distant range */}
+        <path
+          d="M 0 230  L 90 170  L 160 200  L 240 130  L 330 175  L 420 110  L 510 170  L 600 130  L 700 180  L 800 150  L 800 280 L 0 280 Z"
+          fill="url(#far-range)"
+          opacity="0.7"
+        />
+
+        {/* Mid range with snow caps */}
+        <path
+          d="M 0 290  L 60 240  L 130 280  L 220 200  L 300 270  L 380 190  L 460 250  L 560 180  L 660 240  L 760 200  L 800 230  L 800 320 L 0 320 Z"
+          fill="url(#mid-range)"
+        />
+        {/* Snow caps on mid range */}
+        <path d="M 220 200 L 240 217 L 230 220 L 215 213 Z"  fill="url(#snow-cap)" />
+        <path d="M 380 190 L 405 210 L 395 215 L 372 205 Z"  fill="url(#snow-cap)" />
+        <path d="M 560 180 L 585 198 L 575 204 L 552 195 Z"  fill="url(#snow-cap)" />
+
+        {/* Main mountain (front) — the route climbs this one */}
+        <path
+          d="M 0 420 L 0 360 L 90 320 L 180 280 L 260 230 L 340 180 L 420 130 L 500 90 L 570 50 L 640 30 L 720 50 L 800 90 L 800 420 Z"
+          fill="url(#near-range)"
+        />
+        {/* Snowy summit + crown */}
+        <path
+          d="M 500 90 L 570 50 L 640 30 L 720 50 L 705 75 L 685 60 L 660 78 L 630 56 L 605 80 L 575 64 L 555 86 L 520 95 Z"
+          fill="url(#snow-cap)"
+        />
+        {/* Side shadow on main mountain */}
+        <path
+          d="M 640 30 L 720 50 L 800 90 L 800 420 L 720 420 Z"
+          fill="url(#shadow)"
+        />
+
+        {/* Snow patches / ski runs scribed down the face */}
+        <path d="M 640 36 Q 600 110 540 170 Q 480 230 410 290 Q 340 350 270 410"
+              fill="none" stroke="#FFFFFF" strokeWidth="22" strokeLinecap="round" opacity="0.55" />
+        <path d="M 640 36 Q 600 110 540 170 Q 480 230 410 290 Q 340 350 270 410"
+              fill="none" stroke="#FFFFFF" strokeWidth="10" strokeLinecap="round" opacity="0.85" />
+
+        {/* Pine trees at the base */}
+        {[
+          [40, 380], [75, 395], [110, 385], [155, 400], [200, 392],
+          [50, 360], [88, 372], [128, 365], [175, 378],
+          [250, 405], [285, 395]
+        ].map(([x, y], i) => (
+          <g key={i} transform={`translate(${x} ${y})`}>
+            <polygon points="0,-18 -8,4 8,4" fill="#1F5594" />
+            <polygon points="0,-10 -10,10 10,10" fill="#0B4A8F" />
+            <rect x="-1.5" y="9" width="3" height="6" fill="#2A3B57" />
+          </g>
+        ))}
+
+        {/* ─── Ski-lift cable ─── */}
+        {/* Lift towers */}
+        {[
+          { x: 80,  yTop: 340, yBot: 420 },
+          { x: 230, yTop: 220, yBot: 380 },
+          { x: 380, yTop: 130, yBot: 310 },
+          { x: 530, yTop: 75,  yBot: 240 },
+          { x: 680, yTop: 35,  yBot: 170 },
+        ].map((t, i) => (
+          <g key={i}>
+            <line x1={t.x} y1={t.yTop} x2={t.x} y2={t.yBot}
+                  stroke="#2A3B57" strokeWidth="2.5" strokeLinecap="round" />
+            {/* Top crossbar */}
+            <line x1={t.x - 12} y1={t.yTop} x2={t.x + 12} y2={t.yTop}
+                  stroke="#2A3B57" strokeWidth="2.5" strokeLinecap="round" />
+            {/* Cable pulley */}
+            <circle cx={t.x} cy={t.yTop} r="3" fill="#0F1E36" />
+            {/* Base block */}
+            <rect x={t.x - 5} y={t.yBot - 4} width="10" height="5" fill="#1A2B45" />
+          </g>
+        ))}
+
+        {/* Cable shadow */}
+        <path d={CABLE_PATH} fill="none" stroke="rgba(11,74,143,0.10)" strokeWidth="3" transform="translate(1 2)" />
+        {/* Cable — quadratic curve following the towers */}
+        <path id="cable-route" d={CABLE_PATH} fill="none" stroke="#1A2B45" strokeWidth="1.5" />
+
+        {/* ─── Station markers (piste signs on the cable route) ─── */}
+        {stations.map((s) => {
+          const isUnlocked = unlockedLevels.includes(s.level);
+          const isActive   = activeLevel === s.level;
+          return (
+            <g key={s.level} transform={`translate(${s.x} ${s.y})`}>
+              {/* Pole */}
+              <line x1="0" y1="0" x2="0" y2="36" stroke="#2A3B57" strokeWidth="1.5" />
+              {/* Sign plate */}
+              <g transform="translate(0 -2)">
+                <rect x="-30" y="-26" width="60" height="22" rx="3"
+                      fill={isUnlocked ? '#FFFFFF' : '#EDF2F8'}
+                      stroke={isUnlocked ? s.pisteColor : '#B4BFCF'}
+                      strokeWidth={isUnlocked ? 1.5 : 1}
+                      filter="url(#soft-shadow)" />
+                <rect x="-30" y="-26" width="60" height="22" rx="3"
+                      fill={isUnlocked ? '#FFFFFF' : '#EDF2F8'}
+                      stroke={isUnlocked ? s.pisteColor : '#B4BFCF'}
+                      strokeWidth={isUnlocked ? 1.5 : 1} />
+                <g transform="translate(-20 -15)" opacity={isUnlocked ? 1 : 0.45}>
+                  <PisteMarker shape={s.pisteShape} color={s.pisteColor} />
+                </g>
+                <text x="8" y="-12" fontSize="9" fontWeight="600" textAnchor="middle" fill={isUnlocked ? '#0F1E36' : '#8A99B0'}
+                      style={{ fontFamily: 'Inter Tight, sans-serif', letterSpacing: '-0.01em' }}>
+                  {s.level === 'beginner' ? 'GROEN'
+                    : s.level === 'medior' ? 'BLAUW'
+                    : s.level === 'senior' ? 'ROOD'
+                    : 'ZWART'}
+                </text>
+              </g>
+              {/* Caption under the pole — white backdrop keeps text readable
+                  over snow, slopes and trees at any zoom level. */}
+              <g transform="translate(0 50)">
+                <rect x="-58" y="-9" width="116" height="28" rx="4"
+                      fill="rgba(255,255,255,0.92)" stroke="rgba(11,30,54,0.08)" strokeWidth="0.6" />
+                <text textAnchor="middle" y="2" fontSize="10" fontWeight="600" fill="#0F1E36"
+                      style={{ fontFamily: 'Inter Tight, sans-serif' }}>
+                  {s.label}
+                </text>
+                <text textAnchor="middle" y="14" fontSize="9" fill="#5A6B82"
+                      style={{ fontFamily: 'Inter Tight, sans-serif' }}>
+                  {isUnlocked ? s.sub : '— vergrendeld —'}
+                </text>
+              </g>
+              {/* Active pulse */}
+              {isActive && (
+                <>
+                  <circle cx="0" cy="36" r="6" fill={s.pisteColor} opacity="0.35">
+                    <animate attributeName="r" values="6;16;6" dur="2s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.4;0;0.4" dur="2s" repeatCount="indefinite" />
+                  </circle>
+                  <circle cx="0" cy="36" r="4" fill={s.pisteColor} />
+                </>
+              )}
+              {/* Lock badge if not unlocked */}
+              {!isUnlocked && (
+                <g transform="translate(0 36)">
+                  <circle r="6" fill="#FFFFFF" stroke="#B4BFCF" strokeWidth="1.2" />
+                  <path d="M -2 -1 L -2 -3 Q -2 -4.5 0 -4.5 Q 2 -4.5 2 -3 L 2 -1 M -2.5 -1 L 2.5 -1 L 2.5 2.5 L -2.5 2.5 Z"
+                        fill="none" stroke="#5A6B82" strokeWidth="0.9" strokeLinecap="round" />
+                </g>
+              )}
+            </g>
+          );
+        })}
+
+        {/* Gondolas — rendered inside the SVG so they always stay on the cable, regardless of container width.
+            Each gondola's origin (0,0) follows the cable; the hanger drops down and the body hangs below. */}
+        {[0, -6, -12].map((delay, i) => (
+          <g key={i}>
+            {/* Hanger drops 5 units below the cable, gondola body hangs from there */}
+            <line x1="0" y1="0" x2="0" y2="5" stroke="#1A2B45" strokeWidth="0.8" />
+            <rect x="-7" y="5" width="14" height="9" rx="2" fill="#FFFFFF" stroke="#1A2B45" strokeWidth="0.8" />
+            <rect x="-5" y="7.5" width="10" height="4" rx="1" fill="#0B4A8F" opacity="0.85" />
+            {/* Drop shadow */}
+            <ellipse cx="0" cy="14.5" rx="6" ry="0.8" fill="rgba(11,74,143,0.18)" />
+            <animateMotion
+              dur="22s"
+              repeatCount="indefinite"
+              begin={`${delay}s`}
+            >
+              <mpath href="#cable-route" />
+            </animateMotion>
+          </g>
+        ))}
+
+        {/* Caption strip — placed inside SVG so it scales nicely too */}
+        <g>
+          {/* Legend (right) */}
+          <g transform="translate(540 400)" style={{ fontFamily: 'Inter, sans-serif' }}>
+            <circle cx="0"  cy="0" r="3.5" fill="#0F9D58" />
+            <text   x="8"  y="3" fontSize="9.5" fill="#5A6B82" letterSpacing="0.06em">GROEN</text>
+            <rect   x="55" y="-3.5" width="7" height="7" fill="#2F6CAE" />
+            <text   x="66" y="3" fontSize="9.5" fill="#5A6B82" letterSpacing="0.06em">BLAUW</text>
+            <rect   x="115" y="-3.5" width="7" height="7" fill="#D14343" transform="rotate(45 118.5 0)" />
+            <text   x="128" y="3" fontSize="9.5" fill="#5A6B82" letterSpacing="0.06em">ROOD</text>
+            <rect   x="175" y="-3.5" width="7" height="7" fill="#0F1E36" transform="rotate(45 178.5 0)" />
+            <text   x="188" y="3" fontSize="9.5" fill="#5A6B82" letterSpacing="0.06em">ZWART</text>
+          </g>
+        </g>
+      </svg>
     </div>
   );
 };
@@ -157,9 +348,9 @@ const LevelCard: React.FC<{
 
   const getSlopeColorClasses = () => {
     switch (config.slopeColor) {
-      case 'green': return 'border-green-500 bg-green-50 dark:bg-green-900/20';
-      case 'blue': return 'border-blue-500 bg-blue-50 dark:bg-blue-900/20';
-      case 'red': return 'border-red-500 bg-red-50 dark:bg-red-900/20';
+      case 'green': return 'border-positive-500 bg-positive-50 dark:bg-positive-700/15';
+      case 'blue': return 'border-primary-500 bg-primary-50 dark:bg-primary-900/20';
+      case 'red': return 'border-negative-500 bg-negative-50 dark:bg-negative-700/15';
       case 'black': return 'border-gray-900 dark:border-gray-100 bg-gray-50 dark:bg-gray-800';
       default: return 'border-gray-300 bg-gray-50';
     }
@@ -167,11 +358,11 @@ const LevelCard: React.FC<{
 
   const getHeaderColorClasses = () => {
     switch (config.slopeColor) {
-      case 'green': return 'bg-green-500';
-      case 'blue': return 'bg-blue-500';
-      case 'red': return 'bg-red-500';
-      case 'black': return 'bg-gray-900 dark:bg-gray-100';
-      default: return 'bg-gray-500';
+      case 'green': return 'bg-positive-700';
+      case 'blue': return 'bg-primary-700';
+      case 'red': return 'bg-negative-700';
+      case 'black': return 'bg-ink-900 dark:bg-ink-100';
+      default: return 'bg-ink-700';
     }
   };
 
@@ -260,7 +451,7 @@ const LevelCard: React.FC<{
             {config.creditsRequired > 0 && (
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-500 dark:text-gray-400">Credits nodig:</span>
-                <span className={`font-bold ${canAfford ? 'text-green-600' : 'text-gray-600 dark:text-gray-300'}`}>
+                <span className={`font-bold ${canAfford ? 'text-positive-600' : 'text-gray-600 dark:text-gray-300'}`}>
                   {config.creditsRequired}
                 </span>
               </div>
@@ -305,9 +496,14 @@ export const MissionStatement: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { pushNavigation } = useNavigation();
+  const { setPageTitle } = usePageTitle();
   const progress = useAppSelector(selectUserProgress);
   const currentLevelConfig = useAppSelector(selectCurrentLevelConfig);
   const nextLevel = useAppSelector(selectNextLevel);
+
+  useEffect(() => {
+    setPageTitle('Jouw Reis', 'Curriculum, niveaus en leertraject');
+  }, [setPageTitle]);
 
   // Wizard state
   const [wizardOpen, setWizardOpen] = useState(false);
@@ -342,104 +538,140 @@ export const MissionStatement: React.FC = () => {
 
   return (
     <div className="space-y-8">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-br from-primary-600 to-primary-800 rounded-2xl p-8 text-white">
-        <div className="flex items-start gap-6">
-          <div className="p-4 bg-white/10 rounded-xl">
-            <Mountain className="w-12 h-12" />
-          </div>
-          <div className="flex-1">
-            <h1 className="text-3xl font-bold mb-2">
-              Jouw Beleggingsreis Begint Hier
+      {/* Hero Section — editorial intro */}
+      <div className="relative overflow-hidden rounded-xl border border-[var(--line)] bg-white dark:bg-trading-dark-800">
+        <div className="grid md:grid-cols-[1.1fr_1fr] gap-0">
+          <div className="p-8 md:p-10">
+            <p className="eyebrow mb-3">Jouw Reis · Curriculum</p>
+            <h1 className="text-2xl md:text-[1.75rem] leading-[1.15] font-semibold tracking-tight text-ink-900 dark:text-white mb-3">
+              Van groene piste naar de zwarte top
             </h1>
-            <p className="text-lg text-white/80 mb-4">
-              Net zoals bij skiën begin je op de groene piste en werk je je weg omhoog naar de zwarte piste.
-              Elke stap brengt je dichter bij financiële vrijheid.
+            <p className="text-sm text-ink-500 dark:text-ink-300 leading-relaxed max-w-md mb-5">
+              Net als een skischool begeleidt PayDay je stap voor stap. Beheers eerst de basis,
+              klim daarna naar premium-inkomen, spreads en uiteindelijk mastery.
             </p>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-lg">
-                <Award className="w-5 h-5" />
-                <span className="font-medium">Huidig niveau: {currentLevelConfig.name}</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 border border-[var(--line)] rounded-md bg-surface">
+                <Award className="w-4 h-4 text-primary-700" strokeWidth={1.75} />
+                <span className="text-xs"><span className="text-ink-500">Niveau · </span><span className="font-semibold text-ink-900 dark:text-white">{currentLevelConfig.name}</span></span>
               </div>
-              <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-lg">
-                <Star className="w-5 h-5" />
-                <span className="font-medium">{progress.credits} credits</span>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 border border-[var(--line)] rounded-md bg-surface">
+                <Star className="w-4 h-4 text-primary-700" strokeWidth={1.75} />
+                <span className="text-xs tabular-nums"><span className="font-semibold text-ink-900 dark:text-white text-sm">{progress.credits}</span> <span className="text-ink-500">credits</span></span>
               </div>
+            </div>
+          </div>
+          {/* Right side — piste-progressie als editorial strip */}
+          <div className="relative bg-sky-fade border-l border-[var(--line)] overflow-hidden p-8 md:p-10 flex flex-col justify-center">
+            <p className="eyebrow mb-5">Het traject</p>
+            <div className="relative">
+              {/* Connecting dotted route */}
+              <div className="absolute left-0 right-0 top-[14px] border-t border-dashed border-[var(--line)] z-0" />
+              <ul className="relative z-10 grid grid-cols-4 gap-2">
+                {([
+                  { level: 'beginner' as UserLevel, label: 'Groen',  sub: 'Fundamenten',     color: '#0F9D58', shape: 'circle'         as const },
+                  { level: 'medior'   as UserLevel, label: 'Blauw',  sub: 'Premium-inkomen', color: '#2F6CAE', shape: 'square'         as const },
+                  { level: 'senior'   as UserLevel, label: 'Rood',   sub: 'Spreads · PMCC',  color: '#D14343', shape: 'diamond'        as const },
+                  { level: 'expert'   as UserLevel, label: 'Zwart',  sub: 'Mastery',         color: '#0F1E36', shape: 'double-diamond' as const },
+                ]).map((step) => {
+                  const isUnlocked = progress.unlockedLevels.includes(step.level);
+                  const isActive   = progress.currentLevel === step.level;
+                  const tone       = isUnlocked ? step.color : '#B4BFCF';
+                  return (
+                    <li key={step.level} className="flex flex-col items-center text-center">
+                      <div
+                        className={`w-7 h-7 rounded-full bg-white flex items-center justify-center ring-1 transition-shadow ${
+                          isActive
+                            ? 'ring-2 shadow-card'
+                            : 'ring-[var(--line)]'
+                        }`}
+                        style={isActive ? { boxShadow: `0 0 0 3px ${tone}22` } : undefined}
+                      >
+                        <svg width="14" height="14" viewBox="-12 -12 24 24" aria-hidden="true">
+                          {step.shape === 'circle'         && <circle cx="0" cy="0" r="6.5" fill={tone} />}
+                          {step.shape === 'square'         && <rect x="-6" y="-6" width="12" height="12" fill={tone} />}
+                          {step.shape === 'diamond'        && <rect x="-5.5" y="-5.5" width="11" height="11" fill={tone} transform="rotate(45)" />}
+                          {step.shape === 'double-diamond' && (
+                            <>
+                              <rect x="-9.5" y="-4" width="7.5" height="7.5" fill={tone} transform="rotate(45 -5.75 0)" />
+                              <rect x="2"    y="-4" width="7.5" height="7.5" fill={tone} transform="rotate(45 5.75 0)" />
+                            </>
+                          )}
+                        </svg>
+                      </div>
+                      <p className={`mt-2 text-[11px] font-semibold tracking-tight ${isUnlocked ? 'text-ink-900 dark:text-white' : 'text-ink-400'}`}>
+                        {step.label}
+                      </p>
+                      <p className={`text-[10px] leading-tight mt-0.5 ${isUnlocked ? 'text-ink-500 dark:text-ink-400' : 'text-ink-300'}`}>
+                        {step.sub}
+                      </p>
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Ski Slope Visualization */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-          <Target className="w-6 h-6 icon-text-primary" />
-          Jouw Progressie op PayDay Mountain
-        </h2>
+      {/* Mountain visualization (the centerpiece) */}
+      <section>
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <p className="eyebrow mb-1">Route</p>
+            <h2 className="text-lg font-semibold text-ink-900 dark:text-white tracking-tight">
+              Jouw progressie op PayDay Mountain
+            </h2>
+          </div>
+          <div className="hidden md:flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-ink-500">
+            <Target className="w-3.5 h-3.5" />
+            <span>Live · Skilift in bedrijf</span>
+          </div>
+        </div>
         <SkiSlope activeLevel={progress.currentLevel} unlockedLevels={progress.unlockedLevels} />
-      </div>
+      </section>
 
       {/* Mission Statement */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-          <Rocket className="w-6 h-6 icon-text-primary" />
-          Onze Missie
+      <div className="surface-card p-8">
+        <p className="eyebrow mb-2">Onze missie</p>
+        <h2 className="text-lg font-semibold text-ink-900 dark:text-white tracking-tight mb-4">
+          Iedereen toegang tot de kracht van opties.
         </h2>
-        <div className="prose dark:prose-invert max-w-none">
-          <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-            PayDay is opgericht met één duidelijke missie: <strong>iedereen toegang geven tot de kracht van opties trading</strong>,
-            ongeacht hun ervaring of achtergrond. Wij geloven dat financiële educatie de sleutel is tot financiële vrijheid.
+        <div className="max-w-3xl">
+          <p className="text-[15px] text-ink-700 dark:text-ink-300 leading-relaxed">
+            PayDay is opgericht met één duidelijke missie: <strong className="text-ink-900 dark:text-white font-semibold">iedereen toegang geven tot de kracht van opties trading</strong>,
+            ongeacht ervaring of achtergrond. Wij geloven dat financiële educatie de sleutel is tot financiële vrijheid.
           </p>
-          <p className="text-gray-600 dark:text-gray-300 leading-relaxed mt-4">
-            Net zoals een skischool je stap voor stap leert skiën - van de eerste sneeuwploeg op de groene piste
-            tot het carven op de zwarte piste - begeleiden wij je door de wereld van beleggen en opties.
-            Elke strategie wordt uitgelegd, elke tool is ontworpen om je te helpen groeien.
+          <p className="text-[15px] text-ink-700 dark:text-ink-300 leading-relaxed mt-4">
+            Net zoals een skischool je stap voor stap leert skiën — van de eerste sneeuwploeg op de groene piste
+            tot het carven op de zwarte — begeleiden wij je door de wereld van beleggen.
+            Elke strategie wordt uitgelegd, elke tool helpt je groeien.
           </p>
         </div>
 
-        {/* Core Values */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-          <div className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-            <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
-              <GraduationCap className="w-5 h-5 text-green-600 dark:text-green-400" />
+        {/* Core Values — restrained, monochrome */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-px mt-8 bg-[var(--line)] rounded-md overflow-hidden">
+          {[
+            { icon: GraduationCap, t: 'Educatie eerst', d: 'Leer de theorie voordat je handelt. Begrip is de basis van succes.' },
+            { icon: Shield,        t: 'Veilig groeien', d: 'Paper trading modus om risico-vrij te oefenen.' },
+            { icon: TrendingUp,    t: 'Stap voor stap', d: 'Ontgrendel nieuwe strategieën naarmate je vordert.' },
+          ].map(({ icon: Icon, t, d }) => (
+            <div key={t} className="bg-white dark:bg-trading-dark-800 p-5">
+              <div className="w-9 h-9 rounded-md bg-primary-50 text-primary-700 flex items-center justify-center mb-3">
+                <Icon className="w-[18px] h-[18px]" strokeWidth={1.75} />
+              </div>
+              <h3 className="font-semibold text-sm text-ink-900 dark:text-white tracking-tight mb-1">{t}</h3>
+              <p className="text-xs text-ink-500 dark:text-ink-400 leading-relaxed">{d}</p>
             </div>
-            <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white">Educatie Eerst</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Leer de theorie voordat je handelt. Begrip is de basis van succes.
-              </p>
-            </div>
-          </div>
-          <div className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-              <Shield className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white">Veilig Groeien</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Paper trading modus om risico-vrij te oefenen.
-              </p>
-            </div>
-          </div>
-          <div className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-            <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-              <TrendingUp className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white">Stap voor Stap</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Ontgrendel nieuwe strategieën naarmate je vordert.
-              </p>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 
       {/* Level Cards */}
       <div>
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-          <BookOpen className="w-6 h-6 icon-text-primary" />
-          De Vier Niveaus
+        <p className="eyebrow mb-2">Curriculum</p>
+        <h2 className="text-lg font-semibold text-ink-900 dark:text-white tracking-tight mb-5">
+          De vier niveaus
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {LEVEL_CONFIGS.map((config) => (
@@ -457,85 +689,73 @@ export const MissionStatement: React.FC = () => {
       </div>
 
       {/* How to Earn Credits */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-          <Gift className="w-6 h-6 icon-text-primary" />
-          Hoe Verdien Je Credits?
+      <div className="surface-card p-8">
+        <p className="eyebrow mb-2">Voortgang</p>
+        <h2 className="text-lg font-semibold text-ink-900 dark:text-white tracking-tight mb-6">
+          Zo verdien je credits
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg text-center">
-            <div className="w-12 h-12 mx-auto mb-3 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center">
-              <Play className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-[var(--line)] rounded-md overflow-hidden">
+          {[
+            { icon: Play,       t: 'Voltooi lessen',         d: '10–50 credits per les' },
+            { icon: Award,      t: 'Behaal achievements',    d: '25–100 credits per achievement' },
+            { icon: Zap,        t: 'Dagelijkse streak',      d: '5 credits per dag' },
+            { icon: CreditCard, t: 'Koop credits',           d: 'Of ontgrendel direct met €' },
+          ].map(({ icon: Icon, t, d }) => (
+            <div key={t} className="bg-white dark:bg-trading-dark-800 p-5 text-center">
+              <div className="w-10 h-10 mx-auto mb-3 bg-primary-50 text-primary-700 rounded-md flex items-center justify-center">
+                <Icon className="w-[18px] h-[18px]" strokeWidth={1.75} />
+              </div>
+              <h3 className="font-semibold text-sm text-ink-900 dark:text-white tracking-tight mb-1">{t}</h3>
+              <p className="text-xs text-ink-500 dark:text-ink-400">{d}</p>
             </div>
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Voltooi Lessen</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">10-50 credits per les</p>
-          </div>
-          <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg text-center">
-            <div className="w-12 h-12 mx-auto mb-3 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-              <Award className="w-6 h-6 text-green-600 dark:text-green-400" />
-            </div>
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Behaal Achievements</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">25-100 credits per achievement</p>
-          </div>
-          <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg text-center">
-            <div className="w-12 h-12 mx-auto mb-3 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-              <Zap className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-            </div>
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Dagelijkse Streak</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">5 credits per dag</p>
-          </div>
-          <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg text-center">
-            <div className="w-12 h-12 mx-auto mb-3 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
-              <CreditCard className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-            </div>
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Koop Credits</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Of ontgrendel direct met €</p>
-          </div>
+          ))}
         </div>
       </div>
 
       {/* Education Curriculum Section */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-          <GraduationCap className="w-6 h-6 icon-text-primary" />
-          Leertraject
+      <div className="surface-card p-8">
+        <p className="eyebrow mb-2">Leertraject</p>
+        <h2 className="text-lg font-semibold text-ink-900 dark:text-white tracking-tight mb-3">
+          Gestructureerd onderwijs
         </h2>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">
-          Volg ons gestructureerde leertraject om stap voor stap een betere belegger te worden.
+        <p className="text-sm text-ink-500 dark:text-ink-400 mb-6 max-w-2xl leading-relaxed">
           Elke les bouwt voort op de vorige en is afgestemd op jouw niveau.
         </p>
         <EducationCurriculum />
       </div>
 
       {/* Learning Resources Section */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-          <BookOpen className="w-6 h-6 icon-text-primary" />
-          Tips, Boeken & Tutorials
+      <div className="surface-card p-8">
+        <p className="eyebrow mb-2">Bibliotheek</p>
+        <h2 className="text-lg font-semibold text-ink-900 dark:text-white tracking-tight mb-6">
+          Tips, boeken &amp; tutorials
         </h2>
         <LearningResources showAllLevels />
       </div>
 
       {/* Belgian Fiscal Info Teaser */}
-      <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-xl border border-yellow-200 dark:border-yellow-700 p-6">
-        <div className="flex items-start gap-4">
-          <div className="p-3 bg-yellow-100 dark:bg-yellow-900/50 rounded-lg">
-            <Shield className="w-8 h-8 text-yellow-600 dark:text-yellow-400" />
-          </div>
-          <div>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
-              Belgische Fiscaliteit
+      <div className="surface-card overflow-hidden">
+        <div className="grid md:grid-cols-[1fr_2fr] gap-0">
+          <div className="bg-sky-fade border-r border-[var(--line)] p-8 flex flex-col justify-center">
+            <div className="w-11 h-11 rounded-md bg-primary-50 text-primary-700 flex items-center justify-center mb-3">
+              <Shield className="w-5 h-5" strokeWidth={1.75} />
+            </div>
+            <p className="eyebrow mb-1">Fiscaliteit</p>
+            <h2 className="text-base font-semibold text-ink-900 tracking-tight">
+              Belgische belasting
             </h2>
-            <p className="text-gray-600 dark:text-gray-300 mb-3">
+          </div>
+          <div className="p-8">
+            <p className="text-sm text-ink-700 dark:text-ink-300 leading-relaxed mb-4">
               Als Belgische belegger heb je te maken met specifieke belastingregels.
-              PayDay helpt je met het begrijpen van de fiscale impact van je trades,
+              PayDay helpt je met het begrijpen van de fiscale impact van je trades —
               inclusief meerwaardebelasting, TOB en roerende voorheffing.
             </p>
             <button
               onClick={() => handleNavigate('/tools/capital-gains-tax', 'Meerwaardebelasting')}
-              className="flex items-center gap-2 text-yellow-700 dark:text-yellow-400 font-medium hover:underline"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-700 hover:text-primary-800 transition-colors"
             >
-              Bekijk de belastingcalculator
+              Naar de belastingcalculator
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
@@ -544,19 +764,20 @@ export const MissionStatement: React.FC = () => {
 
       {/* CTA Section */}
       {nextLevel && !progress.unlockedLevels.includes(nextLevel.level) && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 text-center">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-            Klaar voor de Volgende Stap?
+        <div className="surface-card p-8 text-center">
+          <p className="eyebrow mb-2">Volgende stap</p>
+          <h2 className="text-lg font-semibold text-ink-900 dark:text-white tracking-tight mb-2">
+            Klaar voor de volgende piste?
           </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
-            Je hebt nog <strong>{nextLevel.creditsRequired - progress.credits}</strong> credits nodig
+          <p className="text-sm text-ink-500 dark:text-ink-400 mb-5">
+            Nog <span className="font-semibold text-ink-900 dark:text-white tabular-nums">{nextLevel.creditsRequired - progress.credits}</span> credits
             om de {nextLevel.slopeName} te ontgrendelen.
           </p>
           {nextLevel.priceEUR && nextLevel.priceEUR > 0 && (
             <button
-              className="flex items-center justify-center gap-2 px-6 py-3 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg font-medium transition-colors text-gray-700 dark:text-gray-300 mx-auto"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 border border-[var(--line)] hover:border-primary-300 hover:bg-primary-50 rounded-md font-semibold text-sm transition-colors text-ink-700"
             >
-              <CreditCard className="w-5 h-5" />
+              <CreditCard className="w-4 h-4" strokeWidth={1.75} />
               Ontgrendel voor €{nextLevel.priceEUR}
             </button>
           )}

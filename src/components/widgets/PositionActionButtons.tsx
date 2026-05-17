@@ -30,7 +30,7 @@ export const PositionActionButtons: React.FC<PositionActionButtonsProps> = ({
         {onAssign && (
           <button
             onClick={onAssign}
-            className="p-1 hover:bg-purple-100 dark:hover:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded"
+            className="p-1 hover:bg-surface-muted dark:hover:bg-purple-900/30 text-ink-600 dark:text-ink-300 rounded"
             title={assignTitle}
           >
             <ArrowDownLeft className="w-4 h-4" />
@@ -40,7 +40,7 @@ export const PositionActionButtons: React.FC<PositionActionButtonsProps> = ({
         {onNavigateToCampaigns && (
           <button
             onClick={onNavigateToCampaigns}
-            className="p-1 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 rounded"
+            className="p-1 hover:bg-caution-50 dark:hover:bg-yellow-900/30 text-caution-600 dark:text-caution-500 rounded"
             title={campaignTitle}
           >
             <Layers className="w-4 h-4" />
@@ -50,7 +50,7 @@ export const PositionActionButtons: React.FC<PositionActionButtonsProps> = ({
         {onRoll && (
           <button
             onClick={onRoll}
-            className="p-1 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded"
+            className="p-1 hover:bg-primary-50 dark:hover:bg-primary-900/25 text-primary-700 dark:text-primary-300 rounded"
             title={rollTitle}
           >
             <Redo2 className="w-4 h-4" />
@@ -60,7 +60,7 @@ export const PositionActionButtons: React.FC<PositionActionButtonsProps> = ({
         {onClose && (
           <button
             onClick={onClose}
-            className="p-1 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded"
+            className="p-1 hover:bg-negative-50 dark:hover:bg-negative-700/25 text-negative-600 dark:text-negative-500 rounded"
             title={closeTitle}
           >
             <XIcon className="w-4 h-4" />

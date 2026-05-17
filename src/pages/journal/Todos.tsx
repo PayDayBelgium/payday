@@ -102,11 +102,11 @@ export const Todos: React.FC = () => {
             value={newTodoText}
             onChange={(e) => setNewTodoText(e.target.value)}
             placeholder={t('todos.addPlaceholder')}
-            className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
           />
           <button
             type="submit"
-            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2 font-medium"
+            className="px-6 py-3 bg-primary-700 hover:bg-primary-800 text-white rounded-lg transition-colors flex items-center gap-2 font-medium"
           >
             <Plus className="w-5 h-5" />
             {t('todos.add')}
@@ -138,7 +138,7 @@ export const Todos: React.FC = () => {
               >
                 <button
                   onClick={() => handleToggleTodo(todo.id)}
-                  className="flex-shrink-0 mt-0.5 text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors"
+                  className="flex-shrink-0 mt-0.5 text-gray-400 hover:text-positive-600 dark:hover:text-positive-500 transition-colors"
                 >
                   <Circle className="w-6 h-6" />
                 </button>
@@ -149,12 +149,12 @@ export const Todos: React.FC = () => {
                       type="text"
                       value={editText}
                       onChange={(e) => setEditText(e.target.value)}
-                      className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
                       autoFocus
                     />
                     <button
                       onClick={handleSaveEdit}
-                      className="p-2 text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
+                      className="p-2 text-positive-600 hover:text-positive-700 dark:text-positive-500 dark:hover:text-positive-500"
                     >
                       <Save className="w-5 h-5" />
                     </button>
@@ -178,13 +178,13 @@ export const Todos: React.FC = () => {
                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={() => handleStartEdit(todo.id, todo.text)}
-                        className="p-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                        className="p-2 text-primary-700 hover:text-primary-700 dark:text-primary-300 dark:hover:text-primary-400"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDeleteTodo(todo.id)}
-                        className="p-2 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                        className="p-2 text-negative-600 hover:text-negative-700 dark:text-negative-500 dark:hover:text-negative-500"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -206,7 +206,7 @@ export const Todos: React.FC = () => {
           {completedTodos.length > 0 && (
             <button
               onClick={() => setShowCompleted(!showCompleted)}
-              className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+              className="text-sm text-primary-700 hover:text-primary-700 dark:text-primary-300 dark:hover:text-primary-400"
             >
               {showCompleted ? t('todos.hide') : t('todos.show')}
             </button>
@@ -226,7 +226,7 @@ export const Todos: React.FC = () => {
                     key={todo.id}
                     className="flex items-start gap-3 p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30"
                   >
-                    <CheckCircle2 className="w-6 h-6 flex-shrink-0 text-green-600 dark:text-green-400 mt-0.5" />
+                    <CheckCircle2 className="w-6 h-6 flex-shrink-0 text-positive-600 dark:text-positive-500 mt-0.5" />
                     <div className="flex-1">
                       <p className="text-gray-500 dark:text-gray-400 line-through">
                         {todo.text}
@@ -238,14 +238,14 @@ export const Todos: React.FC = () => {
                     <div className="flex gap-1">
                       <button
                         onClick={() => handleReopenTodo(todo.id)}
-                        className="p-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                        className="p-2 text-primary-700 hover:text-primary-700 dark:text-primary-300 dark:hover:text-primary-400"
                         title={t('todos.reopen')}
                       >
                         <RotateCcw className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDeleteTodo(todo.id)}
-                        className="p-2 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                        className="p-2 text-negative-600 hover:text-negative-700 dark:text-negative-500 dark:hover:text-negative-500"
                         title={t('todos.delete')}
                       >
                         <Trash2 className="w-4 h-4" />

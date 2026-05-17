@@ -34,8 +34,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       'px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors focus:outline-none focus:ring-2';
 
     const stateStyles = error
-      ? 'border-red-300 dark:border-red-600 focus:ring-red-500 focus:border-red-500'
-      : 'border-gray-300 dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500';
+      ? 'border-negative-500/30 dark:border-negative-600 focus:ring-negative-500 focus:border-negative-500'
+      : 'border-gray-300 dark:border-gray-600 focus:ring-primary-500 focus:border-primary-500';
 
     const widthStyles = fullWidth ? 'w-full' : '';
     const iconPadding = leftIcon ? 'pl-10' : '';
@@ -70,7 +70,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           )}
         </div>
         {error && (
-          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error}</p>
+          <p className="mt-1 text-sm text-negative-600 dark:text-negative-500">{error}</p>
         )}
         {helperText && !error && (
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">

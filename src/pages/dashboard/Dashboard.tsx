@@ -164,89 +164,60 @@ export const Dashboard: React.FC = () => {
       {/* Empty State */}
       {!hasPortfolios && (
         <div className="space-y-6">
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-16 text-center">
-            <div className="max-w-md mx-auto">
-              <img src={logo} alt="PayDay" className="w-20 h-20 mx-auto rounded-xl mb-6" />
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                {t('dashboard.noPortfolios')}
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                {t('dashboard.noPortfoliosDescription')}
-              </p>
-              <button
-                onClick={() => handleNavigate('/settings/portfolios', t('sidebar.managePortfolios'))}
-                className="inline-flex items-center gap-2 px-5 py-2.5 btn-primary text-white rounded-lg font-medium transition-colors shadow-sm hover:shadow-md"
-              >
-                <Plus className="w-5 h-5" />
-                {t('dashboard.addPortfolio')}
-              </button>
+          <div className="surface-card overflow-hidden">
+            <div className="relative bg-sky-fade px-10 py-14 text-center">
+              {/* subtle grid texture */}
+              <div className="absolute inset-0 opacity-[0.35] pointer-events-none"
+                   style={{
+                     backgroundImage:
+                       'linear-gradient(rgba(11,74,143,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(11,74,143,0.06) 1px, transparent 1px)',
+                     backgroundSize: '32px 32px',
+                   }} />
+              <div className="relative max-w-md mx-auto">
+                <img src={logo} alt="PayDay" className="w-16 h-16 mx-auto rounded-md ring-1 ring-[var(--line)] mb-5" />
+                <p className="eyebrow mb-2">Markets Workspace</p>
+                <h3 className="text-xl font-semibold text-ink-900 dark:text-white tracking-tight mb-3">
+                  {t('dashboard.noPortfolios')}
+                </h3>
+                <p className="text-sm text-ink-500 dark:text-ink-400 mb-7 leading-relaxed">
+                  {t('dashboard.noPortfoliosDescription')}
+                </p>
+                <button
+                  onClick={() => handleNavigate('/settings/portfolios', t('sidebar.managePortfolios'))}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 btn-primary rounded-md text-sm"
+                >
+                  <Plus className="w-4 h-4" strokeWidth={2} />
+                  {t('dashboard.addPortfolio')}
+                </button>
+              </div>
             </div>
           </div>
 
           {/* Strategy Overview for New Users */}
-          <div className="bg-gradient-to-br from-blue-50 via-purple-50 to-green-50 dark:from-blue-900/10 dark:via-purple-900/10 dark:to-green-900/10 rounded-lg border border-blue-200 dark:border-blue-500/30 p-8">
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">
-              Welkom bij PayDay - Jouw Options Trading Platform
-            </h3>
-            <p className="text-gray-700 dark:text-gray-300 text-center mb-8 max-w-2xl mx-auto">
-              PayDay helpt je om systematisch inkomen te genereren met options trading.
-              We beginnen met de fundamenten en bouwen stap voor stap op.
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-blue-200 dark:border-blue-500/30">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 font-semibold">
-                    1
-                  </div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white">Aandelen & ETFs</h4>
-                </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  De basis: koop betrouwbare aandelen of ETFs voor de lange termijn.
-                </p>
-              </div>
-
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-purple-200 dark:border-purple-500/30">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400 font-semibold">
-                    2
-                  </div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white">LEAPS</h4>
-                </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Synthetische aandelen met leverage - krijg exposure voor minder kapitaal.
-                </p>
-              </div>
-
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-green-200 dark:border-green-500/30">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400 font-semibold">
-                    3
-                  </div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white">Covered Calls</h4>
-                </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Verdien extra premies door calls te schrijven op je aandelen of LEAPS.
-                </p>
-              </div>
-
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-indigo-200 dark:border-indigo-500/30">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-semibold">
-                    4
-                  </div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white">Cash Secured Puts</h4>
-                </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Krijg betaald om aandelen te kopen aan jouw gewenste prijs.
-                </p>
-              </div>
+          <div className="surface-card p-8">
+            <div className="text-center mb-8">
+              <p className="eyebrow mb-2">Welkom bij PayDay</p>
+              <h3 className="text-lg font-semibold text-ink-900 dark:text-white tracking-tight mb-3">
+                Een systematisch traject voor opties-inkomen
+              </h3>
+              <p className="text-sm text-ink-500 dark:text-ink-400 max-w-2xl mx-auto leading-relaxed">
+                We bouwen je portefeuille stap voor stap op — van fundament tot geavanceerde strategieën.
+              </p>
             </div>
 
-            <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Begin door een portfolio toe te voegen, daarna kun je stap voor stap je strategieën opbouwen.
-              </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-[var(--line)] rounded-md overflow-hidden">
+              {[
+                { n: '01', t: 'Aandelen & ETFs', d: 'De basis: betrouwbare aandelen of ETFs voor de lange termijn.' },
+                { n: '02', t: 'LEAPS',           d: 'Synthetische aandelen met leverage — exposure voor minder kapitaal.' },
+                { n: '03', t: 'Covered Calls',   d: 'Verdien extra premies door calls te schrijven op je aandelen of LEAPS.' },
+                { n: '04', t: 'Cash Secured Puts', d: 'Krijg betaald om aandelen te kopen aan jouw gewenste prijs.' },
+              ].map((step) => (
+                <div key={step.n} className="bg-white dark:bg-trading-dark-800 p-6">
+                  <p className="text-2xl text-primary-700 font-semibold tabular-nums leading-none mb-3">{step.n}</p>
+                  <h4 className="font-semibold text-ink-900 dark:text-white text-[15px] tracking-tight mb-1.5">{step.t}</h4>
+                  <p className="text-xs text-ink-500 dark:text-ink-400 leading-relaxed">{step.d}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -308,7 +279,7 @@ export const Dashboard: React.FC = () => {
               value={formatCurrency(totalStats.freeCash, totalStats.currencySymbol)}
               icon={<Wallet className="w-6 h-6" />}
               tooltip="Cash die niet gereserveerd is als collateral voor short posities"
-              valueClassName={totalStats.freeCash < 0 ? 'text-red-600 dark:text-red-400' : undefined}
+              valueClassName={totalStats.freeCash < 0 ? 'text-negative-600 dark:text-negative-500' : undefined}
             />
           </div>
 
@@ -348,28 +319,36 @@ export const Dashboard: React.FC = () => {
 
       {/* Critical Alerts */}
       {criticalAlerts.length > 0 && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-500/50 rounded-lg p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <AlertCircle className="w-6 h-6 text-red-600 dark:text-red-400" />
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t('dashboard.criticalAlerts')}</h2>
-          </div>
-          <div className="space-y-2">
-            {criticalAlerts.map((alert) => (
-              <div
-                key={alert.id}
-                className="flex items-center justify-between p-3 bg-white dark:bg-trading-dark-800 rounded-lg border border-gray-200 dark:border-trading-dark-700"
-              >
-                <div>
-                  <p className="text-gray-900 dark:text-white font-medium">{alert.ticker}</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{alert.message}</p>
-                </div>
-                {alert.suggestedAction && (
-                  <button className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors">
-                    {alert.suggestedAction}
-                  </button>
-                )}
+        <div className="relative surface-card overflow-hidden">
+          <span className="absolute inset-x-0 top-0 h-[2px] bg-negative-500" aria-hidden />
+          <div className="p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-9 h-9 rounded-md bg-negative-50 text-negative-600 flex items-center justify-center">
+                <AlertCircle className="w-[18px] h-[18px]" strokeWidth={1.75} />
               </div>
-            ))}
+              <div>
+                <p className="eyebrow text-negative-600">Kritiek</p>
+                <h2 className="text-base font-semibold text-ink-900 dark:text-white tracking-tight">{t('dashboard.criticalAlerts')}</h2>
+              </div>
+            </div>
+            <div className="divide-y divide-[var(--line-soft)] border-t border-[var(--line-soft)]">
+              {criticalAlerts.map((alert) => (
+                <div
+                  key={alert.id}
+                  className="flex items-center justify-between py-3"
+                >
+                  <div>
+                    <p className="font-semibold text-sm text-ink-900 dark:text-white tabular-nums tracking-tight">{alert.ticker}</p>
+                    <p className="text-xs text-ink-500 dark:text-ink-400 mt-0.5">{alert.message}</p>
+                  </div>
+                  {alert.suggestedAction && (
+                    <button className="px-3 py-1.5 bg-negative-500 hover:bg-negative-600 text-white rounded-md text-xs font-semibold transition-colors">
+                      {alert.suggestedAction}
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}

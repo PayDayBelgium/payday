@@ -227,7 +227,7 @@ export const TickersOverview: React.FC = () => {
                   onClick={() => togglePortfolioFilter(portfolio.name)}
                   className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                     selectedPortfolios.includes(portfolio.name)
-                      ? 'bg-blue-600 text-white'
+                      ? 'bg-primary-700 text-white'
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
@@ -242,7 +242,7 @@ export const TickersOverview: React.FC = () => {
               onClick={() => setShowWatchlistOnly(!showWatchlistOnly)}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 showWatchlistOnly
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-primary-700 text-white'
                   : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
             >
@@ -257,7 +257,7 @@ export const TickersOverview: React.FC = () => {
                   setSelectedPortfolios([]);
                   setShowWatchlistOnly(false);
                 }}
-                className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                className="text-sm text-primary-700 dark:text-primary-300 hover:underline"
               >
                 Clear all
               </button>
@@ -267,7 +267,7 @@ export const TickersOverview: React.FC = () => {
           {/* Add to Watchlist button */}
           <button
             onClick={() => setIsAddWatchlistOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+            className="flex items-center gap-2 px-4 py-2 bg-primary-700 text-white rounded-lg hover:bg-primary-800 transition-colors text-sm font-medium"
           >
             <Plus className="w-4 h-4" />
             Watchlist
@@ -352,7 +352,7 @@ export const TickersOverview: React.FC = () => {
               <button
                 type="submit"
                 disabled={!newWatchlistTicker.symbol.trim()}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-primary-700 text-white rounded-lg hover:bg-primary-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Toevoegen
               </button>
@@ -393,11 +393,11 @@ export const TickersOverview: React.FC = () => {
                     href={getYahooFinanceUrl(ticker.symbol)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 font-mono font-bold text-sm text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors group"
+                    className="inline-flex items-center gap-1.5 font-mono font-bold text-sm text-gray-900 dark:text-white hover:text-primary-700 dark:hover:text-primary-500 transition-colors group"
                     title="View on Yahoo Finance"
                   >
                     {ticker.symbol}
-                    <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity text-blue-600 dark:text-blue-400" />
+                    <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity text-primary-700 dark:text-primary-300" />
                   </a>
                 </div>
 
@@ -469,7 +469,7 @@ export const TickersOverview: React.FC = () => {
                 {/* Unrealized P&L */}
                 <div className="text-right">
                   {ticker.unrealizedPnL !== 0 ? (
-                    <div className={`text-sm font-semibold ${ticker.unrealizedPnL >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                    <div className={`text-sm font-semibold ${ticker.unrealizedPnL >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
                       <div>{ticker.unrealizedPnL >= 0 ? '+' : ''}${Math.abs(ticker.unrealizedPnL).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                       <div className="text-[10px]">
                         {ticker.unrealizedPnLPercent >= 0 ? '+' : ''}{formatNumber(ticker.unrealizedPnLPercent, 2)}%
@@ -483,12 +483,12 @@ export const TickersOverview: React.FC = () => {
                 {/* Status */}
                 <div className="text-center">
                   {ticker.isWatchlist && !ticker.hasPositions ? (
-                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded text-[10px] font-medium">
+                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded text-[10px] font-medium">
                       <Eye className="w-2.5 h-2.5" />
                       Watch
                     </span>
                   ) : ticker.hasPositions ? (
-                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded text-[10px] font-medium">
+                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 rounded text-[10px] font-medium">
                       <Briefcase className="w-2.5 h-2.5" />
                       Active
                     </span>
@@ -503,7 +503,7 @@ export const TickersOverview: React.FC = () => {
                     <>
                       <button
                         onClick={() => saveEdit(ticker.symbol)}
-                        className="p-1 hover:bg-green-100 dark:hover:bg-green-900/30 text-green-600 dark:text-green-400 rounded transition-colors"
+                        className="p-1 hover:bg-positive-50 dark:hover:bg-positive-700/25 text-positive-600 dark:text-positive-500 rounded transition-colors"
                         title="Opslaan"
                       >
                         <Check className="w-3.5 h-3.5" />
@@ -520,7 +520,7 @@ export const TickersOverview: React.FC = () => {
                     <>
                       <button
                         onClick={() => startEditing(ticker)}
-                        className="p-1 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded transition-colors"
+                        className="p-1 hover:bg-primary-50 dark:hover:bg-primary-900/25 text-primary-700 dark:text-primary-300 rounded transition-colors"
                         title="Bewerken"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
@@ -528,7 +528,7 @@ export const TickersOverview: React.FC = () => {
                       {ticker.isWatchlist && !ticker.hasPositions && (
                         <button
                           onClick={() => handleDeleteTicker(ticker.symbol, ticker.name)}
-                          className="p-1 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded transition-colors"
+                          className="p-1 hover:bg-negative-50 dark:hover:bg-negative-700/25 text-negative-600 dark:text-negative-500 rounded transition-colors"
                           title="Verwijderen"
                         >
                           <Trash2 className="w-3.5 h-3.5" />

@@ -62,8 +62,8 @@ export const BackupNameModal: React.FC<BackupNameModalProps> = ({
         {/* Header */}
         <div className="border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-              <Download className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <div className="p-2 bg-primary-50 dark:bg-primary-900/30 rounded-lg">
+              <Download className="w-5 h-5 text-primary-700 dark:text-primary-300" />
             </div>
             <h2 className="text-lg font-bold text-gray-900 dark:text-white">
               Backup Opslaan
@@ -88,7 +88,7 @@ export const BackupNameModal: React.FC<BackupNameModalProps> = ({
               type="text"
               value={filename}
               onChange={(e) => setFilename(e.target.value)}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               placeholder={defaultFilename}
             />
             <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
@@ -107,7 +107,7 @@ export const BackupNameModal: React.FC<BackupNameModalProps> = ({
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+              className="flex-1 px-4 py-2.5 bg-primary-700 hover:bg-primary-800 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
             >
               <Download className="w-4 h-4" />
               Opslaan

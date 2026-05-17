@@ -89,8 +89,8 @@ export const StockRow: React.FC<StockRowProps> = ({
         {/* Icon */}
         <div className={`w-8 h-8 rounded flex items-center justify-center flex-shrink-0 ${
           position.type === 'stock'
-            ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-            : 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400'
+            ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+            : 'bg-surface-muted dark:bg-trading-dark-600 text-ink-600 dark:text-ink-300'
         }`}>
           {position.type === 'stock' ? (
             <TrendingUp className="w-4 h-4" />
@@ -105,13 +105,13 @@ export const StockRow: React.FC<StockRowProps> = ({
             <h4 className="text-sm font-bold text-gray-900 dark:text-white">
               {position.shares}x {position.ticker}
             </h4>
-            <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
+            <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
               LONG
             </span>
             <span className={`px-1.5 py-0.5 text-[10px] font-semibold rounded ${
               position.type === 'stock'
-                ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
-                : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400'
+                ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                : 'bg-surface-muted dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300'
             }`}>
               {position.type === 'stock' ? 'AANDEEL' : 'ETF'}
             </span>
@@ -123,19 +123,19 @@ export const StockRow: React.FC<StockRowProps> = ({
                   onMouseLeave={() => setShowTooltip(false)}
                 >
                   <Target
-                    className="w-3.5 h-3.5 text-green-600 dark:text-green-400 cursor-help"
+                    className="w-3.5 h-3.5 text-positive-600 dark:text-positive-500 cursor-help"
                   />
                 </div>
                 {showTooltip && createPortal(
                   <div
-                    className="fixed w-64 p-3 bg-white dark:bg-gray-800 border-2 border-green-200 dark:border-green-800 rounded-lg shadow-xl z-[9999]"
+                    className="fixed w-64 p-3 bg-white dark:bg-gray-800 border-2 border-positive-500/20 dark:border-positive-700/30 rounded-lg shadow-xl z-[9999]"
                     style={{ top: tooltipPosition.top, left: tooltipPosition.left }}
                     onMouseEnter={() => setShowTooltip(true)}
                     onMouseLeave={() => setShowTooltip(false)}
                   >
-                    <div className="absolute -top-1.5 left-3 w-3 h-3 bg-white dark:bg-gray-800 border-l border-t border-green-200 dark:border-green-800 transform rotate-45"></div>
+                    <div className="absolute -top-1.5 left-3 w-3 h-3 bg-white dark:bg-gray-800 border-l border-t border-positive-500/20 dark:border-positive-700/30 transform rotate-45"></div>
                     <div className="flex items-start gap-2">
-                      <Target className="w-4 h-4 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+                      <Target className="w-4 h-4 text-positive-600 dark:text-positive-500 flex-shrink-0 mt-0.5" />
                       <div>
                         <p className="font-semibold text-sm text-gray-900 dark:text-white mb-1">Opportunity</p>
                         <p className="text-xs text-gray-600 dark:text-gray-300 whitespace-pre-line">{tooltipMessage}</p>
@@ -172,7 +172,7 @@ export const StockRow: React.FC<StockRowProps> = ({
           {currentPrice ? (
             <p className={`text-sm font-medium ${
               currentPrice < purchasePricePerShare
-                ? 'text-red-600 dark:text-red-400'
+                ? 'text-negative-600 dark:text-negative-500'
                 : 'text-gray-900 dark:text-white'
             }`}>
               {currentPrice > purchasePricePerShare ? '+' : ''}{formatCurrency(currentPrice - purchasePricePerShare, currencySymbol)}
@@ -206,18 +206,18 @@ export const StockRow: React.FC<StockRowProps> = ({
         <div>
           <p className={`text-sm font-medium ${
             profitLoss > 0
-              ? 'text-green-600 dark:text-green-400'
+              ? 'text-positive-600 dark:text-positive-500'
               : profitLoss < 0
-              ? 'text-red-600 dark:text-red-400'
+              ? 'text-negative-600 dark:text-negative-500'
               : 'text-gray-900 dark:text-white'
           }`}>
             {profitLoss > 0 ? '+' : ''}{formatCurrency(profitLoss, currencySymbol)}
           </p>
           <p className={`text-xs ${
             profitLossPercentage > 0
-              ? 'text-green-600 dark:text-green-400'
+              ? 'text-positive-600 dark:text-positive-500'
               : profitLossPercentage < 0
-              ? 'text-red-600 dark:text-red-400'
+              ? 'text-negative-600 dark:text-negative-500'
               : 'text-gray-500 dark:text-gray-400'
           }`}>
             {profitLossPercentage > 0 ? '+' : ''}{formatNumber(profitLossPercentage)}%

@@ -45,24 +45,24 @@ export const WebSocketConnectionStatus: React.FC<WebSocketConnectionStatusProps>
       case 'connected':
         return {
           icon: Wifi,
-          color: 'text-green-600 dark:text-green-400',
-          bgColor: 'bg-green-100 dark:bg-green-900/30',
+          color: 'text-positive-600 dark:text-positive-500',
+          bgColor: 'bg-positive-50 dark:bg-positive-700/25',
           label: 'Connected',
           pulse: false,
         };
       case 'connecting':
         return {
           icon: RefreshCw,
-          color: 'text-blue-600 dark:text-blue-400',
-          bgColor: 'bg-blue-100 dark:bg-blue-900/30',
+          color: 'text-primary-700 dark:text-primary-300',
+          bgColor: 'bg-primary-50 dark:bg-primary-900/30',
           label: 'Connecting...',
           pulse: true,
         };
       case 'error':
         return {
           icon: AlertCircle,
-          color: 'text-red-600 dark:text-red-400',
-          bgColor: 'bg-red-100 dark:bg-red-900/30',
+          color: 'text-negative-600 dark:text-negative-500',
+          bgColor: 'bg-negative-50 dark:bg-negative-700/25',
           label: 'Error',
           pulse: false,
         };
@@ -99,7 +99,7 @@ export const WebSocketConnectionStatus: React.FC<WebSocketConnectionStatusProps>
             status === 'disconnected' || status === 'error'
               ? 'cursor-pointer hover:scale-110 hover:shadow-md ring-2 ring-yellow-500 ring-offset-2'
               : status === 'connected'
-              ? 'cursor-pointer hover:bg-green-200 dark:hover:bg-green-800/50'
+              ? 'cursor-pointer hover:bg-positive-50 dark:hover:bg-positive-700/50'
               : ''
           }`}
           disabled={isRetrying || status === 'connecting'}
@@ -112,19 +112,19 @@ export const WebSocketConnectionStatus: React.FC<WebSocketConnectionStatusProps>
 
         {/* Tooltip with invisible bridge to prevent gap */}
         <div className="absolute right-0 top-full hidden group-hover:block w-64 pt-1 z-50">
-          <div className="bg-gray-50 dark:bg-gray-50 text-gray-900 text-xs rounded-lg shadow-lg border-2 border-blue-900 overflow-hidden p-3">
+          <div className="bg-gray-50 dark:bg-gray-50 text-gray-900 text-xs rounded-lg shadow-lg border-2 border-primary-900 overflow-hidden p-3">
             <p className="font-bold mb-1 text-gray-900">Price WebSocket</p>
             <p className={`${
-              status === 'connected' ? 'text-green-600' :
-              status === 'connecting' ? 'text-blue-600' :
-              status === 'error' ? 'text-red-600' :
+              status === 'connected' ? 'text-positive-600' :
+              status === 'connecting' ? 'text-primary-700' :
+              status === 'error' ? 'text-negative-600' :
               'text-gray-600'
             } font-semibold`}>
               {config.label}
             </p>
             {lastError && (
-              <div className="mt-2 p-2 bg-red-100 rounded border border-red-300">
-                <p className="text-red-700 text-xs">{lastError}</p>
+              <div className="mt-2 p-2 bg-negative-50 rounded border border-negative-500/30">
+                <p className="text-negative-700 text-xs">{lastError}</p>
               </div>
             )}
             {lastConnected && status === 'connected' && (
@@ -158,7 +158,7 @@ export const WebSocketConnectionStatus: React.FC<WebSocketConnectionStatusProps>
       {showLabel && (
         <div className="flex-1">
           <p className={`text-sm font-medium ${config.color}`}>{config.label}</p>
-          {lastError && <p className="text-xs text-red-600 dark:text-red-400 mt-0.5">{lastError}</p>}
+          {lastError && <p className="text-xs text-negative-600 dark:text-negative-500 mt-0.5">{lastError}</p>}
           {lastConnected && status === 'connected' && (
             <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
               Last: {new Date(lastConnected).toLocaleTimeString()}
@@ -175,7 +175,7 @@ export const WebSocketConnectionStatus: React.FC<WebSocketConnectionStatusProps>
       {status === 'connected' ? (
         <button
           onClick={handleDisconnect}
-          className="px-3 py-1.5 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors"
+          className="px-3 py-1.5 text-xs font-medium text-white bg-negative-600 hover:bg-negative-700 rounded-md transition-colors"
         >
           Disconnect
         </button>
@@ -183,7 +183,7 @@ export const WebSocketConnectionStatus: React.FC<WebSocketConnectionStatusProps>
         <button
           onClick={handleRetry}
           disabled={isRetrying}
-          className="px-3 py-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-md transition-colors"
+          className="px-3 py-1.5 text-xs font-medium text-white bg-primary-700 hover:bg-primary-800 disabled:opacity-50 rounded-md transition-colors"
         >
           {isRetrying ? 'Connecting...' : 'Connect'}
         </button>

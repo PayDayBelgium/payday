@@ -135,7 +135,7 @@ export const PortfolioValueChart: React.FC<PortfolioValueChartProps> = ({
                 onClick={() => setViewMode('chart')}
                 className={`p-2 rounded-md transition-colors ${
                   viewMode === 'chart'
-                    ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm'
+                    ? 'bg-white dark:bg-gray-600 text-primary-700 dark:text-primary-300 shadow-sm'
                     : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                 }`}
                 title="Grafiek weergave"
@@ -146,7 +146,7 @@ export const PortfolioValueChart: React.FC<PortfolioValueChartProps> = ({
                 onClick={() => setViewMode('table')}
                 className={`p-2 rounded-md transition-colors ${
                   viewMode === 'table'
-                    ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm'
+                    ? 'bg-white dark:bg-gray-600 text-primary-700 dark:text-primary-300 shadow-sm'
                     : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                 }`}
                 title="Tabel weergave"
@@ -159,7 +159,7 @@ export const PortfolioValueChart: React.FC<PortfolioValueChartProps> = ({
               onClick={handleCopyToClipboard}
               className={`p-2 rounded-lg transition-colors ${
                 copied
-                  ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
+                  ? 'bg-positive-50 dark:bg-positive-700/25 text-positive-600 dark:text-positive-500'
                   : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
               }`}
               title={copied ? 'Gekopieerd!' : 'Kopieer naar clipboard (Excel)'}
@@ -250,8 +250,8 @@ export const PortfolioValueChart: React.FC<PortfolioValueChartProps> = ({
                   </td>
                   <td className={`px-6 py-3 whitespace-nowrap text-sm text-right font-medium ${
                     row.dailyPnL >= 0
-                      ? 'text-green-600 dark:text-green-400'
-                      : 'text-red-600 dark:text-red-400'
+                      ? 'text-positive-600 dark:text-positive-500'
+                      : 'text-negative-600 dark:text-negative-500'
                   }`}>
                     {row.dailyPnL >= 0 ? '+' : ''}{formatCurrency(row.dailyPnL, currencySymbol)}
                   </td>

@@ -107,7 +107,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                 onClick={() => setTransactionType('deposit')}
                 className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
                   transactionType === 'deposit'
-                    ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
+                    ? 'border-positive-500 bg-positive-50 dark:bg-positive-700/15 text-positive-700 dark:text-positive-500'
                     : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
                 }`}
               >
@@ -120,7 +120,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                 onClick={() => setTransactionType('withdrawal')}
                 className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
                   transactionType === 'withdrawal'
-                    ? 'border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400'
+                    ? 'border-negative-500 bg-negative-50 dark:bg-negative-700/15 text-negative-700 dark:text-negative-500'
                     : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
                 }`}
               >
@@ -133,7 +133,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                 onClick={() => setTransactionType('adjustment')}
                 className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
                   transactionType === 'adjustment'
-                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400'
+                    ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300'
                     : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
                 }`}
               >
@@ -157,7 +157,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                 onChange={setAmount}
                 min={0}
                 placeholder="0"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 required
               />
             </div>
@@ -178,7 +178,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
               value={date}
               onChange={(e) => setDate(e.target.value)}
               max={new Date().toISOString().split('T')[0]}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               required
             />
           </div>
@@ -192,34 +192,34 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               placeholder="Bijv.: Maandelijkse storting, Koersaanpassing, etc."
             />
           </div>
 
           {/* Preview */}
           {amount > 0 && (
-            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
-              <p className="text-sm font-medium text-blue-900 dark:text-blue-300 mb-2">
+            <div className="bg-primary-50 dark:bg-primary-900/20 rounded-lg p-4 border border-primary-200 dark:border-primary-800">
+              <p className="text-sm font-medium text-primary-900 dark:text-primary-300 mb-2">
                 Preview
               </p>
               <div className="space-y-1 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-blue-700 dark:text-blue-400">Huidige waarde:</span>
-                  <span className="font-medium text-blue-900 dark:text-blue-300">
+                  <span className="text-primary-700 dark:text-primary-300">Huidige waarde:</span>
+                  <span className="font-medium text-primary-900 dark:text-primary-300">
                     {formatCurrency(portfolio.currentValue, currencySymbol)}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-blue-700 dark:text-blue-400">
+                  <span className="text-primary-700 dark:text-primary-300">
                     {transactionType === 'deposit' && 'Storting:'}
                     {transactionType === 'withdrawal' && 'Opname:'}
                     {transactionType === 'adjustment' && 'Aanpassing:'}
                   </span>
                   <span className={`font-medium ${
                     (transactionType === 'deposit') || (transactionType === 'adjustment' && amount > portfolio.currentValue)
-                      ? 'text-green-600 dark:text-green-400'
-                      : 'text-red-600 dark:text-red-400'
+                      ? 'text-positive-600 dark:text-positive-500'
+                      : 'text-negative-600 dark:text-negative-500'
                   }`}>
                     {transactionType === 'adjustment'
                       ? (amount > portfolio.currentValue ? '+' : '') + formatCurrency(amount - portfolio.currentValue, currencySymbol)
@@ -227,9 +227,9 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                     }
                   </span>
                 </div>
-                <div className="flex justify-between pt-2 border-t border-blue-300 dark:border-blue-700">
-                  <span className="font-semibold text-blue-900 dark:text-blue-200">Nieuwe waarde:</span>
-                  <span className="font-bold text-blue-900 dark:text-blue-200">
+                <div className="flex justify-between pt-2 border-t border-primary-300 dark:border-primary-700">
+                  <span className="font-semibold text-primary-900 dark:text-primary-200">Nieuwe waarde:</span>
+                  <span className="font-bold text-primary-900 dark:text-primary-200">
                     {formatCurrency(
                       transactionType === 'adjustment'
                         ? amount
@@ -253,7 +253,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+              className="flex-1 px-4 py-2.5 bg-primary-700 hover:bg-primary-800 text-white rounded-lg font-medium transition-colors"
             >
               Opslaan
             </button>

@@ -66,7 +66,7 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
     <div
       onClick={onEdit ? () => onEdit(position) : onCardClick}
       className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-5 hover:shadow-md transition-all ${
-        onEdit || onCardClick ? 'cursor-pointer hover:border-blue-400 dark:hover:border-blue-500' : ''
+        onEdit || onCardClick ? 'cursor-pointer hover:border-primary-400 dark:hover:border-primary-500' : ''
       }`}
     >
       {/* Header with P&L on the right */}
@@ -77,8 +77,8 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
             <span
               className={`px-2 py-0.5 rounded text-xs font-medium ${
                 position.type === 'etf'
-                  ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400'
-                  : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
+                  ? 'bg-surface-muted dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300'
+                  : 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
               }`}
             >
               {position.type === 'etf' ? 'ETF' : 'Stock'}
@@ -93,14 +93,14 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
         <div className="text-right">
           <p
             className={`text-lg font-bold ${
-              isProfit ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+              isProfit ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'
             }`}
           >
             {isProfit ? '+' : ''}{formatCurrency(Math.abs(profitLoss), allPortfolios)}
           </p>
           <p
             className={`text-sm font-medium ${
-              isProfit ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+              isProfit ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'
             }`}
           >
             {isProfit ? '+' : ''}{formatNumber(profitLossPercentage, 2)}%
@@ -141,7 +141,7 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
           {/* Price Alerts Indicator */}
           {unreadAlerts.length > 0 && (
             <div
-              className="flex items-center gap-1 px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-full text-xs font-medium"
+              className="flex items-center gap-1 px-2 py-1 bg-negative-50 dark:bg-negative-700/25 text-negative-700 dark:text-negative-500 rounded-full text-xs font-medium"
               title="Prijs waarschuwingen - De prijs is significant veranderd"
             >
               <AlertCircle className="w-3.5 h-3.5" />
@@ -152,7 +152,7 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
           {/* Rule-based Alerts */}
           {ruleAlerts.length > 0 && (
             <div
-              className="flex items-center gap-1 px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-full text-xs font-medium"
+              className="flex items-center gap-1 px-2 py-1 bg-caution-50 dark:bg-caution-600/25 text-caution-600 dark:text-caution-500 rounded-full text-xs font-medium"
               title="Waarschuwingen - Regels die aandacht vereisen"
             >
               <AlertCircle className="w-3.5 h-3.5" />
@@ -163,7 +163,7 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
           {/* Rule-based Opportunities */}
           {ruleOpportunities.length > 0 && (
             <div
-              className="flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-xs font-medium"
+              className="flex items-center gap-1 px-2 py-1 bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 rounded-full text-xs font-medium"
               title="Kansen - Mogelijkheden om te handelen"
             >
               <Target className="w-3.5 h-3.5" />
@@ -174,7 +174,7 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
           {/* Covered Call Opportunity Badge */}
           {canWriteCoveredCalls && (
             <div
-              className="flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-xs font-medium"
+              className="flex items-center gap-1 px-2 py-1 bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 rounded-full text-xs font-medium"
               title="Covered Calls mogelijk - Voldoende aandelen om covered calls te schrijven"
             >
               <CheckCircle className="w-3.5 h-3.5" />
@@ -191,10 +191,10 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
           {unreadAlerts.slice(0, 2).map((alert) => (
             <div
               key={alert.id}
-              className="flex items-start gap-2 p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded text-xs"
+              className="flex items-start gap-2 p-2 bg-negative-50 dark:bg-negative-700/15 border border-negative-500/20 dark:border-negative-700/30 rounded text-xs"
             >
-              <AlertCircle className="w-3.5 h-3.5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
-              <p className="text-red-800 dark:text-red-200 flex-1">{alert.message}</p>
+              <AlertCircle className="w-3.5 h-3.5 text-negative-600 dark:text-negative-500 mt-0.5 flex-shrink-0" />
+              <p className="text-negative-700 dark:text-negative-500 flex-1">{alert.message}</p>
             </div>
           ))}
 
@@ -203,17 +203,17 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
             const isAlert = alert.category === 'alert';
             const Icon = isAlert ? AlertCircle : Target;
             const bgColor = isAlert
-              ? 'bg-amber-50 dark:bg-amber-900/20'
-              : 'bg-green-50 dark:bg-green-900/20';
+              ? 'bg-caution-50 dark:bg-caution-600/15'
+              : 'bg-positive-50 dark:bg-positive-700/15';
             const borderColor = isAlert
-              ? 'border-amber-200 dark:border-amber-800'
-              : 'border-green-200 dark:border-green-800';
+              ? 'border-caution-500/30 dark:border-caution-600/40'
+              : 'border-positive-500/20 dark:border-positive-700/30';
             const iconColor = isAlert
-              ? 'text-amber-600 dark:text-amber-400'
-              : 'text-green-600 dark:text-green-400';
+              ? 'text-caution-600 dark:text-caution-500'
+              : 'text-positive-600 dark:text-positive-500';
             const textColor = isAlert
-              ? 'text-amber-800 dark:text-amber-200'
-              : 'text-green-800 dark:text-green-200';
+              ? 'text-caution-600 dark:text-amber-200'
+              : 'text-positive-700 dark:text-positive-500';
 
             return (
               <div

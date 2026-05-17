@@ -79,7 +79,7 @@ const LayoutContent: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50 dark:bg-slate-900">
+    <div className="flex min-h-screen bg-surface dark:bg-trading-dark-900">
       <Header
         pageTitle={pageTitle}
         pageDescription={pageDescription}
@@ -97,7 +97,7 @@ const LayoutContent: React.FC = () => {
         isCollapsed={isSidebarCollapsed}
         onToggleCollapse={toggleSidebar}
       />
-      <main className={`flex-1 ${isSidebarCollapsed ? 'ml-16' : 'ml-64'} mt-16 p-6 bg-gray-50 dark:bg-slate-900 transition-all duration-300`}>
+      <main className={`flex-1 ${isSidebarCollapsed ? 'ml-16' : 'ml-64'} mt-16 p-6 bg-surface dark:bg-trading-dark-900 transition-all duration-300`}>
         <Outlet />
       </main>
 

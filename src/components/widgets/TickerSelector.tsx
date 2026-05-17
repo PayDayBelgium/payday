@@ -150,7 +150,7 @@ export const TickerSelector: React.FC<TickerSelectorProps> = ({
             }
           }}
           onKeyDown={handleKeyDown}
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           placeholder={placeholder}
         />
       </div>
@@ -181,8 +181,8 @@ export const TickerSelector: React.FC<TickerSelectorProps> = ({
                     <div
                       className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                         ticker.type === 'stock'
-                          ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-                          : 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
+                          ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                          : 'bg-positive-50 dark:bg-positive-700/25 text-positive-600 dark:text-positive-500'
                       }`}
                     >
                       {ticker.type === 'stock' ? (
@@ -199,8 +199,8 @@ export const TickerSelector: React.FC<TickerSelectorProps> = ({
                         <span
                           className={`text-xs px-2 py-0.5 rounded ${
                             ticker.type === 'stock'
-                              ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
-                              : 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                              ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                              : 'bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500'
                           }`}
                         >
                           {ticker.type === 'stock' ? 'Aandeel' : 'ETF'}
@@ -224,17 +224,17 @@ export const TickerSelector: React.FC<TickerSelectorProps> = ({
               {showCreateNew && onCreateNew && (
                 <button
                   onClick={handleCreateNew}
-                  className={`w-full px-4 py-3 flex items-center gap-3 border-t border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors ${
+                  className={`w-full px-4 py-3 flex items-center gap-3 border-t border-gray-200 dark:border-gray-700 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors ${
                     highlightedIndex === filteredTickers.length
-                      ? 'bg-blue-50 dark:bg-blue-900/20'
+                      ? 'bg-primary-50 dark:bg-primary-900/20'
                       : ''
                   }`}
                 >
-                  <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-lg bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 flex items-center justify-center">
                     <Plus className="w-5 h-5" />
                   </div>
                   <div className="flex-1 text-left">
-                    <span className="font-semibold text-blue-600 dark:text-blue-400">
+                    <span className="font-semibold text-primary-700 dark:text-primary-300">
                       Nieuwe ticker toevoegen: {searchTerm.toUpperCase()}
                     </span>
                     <p className="text-sm text-gray-600 dark:text-gray-400">

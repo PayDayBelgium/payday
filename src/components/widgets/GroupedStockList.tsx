@@ -207,7 +207,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Zoek ticker..."
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
         />
       </div>
 
@@ -263,15 +263,15 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                           <span
                             className={`px-2 py-0.5 rounded text-xs font-medium ${
                               group.type === 'etf'
-                                ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400'
-                                : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
+                                ? 'bg-surface-muted dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300'
+                                : 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
                             }`}
                           >
                             {group.type === 'etf' ? 'ETF' : 'Stock'}
                           </span>
                           {hasUnreadAlerts && (
                             <div
-                              className="flex items-center gap-1 px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-full text-xs font-medium"
+                              className="flex items-center gap-1 px-2 py-1 bg-negative-50 dark:bg-negative-700/25 text-negative-700 dark:text-negative-500 rounded-full text-xs font-medium"
                               title="Prijs waarschuwingen - De prijs is significant veranderd"
                             >
                               <AlertCircle className="w-3.5 h-3.5" />
@@ -280,7 +280,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                           )}
                           {ruleAlerts.length > 0 && (
                             <div
-                              className="flex items-center gap-1 px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-full text-xs font-medium"
+                              className="flex items-center gap-1 px-2 py-1 bg-caution-50 dark:bg-caution-600/25 text-caution-600 dark:text-caution-500 rounded-full text-xs font-medium"
                               title="Waarschuwingen - Regels die aandacht vereisen"
                             >
                               <AlertCircle className="w-3.5 h-3.5" />
@@ -289,7 +289,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                           )}
                           {ruleOpportunities.length > 0 && (
                             <div
-                              className="flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-xs font-medium"
+                              className="flex items-center gap-1 px-2 py-1 bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 rounded-full text-xs font-medium"
                               title="Kansen - Mogelijkheden om te handelen"
                             >
                               <Target className="w-3.5 h-3.5" />
@@ -298,7 +298,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                           )}
                           {canWriteCoveredCalls && (
                             <div
-                              className="flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-xs font-medium"
+                              className="flex items-center gap-1 px-2 py-1 bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 rounded-full text-xs font-medium"
                               title="Covered Calls mogelijk - Voldoende aandelen om covered calls te schrijven"
                             >
                               <CheckCircle className="w-3.5 h-3.5" />
@@ -338,14 +338,14 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                                   onChange={(e) => setEditPrice(e.target.value)}
                                   onKeyDown={(e) => handlePriceKeyDown(group.ticker, e)}
                                   onBlur={(e) => savePrice(group.ticker, e as any)}
-                                  className="w-full px-2 py-1 text-sm font-bold border-2 border-blue-500 dark:border-blue-400 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                  className="w-full px-2 py-1 text-sm font-bold border-2 border-primary-500 dark:border-primary-400 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
                                   autoFocus
                                 />
                               </div>
                             ) : (
                               <p
                                 onClick={(e) => startEditingPrice(group.ticker, group.positions[0].currentPrice, e)}
-                                className="text-gray-900 dark:text-white font-bold text-base cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                className="text-gray-900 dark:text-white font-bold text-base cursor-pointer hover:text-primary-700 dark:hover:text-primary-500 transition-colors"
                               >
                                 {formatCurrency(group.positions[0].currentPrice, allPortfolios)}
                               </p>
@@ -366,14 +366,14 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                     <div className="text-center flex-shrink-0">
                       <p
                         className={`text-2xl font-bold ${
-                          isProfit ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                          isProfit ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'
                         }`}
                       >
                         {isProfit ? '+' : ''}{formatCurrency(Math.abs(group.profitLoss), allPortfolios)}
                       </p>
                       <p
                         className={`text-sm font-medium ${
-                          isProfit ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                          isProfit ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'
                         }`}
                       >
                         {isProfit ? '+' : ''}{formatNumber(group.profitLossPercentage, 2)}%
@@ -426,13 +426,13 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                                     {(positionAlerts.length > 0 || positionStrategyAlerts.length > 0) && (
                                       <div className="flex flex-col gap-0.5">
                                         {positionAlerts.some(a => !a.category || a.category === 'alert') && (
-                                          <AlertCircle className="w-3.5 h-3.5 text-red-600 dark:text-red-400" />
+                                          <AlertCircle className="w-3.5 h-3.5 text-negative-600 dark:text-negative-500" />
                                         )}
                                         {positionStrategyAlerts.some(a => a.category === 'alert') && (
-                                          <AlertCircle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                                          <AlertCircle className="w-3.5 h-3.5 text-caution-600 dark:text-caution-500" />
                                         )}
                                         {(positionAlerts.some(a => a.category === 'opportunity') || positionStrategyAlerts.some(a => a.category === 'opportunity')) && (
-                                          <Target className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
+                                          <Target className="w-3.5 h-3.5 text-positive-600 dark:text-positive-500" />
                                         )}
                                       </div>
                                     )}
@@ -477,14 +477,14 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                                 <div className="flex-shrink-0 text-right" style={{ width: '180px' }}>
                                   <p
                                     className={`text-lg font-bold ${
-                                      isPosProfit ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                                      isPosProfit ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'
                                     }`}
                                   >
                                     {isPosProfit ? '+' : ''}{formatCurrency(Math.abs(posProfit), allPortfolios)}
                                   </p>
                                   <p
                                     className={`text-xs font-medium ${
-                                      isPosProfit ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                                      isPosProfit ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'
                                     }`}
                                   >
                                     {isPosProfit ? '+' : ''}{formatNumber(posProfitPct, 2)}%
@@ -500,14 +500,14 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                                 {positionAlerts.map((alert) => {
                                   const isOpportunity = alert.category === 'opportunity';
                                   const bgColor = isOpportunity
-                                    ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-                                    : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800';
+                                    ? 'bg-positive-50 dark:bg-positive-700/15 border-positive-500/20 dark:border-positive-700/30'
+                                    : 'bg-negative-50 dark:bg-negative-700/15 border-negative-500/20 dark:border-negative-700/30';
                                   const iconColor = isOpportunity
-                                    ? 'text-green-600 dark:text-green-400'
-                                    : 'text-red-600 dark:text-red-400';
+                                    ? 'text-positive-600 dark:text-positive-500'
+                                    : 'text-negative-600 dark:text-negative-500';
                                   const textColor = isOpportunity
-                                    ? 'text-green-800 dark:text-green-200'
-                                    : 'text-red-800 dark:text-red-200';
+                                    ? 'text-positive-700 dark:text-positive-500'
+                                    : 'text-negative-700 dark:text-negative-500';
 
                                   return (
                                     <div
@@ -539,14 +539,14 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                                   const isAlert = alert.category === 'alert';
                                   const Icon = isAlert ? AlertCircle : Target;
                                   const bgColor = isAlert
-                                    ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800'
-                                    : 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800';
+                                    ? 'bg-caution-50 dark:bg-caution-600/15 border-caution-500/30 dark:border-caution-600/40'
+                                    : 'bg-positive-50 dark:bg-positive-700/15 border-positive-500/20 dark:border-positive-700/30';
                                   const iconColor = isAlert
-                                    ? 'text-amber-600 dark:text-amber-400'
-                                    : 'text-green-600 dark:text-green-400';
+                                    ? 'text-caution-600 dark:text-caution-500'
+                                    : 'text-positive-600 dark:text-positive-500';
                                   const textColor = isAlert
-                                    ? 'text-amber-800 dark:text-amber-200'
-                                    : 'text-green-800 dark:text-green-200';
+                                    ? 'text-caution-600 dark:text-amber-200'
+                                    : 'text-positive-700 dark:text-positive-500';
 
                                   return (
                                     <div
@@ -578,20 +578,20 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
 
                 {/* Alerts Display */}
                 {hasUnreadAlerts && !isExpanded && (
-                  <div className="border-t border-gray-200 dark:border-gray-700 p-3 bg-red-50 dark:bg-red-900/20">
+                  <div className="border-t border-gray-200 dark:border-gray-700 p-3 bg-negative-50 dark:bg-negative-700/15">
                     <div className="space-y-2">
                       {group.alerts.slice(0, 2).map((alert) => {
                         // Fallback to 'alert' if category is not set (for backwards compatibility)
                         const isOpportunity = alert.category === 'opportunity';
                         const bgColor = isOpportunity
-                          ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-                          : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800';
+                          ? 'bg-positive-50 dark:bg-positive-700/15 border-positive-500/20 dark:border-positive-700/30'
+                          : 'bg-negative-50 dark:bg-negative-700/15 border-negative-500/20 dark:border-negative-700/30';
                         const iconColor = isOpportunity
-                          ? 'text-green-600 dark:text-green-400'
-                          : 'text-red-600 dark:text-red-400';
+                          ? 'text-positive-600 dark:text-positive-500'
+                          : 'text-negative-600 dark:text-negative-500';
                         const textColor = isOpportunity
-                          ? 'text-green-800 dark:text-green-200'
-                          : 'text-red-800 dark:text-red-200';
+                          ? 'text-positive-700 dark:text-positive-500'
+                          : 'text-negative-700 dark:text-negative-500';
 
                         return (
                           <div

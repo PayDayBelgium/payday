@@ -45,7 +45,7 @@ export const AdminLogin: React.FC = () => {
             <img src={logo} alt="PayDay" className="h-16 w-auto" />
           </div>
           <div className="flex items-center justify-center gap-2 mb-2">
-            <Shield className="w-6 h-6 text-blue-500" />
+            <Shield className="w-6 h-6 text-primary-600" />
             <h1 className="text-2xl font-bold text-white">Admin Portal</h1>
           </div>
           <p className="text-gray-400 text-sm">Sign in to manage users</p>
@@ -66,7 +66,7 @@ export const AdminLogin: React.FC = () => {
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   placeholder="Enter admin username"
                   required
                   autoFocus
@@ -86,7 +86,7 @@ export const AdminLogin: React.FC = () => {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   placeholder="Enter admin password"
                   required
                 />
@@ -95,15 +95,15 @@ export const AdminLogin: React.FC = () => {
 
             {/* Error Message */}
             {error && (
-              <div className="bg-red-900/20 border border-red-500 rounded-lg p-3">
-                <p className="text-red-400 text-sm">{error}</p>
+              <div className="bg-negative-700/20 border border-negative-500 rounded-lg p-3">
+                <p className="text-negative-500 text-sm">{error}</p>
               </div>
             )}
 
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
+              className="w-full bg-primary-700 hover:bg-primary-800 text-white font-medium py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
             >
               <Shield className="w-5 h-5" />
               Sign In

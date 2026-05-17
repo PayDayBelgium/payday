@@ -1,0 +1,29 @@
+- generic [ref=e3]:
+  - generic:
+    - img
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - img "PayDay" [ref=e6]
+      - generic [ref=e7]:
+        - paragraph [ref=e8]: PayDay
+        - paragraph [ref=e9]: Trading Workspace
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - paragraph [ref=e12]: Sign in
+        - heading "Welcome back" [level=1] [ref=e13]
+        - paragraph [ref=e14]: Sign in to continue with your portfolios.
+      - generic [ref=e15]:
+        - generic [ref=e16]:
+          - generic [ref=e17]: Username
+          - textbox "Username" [ref=e18]
+        - generic [ref=e19]:
+          - generic [ref=e20]: Password
+          - textbox "Password" [ref=e21]
+        - generic [ref=e22]:
+          - generic [ref=e23]: Language
+          - combobox "Language" [ref=e24]:
+            - option "English" [selected]
+            - option "Nederlands"
+            - option "Français"
+        - button "Sign in" [ref=e25] [cursor=pointer]
+    - paragraph [ref=e26]: Member-only · Confidential

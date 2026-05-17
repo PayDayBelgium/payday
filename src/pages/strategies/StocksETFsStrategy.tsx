@@ -231,13 +231,13 @@ export const StocksETFsStrategy: React.FC = () => {
             onClick={() => setActiveTab('positions')}
             className={`px-4 py-2 font-medium transition-colors flex items-center gap-2 ${
               activeTab === 'positions'
-                ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
+                ? 'text-primary-700 dark:text-primary-300 border-b-2 border-primary-700 dark:border-primary-400'
                 : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
             }`}
           >
             Posities
             {totalPositions > 0 && (
-              <span className="px-2 py-0.5 rounded-full text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
+              <span className="px-2 py-0.5 rounded-full text-xs bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
                 {totalPositions}
               </span>
             )}
@@ -246,14 +246,14 @@ export const StocksETFsStrategy: React.FC = () => {
             onClick={() => setActiveTab('rules')}
             className={`px-4 py-2 font-medium transition-colors flex items-center gap-2 ${
               activeTab === 'rules'
-                ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
+                ? 'text-primary-700 dark:text-primary-300 border-b-2 border-primary-700 dark:border-primary-400'
                 : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
             }`}
           >
             <ListTodo className="w-4 h-4" />
             Regels
             {strategyRules.length > 0 && (
-              <span className="px-2 py-0.5 rounded-full text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
+              <span className="px-2 py-0.5 rounded-full text-xs bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
                 {strategyRules.length}
               </span>
             )}
@@ -262,7 +262,7 @@ export const StocksETFsStrategy: React.FC = () => {
             onClick={() => setActiveTab('info')}
             className={`px-4 py-2 font-medium transition-colors flex items-center gap-2 ${
               activeTab === 'info'
-                ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
+                ? 'text-primary-700 dark:text-primary-300 border-b-2 border-primary-700 dark:border-primary-400'
                 : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
             }`}
           >
@@ -273,7 +273,7 @@ export const StocksETFsStrategy: React.FC = () => {
         {(activeTab === 'positions' || activeTab === 'rules') && (
           <button
             onClick={() => activeTab === 'positions' ? setIsModalOpen(true) : handleAddRule()}
-            className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 bg-primary-700 hover:bg-primary-800 text-white rounded-lg text-sm font-medium transition-colors"
           >
             <Plus className="w-4 h-4" />
             {activeTab === 'positions' ? 'Aandeel/ETF Toevoegen' : 'Regel Toevoegen'}
@@ -288,7 +288,7 @@ export const StocksETFsStrategy: React.FC = () => {
           <div className={`grid grid-cols-1 gap-4 ${currentPortfolio?.hasOptions ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}>
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
               <p className="text-sm text-gray-600 dark:text-gray-400">Totale Waarde</p>
-              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">
+              <p className="text-2xl font-bold text-primary-700 dark:text-primary-300 mt-1">
                 {formatCurrency(totalValue, allPortfolios)}
               </p>
             </div>
@@ -299,7 +299,7 @@ export const StocksETFsStrategy: React.FC = () => {
             {currentPortfolio?.hasOptions && (
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <p className="text-sm text-gray-600 dark:text-gray-400">Beschikbaar voor Covered Calls</p>
-                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">{availableForCC}</p>
+                <p className="text-2xl font-bold text-primary-700 dark:text-primary-300 mt-1">{availableForCC}</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Niet gedekt met calls</p>
               </div>
             )}
@@ -326,7 +326,7 @@ export const StocksETFsStrategy: React.FC = () => {
               </p>
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                className="px-6 py-3 bg-primary-700 hover:bg-primary-800 text-white rounded-lg font-medium transition-colors"
               >
                 Voeg je eerste positie toe
               </button>
@@ -352,9 +352,9 @@ export const StocksETFsStrategy: React.FC = () => {
       {activeTab === 'info' && (
         <div className="space-y-6">
           {/* Education Section */}
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-500/30 rounded-lg p-6">
+          <div className="bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-700/30 rounded-lg p-6">
             <div className="flex items-start gap-3">
-              <Lightbulb className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+              <Lightbulb className="w-5 h-5 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                   Waarom beginnen met Aandelen & ETFs?
@@ -366,13 +366,13 @@ export const StocksETFsStrategy: React.FC = () => {
                 {currentPortfolio?.hasOptions ? (
                   <div className="space-y-2">
                     <div className="flex items-start gap-2">
-                      <ArrowRight className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                      <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                       <p className="text-sm text-gray-700 dark:text-gray-300">
                         <strong>Stap 1:</strong> Begin met sterke, betrouwbare aandelen of ETFs
                       </p>
                     </div>
                     <div className="flex items-start gap-2">
-                      <ArrowRight className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                      <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                       <p className="text-sm text-gray-700 dark:text-gray-300">
                         <strong>Volgende stap:</strong> Verdien extra inkomen door Covered Calls te schrijven op deze aandelen
                       </p>
@@ -381,13 +381,13 @@ export const StocksETFsStrategy: React.FC = () => {
                 ) : (
                   <div className="space-y-2">
                     <div className="flex items-start gap-2">
-                      <ArrowRight className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                      <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                       <p className="text-sm text-gray-700 dark:text-gray-300">
                         <strong>Let op:</strong> Deze portfolio ondersteunt geen opties. Je kunt alleen verdienen via koersstijgingen en eventuele dividenden.
                       </p>
                     </div>
                     <div className="flex items-start gap-2">
-                      <ArrowRight className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                      <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                       <p className="text-sm text-gray-700 dark:text-gray-300">
                         <strong>Strategie:</strong> Focus op kwaliteitsaandelen met groei potentieel en/of dividend uitkeringen
                       </p>
@@ -400,9 +400,9 @@ export const StocksETFsStrategy: React.FC = () => {
 
           {/* Next Steps Section */}
           {currentPortfolio?.hasOptions && (
-            <div className="bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/10 dark:to-green-900/10 border border-blue-200 dark:border-blue-500/30 rounded-lg p-6">
+            <div className="bg-gradient-to-r from-primary-50 to-positive-50 dark:from-blue-900/10 dark:to-green-900/10 border border-primary-200 dark:border-primary-700/30 rounded-lg p-6">
               <div className="flex items-start gap-3 mb-4">
-                <GraduationCap className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                <GraduationCap className="w-5 h-5 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                   Volgende Stappen
                 </h3>
@@ -413,7 +413,7 @@ export const StocksETFsStrategy: React.FC = () => {
                     pushNavigation(`/portfolio/${portfolio}/covered-calls`, 'Covered Calls');
                     navigate(`/portfolio/${portfolio}/covered-calls`);
                   }}
-                  className="w-full text-left p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-500 transition-colors"
+                  className="w-full text-left p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-500 transition-colors"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1 text-left">
@@ -430,7 +430,7 @@ export const StocksETFsStrategy: React.FC = () => {
                     pushNavigation(`/portfolio/${portfolio}/leaps`, 'LEAPS');
                     navigate(`/portfolio/${portfolio}/leaps`);
                   }}
-                  className="w-full text-left p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-500 transition-colors"
+                  className="w-full text-left p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-500 transition-colors"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1 text-left">

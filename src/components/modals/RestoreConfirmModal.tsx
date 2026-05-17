@@ -22,8 +22,8 @@ export const RestoreConfirmModal: React.FC<RestoreConfirmModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
-              <Upload className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+            <div className="p-2 bg-caution-50 dark:bg-caution-600/25 rounded-lg">
+              <Upload className="w-6 h-6 text-caution-600 dark:text-caution-500" />
             </div>
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">
               Herstel backup
@@ -40,9 +40,9 @@ export const RestoreConfirmModal: React.FC<RestoreConfirmModalProps> = ({
         {/* Content */}
         <div className="p-6 space-y-4">
           {/* Warning */}
-          <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-4">
+          <div className="bg-caution-50 dark:bg-caution-600/15 border border-caution-500/30 dark:border-caution-600/40 rounded-lg p-4">
             <div className="flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0" />
+              <AlertTriangle className="w-5 h-5 text-caution-600 dark:text-caution-500 mt-0.5 flex-shrink-0" />
               <div className="flex-1">
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
                   Let op!
@@ -100,7 +100,7 @@ export const RestoreConfirmModal: React.FC<RestoreConfirmModalProps> = ({
           </button>
           <button
             onClick={onConfirm}
-            className="px-6 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-colors shadow-sm hover:shadow-md"
+            className="px-6 py-2 bg-caution-600 hover:bg-caution-600 text-white rounded-lg font-medium transition-colors shadow-sm hover:shadow-md"
           >
             Ja, herstel backup
           </button>

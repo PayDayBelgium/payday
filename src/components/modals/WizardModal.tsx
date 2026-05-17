@@ -139,9 +139,9 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                       <div
                         className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
                           isCompleted
-                            ? 'bg-green-600 text-white'
+                            ? 'bg-positive-600 text-white'
                             : isActive
-                            ? 'bg-blue-600 text-white'
+                            ? 'bg-primary-700 text-white'
                             : 'bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-400'
                         }`}
                       >
@@ -151,9 +151,9 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                         <p
                           className={`text-sm font-medium ${
                             isActive
-                              ? 'text-blue-600 dark:text-blue-400'
+                              ? 'text-primary-700 dark:text-primary-300'
                               : isCompleted
-                              ? 'text-green-600 dark:text-green-400'
+                              ? 'text-positive-600 dark:text-positive-500'
                               : 'text-gray-500 dark:text-gray-400'
                           }`}
                         >
@@ -165,7 +165,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                       <div
                         className={`flex-1 h-0.5 mx-2 ${
                           index < currentStepIndex
-                            ? 'bg-green-600'
+                            ? 'bg-positive-600'
                             : 'bg-gray-300 dark:bg-gray-600'
                         }`}
                       />
@@ -208,7 +208,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
             <button
               onClick={handleNext}
               disabled={!canGoNext}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-primary-700 hover:bg-primary-800 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
             >
               {isLastStep ? completeButtonLabel : 'Volgende'}
               {!isLastStep && <ChevronRight className="w-4 h-4" />}

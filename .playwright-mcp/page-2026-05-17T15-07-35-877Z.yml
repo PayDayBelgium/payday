@@ -1,0 +1,502 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - img "PayDay" [ref=e8]
+          - generic [ref=e9]:
+            - heading "PayDay" [level=1] [ref=e10]
+            - paragraph [ref=e11]: Trading workspace
+        - button "Collapse sidebar" [ref=e12] [cursor=pointer]:
+          - img [ref=e13]
+      - generic [ref=e15]:
+        - button "Click to connect" [ref=e17] [cursor=pointer]:
+          - img [ref=e18]
+        - button "Help Portal" [ref=e25] [cursor=pointer]:
+          - img [ref=e26]
+        - button "D" [ref=e30] [cursor=pointer]
+  - complementary [ref=e31]:
+    - navigation [ref=e32]:
+      - paragraph [ref=e33]: Overzicht
+      - link "Dashboard" [ref=e34] [cursor=pointer]:
+        - /url: /
+        - img [ref=e35]
+        - generic [ref=e40]: Dashboard
+      - link "Jouw Reis" [ref=e41] [cursor=pointer]:
+        - /url: /mission
+        - img [ref=e43]
+        - generic [ref=e45]: Jouw Reis
+      - generic [ref=e46]:
+        - paragraph [ref=e47]: Portefeuilles
+        - link "Lynx Lynx" [ref=e48] [cursor=pointer]:
+          - /url: /portfolio/Lynx
+          - img "Lynx" [ref=e49]
+          - generic [ref=e50]: Lynx
+        - link "FreeStoxx FreeStoxx" [ref=e51] [cursor=pointer]:
+          - /url: /portfolio/FreeStoxx
+          - img "FreeStoxx" [ref=e52]
+          - generic [ref=e53]: FreeStoxx
+        - link "DeGiro DeGiro" [ref=e54] [cursor=pointer]:
+          - /url: /portfolio/DeGiro
+          - img "DeGiro" [ref=e55]
+          - generic [ref=e56]: DeGiro
+        - link "SAXO SAXO" [ref=e57] [cursor=pointer]:
+          - /url: /portfolio/SAXO
+          - img "SAXO" [ref=e58]
+          - generic [ref=e59]: SAXO
+      - generic [ref=e60]:
+        - paragraph [ref=e61]: Tools
+        - link "Ticker overview" [ref=e62] [cursor=pointer]:
+          - /url: /tickers
+          - img [ref=e63]
+          - generic [ref=e66]: Ticker overview
+        - link "Meerwaardebelasting" [ref=e67] [cursor=pointer]:
+          - /url: /tools/capital-gains-tax
+          - img [ref=e68]
+          - generic [ref=e71]: Meerwaardebelasting
+    - paragraph [ref=e73]: PayDay v1.0
+  - main [ref=e74]:
+    - generic [ref=e75]:
+      - generic [ref=e77]:
+        - generic [ref=e78]:
+          - paragraph [ref=e79]: Jouw Reis Â· Curriculum
+          - heading "Van groene piste naar de zwarte top" [level=1] [ref=e80]
+          - paragraph [ref=e81]: Net als een skischool begeleidt PayDay je stap voor stap. Beheers eerst de basis, klim daarna naar premium-inkomen, spreads en uiteindelijk mastery.
+          - generic [ref=e82]:
+            - generic [ref=e83]:
+              - img [ref=e84]
+              - generic [ref=e87]: Niveau Â· Beginner
+            - generic [ref=e88]:
+              - img [ref=e89]
+              - generic [ref=e91]: 0 credits
+        - img [ref=e93]
+      - generic [ref=e98]:
+        - generic [ref=e99]:
+          - generic [ref=e100]:
+            - paragraph [ref=e101]: Route
+            - heading "Jouw progressie op PayDay Mountain" [level=2] [ref=e102]
+          - generic [ref=e103]:
+            - img [ref=e104]
+            - generic [ref=e108]: Live Â· Skilift in bedrijf
+        - img [ref=e110]:
+          - generic [ref=e185]:
+            - generic [ref=e191]: GROEN
+            - generic [ref=e192]:
+              - generic [ref=e193]: Groene piste
+              - generic [ref=e194]: Fundamenten
+          - generic [ref=e197]:
+            - generic [ref=e203]: BLAUW
+            - generic [ref=e204]:
+              - generic [ref=e205]: Blauwe piste
+              - generic [ref=e206]: â€” vergrendeld â€”
+          - generic [ref=e210]:
+            - generic [ref=e216]: ROOD
+            - generic [ref=e217]:
+              - generic [ref=e218]: Rode piste
+              - generic [ref=e219]: â€” vergrendeld â€”
+          - generic [ref=e223]:
+            - generic [ref=e231]: ZWART
+            - generic [ref=e232]:
+              - generic [ref=e233]: Zwarte piste
+              - generic [ref=e234]: â€” vergrendeld â€”
+          - generic [ref=e251]:
+            - generic [ref=e253]: GROEN
+            - generic [ref=e255]: BLAUW
+            - generic [ref=e257]: ROOD
+            - generic [ref=e259]: ZWART
+      - generic [ref=e260]:
+        - paragraph [ref=e261]: Onze missie
+        - heading "Iedereen toegang tot de kracht van opties." [level=2] [ref=e262]
+        - generic [ref=e263]:
+          - paragraph [ref=e264]:
+            - text: "PayDay is opgericht met Ã©Ã©n duidelijke missie:"
+            - strong [ref=e265]: iedereen toegang geven tot de kracht van opties trading
+            - text: ", ongeacht ervaring of achtergrond. Wij geloven dat financiÃ«le educatie de sleutel is tot financiÃ«le vrijheid."
+          - paragraph [ref=e266]: Net zoals een skischool je stap voor stap leert skiÃ«n â€” van de eerste sneeuwploeg op de groene piste tot het carven op de zwarte â€” begeleiden wij je door de wereld van beleggen. Elke strategie wordt uitgelegd, elke tool helpt je groeien.
+        - generic [ref=e267]:
+          - generic [ref=e268]:
+            - img [ref=e270]
+            - heading "Educatie eerst" [level=3] [ref=e273]
+            - paragraph [ref=e274]: Leer de theorie voordat je handelt. Begrip is de basis van succes.
+          - generic [ref=e275]:
+            - img [ref=e277]
+            - heading "Veilig groeien" [level=3] [ref=e279]
+            - paragraph [ref=e280]: Paper trading modus om risico-vrij te oefenen.
+          - generic [ref=e281]:
+            - img [ref=e283]
+            - heading "Stap voor stap" [level=3] [ref=e286]
+            - paragraph [ref=e287]: Ontgrendel nieuwe strategieÃ«n naarmate je vordert.
+      - generic [ref=e288]:
+        - paragraph [ref=e289]: Curriculum
+        - heading "De vier niveaus" [level=2] [ref=e290]
+        - generic [ref=e291]:
+          - generic [ref=e292]:
+            - generic [ref=e293]:
+              - generic [ref=e294]:
+                - generic [ref=e295]: 🟢
+                - generic [ref=e296]:
+                  - heading "Beginner" [level=3] [ref=e297]
+                  - paragraph [ref=e298]: Groene Piste
+              - generic [ref=e299]:
+                - img [ref=e300]
+                - generic [ref=e302]: Ontgrendeld
+            - generic [ref=e303]:
+              - paragraph [ref=e304]: Start je beleggingsreis met aandelen, ETFs en dividenden. Leer de basisprincipes van portfoliobeheer.
+              - generic [ref=e305]:
+                - heading "Features" [level=4] [ref=e306]
+                - generic [ref=e307]:
+                  - generic [ref=e308]: broker setup
+                  - generic [ref=e309]: stocks
+                  - generic [ref=e310]: etfs
+                  - generic [ref=e311]: dividends
+                  - generic [ref=e312]: +2 meer
+              - button "Herstart introductie wizard" [ref=e314] [cursor=pointer]:
+                - img [ref=e315]
+                - text: Herstart introductie wizard
+          - generic [ref=e320]:
+            - generic [ref=e321]:
+              - generic [ref=e322]:
+                - generic [ref=e323]: 🔵
+                - generic [ref=e324]:
+                  - heading "Medior" [level=3] [ref=e325]
+                  - paragraph [ref=e326]: Blauwe Piste
+              - img [ref=e327]
+            - generic [ref=e330]:
+              - paragraph [ref=e331]: Ontdek inkomensstrategieën met covered calls, cash secured puts en de Wheel strategie.
+              - generic [ref=e332]:
+                - heading "Features" [level=4] [ref=e333]
+                - generic [ref=e334]:
+                  - generic [ref=e335]: covered calls
+                  - generic [ref=e336]: cash secured puts
+                  - generic [ref=e337]: wheel strategy
+                  - generic [ref=e338]: options basics
+                  - generic [ref=e339]: +1 meer
+              - generic [ref=e340]:
+                - text: "0"
+                - generic [ref=e341]:
+                  - button "Ontgrendel nu" [ref=e342] [cursor=pointer]:
+                    - img [ref=e343]
+                    - text: Ontgrendel nu
+                  - text: "0"
+          - generic [ref=e345]:
+            - generic [ref=e346]:
+              - generic [ref=e347]:
+                - generic [ref=e348]: 🔴
+                - generic [ref=e349]:
+                  - heading "Senior" [level=3] [ref=e350]
+                  - paragraph [ref=e351]: Rode Piste
+              - img [ref=e352]
+            - generic [ref=e355]:
+              - paragraph [ref=e356]: Beheers geavanceerde strategieën met LEAPS, delta management en PMCC.
+              - generic [ref=e357]:
+                - heading "Features" [level=4] [ref=e358]
+                - generic [ref=e359]:
+                  - generic [ref=e360]: leaps
+                  - generic [ref=e361]: delta management
+                  - generic [ref=e362]: pmcc
+                  - generic [ref=e363]: advanced analytics
+                  - generic [ref=e364]: +1 meer
+              - generic [ref=e365]:
+                - text: "0"
+                - generic [ref=e366]:
+                  - button "Ontgrendel nu" [ref=e367] [cursor=pointer]:
+                    - img [ref=e368]
+                    - text: Ontgrendel nu
+                  - text: "0"
+          - generic [ref=e370]:
+            - generic [ref=e371]:
+              - generic [ref=e372]:
+                - generic [ref=e373]: ⚫
+                - generic [ref=e374]:
+                  - heading "Expert" [level=3] [ref=e375]
+                  - paragraph [ref=e376]: Zwarte Piste
+              - img [ref=e377]
+            - generic [ref=e380]:
+              - paragraph [ref=e381]: Toegang tot alle strategieën inclusief spreads, iron condors, KaChing en AI-assistent.
+              - generic [ref=e382]:
+                - heading "Features" [level=4] [ref=e383]
+                - generic [ref=e384]:
+                  - generic [ref=e385]: spreads
+                  - generic [ref=e386]: iron condors
+                  - generic [ref=e387]: kaching
+                  - generic [ref=e388]: complex strategies
+                  - generic [ref=e389]: +2 meer
+              - generic [ref=e390]:
+                - text: "0"
+                - generic [ref=e391]:
+                  - button "Ontgrendel nu" [ref=e392] [cursor=pointer]:
+                    - img [ref=e393]
+                    - text: Ontgrendel nu
+                  - text: "0"
+      - generic [ref=e395]:
+        - paragraph [ref=e396]: Voortgang
+        - heading "Zo verdien je credits" [level=2] [ref=e397]
+        - generic [ref=e398]:
+          - generic [ref=e399]:
+            - img [ref=e401]
+            - heading "Voltooi lessen" [level=3] [ref=e403]
+            - paragraph [ref=e404]: 10â€“50 credits per les
+          - generic [ref=e405]:
+            - img [ref=e407]
+            - heading "Behaal achievements" [level=3] [ref=e410]
+            - paragraph [ref=e411]: 25â€“100 credits per achievement
+          - generic [ref=e412]:
+            - img [ref=e414]
+            - heading "Dagelijkse streak" [level=3] [ref=e416]
+            - paragraph [ref=e417]: 5 credits per dag
+          - generic [ref=e418]:
+            - img [ref=e420]
+            - heading "Koop credits" [level=3] [ref=e422]
+            - paragraph [ref=e423]: Of ontgrendel direct met â‚¬
+      - generic [ref=e424]:
+        - paragraph [ref=e425]: Leertraject
+        - heading "Gestructureerd onderwijs" [level=2] [ref=e426]
+        - paragraph [ref=e427]: Elke les bouwt voort op de vorige en is afgestemd op jouw niveau.
+        - generic [ref=e428]:
+          - generic [ref=e429]:
+            - button "🟢 Beginner" [ref=e430] [cursor=pointer]:
+              - generic [ref=e431]: 🟢
+              - generic [ref=e432]: Beginner
+            - button "🔵 Medior" [ref=e433] [cursor=pointer]:
+              - generic [ref=e434]: 🔵
+              - generic [ref=e435]: Medior
+              - img [ref=e436]
+            - button "🔴 Senior" [ref=e439] [cursor=pointer]:
+              - generic [ref=e440]: 🔴
+              - generic [ref=e441]: Senior
+              - img [ref=e442]
+            - button "⚫ Expert" [ref=e445] [cursor=pointer]:
+              - generic [ref=e446]: ⚫
+              - generic [ref=e447]: Expert
+              - img [ref=e448]
+          - generic [ref=e451]:
+            - 'button "🏦 Wat is een Broker? Alles over brokers: wat ze doen, hoe je er eentje kiest, en het verschil tussen binnenlandse en buitenlandse brokers. 20 min 3 lessen" [ref=e453] [cursor=pointer]':
+              - generic [ref=e454]: 🏦
+              - generic [ref=e455]:
+                - heading "Wat is een Broker?" [level=3] [ref=e456]
+                - paragraph [ref=e457]: "Alles over brokers: wat ze doen, hoe je er eentje kiest, en het verschil tussen binnenlandse en buitenlandse brokers."
+                - generic [ref=e458]:
+                  - generic [ref=e459]:
+                    - img [ref=e460]
+                    - text: 20 min
+                  - generic [ref=e463]: 3 lessen
+              - img [ref=e464]
+            - 'button "🎯 De PayDay Filosofie Voordat je begint: de belangrijkste principes voor succesvol en verantwoord beleggen. 25 min 2 lessen" [ref=e467] [cursor=pointer]':
+              - generic [ref=e468]: 🎯
+              - generic [ref=e469]:
+                - heading "De PayDay Filosofie" [level=3] [ref=e470]
+                - paragraph [ref=e471]: "Voordat je begint: de belangrijkste principes voor succesvol en verantwoord beleggen."
+                - generic [ref=e472]:
+                  - generic [ref=e473]:
+                    - img [ref=e474]
+                    - text: 25 min
+                  - generic [ref=e477]: 2 lessen
+              - img [ref=e478]
+            - button "📈 Wat zijn Aandelen? Begrijp wat aandelen zijn, hoe je ze koopt, en wat bied- en laatprijzen betekenen. 25 min 3 lessen" [ref=e481] [cursor=pointer]:
+              - generic [ref=e482]: 📈
+              - generic [ref=e483]:
+                - heading "Wat zijn Aandelen?" [level=3] [ref=e484]
+                - paragraph [ref=e485]: Begrijp wat aandelen zijn, hoe je ze koopt, en wat bied- en laatprijzen betekenen.
+                - generic [ref=e486]:
+                  - generic [ref=e487]:
+                    - img [ref=e488]
+                    - text: 25 min
+                  - generic [ref=e491]: 3 lessen
+              - img [ref=e492]
+            - 'button "📊 Wat zijn ETFs? Exchange Traded Funds: de ideale bouwstenen voor je portfolio. 20 min 2 lessen" [ref=e495] [cursor=pointer]':
+              - generic [ref=e496]: 📊
+              - generic [ref=e497]:
+                - heading "Wat zijn ETFs?" [level=3] [ref=e498]
+                - paragraph [ref=e499]: "Exchange Traded Funds: de ideale bouwstenen voor je portfolio."
+                - generic [ref=e500]:
+                  - generic [ref=e501]:
+                    - img [ref=e502]
+                    - text: 20 min
+                  - generic [ref=e505]: 2 lessen
+              - img [ref=e506]
+            - button "💰 Dividenden Begrijpen Hoe werkt passief inkomen uit dividenden en wat zijn de fiscale gevolgen? 25 min 2 lessen" [ref=e509] [cursor=pointer]:
+              - generic [ref=e510]: 💰
+              - generic [ref=e511]:
+                - heading "Dividenden Begrijpen" [level=3] [ref=e512]
+                - paragraph [ref=e513]: Hoe werkt passief inkomen uit dividenden en wat zijn de fiscale gevolgen?
+                - generic [ref=e514]:
+                  - generic [ref=e515]:
+                    - img [ref=e516]
+                    - text: 25 min
+                  - generic [ref=e519]: 2 lessen
+              - img [ref=e520]
+            - button "📋 Belastingen op Beleggen Alles over TOB, meerwaardebelasting en je fiscale verplichtingen als belegger. 30 min 2 lessen" [ref=e523] [cursor=pointer]:
+              - generic [ref=e524]: 📋
+              - generic [ref=e525]:
+                - heading "Belastingen op Beleggen" [level=3] [ref=e526]
+                - paragraph [ref=e527]: Alles over TOB, meerwaardebelasting en je fiscale verplichtingen als belegger.
+                - generic [ref=e528]:
+                  - generic [ref=e529]:
+                    - img [ref=e530]
+                    - text: 30 min
+                  - generic [ref=e533]: 2 lessen
+              - img [ref=e534]
+      - generic [ref=e536]:
+        - paragraph [ref=e537]: Bibliotheek
+        - heading "Tips, boeken & tutorials" [level=2] [ref=e538]
+        - generic [ref=e539]:
+          - generic [ref=e540]:
+            - button "Alle Niveaus" [ref=e541] [cursor=pointer]
+            - button "🟢 Groene Piste" [ref=e542] [cursor=pointer]:
+              - generic [ref=e543]: 🟢
+              - generic [ref=e544]: Groene Piste
+            - button "🔵 Blauwe Piste" [ref=e545] [cursor=pointer]:
+              - generic [ref=e546]: 🔵
+              - generic [ref=e547]: Blauwe Piste
+              - img [ref=e548]
+            - button "🔴 Rode Piste" [ref=e551] [cursor=pointer]:
+              - generic [ref=e552]: 🔴
+              - generic [ref=e553]: Rode Piste
+              - img [ref=e554]
+            - button "⚫ Zwarte Piste" [ref=e557] [cursor=pointer]:
+              - generic [ref=e558]: ⚫
+              - generic [ref=e559]: Zwarte Piste
+              - img [ref=e560]
+          - generic [ref=e563]:
+            - generic [ref=e564]:
+              - button "Tips & Tricks 6" [ref=e565] [cursor=pointer]:
+                - generic [ref=e566]:
+                  - img [ref=e567]
+                  - generic [ref=e569]: Tips & Tricks
+                  - generic [ref=e570]: "6"
+                - img [ref=e571]
+              - generic [ref=e574]:
+                - generic [ref=e576]:
+                  - generic [ref=e577]: 🎯
+                  - generic [ref=e578]:
+                    - generic [ref=e579]:
+                      - heading "Start met een Demo Account" [level=4] [ref=e580]
+                      - generic [ref=e581]: Algemeen
+                    - paragraph [ref=e582]: Voordat je echt geld investeert, oefen eerst met een paper trading account. De meeste brokers bieden dit gratis aan. Zo leer je de platform kennen zonder risico.
+                - generic [ref=e584]:
+                  - generic [ref=e585]: 💰
+                  - generic [ref=e586]:
+                    - generic [ref=e587]:
+                      - heading "Investeer Alleen Wat Je Kunt Missen" [level=4] [ref=e588]
+                      - generic [ref=e589]: Risico
+                    - paragraph [ref=e590]: "De gouden regel: investeer nooit geld dat je nodig hebt voor je dagelijkse uitgaven. Begin klein en bouw langzaam op naarmate je meer ervaring krijgt."
+                - generic [ref=e592]:
+                  - generic [ref=e593]: 🥚
+                  - generic [ref=e594]:
+                    - generic [ref=e595]:
+                      - heading "Diversificatie is Koning" [level=4] [ref=e596]
+                      - generic [ref=e597]: Strategie
+                    - paragraph [ref=e598]: Leg niet al je eieren in één mandje. Spreid je investeringen over verschillende sectoren en bedrijven. ETFs zijn hier perfect voor als beginner.
+                - generic [ref=e600]:
+                  - generic [ref=e601]: 🏦
+                  - generic [ref=e602]:
+                    - generic [ref=e603]:
+                      - heading "Kies een Betrouwbare Broker" [level=4] [ref=e604]
+                      - generic [ref=e605]: Tool
+                    - paragraph [ref=e606]: Voor Belgische beleggers zijn DEGIRO, Bolero (KBC), en Interactive Brokers populaire keuzes. Let op de kosten per transactie en beschikbare markten.
+                - generic [ref=e608]:
+                  - generic [ref=e609]: 🔄
+                  - generic [ref=e610]:
+                    - generic [ref=e611]:
+                      - heading "Dividenden Herinvesteren" [level=4] [ref=e612]
+                      - generic [ref=e613]: Strategie
+                    - paragraph [ref=e614]: DRIP (Dividend Reinvestment Plan) laat je dividenden automatisch herinvesteren. Dit zorgt voor compound groei op lange termijn.
+                - generic [ref=e616]:
+                  - generic [ref=e617]: 📋
+                  - generic [ref=e618]:
+                    - generic [ref=e619]:
+                      - heading "Ken de Belgische Belastingregels" [level=4] [ref=e620]
+                      - generic [ref=e621]: Belasting
+                    - paragraph [ref=e622]: België kent de TOB (Taks op Beursverrichtingen), roerende voorheffing op dividenden (30%), en mogelijke meerwaardebelasting. Houd hier rekening mee!
+            - generic [ref=e623]:
+              - button "Aanbevolen Boeken 3" [ref=e624] [cursor=pointer]:
+                - generic [ref=e625]:
+                  - img [ref=e626]
+                  - generic [ref=e628]: Aanbevolen Boeken
+                  - generic [ref=e629]: "3"
+                - img [ref=e630]
+              - generic [ref=e633]:
+                - generic [ref=e635]:
+                  - img [ref=e637]
+                  - generic [ref=e639]:
+                    - heading "The Simple Path to Wealth" [level=4] [ref=e640]
+                    - paragraph [ref=e641]: door JL Collins
+                    - paragraph [ref=e642]: De perfecte introductie tot passief beleggen. Collins legt uit waarom index fondsen de beste keuze zijn voor de meeste beleggers.
+                    - generic [ref=e643]:
+                      - generic [ref=e644]:
+                        - generic [ref=e645]:
+                          - img [ref=e646]
+                          - img [ref=e648]
+                          - img [ref=e650]
+                          - img [ref=e652]
+                          - img [ref=e654]
+                        - generic [ref=e656]: Toegankelijk
+                      - link "Amazon" [ref=e658] [cursor=pointer]:
+                        - /url: https://www.amazon.com/Simple-Path-Wealth-financial-independence/dp/1533667926
+                        - text: Amazon
+                        - img [ref=e659]
+                - generic [ref=e664]:
+                  - img [ref=e666]
+                  - generic [ref=e668]:
+                    - heading "A Random Walk Down Wall Street" [level=4] [ref=e669]
+                    - paragraph [ref=e670]: door Burton Malkiel
+                    - paragraph [ref=e671]: Een klassieker die de basis legt voor het begrijpen van markten en waarom timing de markt bijna onmogelijk is.
+                    - generic [ref=e672]:
+                      - generic [ref=e673]:
+                        - generic [ref=e674]:
+                          - img [ref=e675]
+                          - img [ref=e677]
+                          - img [ref=e679]
+                          - img [ref=e681]
+                          - img [ref=e683]
+                        - generic [ref=e685]: Toegankelijk
+                      - link "Amazon" [ref=e687] [cursor=pointer]:
+                        - /url: https://www.amazon.com/Random-Walk-Down-Wall-Street/dp/1324002182
+                        - text: Amazon
+                        - img [ref=e688]
+                - generic [ref=e693]:
+                  - img [ref=e695]
+                  - generic [ref=e697]:
+                    - heading "The Intelligent Investor" [level=4] [ref=e698]
+                    - paragraph [ref=e699]: door Benjamin Graham
+                    - paragraph [ref=e700]: Het bijbel van waardebeleggen, geschreven door de mentor van Warren Buffett. Focus op de hoofdstukken over margin of safety.
+                    - generic [ref=e701]:
+                      - generic [ref=e702]:
+                        - generic [ref=e703]:
+                          - img [ref=e704]
+                          - img [ref=e706]
+                          - img [ref=e708]
+                          - img [ref=e710]
+                          - img [ref=e712]
+                        - generic [ref=e714]: Gemiddeld
+                      - link "Amazon" [ref=e716] [cursor=pointer]:
+                        - /url: https://www.amazon.com/Intelligent-Investor-Definitive-Investing-Essentials/dp/0060555661
+                        - text: Amazon
+                        - img [ref=e717]
+            - button "Video Tutorials 2" [ref=e722] [cursor=pointer]:
+              - generic [ref=e723]:
+                - img [ref=e724]
+                - generic [ref=e727]: Video Tutorials
+                - generic [ref=e728]: "2"
+              - img [ref=e729]
+            - button "Handige Links 2" [ref=e732] [cursor=pointer]:
+              - generic [ref=e733]:
+                - img [ref=e734]
+                - generic [ref=e738]: Handige Links
+                - generic [ref=e739]: "2"
+              - img [ref=e740]
+      - generic [ref=e743]:
+        - generic [ref=e744]:
+          - img [ref=e746]
+          - paragraph [ref=e748]: Fiscaliteit
+          - heading "Belgische belasting" [level=2] [ref=e749]
+        - generic [ref=e750]:
+          - paragraph [ref=e751]: Als Belgische belegger heb je te maken met specifieke belastingregels. PayDay helpt je met het begrijpen van de fiscale impact van je trades â€” inclusief meerwaardebelasting, TOB en roerende voorheffing.
+          - button "Naar de belastingcalculator" [ref=e752] [cursor=pointer]:
+            - text: Naar de belastingcalculator
+            - img [ref=e753]
+      - generic [ref=e755]:
+        - paragraph [ref=e756]: Volgende stap
+        - heading "Klaar voor de volgende piste?" [level=2] [ref=e757]
+        - paragraph [ref=e758]: Nog 0 credits om de Blauwe Piste te ontgrendelen.
+        - text: "0"

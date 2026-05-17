@@ -47,11 +47,11 @@ export const AlertTooltipContent: React.FC<AlertTooltipContentProps> = ({
 }) => {
   const isAlert = type === 'alert';
   const iconBgClass = isAlert
-    ? 'bg-amber-100 dark:bg-amber-900/30'
-    : 'bg-green-100 dark:bg-green-900/30';
+    ? 'bg-caution-50 dark:bg-caution-600/25'
+    : 'bg-positive-50 dark:bg-positive-700/25';
   const iconColorClass = isAlert
-    ? 'text-amber-600 dark:text-amber-400'
-    : 'text-green-600 dark:text-green-400';
+    ? 'text-caution-600 dark:text-caution-500'
+    : 'text-positive-600 dark:text-positive-500';
 
   return (
     <div className="space-y-2">

@@ -44,16 +44,16 @@ export const FeatureGate: React.FC<FeatureGateProps> = ({
         {/* Lock icon with level color */}
         <div className={`
           w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center
-          ${levelConfig?.slopeColor === 'green' ? 'bg-green-100 dark:bg-green-900/30' :
-            levelConfig?.slopeColor === 'blue' ? 'bg-blue-100 dark:bg-blue-900/30' :
-            levelConfig?.slopeColor === 'red' ? 'bg-red-100 dark:bg-red-900/30' :
+          ${levelConfig?.slopeColor === 'green' ? 'bg-positive-50 dark:bg-positive-700/25' :
+            levelConfig?.slopeColor === 'blue' ? 'bg-primary-50 dark:bg-primary-900/30' :
+            levelConfig?.slopeColor === 'red' ? 'bg-negative-50 dark:bg-negative-700/25' :
             'bg-gray-100 dark:bg-gray-700'}
         `}>
           <Lock className={`
             w-10 h-10
-            ${levelConfig?.slopeColor === 'green' ? 'text-green-600 dark:text-green-400' :
-              levelConfig?.slopeColor === 'blue' ? 'text-blue-600 dark:text-blue-400' :
-              levelConfig?.slopeColor === 'red' ? 'text-red-600 dark:text-red-400' :
+            ${levelConfig?.slopeColor === 'green' ? 'text-positive-600 dark:text-positive-500' :
+              levelConfig?.slopeColor === 'blue' ? 'text-primary-700 dark:text-primary-300' :
+              levelConfig?.slopeColor === 'red' ? 'text-negative-600 dark:text-negative-500' :
               'text-gray-600 dark:text-gray-400'}
           `} />
         </div>
@@ -73,9 +73,9 @@ export const FeatureGate: React.FC<FeatureGateProps> = ({
         {levelConfig && (
           <div className={`
             p-4 rounded-lg mb-6
-            ${levelConfig.slopeColor === 'green' ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700' :
-              levelConfig.slopeColor === 'blue' ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700' :
-              levelConfig.slopeColor === 'red' ? 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700' :
+            ${levelConfig.slopeColor === 'green' ? 'bg-positive-50 dark:bg-positive-700/15 border border-positive-500/20 dark:border-positive-700' :
+              levelConfig.slopeColor === 'blue' ? 'bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-700' :
+              levelConfig.slopeColor === 'red' ? 'bg-negative-50 dark:bg-negative-700/15 border border-negative-500/20 dark:border-negative-700' :
               'bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600'}
           `}>
             <div className="flex items-center justify-center gap-2 mb-2">

@@ -441,11 +441,11 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                 onClick={() => setAction('buy')}
                 className={`p-3 rounded-lg border-2 transition-all ${
                   action === 'buy'
-                    ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                    : 'border-gray-200 dark:border-gray-700 hover:border-blue-300'
+                    ? 'border-primary-700 bg-primary-50 dark:bg-primary-900/20'
+                    : 'border-gray-200 dark:border-gray-700 hover:border-primary-300'
                 }`}
               >
-                <TrendingUp className="w-6 h-6 mx-auto mb-1.5 text-blue-600 dark:text-blue-400" />
+                <TrendingUp className="w-6 h-6 mx-auto mb-1.5 text-primary-700 dark:text-primary-300" />
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-0.5">
                   {t('callWizard.actionStep.buyCall')}
                 </h3>
@@ -458,11 +458,11 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                 onClick={() => setAction('sell')}
                 className={`p-3 rounded-lg border-2 transition-all ${
                   action === 'sell'
-                    ? 'border-orange-600 bg-orange-50 dark:bg-orange-900/20'
-                    : 'border-gray-200 dark:border-gray-700 hover:border-orange-300'
+                    ? 'border-caution-600 bg-caution-50 dark:bg-caution-600/15'
+                    : 'border-gray-200 dark:border-gray-700 hover:border-caution-500/40'
                 }`}
               >
-                <TrendingDown className="w-6 h-6 mx-auto mb-1.5 text-orange-600 dark:text-orange-400" />
+                <TrendingDown className="w-6 h-6 mx-auto mb-1.5 text-caution-600 dark:text-caution-500" />
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-0.5">
                   {t('callWizard.actionStep.sellCall')}
                 </h3>
@@ -475,11 +475,11 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                 onClick={() => setAction('credit-spread')}
                 className={`p-3 rounded-lg border-2 transition-all ${
                   action === 'credit-spread'
-                    ? 'border-purple-600 bg-purple-50 dark:bg-purple-900/20'
-                    : 'border-gray-200 dark:border-gray-700 hover:border-purple-300'
+                    ? 'border-ink-700 bg-surface-subtle dark:bg-trading-dark-700'
+                    : 'border-gray-200 dark:border-gray-700 hover:border-ink-300'
                 }`}
               >
-                <ArrowRightLeft className="w-6 h-6 mx-auto mb-1.5 text-purple-600 dark:text-purple-400" />
+                <ArrowRightLeft className="w-6 h-6 mx-auto mb-1.5 text-ink-600 dark:text-ink-300" />
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-0.5">
                   {t('callWizard.actionStep.creditSpread')}
                 </h3>
@@ -492,11 +492,11 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                 onClick={() => setAction('debit-spread')}
                 className={`p-3 rounded-lg border-2 transition-all ${
                   action === 'debit-spread'
-                    ? 'border-green-600 bg-green-50 dark:bg-green-900/20'
-                    : 'border-gray-200 dark:border-gray-700 hover:border-green-300'
+                    ? 'border-positive-600 bg-positive-50 dark:bg-positive-700/15'
+                    : 'border-gray-200 dark:border-gray-700 hover:border-positive-500/30'
                 }`}
               >
-                <ArrowRightLeft className="w-6 h-6 mx-auto mb-1.5 text-green-600 dark:text-green-400" />
+                <ArrowRightLeft className="w-6 h-6 mx-auto mb-1.5 text-positive-600 dark:text-positive-500" />
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-0.5">
                   {t('callWizard.actionStep.debitSpread')}
                 </h3>
@@ -506,14 +506,14 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
               </button>
             </div>
 
-            <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-              <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-1.5">
+            <div className="mt-4 p-3 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
+              <h4 className="text-sm font-semibold text-primary-900 dark:text-primary-300 mb-1.5">
                 {action === 'buy' && t('callWizard.actionStep.buyCall')}
                 {action === 'sell' && t('callWizard.actionStep.sellCall')}
                 {action === 'credit-spread' && t('callWizard.actionStep.creditSpread')}
                 {action === 'debit-spread' && t('callWizard.actionStep.debitSpread')}
               </h4>
-              <p className="text-xs text-blue-800 dark:text-blue-400 mb-2">
+              <p className="text-xs text-primary-700 dark:text-primary-300 mb-2">
                 {action === 'buy' && (
                   <>
                     <strong>{t('callWizard.actionStep.buyCallInfo.when')}</strong> {t('callWizard.actionStep.buyCallInfo.whenText')}
@@ -581,20 +581,20 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                 </div>
 
                 {selectedTicker && (
-                  <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                  <div className="p-4 bg-positive-50 dark:bg-positive-700/15 rounded-lg border border-positive-500/20 dark:border-positive-700/30">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                        <TrendingUp className="w-6 h-6 text-green-600 dark:text-green-400" />
+                      <div className="w-12 h-12 bg-positive-50 dark:bg-positive-700/25 rounded-lg flex items-center justify-center">
+                        <TrendingUp className="w-6 h-6 text-positive-600 dark:text-positive-500" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-green-900 dark:text-green-300">
+                        <h4 className="font-semibold text-positive-700 dark:text-positive-500">
                           {selectedTicker.symbol}
                         </h4>
-                        <p className="text-sm text-green-700 dark:text-green-400">
+                        <p className="text-sm text-positive-700 dark:text-positive-500">
                           {selectedTicker.name}
                         </p>
                         {selectedTicker.optionsAvailable && (
-                          <p className="text-xs text-green-600 dark:text-green-500">
+                          <p className="text-xs text-positive-600 dark:text-positive-500">
                             {t('callWizard.tickerStep.optionsAvailable')}
                             {selectedTicker.miniContractsAvailable && ` • ${t('callWizard.tickerStep.miniContracts')}`}
                           </p>
@@ -606,11 +606,11 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
               </>
             ) : (
               <div className="space-y-4">
-                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                  <h4 className="font-semibold text-blue-900 dark:text-blue-300 mb-2">
+                <div className="p-4 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
+                  <h4 className="font-semibold text-primary-900 dark:text-primary-300 mb-2">
                     {t('callWizard.tickerStep.newTicker')} {newTickerData.symbol}
                   </h4>
-                  <p className="text-sm text-blue-800 dark:text-blue-400">
+                  <p className="text-sm text-primary-700 dark:text-primary-300">
                     {t('callWizard.tickerStep.newTickerDesc')}
                   </p>
                 </div>
@@ -625,7 +625,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                     onChange={(e) =>
                       setNewTickerData({ ...newTickerData, name: e.target.value })
                     }
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     placeholder={t('callWizard.tickerStep.companyPlaceholder')}
                     autoFocus
                   />
@@ -640,7 +640,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                       onClick={() => setNewTickerData({ ...newTickerData, type: 'stock' })}
                       className={`p-3 rounded-lg border-2 transition-all ${
                         newTickerData.type === 'stock'
-                          ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
+                          ? 'border-primary-700 bg-primary-50 dark:bg-primary-900/20'
                           : 'border-gray-200 dark:border-gray-700'
                       }`}
                     >
@@ -650,7 +650,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                       onClick={() => setNewTickerData({ ...newTickerData, type: 'etf' })}
                       className={`p-3 rounded-lg border-2 transition-all ${
                         newTickerData.type === 'etf'
-                          ? 'border-green-600 bg-green-50 dark:bg-green-900/20'
+                          ? 'border-positive-600 bg-positive-50 dark:bg-positive-700/15'
                           : 'border-gray-200 dark:border-gray-700'
                       }`}
                     >
@@ -670,7 +670,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                           optionsAvailable: e.target.checked,
                         })
                       }
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                      className="w-4 h-4 text-primary-700 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300">
                       {t('callWizard.tickerStep.optionsAvailableCheck')}
@@ -687,7 +687,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                           miniContractsAvailable: e.target.checked,
                         })
                       }
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                      className="w-4 h-4 text-primary-700 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2">
                       {t('callWizard.tickerStep.miniContractsCheck')}
@@ -705,7 +705,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                   <button
                     onClick={handleCreateTicker}
                     disabled={!newTickerData.name}
-                    className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+                    className="flex-1 px-4 py-2 bg-primary-700 hover:bg-primary-800 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
                   >
                     {t('callWizard.tickerStep.addTicker')}
                   </button>
@@ -761,8 +761,8 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                   {action === 'credit-spread' ? (
                     <>
                       {/* Short Leg first for credit spread */}
-                      <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
-                        <h4 className="font-semibold text-orange-900 dark:text-orange-300 mb-3 text-sm">
+                      <div className="p-3 bg-caution-50 dark:bg-caution-600/15 rounded-lg border border-caution-500/30 dark:border-caution-600/40">
+                        <h4 className="font-semibold text-orange-900 dark:text-caution-500 mb-3 text-sm">
                           {t('callWizard.detailsStep.shortLegCredit')}
                         </h4>
                         <div className="space-y-3">
@@ -781,7 +781,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                                   setShortLeg({ ...shortLeg, strike: parseLocalizedNumber(value) });
                                 }
                               }}
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                               placeholder={`150${getDecimalSeparator()}00`}
                             />
                           </div>
@@ -800,7 +800,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                                   setShortLeg({ ...shortLeg, premium: parseLocalizedNumber(value) });
                                 }
                               }}
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                               placeholder={`5${getDecimalSeparator()}50`}
                             />
                           </div>
@@ -808,8 +808,8 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                       </div>
 
                       {/* Long Leg second for credit spread */}
-                      <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                        <h4 className="font-semibold text-blue-900 dark:text-blue-300 mb-3 text-sm">
+                      <div className="p-3 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
+                        <h4 className="font-semibold text-primary-900 dark:text-primary-300 mb-3 text-sm">
                           {t('callWizard.detailsStep.longLegCredit')}
                         </h4>
                         <div className="space-y-3">
@@ -827,7 +827,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                                   setLongLeg({ ...longLeg, strike: parseLocalizedNumber(value) });
                                 }
                               }}
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                               placeholder={`160${getDecimalSeparator()}00`}
                             />
                           </div>
@@ -846,7 +846,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                                   setLongLeg({ ...longLeg, premium: parseLocalizedNumber(value) });
                                 }
                               }}
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                               placeholder={`2${getDecimalSeparator()}50`}
                             />
                           </div>
@@ -856,8 +856,8 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                   ) : (
                     <>
                       {/* Long Leg first for debit spread */}
-                      <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                        <h4 className="font-semibold text-blue-900 dark:text-blue-300 mb-3 text-sm">
+                      <div className="p-3 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
+                        <h4 className="font-semibold text-primary-900 dark:text-primary-300 mb-3 text-sm">
                           {t('callWizard.detailsStep.longLegDebit')}
                         </h4>
                         <div className="space-y-3">
@@ -876,7 +876,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                                   setLongLeg({ ...longLeg, strike: parseLocalizedNumber(value) });
                                 }
                               }}
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                               placeholder={`150${getDecimalSeparator()}00`}
                             />
                           </div>
@@ -895,7 +895,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                                   setLongLeg({ ...longLeg, premium: parseLocalizedNumber(value) });
                                 }
                               }}
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                               placeholder={`5${getDecimalSeparator()}50`}
                             />
                           </div>
@@ -903,8 +903,8 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                       </div>
 
                       {/* Short Leg second for debit spread */}
-                      <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
-                        <h4 className="font-semibold text-orange-900 dark:text-orange-300 mb-3 text-sm">
+                      <div className="p-3 bg-caution-50 dark:bg-caution-600/15 rounded-lg border border-caution-500/30 dark:border-caution-600/40">
+                        <h4 className="font-semibold text-orange-900 dark:text-caution-500 mb-3 text-sm">
                           {t('callWizard.detailsStep.shortLegDebit')}
                         </h4>
                         <div className="space-y-3">
@@ -922,7 +922,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                                   setShortLeg({ ...shortLeg, strike: parseLocalizedNumber(value) });
                                 }
                               }}
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                               placeholder={`160${getDecimalSeparator()}00`}
                             />
                           </div>
@@ -941,7 +941,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                                   setShortLeg({ ...shortLeg, premium: parseLocalizedNumber(value) });
                                 }
                               }}
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                               placeholder={`2${getDecimalSeparator()}50`}
                             />
                           </div>
@@ -967,7 +967,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                           setLongLeg({ ...longLeg, expiration: date });
                           setShortLeg({ ...shortLeg, expiration: date });
                         }}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       />
                       {longLeg.expiration && (
                         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -989,7 +989,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                           setLongLeg({ ...longLeg, contracts });
                           setShortLeg({ ...shortLeg, contracts });
                         }}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                         placeholder="1"
                       />
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -1001,8 +1001,8 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
 
                 {/* Spread Summary */}
                 {longLeg.strike > 0 && shortLeg.strike > 0 && longLeg.premium > 0 && shortLeg.premium > 0 && (
-                  <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
-                    <h4 className="text-sm font-semibold text-purple-900 dark:text-purple-300 mb-3 flex items-center gap-2">
+                  <div className="p-3 bg-surface-subtle dark:bg-trading-dark-700 rounded-lg border border-ink-200 dark:border-trading-dark-600">
+                    <h4 className="text-sm font-semibold text-purple-900 dark:text-ink-300 mb-3 flex items-center gap-2">
                       <BarChart3 className="w-4 h-4" />
                       {t('callWizard.detailsStep.spreadOverview')}
                     </h4>
@@ -1011,13 +1011,13 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                         <p className="text-xs text-gray-600 dark:text-gray-400">
                           {action === 'credit-spread' ? t('callWizard.detailsStep.netCredit') : t('callWizard.detailsStep.netDebit')}
                         </p>
-                        <p className={`font-semibold ${action === 'credit-spread' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                        <p className={`font-semibold ${action === 'credit-spread' ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
                           {action === 'credit-spread' ? '+' : '-'}${formatNumber(Math.abs((shortLeg.premium - longLeg.premium) * longLeg.contracts * 100), 2)}
                         </p>
                       </div>
                       <div>
                         <p className="text-xs text-gray-600 dark:text-gray-400">{t('callWizard.detailsStep.maxProfit')}</p>
-                        <p className="font-semibold text-green-600 dark:text-green-400">
+                        <p className="font-semibold text-positive-600 dark:text-positive-500">
                           ${action === 'credit-spread'
                             ? formatNumber((shortLeg.premium - longLeg.premium) * longLeg.contracts * 100, 2)
                             : formatNumber((Math.abs(shortLeg.strike - longLeg.strike) - (longLeg.premium - shortLeg.premium)) * longLeg.contracts * 100, 2)
@@ -1026,7 +1026,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                       </div>
                       <div>
                         <p className="text-xs text-gray-600 dark:text-gray-400">{t('callWizard.detailsStep.maxLoss')}</p>
-                        <p className="font-semibold text-red-600 dark:text-red-400">
+                        <p className="font-semibold text-negative-600 dark:text-negative-500">
                           -${action === 'credit-spread'
                             ? formatNumber((Math.abs(shortLeg.strike - longLeg.strike) - (shortLeg.premium - longLeg.premium)) * longLeg.contracts * 100, 2)
                             : formatNumber((longLeg.premium - shortLeg.premium) * longLeg.contracts * 100, 2)
@@ -1056,12 +1056,12 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
               <>
                 {/* Current Stock price Indicator */}
                 {currentTickerPrice && (
-                  <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <div className="mb-4 p-3 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                      <span className="text-sm font-medium text-primary-700 dark:text-primary-300">
                         {t('callWizard.detailsStep.currentPrice')} {selectedTicker?.symbol}
                       </span>
-                      <span className="text-lg font-bold text-blue-900 dark:text-blue-100">
+                      <span className="text-lg font-bold text-primary-900 dark:text-blue-100">
                         ${formatNumber(currentTickerPrice, 2)}
                       </span>
                     </div>
@@ -1085,7 +1085,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                           setLongLeg({ ...longLeg, strike: parseLocalizedNumber(value) });
                         }
                       }}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       placeholder={`150${getDecimalSeparator()}00`}
                     />
                   </div>
@@ -1104,7 +1104,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                           setLongLeg({ ...longLeg, premium: parseLocalizedNumber(value) });
                         }
                       }}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       placeholder={`5${getDecimalSeparator()}50`}
                     />
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -1119,7 +1119,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                     <FridayDatePicker
                       value={longLeg.expiration}
                       onChange={(date) => setLongLeg({ ...longLeg, expiration: date })}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     />
                     {longLeg.expiration && (
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -1140,7 +1140,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                         setLongLeg({ ...longLeg, contracts: parseInt(e.target.value) || 1 })
                       }
                       disabled={wheelLockedContracts !== null}
-                      className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white ${
+                      className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white ${
                         wheelLockedContracts !== null ? 'opacity-60 cursor-not-allowed' : ''
                       }`}
                       placeholder="1"
@@ -1148,7 +1148,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                       = {longLeg.contracts * 100} {t('callWizard.detailsStep.shares')}
                       {wheelLockedContracts !== null && (
-                        <span className="text-amber-600 dark:text-amber-400 ml-1">
+                        <span className="text-caution-600 dark:text-caution-500 ml-1">
                           {t('callWizard.detailsStep.determinedByWheel')}
                         </span>
                       )}
@@ -1158,7 +1158,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
 
                 {/* Break-even & Max Winst/Verlies Display */}
                 {longLeg.strike > 0 && longLeg.premium > 0 && (
-                  <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <div className="p-4 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <p className="text-sm text-gray-600 dark:text-gray-400">{t('callWizard.detailsStep.breakEvenPrice')}</p>
@@ -1171,7 +1171,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                           {action === 'buy' ? t('callWizard.detailsStep.maxLoss') : t('callWizard.detailsStep.maxProfit')}
                         </p>
                         <p className={`text-lg font-semibold ${
-                          action === 'buy' ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'
+                          action === 'buy' ? 'text-negative-600 dark:text-negative-500' : 'text-positive-600 dark:text-positive-500'
                         }`}>
                           {action === 'buy' ? '-' : '+'}${formatNumber(longLeg.premium * longLeg.contracts * 100, 2)}
                         </p>
@@ -1191,7 +1191,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                 type="date"
                 value={purchaseDate}
                 onChange={(e) => setPurchaseDate(e.target.value)}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               />
             </div>
 
@@ -1203,21 +1203,21 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={3}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 placeholder={t('callWizard.detailsStep.notesPlaceholder')}
               />
             </div>
 
             {/* Wheel Linking for Covered Calls / Sell Calls */}
             {(action === 'covered-call' || action === 'sell') && matchingWheels.length > 0 && (
-              <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
+              <div className="p-4 bg-caution-50 dark:bg-caution-600/15 rounded-lg border border-caution-500/30 dark:border-caution-600/40">
                 <div className="flex items-start gap-3">
-                  <RefreshCw className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+                  <RefreshCw className="w-5 h-5 text-caution-600 dark:text-caution-500 mt-0.5 flex-shrink-0" />
                   <div className="flex-1">
-                    <h4 className="font-semibold text-amber-900 dark:text-amber-300 mb-2">
+                    <h4 className="font-semibold text-amber-900 dark:text-caution-500 mb-2">
                       {t('callWizard.detailsStep.wheelFound')}
                     </h4>
-                    <p className="text-sm text-amber-800 dark:text-amber-400 mb-3">
+                    <p className="text-sm text-caution-600 dark:text-caution-500 mb-3">
                       {matchingWheels.length === 1
                         ? t('callWizard.detailsStep.wheelFoundDesc', { count: matchingWheels.length, ticker: selectedTicker?.symbol })
                         : t('callWizard.detailsStep.wheelFoundDescPlural', { count: matchingWheels.length, ticker: selectedTicker?.symbol })
@@ -1230,8 +1230,8 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                           key={wheel.id}
                           className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
                             selectedWheelId === wheel.id
-                              ? 'border-amber-500 bg-amber-100 dark:bg-amber-900/40'
-                              : 'border-gray-200 dark:border-gray-700 hover:border-amber-300'
+                              ? 'border-caution-500 bg-caution-50 dark:bg-amber-900/40'
+                              : 'border-gray-200 dark:border-gray-700 hover:border-caution-500/40'
                           }`}
                         >
                           <input
@@ -1239,7 +1239,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                             name="wheel-link"
                             checked={selectedWheelId === wheel.id}
                             onChange={() => setSelectedWheelId(wheel.id)}
-                            className="w-4 h-4 text-amber-600"
+                            className="w-4 h-4 text-caution-600"
                           />
                           <div className="flex-1">
                             <p className="font-medium text-gray-900 dark:text-white text-sm">

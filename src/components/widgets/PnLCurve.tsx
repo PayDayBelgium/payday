@@ -342,18 +342,18 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
           )}
           {maxProfit !== null && maxProfit !== Infinity && (
             <div className="flex items-center gap-1">
-              <TrendingUp className="w-4 h-4 text-green-600 dark:text-green-400" />
+              <TrendingUp className="w-4 h-4 text-positive-600 dark:text-positive-500" />
               <span className="text-gray-600 dark:text-gray-400">Max:</span>
-              <span className="font-semibold text-green-600 dark:text-green-400">
+              <span className="font-semibold text-positive-600 dark:text-positive-500">
                 +{currencySymbol}{formatNumber(maxProfit, 2)}
               </span>
             </div>
           )}
           {maxLoss !== null && maxLoss !== -Infinity && (
             <div className="flex items-center gap-1">
-              <TrendingDown className="w-4 h-4 text-red-600 dark:text-red-400" />
+              <TrendingDown className="w-4 h-4 text-negative-600 dark:text-negative-500" />
               <span className="text-gray-600 dark:text-gray-400">Max:</span>
-              <span className="font-semibold text-red-600 dark:text-red-400">
+              <span className="font-semibold text-negative-600 dark:text-negative-500">
                 -{currencySymbol}{formatNumber(Math.abs(maxLoss), 2)}
               </span>
             </div>
@@ -431,7 +431,7 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
             strokeWidth="3"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="text-blue-600 dark:text-blue-400"
+            className="text-primary-700 dark:text-primary-300"
           />
 
           {/* Current price indicator */}
@@ -445,7 +445,7 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
                 stroke="currentColor"
                 strokeWidth="2"
                 strokeDasharray="3,3"
-                className="text-purple-500 dark:text-purple-400"
+                className="text-ink-500 dark:text-ink-300"
               />
               <text
                 x={xScale(currentPrice)}
@@ -469,14 +469,14 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
                 stroke="currentColor"
                 strokeWidth="2"
                 strokeDasharray="5,2"
-                className="text-orange-500 dark:text-orange-400"
+                className="text-caution-500 dark:text-caution-500"
               />
               <circle
                 cx={xScale(breakEven)}
                 cy={zeroY}
                 r="4"
                 fill="currentColor"
-                className="text-orange-500 dark:text-orange-400"
+                className="text-caution-500 dark:text-caution-500"
               />
             </>
           )}
@@ -556,7 +556,7 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
                 stroke="currentColor"
                 strokeWidth="1"
                 strokeDasharray="3,3"
-                className="text-blue-500 dark:text-blue-400"
+                className="text-primary-600 dark:text-primary-300"
                 opacity="0.5"
               />
               {/* Horizontal crosshair */}
@@ -568,7 +568,7 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
                 stroke="currentColor"
                 strokeWidth="1"
                 strokeDasharray="3,3"
-                className="text-blue-500 dark:text-blue-400"
+                className="text-primary-600 dark:text-primary-300"
                 opacity="0.5"
               />
               {/* Hover point circle */}
@@ -579,7 +579,7 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
                 fill="white"
                 stroke="currentColor"
                 strokeWidth="2"
-                className="text-blue-600 dark:text-blue-400"
+                className="text-primary-700 dark:text-primary-300"
               />
               {/* Tooltip */}
               <g>
@@ -621,12 +621,12 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
       <div className="mt-4 flex items-center justify-center gap-6 text-xs">
         {currentPrice > 0 && (
           <div className="flex items-center gap-2">
-            <div className="w-8 h-0.5 bg-purple-500 dark:bg-purple-400" style={{ borderTop: '2px dashed' }} />
+            <div className="w-8 h-0.5 bg-ink-600 dark:bg-purple-400" style={{ borderTop: '2px dashed' }} />
             <span className="text-gray-600 dark:text-gray-400">Huidige Prijs</span>
           </div>
         )}
         <div className="flex items-center gap-2">
-          <div className="w-8 h-0.5 bg-orange-500 dark:bg-orange-400" style={{ borderTop: '2px dashed' }} />
+          <div className="w-8 h-0.5 bg-caution-500 dark:bg-caution-500" style={{ borderTop: '2px dashed' }} />
           <span className="text-gray-600 dark:text-gray-400">Break-even</span>
         </div>
         <div className="flex items-center gap-2">

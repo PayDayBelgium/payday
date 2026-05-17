@@ -20,11 +20,11 @@ import type { UserLevel, TradingTip, RecommendedBook, VideoTutorial, ExternalRes
 const TipCard: React.FC<{ tip: TradingTip; isLocked?: boolean }> = ({ tip, isLocked }) => {
   const getCategoryColor = (category: TradingTip['category']) => {
     switch (category) {
-      case 'strategy': return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
-      case 'risk': return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
-      case 'psychology': return 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400';
-      case 'tax': return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400';
-      case 'tool': return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
+      case 'strategy': return 'bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300';
+      case 'risk': return 'bg-negative-50 text-negative-700 dark:bg-negative-700/25 dark:text-negative-500';
+      case 'psychology': return 'bg-surface-muted text-ink-700 dark:bg-trading-dark-600 dark:text-ink-300';
+      case 'tax': return 'bg-caution-50 text-caution-600 dark:bg-caution-600/25 dark:text-caution-500';
+      case 'tool': return 'bg-positive-50 text-positive-700 dark:bg-positive-700/25 dark:text-positive-500';
       default: return 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300';
     }
   };
@@ -74,9 +74,9 @@ const TipCard: React.FC<{ tip: TradingTip; isLocked?: boolean }> = ({ tip, isLoc
 const BookCard: React.FC<{ book: RecommendedBook; isLocked?: boolean }> = ({ book, isLocked }) => {
   const getDifficultyColor = (difficulty: RecommendedBook['difficulty']) => {
     switch (difficulty) {
-      case 'easy': return 'text-green-600 dark:text-green-400';
-      case 'medium': return 'text-yellow-600 dark:text-yellow-400';
-      case 'advanced': return 'text-red-600 dark:text-red-400';
+      case 'easy': return 'text-positive-600 dark:text-positive-500';
+      case 'medium': return 'text-caution-600 dark:text-caution-500';
+      case 'advanced': return 'text-negative-600 dark:text-negative-500';
       default: return 'text-gray-600';
     }
   };
@@ -137,7 +137,7 @@ const BookCard: React.FC<{ book: RecommendedBook; isLocked?: boolean }> = ({ boo
                     href={book.bolUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+                    className="text-xs text-primary-700 dark:text-primary-300 hover:underline flex items-center gap-1"
                   >
                     Bol.com <ExternalLink className="w-3 h-3" />
                   </a>
@@ -147,7 +147,7 @@ const BookCard: React.FC<{ book: RecommendedBook; isLocked?: boolean }> = ({ boo
                     href={book.amazonUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-orange-600 dark:text-orange-400 hover:underline flex items-center gap-1"
+                    className="text-xs text-caution-600 dark:text-caution-500 hover:underline flex items-center gap-1"
                   >
                     Amazon <ExternalLink className="w-3 h-3" />
                   </a>
@@ -174,8 +174,8 @@ const VideoCard: React.FC<{ video: VideoTutorial; isLocked?: boolean }> = ({ vid
         </div>
       )}
       <div className="flex items-start gap-3">
-        <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
-          <PlayCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
+        <div className="w-10 h-10 bg-negative-50 dark:bg-negative-700/25 rounded-lg flex items-center justify-center flex-shrink-0">
+          <PlayCircle className="w-5 h-5 text-negative-600 dark:text-negative-500" />
         </div>
         <div className="flex-1 min-w-0">
           <h4 className="font-semibold text-gray-900 dark:text-white text-sm mb-1">
@@ -189,7 +189,7 @@ const VideoCard: React.FC<{ video: VideoTutorial; isLocked?: boolean }> = ({ vid
               {video.duration}
             </span>
             {video.creditsAwarded && (
-              <span className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
+              <span className="text-xs text-positive-600 dark:text-positive-500 flex items-center gap-1">
                 <Gift className="w-3 h-3" />
                 +{video.creditsAwarded} credits
               </span>
@@ -231,7 +231,7 @@ const ResourceLink: React.FC<{ resource: ExternalResource; isLocked?: boolean }>
             {resource.title}
           </h4>
           {resource.isFree && (
-            <span className="text-xs px-1.5 py-0.5 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded">
+            <span className="text-xs px-1.5 py-0.5 bg-positive-50 text-positive-700 dark:bg-positive-700/25 dark:text-positive-500 rounded">
               Gratis
             </span>
           )}
@@ -392,7 +392,7 @@ export const LearningResources: React.FC<LearningResourcesProps> = ({ showAllLev
             {resources.tips.length > 0 && (
               <Section
                 title="Tips & Tricks"
-                icon={<Lightbulb className="w-5 h-5 text-yellow-500" />}
+                icon={<Lightbulb className="w-5 h-5 text-caution-500" />}
                 count={resources.tips.length}
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -407,7 +407,7 @@ export const LearningResources: React.FC<LearningResourcesProps> = ({ showAllLev
             {resources.books.length > 0 && (
               <Section
                 title="Aanbevolen Boeken"
-                icon={<BookOpen className="w-5 h-5 text-blue-500" />}
+                icon={<BookOpen className="w-5 h-5 text-primary-600" />}
                 count={resources.books.length}
               >
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
@@ -422,7 +422,7 @@ export const LearningResources: React.FC<LearningResourcesProps> = ({ showAllLev
             {resources.videos.length > 0 && (
               <Section
                 title="Video Tutorials"
-                icon={<PlayCircle className="w-5 h-5 text-red-500" />}
+                icon={<PlayCircle className="w-5 h-5 text-negative-600" />}
                 count={resources.videos.length}
                 defaultOpen={false}
               >
@@ -438,7 +438,7 @@ export const LearningResources: React.FC<LearningResourcesProps> = ({ showAllLev
             {resources.externalResources.length > 0 && (
               <Section
                 title="Handige Links"
-                icon={<ExternalLink className="w-5 h-5 text-green-500" />}
+                icon={<ExternalLink className="w-5 h-5 text-positive-600" />}
                 count={resources.externalResources.length}
                 defaultOpen={false}
               >
@@ -471,10 +471,10 @@ export const RandomTipWidget: React.FC = () => {
   if (!tip) return null;
 
   return (
-    <div className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-xl p-4 border border-yellow-200 dark:border-yellow-700">
+    <div className="bg-gradient-to-br from-caution-50 to-caution-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-xl p-4 border border-caution-500/30 dark:border-caution-600/40">
       <div className="flex items-start gap-3">
-        <div className="p-2 bg-yellow-100 dark:bg-yellow-900/50 rounded-lg">
-          <Lightbulb className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
+        <div className="p-2 bg-caution-50 dark:bg-caution-600/35 rounded-lg">
+          <Lightbulb className="w-5 h-5 text-caution-600 dark:text-caution-500" />
         </div>
         <div className="flex-1 min-w-0">
           <h4 className="font-semibold text-gray-900 dark:text-white text-sm mb-1">

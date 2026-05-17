@@ -36,22 +36,22 @@ const HeadingBlock: React.FC<{ content: string }> = ({ content }) => (
 const CalloutBlock: React.FC<{ content: string; variant?: 'info' | 'warning' | 'tip' | 'success' }> = ({ content, variant = 'info' }) => {
   const variants = {
     info: {
-      bg: 'bg-blue-50 dark:bg-blue-900/20',
-      border: 'border-blue-200 dark:border-blue-800',
-      icon: <Info className="w-5 h-5 text-blue-600 dark:text-blue-400" />,
-      text: 'text-blue-800 dark:text-blue-200',
+      bg: 'bg-primary-50 dark:bg-primary-900/20',
+      border: 'border-primary-200 dark:border-primary-800',
+      icon: <Info className="w-5 h-5 text-primary-700 dark:text-primary-300" />,
+      text: 'text-primary-700 dark:text-primary-200',
     },
     warning: {
-      bg: 'bg-amber-50 dark:bg-amber-900/20',
-      border: 'border-amber-200 dark:border-amber-800',
-      icon: <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />,
-      text: 'text-amber-800 dark:text-amber-200',
+      bg: 'bg-caution-50 dark:bg-caution-600/15',
+      border: 'border-caution-500/30 dark:border-caution-600/40',
+      icon: <AlertTriangle className="w-5 h-5 text-caution-600 dark:text-caution-500" />,
+      text: 'text-caution-600 dark:text-amber-200',
     },
     tip: {
-      bg: 'bg-green-50 dark:bg-green-900/20',
-      border: 'border-green-200 dark:border-green-800',
-      icon: <Lightbulb className="w-5 h-5 text-green-600 dark:text-green-400" />,
-      text: 'text-green-800 dark:text-green-200',
+      bg: 'bg-positive-50 dark:bg-positive-700/15',
+      border: 'border-positive-500/20 dark:border-positive-700/30',
+      icon: <Lightbulb className="w-5 h-5 text-positive-600 dark:text-positive-500" />,
+      text: 'text-positive-700 dark:text-positive-500',
     },
     success: {
       bg: 'bg-emerald-50 dark:bg-emerald-900/20',
@@ -85,23 +85,23 @@ const ComparisonBlock: React.FC<{
   rightItems: string[];
 }> = ({ leftTitle, rightTitle, leftItems, rightItems }) => (
   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-      <h4 className="font-bold text-blue-800 dark:text-blue-200 mb-3">{leftTitle}</h4>
+    <div className="bg-primary-50 dark:bg-primary-900/20 rounded-lg p-4">
+      <h4 className="font-bold text-primary-700 dark:text-primary-200 mb-3">{leftTitle}</h4>
       <ul className="space-y-2">
         {leftItems.map((item, i) => (
-          <li key={i} className="flex items-start gap-2 text-sm text-blue-700 dark:text-blue-300">
-            <span className="text-blue-500 mt-1">•</span>
+          <li key={i} className="flex items-start gap-2 text-sm text-primary-700 dark:text-primary-300">
+            <span className="text-primary-600 mt-1">•</span>
             {item}
           </li>
         ))}
       </ul>
     </div>
-    <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4">
-      <h4 className="font-bold text-purple-800 dark:text-purple-200 mb-3">{rightTitle}</h4>
+    <div className="bg-surface-subtle dark:bg-trading-dark-700 rounded-lg p-4">
+      <h4 className="font-bold text-ink-800 dark:text-purple-200 mb-3">{rightTitle}</h4>
       <ul className="space-y-2">
         {rightItems.map((item, i) => (
-          <li key={i} className="flex items-start gap-2 text-sm text-purple-700 dark:text-purple-300">
-            <span className="text-purple-500 mt-1">•</span>
+          <li key={i} className="flex items-start gap-2 text-sm text-ink-700 dark:text-ink-300">
+            <span className="text-ink-500 mt-1">•</span>
             {item}
           </li>
         ))}
@@ -163,10 +163,10 @@ const ExampleBlock: React.FC<{ content: string; caption?: string }> = ({ content
 );
 
 const AnalogyBlock: React.FC<{ content: string; caption?: string }> = ({ content, caption }) => (
-  <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-lg p-4 border border-amber-200 dark:border-amber-800">
+  <div className="bg-gradient-to-r from-caution-50 to-caution-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-lg p-4 border border-caution-500/30 dark:border-caution-600/40">
     <div className="flex items-center gap-2 mb-2">
       <span className="text-xl">💡</span>
-      {caption && <span className="font-semibold text-amber-800 dark:text-amber-200">{caption}</span>}
+      {caption && <span className="font-semibold text-caution-600 dark:text-amber-200">{caption}</span>}
     </div>
     <p className="text-sm text-amber-900 dark:text-amber-100 whitespace-pre-wrap">{content}</p>
   </div>
@@ -174,7 +174,7 @@ const AnalogyBlock: React.FC<{ content: string; caption?: string }> = ({ content
 
 const FormulaBlock: React.FC<{ content: string }> = ({ content }) => (
   <div className="bg-gray-900 dark:bg-gray-950 rounded-lg p-4 text-center">
-    <code className="text-green-400 font-mono text-lg">{content}</code>
+    <code className="text-positive-500 font-mono text-lg">{content}</code>
   </div>
 );
 
@@ -263,12 +263,12 @@ const Quiz: React.FC<QuizProps> = ({ quiz, onComplete }) => {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-xl p-6 text-center">
         <div className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4 ${
-          passed ? 'bg-green-100 dark:bg-green-900/30' : 'bg-red-100 dark:bg-red-900/30'
+          passed ? 'bg-positive-50 dark:bg-positive-700/25' : 'bg-negative-50 dark:bg-negative-700/25'
         }`}>
           {passed ? (
-            <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
+            <CheckCircle className="w-8 h-8 text-positive-600 dark:text-positive-500" />
           ) : (
-            <AlertTriangle className="w-8 h-8 text-red-600 dark:text-red-400" />
+            <AlertTriangle className="w-8 h-8 text-negative-600 dark:text-negative-500" />
           )}
         </div>
         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
@@ -306,9 +306,9 @@ const Quiz: React.FC<QuizProps> = ({ quiz, onComplete }) => {
           if (!isAnswered) {
             buttonClass += 'border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600 hover:bg-gray-50 dark:hover:bg-gray-700';
           } else if (isCorrectOption) {
-            buttonClass += 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200';
+            buttonClass += 'border-positive-500 bg-positive-50 dark:bg-positive-700/15 text-positive-700 dark:text-positive-500';
           } else if (isSelected) {
-            buttonClass += 'border-red-500 bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200';
+            buttonClass += 'border-negative-500 bg-negative-50 dark:bg-negative-700/15 text-negative-700 dark:text-negative-500';
           } else {
             buttonClass += 'border-gray-200 dark:border-gray-700 opacity-50';
           }
@@ -332,8 +332,8 @@ const Quiz: React.FC<QuizProps> = ({ quiz, onComplete }) => {
       </div>
 
       {showExplanation && (
-        <div className={`mt-4 p-4 rounded-lg ${isCorrect ? 'bg-green-50 dark:bg-green-900/20' : 'bg-amber-50 dark:bg-amber-900/20'}`}>
-          <p className={`text-sm ${isCorrect ? 'text-green-800 dark:text-green-200' : 'text-amber-800 dark:text-amber-200'}`}>
+        <div className={`mt-4 p-4 rounded-lg ${isCorrect ? 'bg-positive-50 dark:bg-positive-700/15' : 'bg-caution-50 dark:bg-caution-600/15'}`}>
+          <p className={`text-sm ${isCorrect ? 'text-positive-700 dark:text-positive-500' : 'text-caution-600 dark:text-amber-200'}`}>
             <strong>{isCorrect ? 'Correct!' : 'Uitleg:'}</strong> {question.explanation}
           </p>
         </div>
@@ -420,7 +420,7 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
             +{lesson.creditsAwarded} credits
           </span>
           {isCompleted && (
-            <span className="flex items-center gap-1 text-green-600 dark:text-green-400">
+            <span className="flex items-center gap-1 text-positive-600 dark:text-positive-500">
               <CheckCircle className="w-4 h-4" />
               Voltooid
             </span>
@@ -517,7 +517,7 @@ const ChapterCard: React.FC<ChapterCardProps> = ({ chapter, completedLessons, is
             </span>
             <span>{totalCount} lessen</span>
             {completedCount > 0 && (
-              <span className="text-green-600 dark:text-green-400">
+              <span className="text-positive-600 dark:text-positive-500">
                 {completedCount}/{totalCount} voltooid
               </span>
             )}
@@ -535,7 +535,7 @@ const ChapterCard: React.FC<ChapterCardProps> = ({ chapter, completedLessons, is
         <div className="px-4 pb-2">
           <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
             <div
-              className="h-full bg-green-500 rounded-full transition-all duration-300"
+              className="h-full bg-positive-500 rounded-full transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -556,11 +556,11 @@ const ChapterCard: React.FC<ChapterCardProps> = ({ chapter, completedLessons, is
               >
                 <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
                   isLessonCompleted
-                    ? 'bg-green-100 dark:bg-green-900/30'
+                    ? 'bg-positive-50 dark:bg-positive-700/25'
                     : 'bg-gray-100 dark:bg-gray-700'
                 }`}>
                   {isLessonCompleted ? (
-                    <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
+                    <CheckCircle className="w-4 h-4 text-positive-600 dark:text-positive-500" />
                   ) : (
                     <span className="text-xs text-gray-500">{index + 1}</span>
                   )}
@@ -680,9 +680,9 @@ export const EducationCurriculum: React.FC<EducationCurriculumProps> = ({ defaul
 
       {/* Level description */}
       {isLevelLocked && (
-        <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4 flex items-center gap-3">
-          <Lock className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-          <p className="text-sm text-amber-800 dark:text-amber-200">
+        <div className="bg-caution-50 dark:bg-caution-600/15 border border-caution-500/30 dark:border-caution-600/40 rounded-lg p-4 flex items-center gap-3">
+          <Lock className="w-5 h-5 text-caution-600 dark:text-caution-500" />
+          <p className="text-sm text-caution-600 dark:text-amber-200">
             Dit niveau is nog vergrendeld. Voltooi eerst de vorige niveaus of ontgrendel dit niveau in je profiel.
           </p>
         </div>

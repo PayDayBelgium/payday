@@ -75,12 +75,12 @@ export const LEAPSStrategy: React.FC = () => {
             onClick={() => setActiveTab('positions')}
             className={`px-4 py-2 font-medium transition-colors flex items-center gap-2 ${
               activeTab === 'positions'
-                ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
+                ? 'text-primary-700 dark:text-primary-300 border-b-2 border-primary-700 dark:border-primary-400'
                 : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
             }`}
           >
             Posities
-            <span className="px-2 py-0.5 rounded-full text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
+            <span className="px-2 py-0.5 rounded-full text-xs bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
               0
             </span>
           </button>
@@ -88,14 +88,14 @@ export const LEAPSStrategy: React.FC = () => {
             onClick={() => setActiveTab('rules')}
             className={`px-4 py-2 font-medium transition-colors flex items-center gap-2 ${
               activeTab === 'rules'
-                ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
+                ? 'text-primary-700 dark:text-primary-300 border-b-2 border-primary-700 dark:border-primary-400'
                 : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
             }`}
           >
             <ListTodo className="w-4 h-4" />
             Regels
             {strategyRules.length > 0 && (
-              <span className="px-2 py-0.5 rounded-full text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
+              <span className="px-2 py-0.5 rounded-full text-xs bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
                 {strategyRules.length}
               </span>
             )}
@@ -104,7 +104,7 @@ export const LEAPSStrategy: React.FC = () => {
             onClick={() => setActiveTab('info')}
             className={`px-4 py-2 font-medium transition-colors flex items-center gap-2 ${
               activeTab === 'info'
-                ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
+                ? 'text-primary-700 dark:text-primary-300 border-b-2 border-primary-700 dark:border-primary-400'
                 : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
             }`}
           >
@@ -115,7 +115,7 @@ export const LEAPSStrategy: React.FC = () => {
         {(activeTab === 'positions' || activeTab === 'rules') && (
           <button
             onClick={() => activeTab === 'positions' ? {} : handleAddRule()}
-            className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 bg-primary-700 hover:bg-primary-800 text-white rounded-lg text-sm font-medium transition-colors"
           >
             <Plus className="w-4 h-4" />
             {activeTab === 'positions' ? 'LEAP Toevoegen' : 'Regel Toevoegen'}
@@ -130,7 +130,7 @@ export const LEAPSStrategy: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <p className="text-sm text-gray-600 dark:text-gray-400">Totale Waarde</p>
-          <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">$0.00</p>
+          <p className="text-2xl font-bold text-primary-700 dark:text-primary-300 mt-1">$0.00</p>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <p className="text-sm text-gray-600 dark:text-gray-400">Aantal LEAPS</p>
@@ -143,7 +143,7 @@ export const LEAPSStrategy: React.FC = () => {
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <p className="text-sm text-gray-600 dark:text-gray-400">Beschikbaar voor Calls</p>
-          <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">0</p>
+          <p className="text-2xl font-bold text-primary-700 dark:text-primary-300 mt-1">0</p>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Niet gedekt met calls</p>
         </div>
       </div>
@@ -157,7 +157,7 @@ export const LEAPSStrategy: React.FC = () => {
         <p className="text-gray-600 dark:text-gray-400 mb-4">
           Voeg LEAPS toe om exposure te krijgen met minder kapitaal
         </p>
-        <button className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
+        <button className="px-6 py-3 bg-primary-700 hover:bg-primary-800 text-white rounded-lg font-medium transition-colors">
           Voeg je eerste LEAP toe
         </button>
       </div>
@@ -168,9 +168,9 @@ export const LEAPSStrategy: React.FC = () => {
       {activeTab === 'info' && (
         <div className="space-y-6">
           {/* Education Section */}
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-500/30 rounded-lg p-6">
+          <div className="bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-700/30 rounded-lg p-6">
             <div className="flex items-start gap-3">
-              <Lightbulb className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+              <Lightbulb className="w-5 h-5 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
               <div className="flex-1 space-y-6">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
@@ -183,19 +183,19 @@ export const LEAPSStrategy: React.FC = () => {
                   </p>
                   <div className="space-y-2">
                     <div className="flex items-start gap-2">
-                      <ArrowRight className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                      <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                       <p className="text-sm text-gray-700 dark:text-gray-300">
                         <strong>Voordeel:</strong> Minder kapitaal nodig dan 100 aandelen kopen
                       </p>
                     </div>
                     <div className="flex items-start gap-2">
-                      <ArrowRight className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                      <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                       <p className="text-sm text-gray-700 dark:text-gray-300">
                         <strong>Leverage:</strong> Grotere procentuele winsten bij koersstijgingen
                       </p>
                     </div>
                     <div className="flex items-start gap-2">
-                      <ArrowRight className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                      <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                       <p className="text-sm text-gray-700 dark:text-gray-300">
                         <strong>Covered Calls:</strong> Schrijf calls op je LEAPS om extra premies te verdienen (zoals bij aandelen)
                       </p>
@@ -203,9 +203,9 @@ export const LEAPSStrategy: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-500/30 rounded-lg p-4">
+                <div className="bg-caution-50 dark:bg-caution-600/15 border border-caution-500/30 dark:border-caution-500/30 rounded-lg p-4">
                   <div className="flex items-start gap-3">
-                    <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+                    <AlertCircle className="w-5 h-5 text-caution-600 dark:text-caution-500 mt-0.5 flex-shrink-0" />
                     <div className="flex-1">
                       <h4 className="font-medium text-gray-900 dark:text-white mb-1">
                         Let op: Leverage werkt twee kanten op
@@ -222,9 +222,9 @@ export const LEAPSStrategy: React.FC = () => {
           </div>
 
           {/* Next Steps Section */}
-          <div className="bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/10 dark:to-green-900/10 border border-blue-200 dark:border-blue-500/30 rounded-lg p-6">
+          <div className="bg-gradient-to-r from-primary-50 to-positive-50 dark:from-blue-900/10 dark:to-green-900/10 border border-primary-200 dark:border-primary-700/30 rounded-lg p-6">
             <div className="flex items-start gap-3 mb-4">
-              <GraduationCap className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+              <GraduationCap className="w-5 h-5 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Volgende Stappen
               </h3>
@@ -235,7 +235,7 @@ export const LEAPSStrategy: React.FC = () => {
                   pushNavigation(`/portfolio/${portfolio}/covered-calls`, 'Covered Calls');
                   navigate(`/portfolio/${portfolio}/covered-calls`);
                 }}
-                className="w-full text-left p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-500 transition-colors"
+                className="w-full text-left p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-500 transition-colors"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex-1 text-left">
@@ -252,7 +252,7 @@ export const LEAPSStrategy: React.FC = () => {
                   pushNavigation(`/portfolio/${portfolio}/stocks-etfs`, 'Aandelen & ETFs');
                   navigate(`/portfolio/${portfolio}/stocks-etfs`);
                 }}
-                className="w-full text-left p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-500 transition-colors"
+                className="w-full text-left p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-500 transition-colors"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex-1 text-left">

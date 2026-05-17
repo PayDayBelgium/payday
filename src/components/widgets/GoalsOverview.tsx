@@ -114,14 +114,14 @@ export const GoalsOverview: React.FC = () => {
       <div className="p-6 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Target className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            <Target className="w-6 h-6 text-primary-700 dark:text-primary-300" />
             <h2 className="text-lg font-bold text-gray-900 dark:text-white">
               {t('dashboard.activeGoals')}
             </h2>
           </div>
           <button
             onClick={() => navigate('/journal')}
-            className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            className="text-sm text-primary-700 dark:text-primary-300 hover:underline font-medium"
           >
             {t('dashboard.viewAll')}
           </button>
@@ -136,18 +136,18 @@ export const GoalsOverview: React.FC = () => {
           return (
             <div
               key={goal.id}
-              className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 transition-colors cursor-pointer"
+              className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-primary-300 dark:hover:border-primary-500 transition-colors cursor-pointer"
               onClick={() => navigate('/journal')}
             >
               {/* Header */}
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-medium px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded">
+                    <span className="text-xs font-medium px-2 py-0.5 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded">
                       {getGoalTypeLabel(goal.type)}
                     </span>
                     {overdue && (
-                      <span className="text-xs font-medium px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded">
+                      <span className="text-xs font-medium px-2 py-0.5 bg-negative-50 dark:bg-negative-700/25 text-negative-700 dark:text-negative-500 rounded">
                         {t('dashboard.overdue')}
                       </span>
                     )}
@@ -177,12 +177,12 @@ export const GoalsOverview: React.FC = () => {
                   <div
                     className={`h-full rounded-full transition-all duration-500 ${
                       progress >= 100
-                        ? 'bg-green-500'
+                        ? 'bg-positive-500'
                         : progress >= 75
-                        ? 'bg-blue-500'
+                        ? 'bg-primary-500'
                         : progress >= 50
-                        ? 'bg-yellow-500'
-                        : 'bg-orange-500'
+                        ? 'bg-caution-500'
+                        : 'bg-caution-500'
                     }`}
                     style={{ width: `${progress}%` }}
                   />
@@ -202,15 +202,15 @@ export const GoalsOverview: React.FC = () => {
                   </div>
                   {goal.deadline && (
                     <div className="flex items-center gap-1.5">
-                      <Calendar className={`w-4 h-4 ${overdue ? 'text-red-500' : 'text-gray-500 dark:text-gray-400'}`} />
-                      <span className={`${overdue ? 'text-red-600 dark:text-red-400 font-medium' : 'text-gray-700 dark:text-gray-300'}`}>
+                      <Calendar className={`w-4 h-4 ${overdue ? 'text-negative-600' : 'text-gray-500 dark:text-gray-400'}`} />
+                      <span className={`${overdue ? 'text-negative-600 dark:text-negative-500 font-medium' : 'text-gray-700 dark:text-gray-300'}`}>
                         {formatDate(goal.deadline)}
                       </span>
                     </div>
                   )}
                 </div>
                 {progress >= 100 && (
-                  <CheckCircle2 className="w-5 h-5 text-green-500" />
+                  <CheckCircle2 className="w-5 h-5 text-positive-600" />
                 )}
               </div>
             </div>
@@ -220,7 +220,7 @@ export const GoalsOverview: React.FC = () => {
         {activeGoals.length > 3 && (
           <button
             onClick={() => navigate('/journal')}
-            className="w-full py-2.5 text-sm font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+            className="w-full py-2.5 text-sm font-medium text-primary-700 dark:text-primary-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
           >
             {t('dashboard.viewAllGoals', { count: activeGoals.length - 3 })}
           </button>

@@ -1,0 +1,18 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# SPA fallback — every unknown route falls through to index.html so React Router takes over.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Cache-busting headers for the built JS/CSS bundles (Vite already fingerprints filenames).
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

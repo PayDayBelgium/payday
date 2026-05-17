@@ -214,9 +214,9 @@ export const CoveredCallSimulator: React.FC = () => {
     highlight?: 'green' | 'red' | 'blue' | 'none';
   }> = ({ label, value, tooltip, highlight = 'none' }) => {
     const highlightClasses = {
-      green: 'text-green-600 dark:text-green-400',
-      red: 'text-red-600 dark:text-red-400',
-      blue: 'text-blue-600 dark:text-blue-400',
+      green: 'text-positive-600 dark:text-positive-500',
+      red: 'text-negative-600 dark:text-negative-500',
+      blue: 'text-primary-700 dark:text-primary-300',
       none: 'text-gray-900 dark:text-white',
     };
 
@@ -243,28 +243,12 @@ export const CoveredCallSimulator: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="p-2 bg-primary-100 dark:bg-primary-900/30 rounded-lg">
-            <Calculator className="w-6 h-6 text-primary-600 dark:text-primary-400" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-              Covered Call Simulator
-            </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Bereken het rendement van covered calls op je aandelen
-            </p>
-          </div>
-        </div>
-
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-          <p className="text-sm text-blue-800 dark:text-blue-200">
-            <strong>Wat is een Covered Call?</strong> Je verkoopt een call optie op aandelen die je bezit.
-            Je ontvangt premium als inkomen, maar als de koers boven de strike komt, worden je aandelen mogelijk weggeroepen.
-          </p>
-        </div>
+      {/* Explanatory note — title is provided by the global header */}
+      <div className="bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 rounded-lg p-4">
+        <p className="text-sm text-primary-700 dark:text-primary-200">
+          <strong>Wat is een Covered Call?</strong> Je verkoopt een call optie op aandelen die je bezit.
+          Je ontvangt premium als inkomen, maar als de koers boven de strike komt, worden je aandelen mogelijk weggeroepen.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -387,7 +371,7 @@ export const CoveredCallSimulator: React.FC = () => {
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
               {inputs.stockPrice > 0 && inputs.strikePrice > 0 && (
-                <p className={`text-xs mt-1 ${inputs.strikePrice >= inputs.stockPrice ? 'text-green-600' : 'text-amber-600'}`}>
+                <p className={`text-xs mt-1 ${inputs.strikePrice >= inputs.stockPrice ? 'text-positive-600' : 'text-caution-600'}`}>
                   {inputs.strikePrice >= inputs.stockPrice
                     ? `${((inputs.strikePrice - inputs.stockPrice) / inputs.stockPrice * 100).toFixed(1)}% boven huidige prijs (OTM)`
                     : `${((inputs.stockPrice - inputs.strikePrice) / inputs.stockPrice * 100).toFixed(1)}% onder huidige prijs (ITM)`
@@ -430,28 +414,28 @@ export const CoveredCallSimulator: React.FC = () => {
             <>
               {/* Summary Cards */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 border border-green-200 dark:border-green-800">
+                <div className="bg-positive-50 dark:bg-positive-700/15 rounded-xl p-4 border border-positive-500/20 dark:border-positive-700/30">
                   <div className="flex items-center gap-2 mb-2">
-                    <DollarSign className="w-5 h-5 text-green-600 dark:text-green-400" />
-                    <span className="text-sm text-green-700 dark:text-green-300">Premium Inkomen</span>
+                    <DollarSign className="w-5 h-5 text-positive-600 dark:text-positive-500" />
+                    <span className="text-sm text-positive-700 dark:text-positive-500">Premium Inkomen</span>
                   </div>
-                  <p className="text-2xl font-bold text-green-700 dark:text-green-300">
+                  <p className="text-2xl font-bold text-positive-700 dark:text-positive-500">
                     ${formatNumber(results.totalPremium)}
                   </p>
-                  <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                  <p className="text-xs text-positive-600 dark:text-positive-500 mt-1">
                     {results.contracts} contract(en)
                   </p>
                 </div>
 
-                <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
+                <div className="bg-primary-50 dark:bg-primary-900/20 rounded-xl p-4 border border-primary-200 dark:border-primary-800">
                   <div className="flex items-center gap-2 mb-2">
-                    <Percent className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                    <span className="text-sm text-blue-700 dark:text-blue-300">Rendement</span>
+                    <Percent className="w-5 h-5 text-primary-700 dark:text-primary-300" />
+                    <span className="text-sm text-primary-700 dark:text-primary-300">Rendement</span>
                   </div>
-                  <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">
+                  <p className="text-2xl font-bold text-primary-700 dark:text-primary-300">
                     {results.premiumReturn.toFixed(2)}%
                   </p>
-                  <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                  <p className="text-xs text-primary-700 dark:text-primary-300 mt-1">
                     {results.annualizedPremiumReturn.toFixed(1)}% annualized
                   </p>
                 </div>

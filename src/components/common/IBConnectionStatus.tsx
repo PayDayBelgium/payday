@@ -35,24 +35,24 @@ export const IBConnectionStatus: React.FC<IBConnectionStatusProps> = ({
       case 'connected':
         return {
           icon: Wifi,
-          color: 'text-green-600 dark:text-green-400',
-          bgColor: 'bg-green-100 dark:bg-green-900/30',
+          color: 'text-positive-600 dark:text-positive-500',
+          bgColor: 'bg-positive-50 dark:bg-positive-700/25',
           label: 'Connected',
           pulse: false,
         };
       case 'connecting':
         return {
           icon: RefreshCw,
-          color: 'text-blue-600 dark:text-blue-400',
-          bgColor: 'bg-blue-100 dark:bg-blue-900/30',
+          color: 'text-primary-700 dark:text-primary-300',
+          bgColor: 'bg-primary-50 dark:bg-primary-900/30',
           label: 'Connecting...',
           pulse: true,
         };
       case 'error':
         return {
           icon: AlertCircle,
-          color: 'text-red-600 dark:text-red-400',
-          bgColor: 'bg-red-100 dark:bg-red-900/30',
+          color: 'text-negative-600 dark:text-negative-500',
+          bgColor: 'bg-negative-50 dark:bg-negative-700/25',
           label: 'Error',
           pulse: false,
         };
@@ -92,20 +92,20 @@ export const IBConnectionStatus: React.FC<IBConnectionStatusProps> = ({
         </button>
 
         {/* Tooltip */}
-        <div className="absolute right-0 top-full mt-2 hidden group-hover:block w-72 bg-gray-50 dark:bg-gray-50 text-gray-900 text-xs rounded-lg shadow-lg border-2 border-blue-900 z-50 overflow-hidden">
+        <div className="absolute right-0 top-full mt-2 hidden group-hover:block w-72 bg-gray-50 dark:bg-gray-50 text-gray-900 text-xs rounded-lg shadow-lg border-2 border-primary-900 z-50 overflow-hidden">
           <div className="p-3">
             <p className="font-bold mb-1 text-gray-900">IB TWS Connection</p>
             <p className={`${
-              status === 'connected' ? 'text-green-600' :
-              status === 'connecting' ? 'text-blue-600' :
-              status === 'error' ? 'text-red-600' :
+              status === 'connected' ? 'text-positive-600' :
+              status === 'connecting' ? 'text-primary-700' :
+              status === 'error' ? 'text-negative-600' :
               'text-gray-600'
             } font-semibold`}>
               {config.label}
             </p>
             {error && (
-              <div className="mt-2 p-2 bg-red-100 rounded border border-red-300">
-                <p className="text-red-700 text-xs">{error}</p>
+              <div className="mt-2 p-2 bg-negative-50 rounded border border-negative-500/30">
+                <p className="text-negative-700 text-xs">{error}</p>
               </div>
             )}
             {lastConnected && status === 'connected' && (
@@ -128,7 +128,7 @@ export const IBConnectionStatus: React.FC<IBConnectionStatusProps> = ({
                   handleRetry();
                 }}
                 disabled={isRetrying}
-                className="w-full px-3 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded transition-colors flex items-center justify-center gap-2"
+                className="w-full px-3 py-2 text-xs font-semibold text-white bg-primary-700 hover:bg-primary-800 disabled:opacity-50 disabled:cursor-not-allowed rounded transition-colors flex items-center justify-center gap-2"
               >
                 <RefreshCw className={`w-3 h-3 ${isRetrying ? 'animate-spin' : ''}`} />
                 {isRetrying ? 'Connecting...' : 'Retry Connection'}
@@ -149,7 +149,7 @@ export const IBConnectionStatus: React.FC<IBConnectionStatusProps> = ({
       {showLabel && (
         <div className="flex-1">
           <p className={`text-sm font-medium ${config.color}`}>{config.label}</p>
-          {error && <p className="text-xs text-red-600 dark:text-red-400 mt-0.5">{error}</p>}
+          {error && <p className="text-xs text-negative-600 dark:text-negative-500 mt-0.5">{error}</p>}
           {lastConnected && status === 'connected' && (
             <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
               Last: {new Date(lastConnected).toLocaleTimeString()}
@@ -167,7 +167,7 @@ export const IBConnectionStatus: React.FC<IBConnectionStatusProps> = ({
         <button
           onClick={handleRetry}
           disabled={isRetrying}
-          className="px-3 py-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-md transition-colors"
+          className="px-3 py-1.5 text-xs font-medium text-white bg-primary-700 hover:bg-primary-800 disabled:opacity-50 rounded-md transition-colors"
         >
           {isRetrying ? 'Retrying...' : 'Retry'}
         </button>

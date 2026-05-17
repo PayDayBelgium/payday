@@ -105,7 +105,7 @@ export const TickerAutocomplete: React.FC<TickerAutocompleteProps> = ({
       {/* Ticker Input with Autocomplete */}
       <div ref={wrapperRef} className="relative">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Ticker symbool {required && <span className="text-red-500">*</span>}
+          Ticker symbool {required && <span className="text-negative-600">*</span>}
         </label>
         <div className="relative">
           <input
@@ -120,7 +120,7 @@ export const TickerAutocomplete: React.FC<TickerAutocompleteProps> = ({
                 setIsOpen(true);
               }
             }}
-            className={`w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent ${className}`}
+            className={`w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent ${className}`}
             placeholder={placeholder}
             autoComplete="off"
           />
@@ -136,9 +136,9 @@ export const TickerAutocomplete: React.FC<TickerAutocompleteProps> = ({
                 type="button"
                 onClick={() => handleSelectSuggestion(suggestion)}
                 onMouseEnter={() => setSelectedIndex(index)}
-                className={`w-full text-left px-4 py-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors ${
+                className={`w-full text-left px-4 py-2 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors ${
                   index === selectedIndex
-                    ? 'bg-blue-50 dark:bg-blue-900/20'
+                    ? 'bg-primary-50 dark:bg-primary-900/20'
                     : ''
                 } ${
                   index === 0
@@ -173,7 +173,7 @@ export const TickerAutocomplete: React.FC<TickerAutocompleteProps> = ({
           type="text"
           value={name}
           onChange={(e) => onNameChange(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           placeholder="Apple Inc."
         />
       </div>

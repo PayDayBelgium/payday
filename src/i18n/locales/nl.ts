@@ -16,8 +16,8 @@ export const nl = {
 
   // Login
   login: {
-    title: 'PayDay',
-    subtitle: 'Welkom terug! Log in op je account.',
+    title: 'Welkom terug',
+    subtitle: 'Log in om verder te gaan met je portefeuilles.',
     username: 'Gebruikersnaam',
     password: 'Wachtwoord',
     language: 'Taal',

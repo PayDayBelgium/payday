@@ -71,13 +71,13 @@ export const UsersList: React.FC = () => {
               placeholder="Search users..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
         </div>
         <button
           onClick={() => navigate('/admin/users/add')}
-          className="flex items-center gap-2 px-6 py-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors shadow-sm"
+          className="flex items-center gap-2 px-6 py-4 bg-primary-700 hover:bg-primary-800 text-white font-medium rounded-lg transition-colors shadow-sm"
         >
           <UserPlus className="w-5 h-5" />
           <span>Add User</span>
@@ -120,8 +120,8 @@ export const UsersList: React.FC = () => {
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center">
-                          <span className="text-blue-600 dark:text-blue-400 font-semibold">
+                        <div className="w-10 h-10 rounded-full bg-primary-500/10 dark:bg-primary-700/20 flex items-center justify-center">
+                          <span className="text-primary-700 dark:text-primary-300 font-semibold">
                             {user.username.charAt(0).toUpperCase()}
                           </span>
                         </div>
@@ -148,7 +148,7 @@ export const UsersList: React.FC = () => {
                           <div className="flex items-center gap-2">
                             <button
                               onClick={(e) => handleDeleteConfirmClick(e, user.username)}
-                              className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700"
+                              className="px-3 py-1 text-sm bg-negative-600 text-white rounded hover:bg-negative-700"
                             >
                               Confirm
                             </button>
@@ -162,7 +162,7 @@ export const UsersList: React.FC = () => {
                         ) : (
                           <button
                             onClick={(e) => handleDeleteClick(e, user.username)}
-                            className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                            className="p-2 text-negative-600 dark:text-negative-500 hover:bg-negative-50 dark:hover:bg-negative-700/20 rounded-lg transition-colors"
                             title="Delete user"
                           >
                             <Trash2 className="w-4 h-4" />

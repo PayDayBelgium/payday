@@ -59,7 +59,7 @@ export const AccountSettings: React.FC = () => {
             <select
               value={nationality || 'OTHER'}
               onChange={(e) => handleNationalityChange(e.target.value as NationalityType)}
-              className="w-full px-3 py-2 text-sm bg-gray-100 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 text-sm bg-gray-100 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               <option value="BE">België (BE)</option>
               <option value="NL">Nederland (NL)</option>
@@ -74,12 +74,12 @@ export const AccountSettings: React.FC = () => {
       </div>
 
       {/* Danger zone */}
-      <div className="bg-red-50 dark:bg-red-900/20 rounded-lg border-2 border-red-200 dark:border-red-800 p-6">
+      <div className="bg-negative-50 dark:bg-negative-700/15 rounded-lg border-2 border-negative-500/20 dark:border-negative-700/30 p-6">
         <div className="flex items-start gap-3 mb-4">
-          <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+          <AlertTriangle className="w-6 h-6 text-negative-600 dark:text-negative-500 flex-shrink-0 mt-0.5" />
           <div>
-            <h2 className="text-xl font-bold text-red-900 dark:text-red-400 mb-2">Danger zone</h2>
-            <p className="text-sm text-red-700 dark:text-red-300">
+            <h2 className="text-xl font-bold text-negative-700 dark:text-negative-500 mb-2">Danger zone</h2>
+            <p className="text-sm text-negative-700 dark:text-negative-500">
               These actions are permanent and cannot be undone. Please be careful!
             </p>
           </div>
@@ -88,14 +88,14 @@ export const AccountSettings: React.FC = () => {
         {!showResetConfirm ? (
           <button
             onClick={() => setShowResetConfirm(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-negative-600 hover:bg-negative-700 text-white rounded-lg font-medium transition-colors"
           >
             <Trash2 className="w-4 h-4" />
             Full application reset
           </button>
         ) : (
           <div className="space-y-4">
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-red-300 dark:border-red-700">
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-negative-500/30 dark:border-negative-700">
               <p className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
                 ⚠️ This will delete ALL data for ALL users:
               </p>
@@ -106,7 +106,7 @@ export const AccountSettings: React.FC = () => {
                 <li>All user accounts and login information</li>
                 <li>All application settings</li>
               </ul>
-              <p className="text-sm font-semibold text-red-600 dark:text-red-400 mt-3">
+              <p className="text-sm font-semibold text-negative-600 dark:text-negative-500 mt-3">
                 This action is PERMANENT and CANNOT be undone!
               </p>
             </div>
@@ -119,7 +119,7 @@ export const AccountSettings: React.FC = () => {
               </button>
               <button
                 onClick={handleFullReset}
-                className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-negative-600 hover:bg-negative-700 text-white rounded-lg font-medium transition-colors"
               >
                 <Trash2 className="w-4 h-4" />
                 Yes, delete everything

@@ -1,0 +1,40 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - img "PayDay" [ref=e8]
+          - generic [ref=e9]:
+            - heading "PayDay" [level=1] [ref=e10]
+            - paragraph [ref=e11]: Trading workspace
+        - button "Collapse sidebar" [ref=e12] [cursor=pointer]:
+          - img [ref=e13]
+      - generic [ref=e15]:
+        - button "Click to connect" [ref=e17] [cursor=pointer]:
+          - img [ref=e18]
+        - button "Help Portal" [ref=e25] [cursor=pointer]:
+          - img [ref=e26]
+        - button "S" [ref=e30] [cursor=pointer]
+  - complementary [ref=e31]:
+    - navigation [ref=e32]:
+      - paragraph [ref=e33]: Overzicht
+      - link "Dashboard" [ref=e34] [cursor=pointer]:
+        - /url: /
+        - img [ref=e36]
+        - generic [ref=e41]: Dashboard
+      - link "Jouw Reis" [ref=e42] [cursor=pointer]:
+        - /url: /mission
+        - img [ref=e43]
+        - generic [ref=e45]: Jouw Reis
+      - generic [ref=e46]:
+        - paragraph [ref=e47]: Tools
+        - link "Ticker overview" [ref=e48] [cursor=pointer]:
+          - /url: /tickers
+          - img [ref=e49]
+          - generic [ref=e52]: Ticker overview
+        - link "Meerwaardebelasting" [ref=e53] [cursor=pointer]:
+          - /url: /tools/capital-gains-tax
+          - img [ref=e54]
+          - generic [ref=e57]: Meerwaardebelasting
+    - paragraph [ref=e59]: PayDay v1.0
+  - main [ref=e60]

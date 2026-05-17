@@ -126,8 +126,8 @@ export const OptionRow: React.FC<OptionRowProps> = ({
         {/* Icon */}
         <div className={`w-8 h-8 rounded flex items-center justify-center flex-shrink-0 ${
           isCall
-            ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
-            : 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400'
+            ? 'bg-positive-50 dark:bg-positive-700/25 text-positive-600 dark:text-positive-500'
+            : 'bg-surface-muted dark:bg-trading-dark-600 text-ink-600 dark:text-ink-300'
         }`}>
           {isCall ? (
             <ArrowUpCircle className="w-4 h-4" />
@@ -148,8 +148,8 @@ export const OptionRow: React.FC<OptionRowProps> = ({
               onMouseLeave={() => setShowTooltip(null)}
               className={`inline-flex items-center px-1.5 py-0.5 text-[10px] font-semibold rounded cursor-help ${
                 isBuy
-                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
-                  : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400'
+                  ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                  : 'bg-caution-50 dark:bg-caution-600/25 text-caution-600 dark:text-caution-500'
               }`}>
               {isBuy ? t('optionRow.long') : t('optionRow.short')}
               <PortalTooltip
@@ -165,13 +165,13 @@ export const OptionRow: React.FC<OptionRowProps> = ({
             </span>
             <span className={`inline-flex items-center px-1.5 py-0.5 text-[10px] font-semibold rounded ${
               isCall
-                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400'
+                ? 'bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500'
+                : 'bg-surface-muted dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300'
             }`}>
               {isCall ? t('optionRow.call') : t('optionRow.put')}
             </span>
             {isLEAPS && (
-              <span className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-semibold rounded bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400">
+              <span className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-semibold rounded bg-caution-50 dark:bg-caution-600/25 text-caution-600 dark:text-caution-500">
                 {t('optionRow.leaps')}
               </span>
             )}
@@ -182,15 +182,15 @@ export const OptionRow: React.FC<OptionRowProps> = ({
                   onMouseEnter={() => setShowTooltip(`alert-${option.id}`)}
                   onMouseLeave={() => setShowTooltip(null)}
                 >
-                  <AlertCircle className="w-3.5 h-3.5 text-red-600 dark:text-red-400 cursor-help" />
+                  <AlertCircle className="w-3.5 h-3.5 text-negative-600 dark:text-negative-500 cursor-help" />
                 </div>
                 <PortalTooltip
                   triggerRef={getTooltipRef(`alert-${option.id}`)}
                   show={showTooltip === `alert-${option.id}`}
                 >
-                  <div className="w-72 p-3 bg-white dark:bg-gray-800 border-2 border-red-200 dark:border-red-800 rounded-lg shadow-xl">
+                  <div className="w-72 p-3 bg-white dark:bg-gray-800 border-2 border-negative-500/20 dark:border-negative-700/30 rounded-lg shadow-xl">
                     <div className="flex items-start gap-2">
-                      <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                      <AlertCircle className="w-4 h-4 text-negative-600 dark:text-negative-500 flex-shrink-0 mt-0.5" />
                       <div>
                         <p className="font-semibold text-sm text-gray-900 dark:text-white mb-1">{t('optionRow.alert')}</p>
                         <p className="text-xs text-gray-600 dark:text-gray-300 whitespace-pre-line">{alertMessage}</p>
@@ -207,15 +207,15 @@ export const OptionRow: React.FC<OptionRowProps> = ({
                   onMouseEnter={() => setShowTooltip(`opportunity-${option.id}`)}
                   onMouseLeave={() => setShowTooltip(null)}
                 >
-                  <Target className="w-3.5 h-3.5 text-green-600 dark:text-green-400 cursor-help" />
+                  <Target className="w-3.5 h-3.5 text-positive-600 dark:text-positive-500 cursor-help" />
                 </div>
                 <PortalTooltip
                   triggerRef={getTooltipRef(`opportunity-${option.id}`)}
                   show={showTooltip === `opportunity-${option.id}`}
                 >
-                  <div className="w-72 p-3 bg-white dark:bg-gray-800 border-2 border-green-200 dark:border-green-800 rounded-lg shadow-xl">
+                  <div className="w-72 p-3 bg-white dark:bg-gray-800 border-2 border-positive-500/20 dark:border-positive-700/30 rounded-lg shadow-xl">
                     <div className="flex items-start gap-2">
-                      <Target className="w-4 h-4 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+                      <Target className="w-4 h-4 text-positive-600 dark:text-positive-500 flex-shrink-0 mt-0.5" />
                       <div>
                         <p className="font-semibold text-sm text-gray-900 dark:text-white mb-1">{t('optionRow.opportunity')}</p>
                         <p className="text-xs text-gray-600 dark:text-gray-300 whitespace-pre-line">{opportunityMessage}</p>
@@ -236,15 +236,15 @@ export const OptionRow: React.FC<OptionRowProps> = ({
                     onMouseEnter={() => setShowTooltip(`notes-${option.id}`)}
                     onMouseLeave={() => setShowTooltip(null)}
                   >
-                    <MessageSquare className="w-3 h-3 text-blue-500 dark:text-blue-400 cursor-help" />
+                    <MessageSquare className="w-3 h-3 text-primary-600 dark:text-primary-300 cursor-help" />
                   </div>
                   <PortalTooltip
                     triggerRef={getTooltipRef(`notes-${option.id}`)}
                     show={showTooltip === `notes-${option.id}`}
                   >
-                    <div className="w-72 p-3 bg-white dark:bg-gray-800 border-2 border-blue-200 dark:border-blue-800 rounded-lg shadow-xl">
+                    <div className="w-72 p-3 bg-white dark:bg-gray-800 border-2 border-primary-200 dark:border-primary-800 rounded-lg shadow-xl">
                       <div className="flex items-start gap-2">
-                        <MessageSquare className="w-4 h-4 text-blue-500 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+                        <MessageSquare className="w-4 h-4 text-primary-600 dark:text-primary-300 flex-shrink-0 mt-0.5" />
                         <div>
                           <p className="font-semibold text-sm text-gray-900 dark:text-white mb-1">{t('optionRow.note')}</p>
                           <p className="text-xs text-gray-600 dark:text-gray-300 whitespace-pre-line">{displayNotes}</p>
@@ -268,9 +268,9 @@ export const OptionRow: React.FC<OptionRowProps> = ({
           </p>
           <p className={`text-xs ${
             expiresThisWeek
-              ? 'text-red-600 dark:text-red-400 font-semibold'
+              ? 'text-negative-600 dark:text-negative-500 font-semibold'
               : expiresWithinTwoWeeks
-              ? 'text-amber-500 dark:text-amber-400 font-semibold'
+              ? 'text-caution-500 dark:text-caution-500 font-semibold'
               : 'text-gray-500 dark:text-gray-400'
           }`}>
             {daysToExpiration > 0 ? `${daysToExpiration}d` : daysToExpiration === 0 ? t('optionRow.today') : t('optionRow.expired')}
@@ -309,7 +309,7 @@ export const OptionRow: React.FC<OptionRowProps> = ({
                   ? (isCall ? priceDifference < 0 : priceDifference > 0)
                   : (isCall ? priceDifference > 0 : priceDifference < 0);
 
-                if (isBadForPosition) return 'text-red-600 dark:text-red-400';
+                if (isBadForPosition) return 'text-negative-600 dark:text-negative-500';
                 return 'text-gray-900 dark:text-white';
               })()
             }`}>
@@ -344,18 +344,18 @@ export const OptionRow: React.FC<OptionRowProps> = ({
         <div>
           <p className={`text-sm font-bold ${
             nominalProfit > 0
-              ? 'text-green-600 dark:text-green-400'
+              ? 'text-positive-600 dark:text-positive-500'
               : nominalProfit < 0
-              ? 'text-red-600 dark:text-red-400'
+              ? 'text-negative-600 dark:text-negative-500'
               : 'text-gray-900 dark:text-white'
           }`}>
             {nominalProfit > 0 ? '+' : ''}{formatCurrency(nominalProfit, currencySymbol)}
           </p>
           <p className={`text-xs font-medium ${
             nominalProfit > 0
-              ? 'text-green-600 dark:text-green-400'
+              ? 'text-positive-600 dark:text-positive-500'
               : nominalProfit < 0
-              ? 'text-red-600 dark:text-red-400'
+              ? 'text-negative-600 dark:text-negative-500'
               : 'text-gray-900 dark:text-white'
           }`}>
             {nominalProfit > 0 ? '+' : ''}{formatNumber(profitPercent)}%
@@ -374,14 +374,14 @@ export const OptionRow: React.FC<OptionRowProps> = ({
               >
                 <p className={`text-sm font-semibold ${
                   collateralType === 'cash'
-                    ? 'text-orange-600 dark:text-orange-400'
+                    ? 'text-caution-600 dark:text-caution-500'
                     : collateralType === 'stock'
-                    ? 'text-blue-600 dark:text-blue-400'
+                    ? 'text-primary-700 dark:text-primary-300'
                     : collateralType === 'put'
-                    ? 'text-purple-600 dark:text-purple-400'
+                    ? 'text-ink-600 dark:text-ink-300'
                     : collateralType === 'call'
-                    ? 'text-green-600 dark:text-green-400'
-                    : 'text-yellow-600 dark:text-yellow-400'
+                    ? 'text-positive-600 dark:text-positive-500'
+                    : 'text-caution-600 dark:text-caution-500'
                 }`}>
                   {collateralType === 'stock' ? t('optionRow.stockCollateral') : collateralType === 'leaps' ? t('optionRow.leapsCollateral') : collateralType === 'put' ? t('optionRow.putCollateral') : collateralType === 'call' ? t('optionRow.callCollateral') : t('optionRow.cashCollateral')}
                 </p>

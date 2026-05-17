@@ -227,30 +227,30 @@ export const RulesManagement: React.FC = () => {
 
   const getRuleIcon = (category: StrategyRuleCategory) => {
     if (category === 'alert') {
-      return <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400" />;
+      return <AlertCircle className="w-4 h-4 text-caution-600 dark:text-caution-500" />;
     } else if (category === 'opportunity') {
-      return <Target className="w-4 h-4 text-green-600 dark:text-green-400" />;
+      return <Target className="w-4 h-4 text-positive-600 dark:text-positive-500" />;
     } else {
-      return <Lightbulb className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />;
+      return <Lightbulb className="w-4 h-4 text-caution-600 dark:text-caution-500" />;
     }
   };
 
   const getRuleBadge = (category: StrategyRuleCategory) => {
     if (category === 'alert') {
       return (
-        <span className="px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded text-xs font-medium">
+        <span className="px-2 py-1 bg-caution-50 dark:bg-caution-600/25 text-caution-600 dark:text-caution-500 rounded text-xs font-medium">
           Alert
         </span>
       );
     } else if (category === 'opportunity') {
       return (
-        <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded text-xs font-medium">
+        <span className="px-2 py-1 bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 rounded text-xs font-medium">
           Opportunity
         </span>
       );
     } else {
       return (
-        <span className="px-2 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 rounded text-xs font-medium">
+        <span className="px-2 py-1 bg-caution-50 dark:bg-caution-600/25 text-caution-600 dark:text-caution-500 rounded text-xs font-medium">
           Idea
         </span>
       );
@@ -397,7 +397,7 @@ export const RulesManagement: React.FC = () => {
           </div>
           <button
             onClick={handleStartWizard}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-primary-700 hover:bg-primary-800 text-white rounded-lg font-medium transition-colors"
           >
             <Plus className="w-4 h-4" />
             Regel Toevoegen
@@ -418,10 +418,10 @@ export const RulesManagement: React.FC = () => {
                 <div className="grid grid-cols-1 gap-4">
                   <button
                     onClick={() => handleSelectAssetType('stocks-etfs')}
-                    className="p-6 border-2 border-gray-200 dark:border-gray-700 rounded-lg hover:border-blue-500 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-all text-left"
+                    className="p-6 border-2 border-gray-200 dark:border-gray-700 rounded-lg hover:border-primary-500 dark:hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/10 transition-all text-left"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
+                      <div className="p-3 bg-primary-50 dark:bg-primary-900/30 rounded-lg text-primary-700 dark:text-primary-300">
                         {getAssetTypeIcon('stocks-etfs')}
                       </div>
                       <div>
@@ -437,10 +437,10 @@ export const RulesManagement: React.FC = () => {
 
                   <button
                     onClick={() => handleSelectAssetType('options')}
-                    className="p-6 border-2 border-gray-200 dark:border-gray-700 rounded-lg hover:border-green-500 dark:hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/10 transition-all text-left"
+                    className="p-6 border-2 border-gray-200 dark:border-gray-700 rounded-lg hover:border-positive-500 dark:hover:border-positive-500 hover:bg-positive-50 dark:hover:bg-positive-700/10 transition-all text-left"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg text-green-600 dark:text-green-400">
+                      <div className="p-3 bg-positive-50 dark:bg-positive-700/25 rounded-lg text-positive-600 dark:text-positive-500">
                         {getAssetTypeIcon('options')}
                       </div>
                       <div>
@@ -456,10 +456,10 @@ export const RulesManagement: React.FC = () => {
 
                   <button
                     onClick={() => handleSelectAssetType('general')}
-                    className="p-6 border-2 border-gray-200 dark:border-gray-700 rounded-lg hover:border-amber-500 dark:hover:border-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/10 transition-all text-left"
+                    className="p-6 border-2 border-gray-200 dark:border-gray-700 rounded-lg hover:border-caution-500 dark:hover:border-caution-500 hover:bg-caution-50 dark:hover:bg-amber-900/10 transition-all text-left"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="p-3 bg-amber-100 dark:bg-amber-900/30 rounded-lg text-amber-600 dark:text-amber-400">
+                      <div className="p-3 bg-caution-50 dark:bg-caution-600/25 rounded-lg text-caution-600 dark:text-caution-500">
                         {getAssetTypeIcon('general')}
                       </div>
                       <div>
@@ -491,7 +491,7 @@ export const RulesManagement: React.FC = () => {
             {wizardStep === 'configure' && selectedAssetType && (
               <div className="p-6 flex-1 flex flex-col overflow-y-auto">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
+                  <div className="p-2 bg-primary-50 dark:bg-primary-900/30 rounded-lg text-primary-700 dark:text-primary-300">
                     {getAssetTypeIcon(selectedAssetType)}
                   </div>
                   <div>
@@ -513,7 +513,7 @@ export const RulesManagement: React.FC = () => {
                       type="text"
                       value={wizardFormData.name}
                       onChange={(e) => setWizardFormData({ ...wizardFormData, name: e.target.value })}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                       placeholder="bv. Aandeel Gedaald 10%"
                     />
                   </div>
@@ -526,7 +526,7 @@ export const RulesManagement: React.FC = () => {
                       type="text"
                       value={wizardFormData.description}
                       onChange={(e) => setWizardFormData({ ...wizardFormData, description: e.target.value })}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                       placeholder="bv. Alert wanneer een aandeel 10% gedaald is"
                     />
                   </div>
@@ -538,7 +538,7 @@ export const RulesManagement: React.FC = () => {
                     <select
                       value={wizardFormData.category}
                       onChange={(e) => setWizardFormData({ ...wizardFormData, category: e.target.value as StrategyRuleCategory })}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     >
                       <option value="alert">Alert (waarschuwing)</option>
                       <option value="opportunity">Opportunity (kans)</option>
@@ -555,7 +555,7 @@ export const RulesManagement: React.FC = () => {
                         <select
                           value={wizardFormData.trigger}
                           onChange={(e) => setWizardFormData({ ...wizardFormData, trigger: e.target.value as StrategyRuleTrigger })}
-                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                         >
                           <option value="price_increase">Prijs Stijging</option>
                           <option value="price_decrease">Prijs Daling</option>
@@ -570,7 +570,7 @@ export const RulesManagement: React.FC = () => {
                           type="number"
                           value={wizardFormData.percentage || ''}
                           onChange={(e) => setWizardFormData({ ...wizardFormData, percentage: parseFloat(e.target.value) })}
-                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                           placeholder="10"
                           min="0"
                           max="100"
@@ -589,7 +589,7 @@ export const RulesManagement: React.FC = () => {
                         <select
                           value={wizardFormData.trigger}
                           onChange={(e) => setWizardFormData({ ...wizardFormData, trigger: e.target.value as StrategyRuleTrigger })}
-                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                         >
                           <option value="time_based">Tijd tot Expiratie</option>
                           <option value="price_decrease">Waarde Daling (positief bij verkochte opties)</option>
@@ -606,7 +606,7 @@ export const RulesManagement: React.FC = () => {
                             type="number"
                             value={wizardFormData.threshold || ''}
                             onChange={(e) => setWizardFormData({ ...wizardFormData, threshold: parseFloat(e.target.value) })}
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                             placeholder="7"
                             min="1"
                             max="30"
@@ -624,7 +624,7 @@ export const RulesManagement: React.FC = () => {
                             type="number"
                             value={wizardFormData.percentage || ''}
                             onChange={(e) => setWizardFormData({ ...wizardFormData, percentage: parseFloat(e.target.value) })}
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                             placeholder="80"
                             min="0"
                             max="100"
@@ -668,7 +668,7 @@ export const RulesManagement: React.FC = () => {
                     <button
                       onClick={handleSaveRule}
                       disabled={!wizardFormData.name || !wizardFormData.description}
-                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+                      className="px-4 py-2 bg-primary-700 hover:bg-primary-800 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
                     >
                       Opslaan
                     </button>
@@ -705,7 +705,7 @@ export const RulesManagement: React.FC = () => {
                       {rule.name}
                     </h4>
                     {getRuleBadge(rule.category)}
-                    <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded text-xs font-medium">
+                    <span className="px-2 py-1 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded text-xs font-medium">
                       Systeem
                     </span>
                   </div>
@@ -719,7 +719,7 @@ export const RulesManagement: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 ml-4">
-                  <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded text-sm font-medium">
+                  <span className="px-3 py-1 bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 rounded text-sm font-medium">
                     Actief
                   </span>
                 </div>
@@ -788,7 +788,7 @@ export const RulesManagement: React.FC = () => {
                           onClick={() => handleToggleEnabled(rule.id)}
                           className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
                             rule.enabled
-                              ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50'
+                              ? 'bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 hover:bg-positive-50 dark:hover:bg-positive-700/50'
                               : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                           }`}
                         >
@@ -796,7 +796,7 @@ export const RulesManagement: React.FC = () => {
                         </button>
                         <button
                           onClick={() => setDeleteConfirm({ isOpen: true, ruleId: rule.id, ruleName: rule.name })}
-                          className="p-2 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors"
+                          className="p-2 text-negative-600 dark:text-negative-500 hover:bg-negative-50 dark:hover:bg-negative-700/25 rounded transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -821,7 +821,7 @@ export const RulesManagement: React.FC = () => {
           </p>
           <button
             onClick={handleStartWizard}
-            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+            className="px-6 py-3 bg-primary-700 hover:bg-primary-800 text-white rounded-lg font-medium transition-colors"
           >
             Eerste regel toevoegen
           </button>

@@ -323,7 +323,7 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
                 id="add-border-checkbox"
                 checked={addBorder}
                 onChange={(e) => setAddBorder(e.target.checked)}
-                className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-700 focus:ring-primary-500 cursor-pointer"
               />
               <label
                 htmlFor="add-border-checkbox"
@@ -392,7 +392,7 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
             </button>
             <button
               onClick={handleCrop}
-              className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+              className="flex-1 px-4 py-2 bg-primary-700 hover:bg-primary-800 text-white rounded-lg transition-colors"
             >
               {t('imageCrop.crop')}
             </button>

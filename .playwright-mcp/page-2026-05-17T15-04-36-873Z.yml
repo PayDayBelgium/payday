@@ -1,0 +1,104 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - img "PayDay" [ref=e8]
+          - generic [ref=e9]:
+            - heading "PayDay" [level=1] [ref=e10]
+            - paragraph [ref=e11]: Trading workspace
+        - button "Collapse sidebar" [ref=e12] [cursor=pointer]:
+          - img [ref=e13]
+      - generic [ref=e17]:
+        - heading "Instellingen - Account" [level=2] [ref=e18]
+        - paragraph [ref=e19]: Beheer je accountgegevens
+      - generic [ref=e20]:
+        - button "Click to connect" [ref=e22] [cursor=pointer]:
+          - img [ref=e23]
+        - button "Help Portal" [ref=e30] [cursor=pointer]:
+          - img [ref=e31]
+        - button "D" [ref=e35] [cursor=pointer]
+  - complementary [ref=e36]:
+    - navigation [ref=e37]:
+      - paragraph [ref=e38]: Overzicht
+      - link "Dashboard" [ref=e39] [cursor=pointer]:
+        - /url: /
+        - img [ref=e40]
+        - generic [ref=e45]: Dashboard
+      - link "Jouw Reis" [ref=e46] [cursor=pointer]:
+        - /url: /mission
+        - img [ref=e47]
+        - generic [ref=e49]: Jouw Reis
+      - generic [ref=e50]:
+        - paragraph [ref=e51]: Portefeuilles
+        - link "Lynx Lynx" [ref=e52] [cursor=pointer]:
+          - /url: /portfolio/Lynx
+          - img "Lynx" [ref=e53]
+          - generic [ref=e54]: Lynx
+        - link "FreeStoxx FreeStoxx" [ref=e55] [cursor=pointer]:
+          - /url: /portfolio/FreeStoxx
+          - img "FreeStoxx" [ref=e56]
+          - generic [ref=e57]: FreeStoxx
+        - link "DeGiro DeGiro" [ref=e58] [cursor=pointer]:
+          - /url: /portfolio/DeGiro
+          - img "DeGiro" [ref=e59]
+          - generic [ref=e60]: DeGiro
+        - link "SAXO SAXO" [ref=e61] [cursor=pointer]:
+          - /url: /portfolio/SAXO
+          - img "SAXO" [ref=e62]
+          - generic [ref=e63]: SAXO
+      - generic [ref=e64]:
+        - paragraph [ref=e65]: Tools
+        - link "Ticker overview" [ref=e66] [cursor=pointer]:
+          - /url: /tickers
+          - img [ref=e67]
+          - generic [ref=e70]: Ticker overview
+        - link "Meerwaardebelasting" [ref=e71] [cursor=pointer]:
+          - /url: /tools/capital-gains-tax
+          - img [ref=e72]
+          - generic [ref=e75]: Meerwaardebelasting
+    - paragraph [ref=e77]: PayDay v1.0
+  - main [ref=e78]:
+    - generic [ref=e79]:
+      - navigation "Tabs" [ref=e81]:
+        - button "Account" [ref=e82] [cursor=pointer]:
+          - img [ref=e83]
+          - text: Account
+        - button "Connectivity" [ref=e86] [cursor=pointer]:
+          - img [ref=e87]
+          - text: Connectivity
+        - button "Trading Rules" [ref=e91] [cursor=pointer]:
+          - img [ref=e92]
+          - text: Trading Rules
+      - generic [ref=e95]:
+        - generic [ref=e96]:
+          - heading "Account information" [level=2] [ref=e97]
+          - generic [ref=e98]:
+            - generic [ref=e99]:
+              - generic [ref=e100]: "Username:"
+              - generic [ref=e101]: demo
+            - generic [ref=e102]:
+              - generic [ref=e103]: "Storage Key:"
+              - generic [ref=e104]: payday-demo
+            - generic [ref=e105]:
+              - generic [ref=e106]:
+                - img [ref=e107]
+                - generic [ref=e110]: Nationaliteit
+              - paragraph [ref=e111]: Voor belastingregels en rapportage (bijv. Belgische meerwaardebelasting vanaf 2026)
+              - combobox [ref=e112]:
+                - option "BelgiÃ« (BE)"
+                - option "Nederland (NL)"
+                - option "Frankrijk (FR)"
+                - option "Duitsland (DE)"
+                - option "Verenigde Staten (US)"
+                - option "Verenigd Koninkrijk (UK)"
+                - option "Anders" [selected]
+        - generic [ref=e113]:
+          - generic [ref=e114]:
+            - img [ref=e115]
+            - generic [ref=e117]:
+              - heading "Danger zone" [level=2] [ref=e118]
+              - paragraph [ref=e119]: These actions are permanent and cannot be undone. Please be careful!
+          - button "Full application reset" [ref=e120] [cursor=pointer]:
+            - img [ref=e121]
+            - text: Full application reset

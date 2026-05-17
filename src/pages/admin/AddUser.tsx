@@ -121,14 +121,14 @@ export const AddUser: React.FC = () => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className={`w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-700 border ${
-                    errors.username ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-                  } rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                    errors.username ? 'border-negative-500' : 'border-gray-300 dark:border-gray-600'
+                  } rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500`}
                   placeholder="Enter username"
                   autoFocus
                 />
               </div>
               {errors.username && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.username}</p>
+                <p className="mt-1 text-sm text-negative-600 dark:text-negative-500">{errors.username}</p>
               )}
             </div>
 
@@ -145,13 +145,13 @@ export const AddUser: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className={`w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-700 border ${
-                    errors.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-                  } rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                    errors.email ? 'border-negative-500' : 'border-gray-300 dark:border-gray-600'
+                  } rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500`}
                   placeholder="Enter email address"
                 />
               </div>
               {errors.email && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email}</p>
+                <p className="mt-1 text-sm text-negative-600 dark:text-negative-500">{errors.email}</p>
               )}
             </div>
 
@@ -168,13 +168,13 @@ export const AddUser: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className={`w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-700 border ${
-                    errors.password ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-                  } rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                    errors.password ? 'border-negative-500' : 'border-gray-300 dark:border-gray-600'
+                  } rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500`}
                   placeholder="Enter password (min. 6 characters)"
                 />
               </div>
               {errors.password && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.password}</p>
+                <p className="mt-1 text-sm text-negative-600 dark:text-negative-500">{errors.password}</p>
               )}
             </div>
 
@@ -191,13 +191,13 @@ export const AddUser: React.FC = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   className={`w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-700 border ${
-                    errors.confirmPassword ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-                  } rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                    errors.confirmPassword ? 'border-negative-500' : 'border-gray-300 dark:border-gray-600'
+                  } rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500`}
                   placeholder="Confirm password"
                 />
               </div>
               {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.confirmPassword}</p>
+                <p className="mt-1 text-sm text-negative-600 dark:text-negative-500">{errors.confirmPassword}</p>
               )}
             </div>
           </div>
@@ -207,7 +207,7 @@ export const AddUser: React.FC = () => {
         <div className="flex items-center gap-3">
           <button
             type="submit"
-            className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+            className="flex items-center gap-2 px-6 py-3 bg-primary-700 hover:bg-primary-800 text-white font-medium rounded-lg transition-colors"
           >
             <Save className="w-5 h-5" />
             Create User

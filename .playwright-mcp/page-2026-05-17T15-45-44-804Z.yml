@@ -1,0 +1,408 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - generic [ref=e7]:
+            - img "PayDay" [ref=e8]
+            - generic [ref=e9]:
+              - heading "PayDay" [level=1] [ref=e10]
+              - paragraph [ref=e11]: Trading workspace
+          - button "Collapse sidebar" [ref=e12] [cursor=pointer]:
+            - img [ref=e13]
+        - generic [ref=e17]:
+          - heading "Dashboard" [level=2] [ref=e18]
+          - paragraph [ref=e19]: Your trading overview at a glance
+        - generic [ref=e20]:
+          - button "Click to connect" [ref=e22] [cursor=pointer]:
+            - img [ref=e23]
+          - button "Help Portal" [ref=e30] [cursor=pointer]:
+            - img [ref=e31]
+          - button "D" [ref=e35] [cursor=pointer]
+    - complementary [ref=e36]:
+      - navigation [ref=e37]:
+        - paragraph [ref=e38]: Overzicht
+        - link "Dashboard" [ref=e39] [cursor=pointer]:
+          - /url: /
+          - img [ref=e41]
+          - generic [ref=e46]: Dashboard
+        - link "Jouw Reis" [ref=e47] [cursor=pointer]:
+          - /url: /mission
+          - img [ref=e48]
+          - generic [ref=e50]: Jouw Reis
+        - generic [ref=e51]:
+          - paragraph [ref=e52]: Portefeuilles
+          - link "Lynx Lynx" [ref=e53] [cursor=pointer]:
+            - /url: /portfolio/Lynx
+            - img "Lynx" [ref=e54]
+            - generic [ref=e55]: Lynx
+          - link "FreeStoxx FreeStoxx" [ref=e56] [cursor=pointer]:
+            - /url: /portfolio/FreeStoxx
+            - img "FreeStoxx" [ref=e57]
+            - generic [ref=e58]: FreeStoxx
+          - link "DeGiro DeGiro" [ref=e59] [cursor=pointer]:
+            - /url: /portfolio/DeGiro
+            - img "DeGiro" [ref=e60]
+            - generic [ref=e61]: DeGiro
+          - link "SAXO SAXO" [ref=e62] [cursor=pointer]:
+            - /url: /portfolio/SAXO
+            - img "SAXO" [ref=e63]
+            - generic [ref=e64]: SAXO
+        - generic [ref=e65]:
+          - paragraph [ref=e66]: Tools
+          - link "Ticker overview" [ref=e67] [cursor=pointer]:
+            - /url: /tickers
+            - img [ref=e68]
+            - generic [ref=e71]: Ticker overview
+          - link "PMCC simulator" [ref=e72] [cursor=pointer]:
+            - /url: /tools/pmcc-calculator
+            - img [ref=e73]
+            - generic [ref=e75]: PMCC simulator
+          - link "KaChing simulator" [ref=e76] [cursor=pointer]:
+            - /url: /tools/kaching-calculator
+            - img [ref=e77]
+            - generic [ref=e80]: KaChing simulator
+          - link "Income simulator" [ref=e81] [cursor=pointer]:
+            - /url: /tools/income-calculator
+            - img [ref=e82]
+            - generic [ref=e84]: Income simulator
+          - link "Covered Call Simulator" [ref=e85] [cursor=pointer]:
+            - /url: /tools/covered-call-simulator
+            - img [ref=e86]
+            - generic [ref=e90]: Covered Call Simulator
+          - link "Meerwaardebelasting" [ref=e91] [cursor=pointer]:
+            - /url: /tools/capital-gains-tax
+            - img [ref=e92]
+            - generic [ref=e95]: Meerwaardebelasting
+          - link "P&L simulator" [ref=e96] [cursor=pointer]:
+            - /url: /tools/pnl-simulator
+            - img [ref=e97]
+            - generic [ref=e100]: P&L simulator
+      - paragraph [ref=e102]: PayDay v1.0
+    - main [ref=e103]:
+      - generic [ref=e104]:
+        - generic [ref=e105]:
+          - generic [ref=e106]:
+            - img [ref=e108]
+            - generic [ref=e110]:
+              - generic [ref=e111]:
+                - paragraph [ref=e112]: Portfolio waarde
+                - img [ref=e115]
+              - paragraph [ref=e117]: 0,00
+              - generic [ref=e118]:
+                - text: "Cash: 0,00"
+                - text: "Assets (long-short): 0,00"
+          - generic [ref=e120]:
+            - generic [ref=e121]:
+              - paragraph [ref=e122]: Long posities
+              - img [ref=e125]
+            - paragraph [ref=e128]: 0,00
+            - generic [ref=e129]: 0 actieve long posities
+          - generic [ref=e131]:
+            - generic [ref=e132]:
+              - paragraph [ref=e133]: Short posities
+              - img [ref=e136]
+            - paragraph [ref=e139]: 0,00
+            - generic [ref=e140]: 0 actieve short posities
+          - generic [ref=e142]:
+            - generic [ref=e143]:
+              - paragraph [ref=e144]: Cash
+              - img [ref=e147]
+            - paragraph [ref=e150]: 0,00
+            - generic [ref=e151]:
+              - text: "Gealloceerd: 0,00"
+              - text: "Vrij: 0,00"
+          - generic [ref=e152]:
+            - img [ref=e154]
+            - generic [ref=e156]:
+              - generic [ref=e157]:
+                - paragraph [ref=e158]: Vrije cash
+                - img [ref=e161]
+              - paragraph [ref=e164]: 0,00
+              - generic [ref=e165]:
+                - text: "Cash: 0,00"
+                - text: "Gealloceerd: 0,00"
+        - generic [ref=e166]:
+          - generic [ref=e167]:
+            - generic [ref=e168]:
+              - heading "Portefeuilles" [level=3] [ref=e169]
+              - paragraph [ref=e170]: 4 portefeuilles
+            - button "Beheer" [ref=e171] [cursor=pointer]:
+              - img [ref=e172]
+              - generic [ref=e173]: Beheer
+          - generic [ref=e175]:
+            - generic [ref=e177]:
+              - button "Lynx Lynx $0,00 Long posities $0,00 Short posities $0,00 Cash $0,00 Vrije cash $0,00" [ref=e179] [cursor=pointer]:
+                - generic [ref=e180]:
+                  - button "Bewerk portfolio" [ref=e181]:
+                    - img [ref=e182]
+                  - button "Toon gains" [ref=e185]:
+                    - img [ref=e186]
+                - generic [ref=e189]:
+                  - img "Lynx" [ref=e190]
+                  - generic [ref=e191]:
+                    - heading "Lynx" [level=3] [ref=e192]
+                    - paragraph [ref=e193]: $0,00
+                - generic [ref=e194]:
+                  - generic [ref=e195]:
+                    - generic [ref=e196]: Long posities
+                    - generic [ref=e197]: $0,00
+                  - generic [ref=e198]:
+                    - generic [ref=e199]: Short posities
+                    - generic [ref=e200]: $0,00
+                  - generic [ref=e201]:
+                    - generic [ref=e202]: Cash
+                    - generic [ref=e203]: $0,00
+                  - generic [ref=e204]:
+                    - generic [ref=e205]: Vrije cash
+                    - generic [ref=e206]: $0,00
+              - button "Lynx Lynx 1W 1M 3M YTD 1Y ALL Totale Gain $NaN +0,00%" [ref=e208] [cursor=pointer]:
+                - generic [ref=e209]:
+                  - generic [ref=e210]:
+                    - img "Lynx" [ref=e211]
+                    - heading "Lynx" [level=3] [ref=e212]
+                  - button "Terug" [ref=e213]:
+                    - img [ref=e214]
+                - generic [ref=e217]:
+                  - button "1W" [ref=e218]
+                  - button "1M" [ref=e219]
+                  - button "3M" [ref=e220]
+                  - button "YTD" [ref=e221]
+                  - button "1Y" [ref=e222]
+                  - button "ALL" [ref=e223]
+                - generic [ref=e224]:
+                  - paragraph [ref=e225]: Totale Gain
+                  - paragraph [ref=e226]: $NaN
+                  - paragraph [ref=e227]:
+                    - img [ref=e228]
+                    - text: +0,00%
+            - generic [ref=e232]:
+              - button "FreeStoxx FreeStoxx €0,00 Long posities €0,00 Short posities €0,00 Cash €0,00 Vrije cash €0,00" [ref=e234] [cursor=pointer]:
+                - generic [ref=e235]:
+                  - button "Bewerk portfolio" [ref=e236]:
+                    - img [ref=e237]
+                  - button "Toon gains" [ref=e240]:
+                    - img [ref=e241]
+                - generic [ref=e244]:
+                  - img "FreeStoxx" [ref=e245]
+                  - generic [ref=e246]:
+                    - heading "FreeStoxx" [level=3] [ref=e247]
+                    - paragraph [ref=e248]: €0,00
+                - generic [ref=e249]:
+                  - generic [ref=e250]:
+                    - generic [ref=e251]: Long posities
+                    - generic [ref=e252]: €0,00
+                  - generic [ref=e253]:
+                    - generic [ref=e254]: Short posities
+                    - generic [ref=e255]: €0,00
+                  - generic [ref=e256]:
+                    - generic [ref=e257]: Cash
+                    - generic [ref=e258]: €0,00
+                  - generic [ref=e259]:
+                    - generic [ref=e260]: Vrije cash
+                    - generic [ref=e261]: €0,00
+              - button "FreeStoxx FreeStoxx 1W 1M 3M YTD 1Y ALL Totale Gain €NaN +0,00%" [ref=e263] [cursor=pointer]:
+                - generic [ref=e264]:
+                  - generic [ref=e265]:
+                    - img "FreeStoxx" [ref=e266]
+                    - heading "FreeStoxx" [level=3] [ref=e267]
+                  - button "Terug" [ref=e268]:
+                    - img [ref=e269]
+                - generic [ref=e272]:
+                  - button "1W" [ref=e273]
+                  - button "1M" [ref=e274]
+                  - button "3M" [ref=e275]
+                  - button "YTD" [ref=e276]
+                  - button "1Y" [ref=e277]
+                  - button "ALL" [ref=e278]
+                - generic [ref=e279]:
+                  - paragraph [ref=e280]: Totale Gain
+                  - paragraph [ref=e281]: €NaN
+                  - paragraph [ref=e282]:
+                    - img [ref=e283]
+                    - text: +0,00%
+            - generic [ref=e287]:
+              - button "DeGiro DeGiro €0,00 Long posities €0,00 Short posities €0,00 Cash €0,00 Vrije cash €0,00" [ref=e289] [cursor=pointer]:
+                - generic [ref=e290]:
+                  - button "Bewerk portfolio" [ref=e291]:
+                    - img [ref=e292]
+                  - button "Toon gains" [ref=e295]:
+                    - img [ref=e296]
+                - generic [ref=e299]:
+                  - img "DeGiro" [ref=e300]
+                  - generic [ref=e301]:
+                    - heading "DeGiro" [level=3] [ref=e302]
+                    - paragraph [ref=e303]: €0,00
+                - generic [ref=e304]:
+                  - generic [ref=e305]:
+                    - generic [ref=e306]: Long posities
+                    - generic [ref=e307]: €0,00
+                  - generic [ref=e308]:
+                    - generic [ref=e309]: Short posities
+                    - generic [ref=e310]: €0,00
+                  - generic [ref=e311]:
+                    - generic [ref=e312]: Cash
+                    - generic [ref=e313]: €0,00
+                  - generic [ref=e314]:
+                    - generic [ref=e315]: Vrije cash
+                    - generic [ref=e316]: €0,00
+              - button "DeGiro DeGiro 1W 1M 3M YTD 1Y ALL Totale Gain €NaN +0,00%" [ref=e318] [cursor=pointer]:
+                - generic [ref=e319]:
+                  - generic [ref=e320]:
+                    - img "DeGiro" [ref=e321]
+                    - heading "DeGiro" [level=3] [ref=e322]
+                  - button "Terug" [ref=e323]:
+                    - img [ref=e324]
+                - generic [ref=e327]:
+                  - button "1W" [ref=e328]
+                  - button "1M" [ref=e329]
+                  - button "3M" [ref=e330]
+                  - button "YTD" [ref=e331]
+                  - button "1Y" [ref=e332]
+                  - button "ALL" [ref=e333]
+                - generic [ref=e334]:
+                  - paragraph [ref=e335]: Totale Gain
+                  - paragraph [ref=e336]: €NaN
+                  - paragraph [ref=e337]:
+                    - img [ref=e338]
+                    - text: +0,00%
+            - generic [ref=e342]:
+              - button "SAXO SAXO $0,00 Long posities $0,00 Short posities $0,00 Cash $0,00 Vrije cash $0,00" [ref=e344] [cursor=pointer]:
+                - generic [ref=e345]:
+                  - button "Bewerk portfolio" [ref=e346]:
+                    - img [ref=e347]
+                  - button "Toon gains" [ref=e350]:
+                    - img [ref=e351]
+                - generic [ref=e354]:
+                  - img "SAXO" [ref=e355]
+                  - generic [ref=e356]:
+                    - heading "SAXO" [level=3] [ref=e357]
+                    - paragraph [ref=e358]: $0,00
+                - generic [ref=e359]:
+                  - generic [ref=e360]:
+                    - generic [ref=e361]: Long posities
+                    - generic [ref=e362]: $0,00
+                  - generic [ref=e363]:
+                    - generic [ref=e364]: Short posities
+                    - generic [ref=e365]: $0,00
+                  - generic [ref=e366]:
+                    - generic [ref=e367]: Cash
+                    - generic [ref=e368]: $0,00
+                  - generic [ref=e369]:
+                    - generic [ref=e370]: Vrije cash
+                    - generic [ref=e371]: $0,00
+              - button "SAXO SAXO 1W 1M 3M YTD 1Y ALL Totale Gain $NaN +0,00%" [ref=e373] [cursor=pointer]:
+                - generic [ref=e374]:
+                  - generic [ref=e375]:
+                    - img "SAXO" [ref=e376]
+                    - heading "SAXO" [level=3] [ref=e377]
+                  - button "Terug" [ref=e378]:
+                    - img [ref=e379]
+                - generic [ref=e382]:
+                  - button "1W" [ref=e383]
+                  - button "1M" [ref=e384]
+                  - button "3M" [ref=e385]
+                  - button "YTD" [ref=e386]
+                  - button "1Y" [ref=e387]
+                  - button "ALL" [ref=e388]
+                - generic [ref=e389]:
+                  - paragraph [ref=e390]: Totale Gain
+                  - paragraph [ref=e391]: $NaN
+                  - paragraph [ref=e392]:
+                    - img [ref=e393]
+                    - text: +0,00%
+        - generic [ref=e396]:
+          - generic [ref=e397]:
+            - generic [ref=e399]:
+              - generic [ref=e400]:
+                - heading "Totale portfolio waarde" [level=3] [ref=e401]
+                - paragraph [ref=e402]: 1 datapunt
+              - generic [ref=e403]:
+                - generic [ref=e404]:
+                  - button "Grafiek weergave" [ref=e405] [cursor=pointer]:
+                    - img [ref=e406]
+                  - button "Tabel weergave" [ref=e408] [cursor=pointer]:
+                    - img [ref=e409]
+                - button "Kopieer naar clipboard (Excel)" [ref=e411] [cursor=pointer]:
+                  - img [ref=e412]
+            - application [ref=e418]:
+              - generic [ref=e431]:
+                - generic [ref=e434]: 11 nov
+                - generic [ref=e435]:
+                  - generic [ref=e437]: $0
+                  - generic [ref=e439]: $150k
+                  - generic [ref=e441]: $300k
+                  - generic [ref=e443]: $450k
+                  - generic [ref=e445]: $600k
+            - paragraph [ref=e447]: Gecombineerde waarde van alle portfolios over tijd
+          - generic [ref=e448]:
+            - generic [ref=e449]:
+              - heading "Portfolio Vergelijking" [level=3] [ref=e450]
+              - paragraph [ref=e451]: 1 datapunt
+            - application [ref=e455]:
+              - generic [ref=e474]:
+                - generic [ref=e477]: 11 nov
+                - generic [ref=e478]:
+                  - generic [ref=e480]: $0
+                  - generic [ref=e482]: $55k
+                  - generic [ref=e484]: $110k
+                  - generic [ref=e486]: $165k
+                  - generic [ref=e488]: $220k
+            - generic [ref=e490]:
+              - button "Lynx" [ref=e491] [cursor=pointer]:
+                - generic [ref=e493]: Lynx
+              - button "FreeStoxx" [ref=e494] [cursor=pointer]:
+                - generic [ref=e496]: FreeStoxx
+              - button "DeGiro" [ref=e497] [cursor=pointer]:
+                - generic [ref=e499]: DeGiro
+              - button "SAXO" [ref=e500] [cursor=pointer]:
+                - generic [ref=e502]: SAXO
+        - generic [ref=e503]:
+          - generic [ref=e504]:
+            - generic [ref=e506]:
+              - img [ref=e507]
+              - heading "Alerts" [level=3] [ref=e509]
+            - generic [ref=e511]:
+              - img [ref=e513]
+              - paragraph [ref=e515]: Geen actieve alerts
+          - generic [ref=e516]:
+            - generic [ref=e518]:
+              - img [ref=e519]
+              - heading "Opportunities" [level=3] [ref=e523]
+            - generic [ref=e525]:
+              - img [ref=e527]
+              - paragraph [ref=e531]: Geen actieve opportunities
+          - generic [ref=e532]:
+            - generic [ref=e533]:
+              - img [ref=e534]
+              - heading "Upcoming Events" [level=3] [ref=e536]
+            - generic [ref=e537]:
+              - generic [ref=e538]:
+                - img [ref=e540]
+                - generic [ref=e544]:
+                  - generic [ref=e545]:
+                    - paragraph [ref=e546]: NVDA EarningsNVDA
+                    - paragraph [ref=e547]: Nvidia Q4 2024 earnings report
+                  - generic [ref=e548]: Jan 16
+              - generic [ref=e549]:
+                - img [ref=e551]
+                - generic [ref=e554]:
+                  - generic [ref=e555]:
+                    - paragraph [ref=e556]: FED Rate Decision
+                    - paragraph [ref=e557]: Federal Reserve interest rate announcement
+                  - generic [ref=e558]: Jan 17
+              - generic [ref=e559]:
+                - img [ref=e561]
+                - generic [ref=e565]:
+                  - generic [ref=e566]:
+                    - paragraph [ref=e567]: TSLA EarningsTSLA
+                    - paragraph [ref=e568]: Tesla Q4 2024 earnings report
+                  - generic [ref=e569]: Jan 20
+              - generic [ref=e570]:
+                - img [ref=e572]
+                - generic [ref=e575]:
+                  - generic [ref=e576]:
+                    - paragraph [ref=e577]: MSFT S&P500 RebalanceMSFT
+                    - paragraph [ref=e578]: S&P 500 index rebalancing
+                  - generic [ref=e579]: Jan 22
+  - generic [ref=e580]: $55k

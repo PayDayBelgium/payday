@@ -16,8 +16,8 @@ export const en = {
 
   // Login
   login: {
-    title: 'PayDay',
-    subtitle: 'Welcome back! Please sign in to your account.',
+    title: 'Welcome back',
+    subtitle: 'Sign in to continue with your portfolios.',
     username: 'Username',
     password: 'Password',
     language: 'Language',

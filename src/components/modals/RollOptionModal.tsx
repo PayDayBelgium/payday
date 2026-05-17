@@ -124,8 +124,8 @@ export const RollOptionModal: React.FC<RollOptionModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-              <Redo2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <div className="p-2 bg-primary-50 dark:bg-primary-900/30 rounded-lg">
+              <Redo2 className="w-5 h-5 text-primary-700 dark:text-primary-300" />
             </div>
             <div>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
@@ -155,33 +155,33 @@ export const RollOptionModal: React.FC<RollOptionModalProps> = ({
 
         {/* Help Section */}
         {showHelp && (
-          <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800">
-            <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">Wat is een optie roll?</h3>
-            <p className="text-sm text-blue-800 dark:text-blue-200 mb-2">
+          <div className="p-4 bg-primary-50 dark:bg-primary-900/20 border-b border-primary-200 dark:border-primary-800">
+            <h3 className="font-semibold text-primary-900 dark:text-blue-100 mb-2">Wat is een optie roll?</h3>
+            <p className="text-sm text-primary-700 dark:text-primary-200 mb-2">
               Een roll is het gelijktijdig <strong>sluiten</strong> van je huidige optie positie en het <strong>openen</strong> van een nieuwe positie.
               Dit lijkt misschien een nieuwe term, maar het is eigenlijk gewoon sluiten en openen in één beweging.
             </p>
             <div className="mt-3 space-y-2">
               <div className="flex items-start gap-2">
-                <Calendar className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-                <p className="text-sm text-blue-800 dark:text-blue-200">
+                <Calendar className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
+                <p className="text-sm text-primary-700 dark:text-primary-200">
                   <strong>Rollen in de tijd:</strong> Verplaats naar een latere expiratie om meer tijd te kopen (bijv. van november naar december).
                 </p>
               </div>
               <div className="flex items-start gap-2">
-                <DollarSign className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-                <p className="text-sm text-blue-800 dark:text-blue-200">
+                <DollarSign className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
+                <p className="text-sm text-primary-700 dark:text-primary-200">
                   <strong>Rollen voor premie:</strong> Open een nieuwe positie met dezelfde of andere strike voor extra premie (kan voor credit of debit).
                 </p>
               </div>
               <div className="flex items-start gap-2">
-                <TrendingUp className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-                <p className="text-sm text-blue-800 dark:text-blue-200">
+                <TrendingUp className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
+                <p className="text-sm text-primary-700 dark:text-primary-200">
                   <strong>Rollen up/down:</strong> Verander de strike prijs om je positie aan te passen aan de markt.
                 </p>
               </div>
             </div>
-            <p className="text-xs text-blue-600 dark:text-blue-300 mt-3 italic">
+            <p className="text-xs text-primary-700 dark:text-primary-300 mt-3 italic">
               Tip: Een credit roll betekent dat je geld ontvangt, een debit roll betekent dat je betaalt.
             </p>
           </div>
@@ -219,7 +219,7 @@ export const RollOptionModal: React.FC<RollOptionModalProps> = ({
           {/* Close Position Section */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2">
-              <span className="flex items-center justify-center w-5 h-5 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full text-xs font-bold">1</span>
+              <span className="flex items-center justify-center w-5 h-5 bg-negative-50 dark:bg-negative-700/25 text-negative-600 dark:text-negative-500 rounded-full text-xs font-bold">1</span>
               Sluit huidige positie
             </h3>
 
@@ -234,7 +234,7 @@ export const RollOptionModal: React.FC<RollOptionModalProps> = ({
                     type="number"
                     value={closePremium}
                     onChange={(e) => setClosePremium(e.target.value)}
-                    className="w-full pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                    className="w-full pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                     placeholder="0.00"
                     step="0.01"
                     required
@@ -249,7 +249,7 @@ export const RollOptionModal: React.FC<RollOptionModalProps> = ({
                   type="date"
                   value={rollDate}
                   onChange={(e) => setRollDate(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                   required
                 />
               </div>
@@ -259,7 +259,7 @@ export const RollOptionModal: React.FC<RollOptionModalProps> = ({
           {/* New Position Section */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2">
-              <span className="flex items-center justify-center w-5 h-5 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full text-xs font-bold">2</span>
+              <span className="flex items-center justify-center w-5 h-5 bg-positive-50 dark:bg-positive-700/25 text-positive-600 dark:text-positive-500 rounded-full text-xs font-bold">2</span>
               Open nieuwe positie
             </h3>
 
@@ -282,7 +282,7 @@ export const RollOptionModal: React.FC<RollOptionModalProps> = ({
                     type="number"
                     value={newStrike}
                     onChange={(e) => setNewStrike(e.target.value)}
-                    className="w-full pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                    className="w-full pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                     step="0.5"
                     required
                   />
@@ -295,7 +295,7 @@ export const RollOptionModal: React.FC<RollOptionModalProps> = ({
                 <FridayDatePicker
                   value={newExpiration}
                   onChange={(date) => setNewExpiration(date)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                 />
               </div>
               <div>
@@ -308,7 +308,7 @@ export const RollOptionModal: React.FC<RollOptionModalProps> = ({
                     type="number"
                     value={newPremium}
                     onChange={(e) => setNewPremium(e.target.value)}
-                    className="w-full pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                    className="w-full pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                     placeholder="0.00"
                     step="0.01"
                     required
@@ -326,7 +326,7 @@ export const RollOptionModal: React.FC<RollOptionModalProps> = ({
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
               rows={2}
               placeholder="Reden voor roll, marktomstandigheden, etc."
             />
@@ -335,9 +335,9 @@ export const RollOptionModal: React.FC<RollOptionModalProps> = ({
           {/* Calculation Summary */}
           <div className={`p-4 rounded-lg ${
             rollCalculation.isCredit
-              ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
+              ? 'bg-positive-50 dark:bg-positive-700/15 border border-positive-500/20 dark:border-positive-700/30'
               : rollCalculation.isDebit
-                ? 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
+                ? 'bg-negative-50 dark:bg-negative-700/15 border border-negative-500/20 dark:border-negative-700/30'
                 : 'bg-gray-50 dark:bg-gray-700/50'
           }`}>
             <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Berekening</h3>
@@ -346,7 +346,7 @@ export const RollOptionModal: React.FC<RollOptionModalProps> = ({
                 <span className="text-gray-600 dark:text-gray-400">
                   Sluiten ({position.action === 'sell' ? 'terugkopen' : 'verkopen'}):
                 </span>
-                <span className={`font-medium ${rollCalculation.closeValue >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                <span className={`font-medium ${rollCalculation.closeValue >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
                   {rollCalculation.closeValue >= 0 ? '+' : ''}{formatCurrency(rollCalculation.closeValue, currencySymbol)}
                 </span>
               </div>
@@ -354,7 +354,7 @@ export const RollOptionModal: React.FC<RollOptionModalProps> = ({
                 <span className="text-gray-600 dark:text-gray-400">
                   Openen ({position.action === 'sell' ? 'verkopen' : 'kopen'}):
                 </span>
-                <span className={`font-medium ${rollCalculation.openValue >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                <span className={`font-medium ${rollCalculation.openValue >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
                   {rollCalculation.openValue >= 0 ? '+' : ''}{formatCurrency(rollCalculation.openValue, currencySymbol)}
                 </span>
               </div>
@@ -365,9 +365,9 @@ export const RollOptionModal: React.FC<RollOptionModalProps> = ({
                   </span>
                   <span className={`text-lg font-bold ${
                     rollCalculation.isCredit
-                      ? 'text-green-600 dark:text-green-400'
+                      ? 'text-positive-600 dark:text-positive-500'
                       : rollCalculation.isDebit
-                        ? 'text-red-600 dark:text-red-400'
+                        ? 'text-negative-600 dark:text-negative-500'
                         : 'text-gray-900 dark:text-white'
                   }`}>
                     {rollCalculation.netCredit >= 0 ? '+' : ''}{formatCurrency(rollCalculation.netCredit, currencySymbol)}
@@ -389,7 +389,7 @@ export const RollOptionModal: React.FC<RollOptionModalProps> = ({
             <button
               type="submit"
               disabled={!closePremium || !newExpiration || !newPremium}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-4 py-2 bg-primary-700 hover:bg-primary-800 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               <Redo2 className="w-4 h-4" />
               Roll Uitvoeren

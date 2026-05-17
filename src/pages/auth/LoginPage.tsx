@@ -106,76 +106,104 @@ const LoginPage: React.FC = () => {
 
   return (
     <>
-      <div className="flex items-center justify-center h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
-        <div className="w-full max-w-md p-8 space-y-6 bg-white dark:bg-gray-800 rounded-xl shadow-2xl">
-          <div className="text-center">
-            <img src={logo} alt="PayDay" className="w-20 h-20 mx-auto rounded-lg shadow-md mb-4" />
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('login.title')}</h1>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{t('login.subtitle')}</p>
+      <div className="relative flex items-center justify-center min-h-screen overflow-hidden bg-sky-fade dark:bg-trading-dark-900">
+        {/* Background composition: faint mountain silhouette + grid */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-0 opacity-[0.35]"
+               style={{
+                 backgroundImage:
+                   'linear-gradient(rgba(11,74,143,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(11,74,143,0.05) 1px, transparent 1px)',
+                 backgroundSize: '40px 40px',
+               }} />
+          <svg className="absolute bottom-0 left-0 right-0 w-full h-1/2" preserveAspectRatio="none" viewBox="0 0 1200 400">
+            <polygon points="0,400 350,140 600,260 900,80 1200,200 1200,400" fill="#DCE7F5" opacity="0.7" />
+            <polygon points="0,400 200,260 480,180 760,300 1080,180 1200,260 1200,400" fill="#0B4A8F" opacity="0.06" />
+          </svg>
+        </div>
+
+        <div className="relative w-full max-w-md mx-4">
+          {/* Brand mark — single, calm wordmark above the form */}
+          <div className="flex items-center justify-center gap-3 mb-8">
+            <img src={logo} alt="PayDay" className="w-11 h-11 rounded-md ring-1 ring-[var(--line)] bg-white" />
+            <div className="text-left leading-tight">
+              <p className="text-lg font-semibold tracking-tight text-ink-900 dark:text-white">PayDay</p>
+              <p className="text-[10px] uppercase tracking-[0.18em] text-ink-400 mt-0.5">Trading&nbsp;Workspace</p>
+            </div>
           </div>
-          <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
-            <div>
-              <label htmlFor="username" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                {t('login.username')}
-              </label>
-              <input
-                id="username"
-                name="username"
-                type="text"
-                required
-                className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                {t('login.password')}
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
 
-            {/* Error Message */}
-            {error && (
-              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-500 rounded-md p-3">
-                <p className="text-red-800 dark:text-red-200 text-sm">{error}</p>
+          <div className="surface-card p-8">
+            <div className="mb-6">
+              <p className="eyebrow mb-1.5">Sign in</p>
+              <h1 className="text-[1.35rem] font-semibold text-ink-900 dark:text-white tracking-tight leading-tight">
+                {t('login.title')}
+              </h1>
+              <p className="mt-1.5 text-sm text-ink-500 dark:text-ink-400">{t('login.subtitle')}</p>
+            </div>
+            <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
+              <div>
+                <label htmlFor="username" className="eyebrow block mb-1.5">
+                  {t('login.username')}
+                </label>
+                <input
+                  id="username"
+                  name="username"
+                  type="text"
+                  required
+                  className="w-full px-3.5 py-2.5 text-sm border border-[var(--line)] rounded-md bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100 transition"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
               </div>
-            )}
 
-            {/* Language Selector - Between password and login button */}
-            <div>
-              <label htmlFor="language" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                {t('login.language')}
-              </label>
-              <select
-                id="language"
-                value={language}
-                onChange={(e) => handleLanguageChange(e.target.value)}
-                className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="en">English</option>
-                <option value="nl">Nederlands</option>
-                <option value="fr">Français</option>
-              </select>
-            </div>
+              <div>
+                <label htmlFor="password" className="eyebrow block mb-1.5">
+                  {t('login.password')}
+                </label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  className="w-full px-3.5 py-2.5 text-sm border border-[var(--line)] rounded-md bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100 transition"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
 
-            <div>
+              {error && (
+                <div className="bg-negative-50 border border-negative-500/40 rounded-md p-3">
+                  <p className="text-negative-700 text-xs">{error}</p>
+                </div>
+              )}
+
+              <div>
+                <label htmlFor="language" className="eyebrow block mb-1.5">
+                  {t('login.language')}
+                </label>
+                <select
+                  id="language"
+                  value={language}
+                  onChange={(e) => handleLanguageChange(e.target.value)}
+                  className="w-full px-3.5 py-2.5 text-sm border border-[var(--line)] rounded-md bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100 transition"
+                >
+                  <option value="en">English</option>
+                  <option value="nl">Nederlands</option>
+                  <option value="fr">Français</option>
+                </select>
+              </div>
+
               <button
                 type="submit"
-                className="w-full px-6 py-3 text-base font-semibold text-white btn-primary rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="w-full px-6 py-3 text-sm font-semibold tracking-tight text-white btn-primary rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
               >
                 {t('login.signIn')}
               </button>
-            </div>
-          </form>
+            </form>
+          </div>
+
+          <p className="text-center mt-6 text-[11px] text-ink-400 tracking-[0.12em] uppercase">
+            Member-only · Confidential
+          </p>
         </div>
       </div>
 

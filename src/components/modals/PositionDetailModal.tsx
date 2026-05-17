@@ -124,8 +124,8 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
             {option && (
               <div className={`w-10 h-10 rounded flex items-center justify-center flex-shrink-0 ${
                 isCall
-                  ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
-                  : 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400'
+                  ? 'bg-positive-50 dark:bg-positive-700/25 text-positive-600 dark:text-positive-500'
+                  : 'bg-surface-muted dark:bg-trading-dark-600 text-ink-600 dark:text-ink-300'
               }`}>
                 {isCall ? (
                   <ArrowUpCircle className="w-5 h-5" />
@@ -138,8 +138,8 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
             {(position.type === 'stock' || position.type === 'etf') && (
               <div className={`w-10 h-10 rounded flex items-center justify-center flex-shrink-0 ${
                 position.type === 'stock'
-                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-                  : 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400'
+                  ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                  : 'bg-surface-muted dark:bg-trading-dark-600 text-ink-600 dark:text-ink-300'
               }`}>
                 {position.type === 'stock' ? (
                   <TrendingUp className="w-5 h-5" />
@@ -163,15 +163,15 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
               <div className="flex items-center gap-2">
                 <span className={`px-2 py-1 text-xs font-semibold rounded ${
                   isCall
-                    ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                    : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400'
+                    ? 'bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500'
+                    : 'bg-surface-muted dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300'
                 }`}>
                   {isCall ? 'CALL' : 'PUT'}
                 </span>
                 <span className={`px-2 py-1 text-xs font-semibold rounded ${
                   isBuy
-                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
-                    : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400'
+                    ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                    : 'bg-caution-50 dark:bg-caution-600/25 text-caution-600 dark:text-caution-500'
                 }`}>
                   {isBuy ? 'LONG' : 'SHORT'}
                 </span>
@@ -180,8 +180,8 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
             {(position.type === 'stock' || position.type === 'etf') && (
               <span className={`px-2 py-1 text-xs font-semibold rounded ${
                 position.type === 'stock'
-                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
-                  : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400'
+                  ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                  : 'bg-surface-muted dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300'
               }`}>
                 {position.type === 'stock' ? 'AANDEEL' : 'ETF'}
               </span>
@@ -203,7 +203,7 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
               onClick={() => setActiveTab('overview')}
               className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 ${
                 activeTab === 'overview'
-                  ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400'
+                  ? 'bg-white dark:bg-gray-700 text-primary-700 dark:text-primary-300 border-primary-700 dark:border-primary-400'
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 border-transparent'
               }`}
             >
@@ -215,7 +215,7 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
               onClick={() => setActiveTab('pnl')}
               className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 ${
                 activeTab === 'pnl'
-                  ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400'
+                  ? 'bg-white dark:bg-gray-700 text-primary-700 dark:text-primary-300 border-primary-700 dark:border-primary-400'
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 border-transparent'
               }`}
             >
@@ -264,15 +264,15 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
                       </div>
                       <p className={`text-xl font-bold ${
                         isProfitable
-                          ? 'text-green-600 dark:text-green-400'
-                          : 'text-red-600 dark:text-red-400'
+                          ? 'text-positive-600 dark:text-positive-500'
+                          : 'text-negative-600 dark:text-negative-500'
                       }`}>
                         {isProfitable ? '+' : ''}{formatCurrency(nominalProfit, currencySymbol)}
                       </p>
                       <p className={`text-sm font-medium ${
                         isProfitable
-                          ? 'text-green-600 dark:text-green-400'
-                          : 'text-red-600 dark:text-red-400'
+                          ? 'text-positive-600 dark:text-positive-500'
+                          : 'text-negative-600 dark:text-negative-500'
                       }`}>
                         {isProfitable ? '+' : ''}{formatNumber(profitPercent)}%
                       </p>
@@ -280,23 +280,23 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
                   </div>
 
               {/* Premium Details */}
-              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-2 border border-blue-200 dark:border-blue-800">
-                <h3 className="font-semibold text-blue-900 dark:text-blue-300 mb-2">
+              <div className="bg-primary-50 dark:bg-primary-900/20 rounded-lg p-2 border border-primary-200 dark:border-primary-800">
+                <h3 className="font-semibold text-primary-900 dark:text-primary-300 mb-2">
                   Premium Details
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                   <div>
-                    <p className="text-sm text-blue-800 dark:text-blue-400 mb-2">Fill Premie</p>
-                    <p className="text-2xl font-bold text-blue-900 dark:text-blue-300">
+                    <p className="text-sm text-primary-700 dark:text-primary-300 mb-2">Fill Premie</p>
+                    <p className="text-2xl font-bold text-primary-900 dark:text-primary-300">
                       {formatCurrency(fillPremium, currencySymbol)}
                     </p>
-                    <p className="text-sm text-blue-700 dark:text-blue-400 mt-1">
+                    <p className="text-sm text-primary-700 dark:text-primary-300 mt-1">
                       Totaal: {formatCurrency(totalFillValue, currencySymbol)}
                     </p>
                   </div>
 
                   <div>
-                    <p className="text-sm text-blue-800 dark:text-blue-400 mb-2">Huidige Premie</p>
+                    <p className="text-sm text-primary-700 dark:text-primary-300 mb-2">Huidige Premie</p>
                     <input
                       type="text"
                       value={currentPrice}
@@ -306,30 +306,30 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
                           setCurrentPrice(value);
                         }
                       }}
-                      className="w-20 px-2 py-0.5 text-lg font-bold bg-white dark:bg-gray-700 border border-blue-300 dark:border-blue-700 rounded text-blue-900 dark:text-blue-300"
+                      className="w-20 px-2 py-0.5 text-lg font-bold bg-white dark:bg-gray-700 border border-primary-300 dark:border-primary-700 rounded text-primary-900 dark:text-primary-300"
                       placeholder="0,00"
                     />
-                    <p className="text-sm text-blue-700 dark:text-blue-400 mt-1">
+                    <p className="text-sm text-primary-700 dark:text-primary-300 mt-1">
                       Totaal: {formatCurrency(totalCurrentValue, currencySymbol)}
                     </p>
                   </div>
 
                   <div>
-                    <p className="text-sm text-blue-800 dark:text-blue-400 mb-2">Verschil</p>
+                    <p className="text-sm text-primary-700 dark:text-primary-300 mb-2">Verschil</p>
                     <p className={`text-2xl font-bold ${
                       // For short positions, negative is good (green)
                       // For long positions, positive is good (green)
                       (isBuy && premiumDifference >= 0) || (!isBuy && premiumDifference < 0)
-                        ? 'text-green-600 dark:text-green-400'
-                        : 'text-red-600 dark:text-red-400'
+                        ? 'text-positive-600 dark:text-positive-500'
+                        : 'text-negative-600 dark:text-negative-500'
                     }`}>
                       {/* Always show absolute value without +/- sign */}
                       {formatCurrency(Math.abs(premiumDifference), currencySymbol)}
                     </p>
                     <p className={`text-sm font-medium mt-1 ${
                       (isBuy && totalDifference >= 0) || (!isBuy && totalDifference < 0)
-                        ? 'text-green-600 dark:text-green-400'
-                        : 'text-red-600 dark:text-red-400'
+                        ? 'text-positive-600 dark:text-positive-500'
+                        : 'text-negative-600 dark:text-negative-500'
                     }`}>
                       Totaal: {formatCurrency(Math.abs(totalDifference), currencySymbol)}
                     </p>
@@ -339,14 +339,14 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
 
               {/* Collateral Info */}
               {option.cashReserved && option.cashReserved > 0 && (
-                <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-2 border border-orange-200 dark:border-orange-800">
-                  <h4 className="font-semibold text-orange-900 dark:text-orange-300 mb-2">
+                <div className="bg-caution-50 dark:bg-caution-600/15 rounded-lg p-2 border border-caution-500/30 dark:border-caution-600/40">
+                  <h4 className="font-semibold text-orange-900 dark:text-caution-500 mb-2">
                     Onderpand (Cash Gereserveerd)
                   </h4>
                   <p className="text-xl font-bold text-gray-700 dark:text-gray-300">
                     {formatCurrency(option.cashReserved, currencySymbol)}
                   </p>
-                  <p className="text-sm text-orange-700 dark:text-orange-400 mt-1">
+                  <p className="text-sm text-caution-600 dark:text-caution-500 mt-1">
                     Deze cash moet beschikbaar zijn voor mogelijke assignment
                   </p>
                 </div>
@@ -404,13 +404,13 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
                 </div>
 
                 {/* Current Price Section */}
-                <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
-                  <h3 className="font-semibold text-blue-900 dark:text-blue-300 mb-3">
+                <div className="bg-primary-50 dark:bg-primary-900/20 rounded-lg p-4 border border-primary-200 dark:border-primary-800">
+                  <h3 className="font-semibold text-primary-900 dark:text-primary-300 mb-3">
                     Huidige Waarde
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <p className="text-sm text-blue-800 dark:text-blue-400 mb-2">Prijs per Aandeel</p>
+                      <p className="text-sm text-primary-700 dark:text-primary-300 mb-2">Prijs per Aandeel</p>
                       <input
                         type="text"
                         value={currentPrice}
@@ -420,31 +420,31 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
                             setCurrentPrice(value);
                           }
                         }}
-                        className="w-28 px-3 py-2 text-lg font-bold bg-white dark:bg-gray-700 border border-blue-300 dark:border-blue-700 rounded text-blue-900 dark:text-blue-300"
+                        className="w-28 px-3 py-2 text-lg font-bold bg-white dark:bg-gray-700 border border-primary-300 dark:border-primary-700 rounded text-primary-900 dark:text-primary-300"
                         placeholder="0,00"
                       />
                     </div>
 
                     <div>
-                      <p className="text-sm text-blue-800 dark:text-blue-400 mb-2">Totale Waarde</p>
-                      <p className="text-2xl font-bold text-blue-900 dark:text-blue-300">
+                      <p className="text-sm text-primary-700 dark:text-primary-300 mb-2">Totale Waarde</p>
+                      <p className="text-2xl font-bold text-primary-900 dark:text-primary-300">
                         {formatCurrency(totalValue, currencySymbol)}
                       </p>
                     </div>
 
                     <div>
-                      <p className="text-sm text-blue-800 dark:text-blue-400 mb-2">Winst/Verlies</p>
+                      <p className="text-sm text-primary-700 dark:text-primary-300 mb-2">Winst/Verlies</p>
                       <p className={`text-2xl font-bold ${
                         pnl >= 0
-                          ? 'text-green-600 dark:text-green-400'
-                          : 'text-red-600 dark:text-red-400'
+                          ? 'text-positive-600 dark:text-positive-500'
+                          : 'text-negative-600 dark:text-negative-500'
                       }`}>
                         {pnl >= 0 ? '+' : ''}{formatCurrency(pnl, currencySymbol)}
                       </p>
                       <p className={`text-sm font-medium mt-1 ${
                         pnl >= 0
-                          ? 'text-green-600 dark:text-green-400'
-                          : 'text-red-600 dark:text-red-400'
+                          ? 'text-positive-600 dark:text-positive-500'
+                          : 'text-negative-600 dark:text-negative-500'
                       }`}>
                         {pnl >= 0 ? '+' : ''}{formatNumber(pnlPercent)}%
                       </p>
@@ -480,7 +480,7 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={3}
-                  className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:ring-primary-500 focus:border-primary-500"
                   placeholder="Voeg notities toe over deze positie, strategie, doelen, etc..."
                 />
               </div>
@@ -535,7 +535,7 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
               </button>
               <button
                 onClick={handleSave}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-primary-700 hover:bg-primary-800 text-white rounded-lg font-medium transition-colors"
               >
                 <Save className="w-4 h-4" />
                 Opslaan

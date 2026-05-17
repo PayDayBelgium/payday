@@ -94,22 +94,8 @@ export const PMCCStrategy: React.FC = () => {
 
   return (
     <div className="p-8 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-3 icon-bg-primary rounded-lg">
-            <WalletMinimal className="w-8 h-8 icon-text-primary" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Poor Man's Covered Call
-            </h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Manage your LEAPs and covered calls
-            </p>
-          </div>
-        </div>
-
+      {/* Toolbar — title is provided by the global header */}
+      <div className="flex items-center justify-end">
         {/* Action Buttons */}
         <div className="flex gap-3">
           <button
@@ -184,9 +170,9 @@ export const PMCCStrategy: React.FC = () => {
           <h3 className="text-gray-600 dark:text-gray-400 text-sm mb-2">Active Covered Calls</h3>
           <p className="text-3xl font-bold text-gray-900 dark:text-white">{coveredCalls.length}</p>
         </div>
-        <div className="bg-orange-50 dark:bg-trading-dark-800 border border-orange-200 dark:border-orange-500/50 rounded-lg p-6">
+        <div className="bg-caution-50 dark:bg-trading-dark-800 border border-caution-500/30 dark:border-caution-500/50 rounded-lg p-6">
           <h3 className="text-gray-600 dark:text-gray-400 text-sm mb-2">Uncovered Contracts</h3>
-          <p className="text-3xl font-bold text-orange-600 dark:text-orange-400">
+          <p className="text-3xl font-bold text-caution-600 dark:text-caution-500">
             {coverageAnalysis.reduce((sum, item) => sum + item.uncovered, 0)}
           </p>
         </div>
@@ -209,9 +195,9 @@ export const PMCCStrategy: React.FC = () => {
               <div
                 className={`p-6 border-b border-gray-200 dark:border-trading-dark-600 ${
                   expirationWarning === 'critical'
-                    ? 'bg-red-50 dark:bg-red-900/20'
+                    ? 'bg-negative-50 dark:bg-negative-700/15'
                     : expirationWarning === 'warning'
-                    ? 'bg-orange-50 dark:bg-orange-900/20'
+                    ? 'bg-caution-50 dark:bg-caution-600/15'
                     : ''
                 }`}
               >
@@ -226,8 +212,8 @@ export const PMCCStrategy: React.FC = () => {
                         <span
                           className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${
                             expirationWarning === 'critical'
-                              ? 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400'
-                              : 'bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400'
+                              ? 'bg-negative-50 dark:bg-negative-700/20 text-negative-700 dark:text-negative-500'
+                              : 'bg-caution-50 dark:bg-caution-500/20 text-caution-600 dark:text-caution-500'
                           }`}
                         >
                           <AlertTriangle className="w-3 h-3" />
@@ -255,13 +241,13 @@ export const PMCCStrategy: React.FC = () => {
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Coverage</p>
                     <div className="flex items-center gap-2">
                       {item.uncovered > 0 ? (
-                        <AlertTriangle className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                        <AlertTriangle className="w-5 h-5 text-caution-600 dark:text-caution-500" />
                       ) : (
-                        <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
+                        <CheckCircle className="w-5 h-5 text-positive-600 dark:text-positive-500" />
                       )}
                       <span
                         className={`text-lg font-semibold ${
-                          item.uncovered > 0 ? 'text-orange-600 dark:text-orange-400' : 'text-green-600 dark:text-green-400'
+                          item.uncovered > 0 ? 'text-caution-600 dark:text-caution-500' : 'text-positive-600 dark:text-positive-500'
                         }`}
                       >
                         {item.uncovered === 0
@@ -287,10 +273,10 @@ export const PMCCStrategy: React.FC = () => {
                       const daysToExpiry = getDaysToExpiration(call.expiration);
 
                       let bgClass = 'bg-gray-50 dark:bg-trading-dark-700';
-                      if (profitStatus === 'take-profit') bgClass = 'bg-green-50 dark:bg-green-900/20';
-                      else if (isITM) bgClass = 'bg-red-50 dark:bg-red-900/20';
-                      else if (expiryWarning === 'critical') bgClass = 'bg-red-50 dark:bg-red-900/20';
-                      else if (expiryWarning === 'warning') bgClass = 'bg-orange-50 dark:bg-orange-900/20';
+                      if (profitStatus === 'take-profit') bgClass = 'bg-positive-50 dark:bg-positive-700/15';
+                      else if (isITM) bgClass = 'bg-negative-50 dark:bg-negative-700/15';
+                      else if (expiryWarning === 'critical') bgClass = 'bg-negative-50 dark:bg-negative-700/15';
+                      else if (expiryWarning === 'warning') bgClass = 'bg-caution-50 dark:bg-caution-600/15';
 
                       return (
                         <div
@@ -307,13 +293,13 @@ export const PMCCStrategy: React.FC = () => {
                                   {call.contracts} contracts
                                 </span>
                                 {profitStatus === 'take-profit' && (
-                                  <span className="flex items-center gap-1 px-2 py-0.5 bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 rounded text-xs font-medium">
+                                  <span className="flex items-center gap-1 px-2 py-0.5 bg-positive-50 dark:bg-positive-700/20 text-positive-700 dark:text-positive-500 rounded text-xs font-medium">
                                     <CheckCircle className="w-3 h-3" />
                                     80%+ Profit
                                   </span>
                                 )}
                                 {isITM && (
-                                  <span className="flex items-center gap-1 px-2 py-0.5 bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 rounded text-xs font-medium">
+                                  <span className="flex items-center gap-1 px-2 py-0.5 bg-negative-50 dark:bg-negative-700/20 text-negative-700 dark:text-negative-500 rounded text-xs font-medium">
                                     <AlertTriangle className="w-3 h-3" />
                                     ITM
                                   </span>
@@ -329,8 +315,8 @@ export const PMCCStrategy: React.FC = () => {
                                 <span
                                   className={`font-medium ${
                                     call.premiumCollected - call.currentValue > 0
-                                      ? 'text-green-600 dark:text-green-400'
-                                      : 'text-red-600 dark:text-red-400'
+                                      ? 'text-positive-600 dark:text-positive-500'
+                                      : 'text-negative-600 dark:text-negative-500'
                                   }`}
                                 >
                                   P/L: $
@@ -358,7 +344,7 @@ export const PMCCStrategy: React.FC = () => {
                       setSelectedLeapId(item.underlying.id);
                       setIsAddCoveredCallModalOpen(true);
                     }}
-                    className="px-4 py-2 bg-blue-900 hover:bg-blue-950 text-white rounded-lg font-medium transition-colors"
+                    className="px-4 py-2 bg-primary-900 hover:bg-blue-950 text-white rounded-lg font-medium transition-colors"
                   >
                     Sell Covered Call
                   </button>
@@ -377,7 +363,7 @@ export const PMCCStrategy: React.FC = () => {
           </p>
           <button
             onClick={() => setIsAddLeapModalOpen(true)}
-            className="px-6 py-3 bg-blue-900 hover:bg-blue-950 text-white rounded-lg font-medium transition-colors"
+            className="px-6 py-3 bg-primary-900 hover:bg-blue-950 text-white rounded-lg font-medium transition-colors"
           >
             Add First Position
           </button>

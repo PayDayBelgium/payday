@@ -272,9 +272,9 @@ export const PMCCCalculator: React.FC = () => {
                   />
                 </div>
               ) : (
-                <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="bg-primary-50 dark:bg-primary-900/20 p-4 rounded-lg border border-primary-200 dark:border-primary-800">
                   <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-semibold text-blue-900 dark:text-blue-300 flex items-center gap-2">
+                    <h4 className="font-semibold text-primary-900 dark:text-primary-300 flex items-center gap-2">
                       <Plus className="w-4 h-4" />
                       Nieuwe ticker toevoegen
                     </h4>
@@ -289,9 +289,9 @@ export const PMCCCalculator: React.FC = () => {
                           miniContractsAvailable: false,
                         });
                       }}
-                      className="p-1 hover:bg-blue-200 dark:hover:bg-blue-800 rounded transition-colors"
+                      className="p-1 hover:bg-primary-200 dark:hover:bg-primary-800 rounded transition-colors"
                     >
-                      <X className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                      <X className="w-4 h-4 text-primary-700 dark:text-primary-300" />
                     </button>
                   </div>
 
@@ -311,7 +311,7 @@ export const PMCCCalculator: React.FC = () => {
                             })
                           }
                           placeholder="AAPL"
-                          className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 p-1.5 text-sm"
+                          className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-1.5 text-sm"
                         />
                       </div>
                       <div>
@@ -326,7 +326,7 @@ export const PMCCCalculator: React.FC = () => {
                               type: e.target.value as 'stock' | 'etf',
                             })
                           }
-                          className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 p-1.5 text-sm"
+                          className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-1.5 text-sm"
                         >
                           <option value="stock">Aandeel</option>
                           <option value="etf">ETF</option>
@@ -348,7 +348,7 @@ export const PMCCCalculator: React.FC = () => {
                           })
                         }
                         placeholder="Apple Inc."
-                        className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 p-1.5 text-sm"
+                        className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-1.5 text-sm"
                       />
                     </div>
 
@@ -363,7 +363,7 @@ export const PMCCCalculator: React.FC = () => {
                               optionsAvailable: e.target.checked,
                             })
                           }
-                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                          className="w-4 h-4 text-primary-700 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
                         />
                         <span className="text-sm text-gray-700 dark:text-gray-300">
                           Opties beschikbaar
@@ -380,7 +380,7 @@ export const PMCCCalculator: React.FC = () => {
                               miniContractsAvailable: e.target.checked,
                             })
                           }
-                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                          className="w-4 h-4 text-primary-700 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
                         />
                         <span className="text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2">
                           Mini contracts beschikbaar
@@ -398,7 +398,7 @@ export const PMCCCalculator: React.FC = () => {
                       <button
                         onClick={handleCreateTicker}
                         disabled={!newTickerData.symbol || !newTickerData.name}
-                        className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors text-sm"
+                        className="flex-1 px-4 py-2 bg-primary-700 hover:bg-primary-800 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors text-sm"
                       >
                         Ticker Toevoegen
                       </button>
@@ -431,7 +431,7 @@ export const PMCCCalculator: React.FC = () => {
                     value={inputs.underlyingPrice || ''}
                     onChange={(e) => handleInputChange('underlyingPrice', parseFloat(e.target.value) || 0)}
                     placeholder="150,00"
-                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 p-1.5 text-sm"
+                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-1.5 text-sm"
                   />
                 </div>
                 <div>
@@ -442,7 +442,7 @@ export const PMCCCalculator: React.FC = () => {
                     type="date"
                     value={inputs.startDate}
                     onChange={(e) => handleInputChange('startDate', e.target.value)}
-                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 p-1.5 text-sm"
+                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-1.5 text-sm"
                   />
                 </div>
               </div>
@@ -465,7 +465,7 @@ export const PMCCCalculator: React.FC = () => {
                     value={inputs.leapStrike || ''}
                     onChange={(e) => handleInputChange('leapStrike', parseFloat(e.target.value) || 0)}
                     placeholder="100,00"
-                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 p-1.5 text-sm"
+                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-1.5 text-sm"
                   />
                 </div>
                 <div>
@@ -477,7 +477,7 @@ export const PMCCCalculator: React.FC = () => {
                     value={inputs.leapDebit || ''}
                     onChange={(e) => handleInputChange('leapDebit', parseFloat(e.target.value) || 0)}
                     placeholder="25,00"
-                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 p-1.5 text-sm"
+                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-1.5 text-sm"
                   />
                 </div>
               </div>
@@ -488,7 +488,7 @@ export const PMCCCalculator: React.FC = () => {
                 <FridayDatePicker
                   value={inputs.leapExpiration}
                   onChange={(date) => handleInputChange('leapExpiration', date)}
-                  className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 p-1.5 text-sm"
+                  className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-1.5 text-sm"
                 />
               </div>
             </div>
@@ -510,7 +510,7 @@ export const PMCCCalculator: React.FC = () => {
                     value={inputs.shortStrike || ''}
                     onChange={(e) => handleInputChange('shortStrike', parseFloat(e.target.value) || 0)}
                     placeholder="160,00"
-                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 p-1.5 text-sm"
+                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-1.5 text-sm"
                   />
                 </div>
                 <div>
@@ -522,7 +522,7 @@ export const PMCCCalculator: React.FC = () => {
                     value={inputs.expectedPremium || ''}
                     onChange={(e) => handleInputChange('expectedPremium', parseFloat(e.target.value) || 0)}
                     placeholder="0,50"
-                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 p-1.5 text-sm"
+                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-1.5 text-sm"
                   />
                 </div>
               </div>
@@ -533,7 +533,7 @@ export const PMCCCalculator: React.FC = () => {
                 <select
                   value={inputs.premiumFrequency}
                   onChange={(e) => handleInputChange('premiumFrequency', e.target.value as 'monthly' | 'weekly')}
-                  className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 p-1.5 text-sm"
+                  className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-1.5 text-sm"
                 >
                   <option value="weekly">Weekly</option>
                   <option value="monthly">Monthly</option>
@@ -632,7 +632,7 @@ export const PMCCCalculator: React.FC = () => {
                         <Info className="w-3 h-3 text-gray-400 hover:text-primary-500 cursor-help" />
                       </PortalTooltip>
                     </span>
-                    <span className="text-sm font-semibold text-green-600 dark:text-green-400">
+                    <span className="text-sm font-semibold text-positive-600 dark:text-positive-500">
                       +{formatCurrency(results.premiumCollected)}
                     </span>
                   </div>
@@ -645,7 +645,7 @@ export const PMCCCalculator: React.FC = () => {
                           <Info className="w-3 h-3 text-gray-400 hover:text-primary-500 cursor-help" />
                         </PortalTooltip>
                       </span>
-                      <span className={`text-xl font-bold ${results.netPnL >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                      <span className={`text-xl font-bold ${results.netPnL >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
                         {formatCurrency(results.netPnL)}
                       </span>
                     </div>
@@ -662,7 +662,7 @@ export const PMCCCalculator: React.FC = () => {
                           <Info className="w-3 h-3 text-gray-400 hover:text-primary-500 cursor-help" />
                         </PortalTooltip>
                       </span>
-                      <span className={`text-xl font-bold ${results.roi >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                      <span className={`text-xl font-bold ${results.roi >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
                         {formatPercentage(results.roi)}
                       </span>
                     </div>
@@ -679,7 +679,7 @@ export const PMCCCalculator: React.FC = () => {
                           <Info className="w-3 h-3 text-gray-400 hover:text-primary-500 cursor-help" />
                         </PortalTooltip>
                       </div>
-                      <span className={`text-2xl font-bold ${results.annualizedROI >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                      <span className={`text-2xl font-bold ${results.annualizedROI >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
                         {formatPercentage(results.annualizedROI)}
                       </span>
                     </div>
@@ -702,7 +702,7 @@ export const PMCCCalculator: React.FC = () => {
               </div>
             ) : (
               <div className="text-center py-12">
-                <Calculator className="w-16 h-16 text-blue-300 dark:text-blue-600 mx-auto mb-4" />
+                <Calculator className="w-16 h-16 text-primary-400 dark:text-primary-700 mx-auto mb-4" />
                 <p className="text-gray-600 dark:text-gray-400">
                   Fill in all fields to see results
                 </p>
@@ -716,10 +716,10 @@ export const PMCCCalculator: React.FC = () => {
               {warnings.map((warning, index) => (
                 <div
                   key={index}
-                  className="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 dark:border-yellow-600 p-3 rounded-md flex items-start gap-2"
+                  className="bg-caution-50 dark:bg-caution-600/15 border-l-4 border-caution-500 dark:border-caution-600 p-3 rounded-md flex items-start gap-2"
                 >
-                  <AlertTriangle className="w-4 h-4 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5" />
-                  <p className="text-xs text-yellow-700 dark:text-yellow-400">{warning}</p>
+                  <AlertTriangle className="w-4 h-4 text-caution-600 dark:text-caution-500 flex-shrink-0 mt-0.5" />
+                  <p className="text-xs text-caution-600 dark:text-caution-500">{warning}</p>
                 </div>
               ))}
             </div>

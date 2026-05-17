@@ -53,10 +53,10 @@ const eventIcons = {
 };
 
 const eventColors = {
-  earnings: 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30',
-  fed: 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30',
-  inclusion: 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30',
-  other: 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30',
+  earnings: 'text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/30',
+  fed: 'text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/30',
+  inclusion: 'text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/30',
+  other: 'text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/30',
 };
 
 export const UpcomingEvents: React.FC = () => {
@@ -78,7 +78,7 @@ export const UpcomingEvents: React.FC = () => {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
       <div className="flex items-center gap-2 mb-4">
-        <Calendar className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+        <Calendar className="w-5 h-5 text-primary-700 dark:text-primary-300" />
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Upcoming Events</h3>
       </div>
 

@@ -1,0 +1,82 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - img "PayDay" [ref=e8]
+          - generic [ref=e9]:
+            - heading "PayDay" [level=1] [ref=e10]
+            - paragraph [ref=e11]: Trading workspace
+        - button "Collapse sidebar" [ref=e12] [cursor=pointer]:
+          - img [ref=e13]
+      - generic [ref=e17]:
+        - heading "Trading Journal" [level=2] [ref=e18]
+        - paragraph [ref=e19]: Track your trades, insights, and goals
+      - generic [ref=e20]:
+        - button "Click to connect" [ref=e22] [cursor=pointer]:
+          - img [ref=e23]
+        - button "Help Portal" [ref=e30] [cursor=pointer]:
+          - img [ref=e31]
+        - button "D" [ref=e35] [cursor=pointer]
+  - complementary [ref=e36]:
+    - navigation [ref=e37]:
+      - paragraph [ref=e38]: Overzicht
+      - link "Dashboard" [ref=e39] [cursor=pointer]:
+        - /url: /
+        - img [ref=e40]
+        - generic [ref=e45]: Dashboard
+      - link "Jouw Reis" [ref=e46] [cursor=pointer]:
+        - /url: /mission
+        - img [ref=e47]
+        - generic [ref=e49]: Jouw Reis
+      - generic [ref=e50]:
+        - paragraph [ref=e51]: Portefeuilles
+        - link "Lynx Lynx" [ref=e52] [cursor=pointer]:
+          - /url: /portfolio/Lynx
+          - img "Lynx" [ref=e53]
+          - generic [ref=e54]: Lynx
+        - link "FreeStoxx FreeStoxx" [ref=e55] [cursor=pointer]:
+          - /url: /portfolio/FreeStoxx
+          - img "FreeStoxx" [ref=e56]
+          - generic [ref=e57]: FreeStoxx
+        - link "DeGiro DeGiro" [ref=e58] [cursor=pointer]:
+          - /url: /portfolio/DeGiro
+          - img "DeGiro" [ref=e59]
+          - generic [ref=e60]: DeGiro
+        - link "SAXO SAXO" [ref=e61] [cursor=pointer]:
+          - /url: /portfolio/SAXO
+          - img "SAXO" [ref=e62]
+          - generic [ref=e63]: SAXO
+      - generic [ref=e64]:
+        - paragraph [ref=e65]: Tools
+        - link "Ticker overview" [ref=e66] [cursor=pointer]:
+          - /url: /tickers
+          - img [ref=e67]
+          - generic [ref=e70]: Ticker overview
+        - link "Meerwaardebelasting" [ref=e71] [cursor=pointer]:
+          - /url: /tools/capital-gains-tax
+          - img [ref=e72]
+          - generic [ref=e75]: Meerwaardebelasting
+    - paragraph [ref=e77]: PayDay v1.0
+  - main [ref=e78]:
+    - generic [ref=e79]:
+      - generic [ref=e80]:
+        - generic [ref=e81]:
+          - button "Journal Entries (0)" [ref=e82] [cursor=pointer]:
+            - generic [ref=e83]:
+              - img [ref=e84]
+              - text: Journal Entries (0)
+          - button "Goals (0 active)" [ref=e86] [cursor=pointer]:
+            - generic [ref=e87]:
+              - img [ref=e88]
+              - text: Goals (0 active)
+        - button "New Entry" [ref=e92] [cursor=pointer]:
+          - img [ref=e93]
+          - text: New Entry
+      - generic [ref=e95]:
+        - img [ref=e96]
+        - heading "No journal entries yet" [level=3] [ref=e98]
+        - paragraph [ref=e99]: Start documenting your trading journey and insights
+        - button "Create First Entry" [ref=e100] [cursor=pointer]:
+          - img [ref=e101]
+          - text: Create First Entry

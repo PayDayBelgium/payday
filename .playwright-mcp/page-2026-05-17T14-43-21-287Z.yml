@@ -1,0 +1,35 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - generic:
+      - img
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - img "PayDay" [ref=e7]
+          - generic [ref=e8]:
+            - paragraph [ref=e9]: PayDay
+            - paragraph [ref=e10]: Markets · Atelier
+        - paragraph [ref=e11]: Sign in
+        - heading "PayDay" [level=1] [ref=e12]
+        - paragraph [ref=e13]: Welcome back! Please sign in to your account.
+      - generic [ref=e15]:
+        - generic [ref=e16]:
+          - generic [ref=e17]: Username
+          - textbox "Username" [ref=e18]: demo
+        - generic [ref=e19]:
+          - generic [ref=e20]: Password
+          - textbox "Password" [ref=e21]: demo
+        - generic [ref=e22]:
+          - generic [ref=e23]: Language
+          - combobox "Language" [ref=e24]:
+            - option "English" [selected]
+            - option "Nederlands"
+            - option "Français"
+        - button "Sign in" [active] [ref=e25] [cursor=pointer]
+      - paragraph [ref=e26]: Member-only · Confidential
+  - generic [ref=e29]:
+    - img "PayDay" [ref=e30]
+    - img [ref=e31]
+    - generic [ref=e33]:
+      - paragraph [ref=e34]: Loading demo environment
+      - paragraph [ref=e35]: Preparing sample data for you...

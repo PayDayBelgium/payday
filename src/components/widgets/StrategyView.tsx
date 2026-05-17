@@ -38,32 +38,32 @@ const strategyTypeConfig: Record<TradingStrategyType, { label: string; icon: Rea
   'covered-call': {
     label: 'Covered Call',
     icon: <TrendingUp className="w-4 h-4" />,
-    color: 'text-blue-600 dark:text-blue-400',
-    bgColor: 'bg-blue-100 dark:bg-blue-900/30',
+    color: 'text-primary-700 dark:text-primary-300',
+    bgColor: 'bg-primary-50 dark:bg-primary-900/30',
   },
   'pmcc': {
     label: 'Poor Man\'s Covered Call',
     icon: <Layers className="w-4 h-4" />,
-    color: 'text-purple-600 dark:text-purple-400',
-    bgColor: 'bg-purple-100 dark:bg-purple-900/30',
+    color: 'text-ink-600 dark:text-ink-300',
+    bgColor: 'bg-surface-muted dark:bg-trading-dark-600',
   },
   'kaching': {
     label: 'KaChing',
     icon: <Zap className="w-4 h-4" />,
-    color: 'text-yellow-600 dark:text-yellow-400',
-    bgColor: 'bg-yellow-100 dark:bg-yellow-900/30',
+    color: 'text-caution-600 dark:text-caution-500',
+    bgColor: 'bg-caution-50 dark:bg-caution-600/25',
   },
   'csp': {
     label: 'Cash Secured Put',
     icon: <ShieldCheck className="w-4 h-4" />,
-    color: 'text-green-600 dark:text-green-400',
-    bgColor: 'bg-green-100 dark:bg-green-900/30',
+    color: 'text-positive-600 dark:text-positive-500',
+    bgColor: 'bg-positive-50 dark:bg-positive-700/25',
   },
   'spread': {
     label: 'Spread',
     icon: <LayoutGrid className="w-4 h-4" />,
-    color: 'text-orange-600 dark:text-orange-400',
-    bgColor: 'bg-orange-100 dark:bg-orange-900/30',
+    color: 'text-caution-600 dark:text-caution-500',
+    bgColor: 'bg-caution-50 dark:bg-caution-600/25',
   },
   'wheel': {
     label: 'Wheel',
@@ -216,7 +216,7 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
         </div>
         <button
           onClick={() => setIsCreating(true)}
-          className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
+          className="flex items-center gap-2 px-3 py-2 bg-primary-700 hover:bg-primary-800 text-white rounded-lg text-sm font-medium transition-colors"
         >
           <Plus className="w-4 h-4" />
           Nieuwe Strategie
@@ -239,7 +239,7 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
                 value={newStrategyName}
                 onChange={(e) => setNewStrategyName(e.target.value)}
                 placeholder="Bijv. AAPL Covered Calls"
-                className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
             <div>
@@ -249,7 +249,7 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
               <select
                 value={newStrategyType}
                 onChange={(e) => setNewStrategyType(e.target.value as TradingStrategyType)}
-                className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               >
                 {Object.entries(strategyTypeConfig).map(([type, config]) => (
                   <option key={type} value={type}>
@@ -267,14 +267,14 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
                 onChange={(e) => setNewStrategyDescription(e.target.value)}
                 placeholder="Beschrijf de strategie..."
                 rows={2}
-                className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
               />
             </div>
             <div className="flex gap-2">
               <button
                 onClick={handleCreateStrategy}
                 disabled={!newStrategyName.trim()}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg text-sm font-medium transition-colors"
+                className="px-4 py-2 bg-primary-700 hover:bg-primary-800 disabled:bg-gray-400 text-white rounded-lg text-sm font-medium transition-colors"
               >
                 Aanmaken
               </button>
@@ -306,7 +306,7 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
             </p>
             <button
               onClick={() => setIsCreating(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-primary-700 hover:bg-primary-800 text-white rounded-lg text-sm font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
               Eerste Strategie Aanmaken
@@ -358,7 +358,7 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
                       onClick={() => setSelectedStrategyForLinking(isLinking ? null : strategy.id)}
                       className={`p-2 rounded-lg transition-colors ${
                         isLinking
-                          ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                          ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
                           : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400'
                       }`}
                       title="Posities koppelen"
@@ -367,7 +367,7 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
                     </button>
                     <button
                       onClick={() => handleDeleteStrategy(strategy.id)}
-                      className="p-2 hover:bg-red-100 dark:hover:bg-red-900/30 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 rounded-lg transition-colors"
+                      className="p-2 hover:bg-negative-50 dark:hover:bg-negative-700/25 text-gray-500 dark:text-gray-400 hover:text-negative-600 dark:hover:text-negative-500 rounded-lg transition-colors"
                       title="Strategie verwijderen"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -427,8 +427,8 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
 
                 {/* Link Positions Panel */}
                 {isLinking && unassignedPositions.length > 0 && (
-                  <div className="border-t border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 p-4">
-                    <p className="text-xs font-medium text-blue-700 dark:text-blue-300 mb-3">
+                  <div className="border-t border-primary-200 dark:border-primary-800 bg-primary-50 dark:bg-primary-900/20 p-4">
+                    <p className="text-xs font-medium text-primary-700 dark:text-primary-300 mb-3">
                       Selecteer posities om te koppelen:
                     </p>
                     <div className="space-y-2 max-h-48 overflow-y-auto">
@@ -438,7 +438,7 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
                           <button
                             key={pos.id}
                             onClick={() => handleLinkPosition(strategy.id, pos.id)}
-                            className="w-full flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
+                            className="w-full flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/25 transition-colors"
                           >
                             <div className="text-left">
                               <p className="text-sm font-medium text-gray-900 dark:text-white">

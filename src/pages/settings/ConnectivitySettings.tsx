@@ -166,11 +166,11 @@ export const ConnectivitySettings: React.FC = () => {
   const getStatusColor = () => {
     switch (status) {
       case 'connected':
-        return 'text-green-500';
+        return 'text-positive-600';
       case 'connecting':
-        return 'text-yellow-500';
+        return 'text-caution-500';
       case 'error':
-        return 'text-red-500';
+        return 'text-negative-600';
       default:
         return 'text-gray-500';
     }
@@ -179,11 +179,11 @@ export const ConnectivitySettings: React.FC = () => {
   const getStatusBgColor = () => {
     switch (status) {
       case 'connected':
-        return 'bg-green-500';
+        return 'bg-positive-500';
       case 'connecting':
-        return 'bg-yellow-500';
+        return 'bg-caution-500';
       case 'error':
-        return 'bg-red-500';
+        return 'bg-negative-500';
       default:
         return 'bg-gray-500';
     }
@@ -192,11 +192,11 @@ export const ConnectivitySettings: React.FC = () => {
   const getLogEntryColor = (entry: WebSocketLogEntry) => {
     switch (entry.direction) {
       case 'incoming':
-        return 'text-green-400';
+        return 'text-positive-500';
       case 'outgoing':
-        return 'text-blue-400';
+        return 'text-primary-500';
       case 'system':
-        return entry.type === 'error' ? 'text-red-400' : 'text-gray-400';
+        return entry.type === 'error' ? 'text-negative-500' : 'text-gray-400';
       default:
         return 'text-gray-400';
     }
@@ -233,7 +233,7 @@ export const ConnectivitySettings: React.FC = () => {
                 {status === 'disconnected' || status === 'error' ? (
                   <button
                     onClick={handleConnect}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors"
+                    className="flex items-center gap-2 px-3 py-1.5 bg-positive-600 hover:bg-positive-700 text-white rounded-lg text-sm font-medium transition-colors"
                   >
                     <Play className="w-4 h-4" />
                     Connect
@@ -241,7 +241,7 @@ export const ConnectivitySettings: React.FC = () => {
                 ) : (
                   <button
                     onClick={handleDisconnect}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors"
+                    className="flex items-center gap-2 px-3 py-1.5 bg-negative-600 hover:bg-negative-700 text-white rounded-lg text-sm font-medium transition-colors"
                   >
                     <Square className="w-4 h-4" />
                     Disconnect
@@ -266,7 +266,7 @@ export const ConnectivitySettings: React.FC = () => {
                   key={option.value}
                   className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
                     dataMode === option.value
-                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                      ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
                       : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50'
                   }`}
                 >
@@ -276,12 +276,12 @@ export const ConnectivitySettings: React.FC = () => {
                     value={option.value}
                     checked={dataMode === option.value}
                     onChange={() => handleDataModeChange(option.value)}
-                    className="mt-1 text-blue-600 focus:ring-blue-500"
+                    className="mt-1 text-primary-700 focus:ring-primary-500"
                   />
                   <div className="flex-1">
                     <span className={`font-medium ${
                       dataMode === option.value
-                        ? 'text-blue-700 dark:text-blue-300'
+                        ? 'text-primary-700 dark:text-primary-300'
                         : 'text-gray-900 dark:text-white'
                     }`}>
                       {option.label}
@@ -295,8 +295,8 @@ export const ConnectivitySettings: React.FC = () => {
             </div>
 
             {dataMode === 'live' && (
-              <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-500/30 rounded-lg">
-                <p className="text-xs text-amber-700 dark:text-amber-300">
+              <div className="mt-3 p-3 bg-caution-50 dark:bg-caution-600/15 border border-caution-500/30 dark:border-caution-500/30 rounded-lg">
+                <p className="text-xs text-caution-600 dark:text-caution-500">
                   <strong>Let op:</strong> Live mode vereist een actieve Interactive Brokers connectie via de backend service.
                 </p>
               </div>
@@ -319,7 +319,7 @@ export const ConnectivitySettings: React.FC = () => {
                   value={config.url}
                   onChange={(e) => setConfig({ ...config, url: e.target.value })}
                   placeholder="ws://localhost:5000/ws/prices"
-                  className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 text-sm"
+                  className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2 text-sm"
                 />
               </div>
 
@@ -334,7 +334,7 @@ export const ConnectivitySettings: React.FC = () => {
                     onChange={(e) => setConfig({ ...config, reconnectInterval: Number(e.target.value) })}
                     min="1000"
                     step="1000"
-                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 text-sm"
+                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2 text-sm"
                   />
                 </div>
 
@@ -348,7 +348,7 @@ export const ConnectivitySettings: React.FC = () => {
                     onChange={(e) => setConfig({ ...config, maxReconnectAttempts: Number(e.target.value) })}
                     min="1"
                     max="100"
-                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 text-sm"
+                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2 text-sm"
                   />
                 </div>
               </div>
@@ -357,7 +357,7 @@ export const ConnectivitySettings: React.FC = () => {
                 <button
                   onClick={handleSaveConfig}
                   disabled={isSaving}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-colors"
+                  className="flex items-center gap-2 px-3 py-1.5 bg-primary-700 hover:bg-primary-800 disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-colors"
                 >
                   <Save className="w-4 h-4" />
                   {isSaving ? 'Saving...' : 'Save'}
@@ -376,8 +376,8 @@ export const ConnectivitySettings: React.FC = () => {
                 <div
                   className={`p-2 rounded-lg text-sm ${
                     saveMessage.type === 'success'
-                      ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
-                      : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
+                      ? 'bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500'
+                      : 'bg-negative-50 dark:bg-negative-700/25 text-negative-700 dark:text-negative-500'
                   }`}
                 >
                   {saveMessage.text}
@@ -401,13 +401,13 @@ export const ConnectivitySettings: React.FC = () => {
                   onChange={(e) => setSubscribeSymbol(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSubscribeTicker()}
                   placeholder="AAPL, MSFT, GOOGL..."
-                  className="flex-1 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 text-sm"
+                  className="flex-1 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2 text-sm"
                   disabled={status !== 'connected'}
                 />
                 <button
                   onClick={handleSubscribeTicker}
                   disabled={status !== 'connected' || !subscribeSymbol.trim()}
-                  className="flex items-center gap-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-colors"
+                  className="flex items-center gap-1 px-3 py-1.5 bg-positive-600 hover:bg-positive-700 disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-colors"
                 >
                   <Send className="w-4 h-4" />
                 </button>
@@ -416,7 +416,7 @@ export const ConnectivitySettings: React.FC = () => {
               <button
                 onClick={handleSubscribeAllTickers}
                 disabled={status !== 'connected' || tickers.length === 0}
-                className="w-full px-3 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-colors"
+                className="w-full px-3 py-1.5 bg-primary-700 hover:bg-primary-800 disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-colors"
               >
                 Subscribe All Tickers ({tickers.length})
               </button>
@@ -431,12 +431,12 @@ export const ConnectivitySettings: React.FC = () => {
                     {subscribedTickers.map((symbol) => (
                       <span
                         key={symbol}
-                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300"
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500"
                       >
                         {symbol}
                         <button
                           onClick={() => handleUnsubscribeTicker(symbol)}
-                          className="hover:text-red-500"
+                          className="hover:text-negative-600"
                           disabled={status !== 'connected'}
                         >
                           &times;
@@ -461,7 +461,7 @@ export const ConnectivitySettings: React.FC = () => {
                 <button
                   onClick={handleSubscribeAllOptions}
                   disabled={status !== 'connected' || optionPositions.length === 0}
-                  className="w-full flex items-center justify-center gap-2 px-3 py-1.5 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-colors mb-2"
+                  className="w-full flex items-center justify-center gap-2 px-3 py-1.5 bg-ink-700 hover:bg-purple-700 disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-colors mb-2"
                 >
                   <TrendingUp className="w-4 h-4" />
                   Subscribe All Options ({optionPositions.length})
@@ -477,7 +477,7 @@ export const ConnectivitySettings: React.FC = () => {
                       <button
                         onClick={handleUnsubscribeAllOptions}
                         disabled={status !== 'connected'}
-                        className="text-xs text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 disabled:opacity-50"
+                        className="text-xs text-negative-600 hover:text-negative-700 dark:text-negative-500 dark:hover:text-negative-500 disabled:opacity-50"
                       >
                         Unsubscribe all
                       </button>
@@ -488,14 +488,14 @@ export const ConnectivitySettings: React.FC = () => {
                         return (
                           <div
                             key={key}
-                            className="flex items-center justify-between px-2 py-1 rounded bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 text-xs"
+                            className="flex items-center justify-between px-2 py-1 rounded bg-surface-muted dark:bg-trading-dark-600 text-ink-800 dark:text-ink-300 text-xs"
                           >
                             <span>
                               {opt.symbol} {opt.strike} {opt.optionType.toUpperCase()} {opt.expiration}
                             </span>
                             <button
                               onClick={() => handleUnsubscribeOption(opt)}
-                              className="hover:text-red-500 ml-2"
+                              className="hover:text-negative-600 ml-2"
                               disabled={status !== 'connected'}
                             >
                               &times;
@@ -547,7 +547,7 @@ export const ConnectivitySettings: React.FC = () => {
                 </label>
                 <button
                   onClick={handleClearLogs}
-                  className="flex items-center gap-1 px-2 py-1 text-sm text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                  className="flex items-center gap-1 px-2 py-1 text-sm text-gray-600 dark:text-gray-400 hover:text-negative-600 dark:hover:text-negative-500 transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
                   Clear
@@ -602,10 +602,10 @@ export const ConnectivitySettings: React.FC = () => {
             <div className="p-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-xs">
               <div className="flex gap-4">
                 <span className="flex items-center gap-1">
-                  <span className="text-green-400">&lt;&lt;</span> Incoming
+                  <span className="text-positive-500">&lt;&lt;</span> Incoming
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="text-blue-400">&gt;&gt;</span> Outgoing
+                  <span className="text-primary-500">&gt;&gt;</span> Outgoing
                 </span>
                 <span className="flex items-center gap-1">
                   <span className="text-gray-400">--</span> System

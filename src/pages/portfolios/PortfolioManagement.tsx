@@ -331,7 +331,7 @@ export const PortfolioManagement: React.FC = () => {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                   placeholder={t('portfolios.namePlaceholder')}
                 />
               </div>
@@ -344,7 +344,7 @@ export const PortfolioManagement: React.FC = () => {
                   <div className="flex items-center gap-3">
                     {/* Logo Preview or Placeholder */}
                     <div
-                      className={`w-16 h-16 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center bg-gray-50 dark:bg-gray-900 ${logoPreview ? 'cursor-pointer hover:border-blue-500 dark:hover:border-blue-400 transition-colors' : ''}`}
+                      className={`w-16 h-16 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center bg-gray-50 dark:bg-gray-900 ${logoPreview ? 'cursor-pointer hover:border-primary-500 dark:hover:border-primary-400 transition-colors' : ''}`}
                       onClick={logoPreview ? handleLogoClick : undefined}
                       title={logoPreview ? t('imageCrop.title') : undefined}
                     >
@@ -379,7 +379,7 @@ export const PortfolioManagement: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setShowDefaultPortfolios(!showDefaultPortfolios)}
-                          className="p-2.5 bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-400 rounded-lg transition-colors flex items-center gap-1"
+                          className="p-2.5 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-200 dark:hover:bg-primary-900/50 text-primary-700 dark:text-primary-300 rounded-lg transition-colors flex items-center gap-1"
                           title={t('portfolios.useDefault')}
                         >
                           <ImageIcon className="w-5 h-5" />
@@ -426,7 +426,7 @@ export const PortfolioManagement: React.FC = () => {
                 <NumberInput
                   value={formData.pricePerContract || 0}
                   onChange={(value) => setFormData({ ...formData, pricePerContract: value })}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                   placeholder={t('portfolios.contractPricePlaceholder')}
                 />
               </div>
@@ -438,7 +438,7 @@ export const PortfolioManagement: React.FC = () => {
                 <select
                   value={formData.currency}
                   onChange={(e) => setFormData({ ...formData, currency: e.target.value as CurrencyType })}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                 >
                   <option value="USD">USD ($)</option>
                   <option value="EUR">EUR (€)</option>
@@ -453,7 +453,7 @@ export const PortfolioManagement: React.FC = () => {
                   type="url"
                   value={formData.url}
                   onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                   placeholder="https://portfolio.com/login"
                 />
               </div>
@@ -467,7 +467,7 @@ export const PortfolioManagement: React.FC = () => {
                   value={formData.startDate}
                   onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
                   max={new Date().toISOString().split('T')[0]}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                 />
                 <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   First day to track data for this portfolio
@@ -484,7 +484,7 @@ export const PortfolioManagement: React.FC = () => {
                   min={0}
                   allowDecimals={false}
                   placeholder="0"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                 />
                 <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   Initieel kapitaal (0 = geen storting)
@@ -500,7 +500,7 @@ export const PortfolioManagement: React.FC = () => {
               <textarea
                 value={formData.strategy}
                 onChange={(e) => setFormData({ ...formData, strategy: e.target.value })}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                 placeholder="Brief description for card views..."
                 rows={2}
               />
@@ -514,7 +514,7 @@ export const PortfolioManagement: React.FC = () => {
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                 placeholder="Detailed information, strategies, and goals for this portfolio account..."
                 rows={4}
               />
@@ -534,7 +534,7 @@ export const PortfolioManagement: React.FC = () => {
               <button
                 onClick={handleSavePortfolio}
                 disabled={!formData.name || !formData.logo}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-primary-700 hover:bg-primary-800 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
               >
                 <Save className="w-4 h-4" />
                 {t('portfolios.savePortfolio')}
@@ -574,7 +574,7 @@ export const PortfolioManagement: React.FC = () => {
             </p>
             <button
               onClick={handleAddPortfolio}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors shadow-md"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-primary-700 hover:bg-primary-800 text-white rounded-lg font-semibold transition-colors shadow-md"
             >
               <Plus className="w-5 h-5" />
               {t('portfolios.addFirstPortfolio')}
@@ -597,7 +597,7 @@ export const PortfolioManagement: React.FC = () => {
             onClick={() => handleEditPortfolio(portfolio)}
             className={`bg-white dark:bg-gray-800 rounded-lg border ${
               dragOverPortfolioId === portfolio.id
-                ? 'border-blue-500 dark:border-blue-400 border-2'
+                ? 'border-primary-500 dark:border-primary-400 border-2'
                 : 'border-gray-200 dark:border-gray-700'
             } p-4 flex flex-col justify-between hover:shadow-lg transition-all cursor-pointer ${
               draggedPortfolioId === portfolio.id ? 'opacity-50' : ''
@@ -648,7 +648,7 @@ export const PortfolioManagement: React.FC = () => {
                   e.stopPropagation();
                   navigate(`/portfolio/${encodeURIComponent(portfolio.name)}`);
                 }}
-                className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-full transition-colors"
+                className="p-1.5 text-primary-700 dark:text-primary-300 hover:bg-primary-50 dark:hover:bg-primary-900/25 rounded-full transition-colors"
                 title={t('portfolios.viewPortfolio')}
               >
                 <Briefcase className="w-3.5 h-3.5" />
@@ -659,7 +659,7 @@ export const PortfolioManagement: React.FC = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  className="p-1.5 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-full transition-colors"
+                  className="p-1.5 text-positive-600 dark:text-positive-500 hover:bg-positive-50 dark:hover:bg-positive-700/25 rounded-full transition-colors"
                   title={t('portfolioDetail.openPortal')}
                 >
                   <ExternalLink className="w-3.5 h-3.5" />
@@ -670,7 +670,7 @@ export const PortfolioManagement: React.FC = () => {
                   e.stopPropagation();
                   handleDeletePortfolio(portfolio.id, portfolio.name);
                 }}
-                className="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-full transition-colors"
+                className="p-1.5 text-negative-600 dark:text-negative-500 hover:bg-negative-50 dark:hover:bg-negative-700/25 rounded-full transition-colors"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
@@ -683,7 +683,7 @@ export const PortfolioManagement: React.FC = () => {
           <div className="flex justify-end">
             <button
               onClick={handleAddPortfolio}
-              className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors shadow-md"
+              className="flex items-center gap-2 px-5 py-2.5 bg-primary-700 hover:bg-primary-800 text-white rounded-lg font-semibold transition-colors shadow-md"
             >
               <Plus className="w-5 h-5" />
               {t('portfolios.addPortfolio')}

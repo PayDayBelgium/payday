@@ -12,11 +12,11 @@ export interface ThemeConfig {
 export const THEMES: Record<ThemeColor, ThemeConfig> = {
   blue: {
     id: 'blue',
-    name: 'Sky Blue',
-    primary: 'rgb(59, 130, 246)', // blue-500
-    primaryHover: 'rgb(37, 99, 235)', // blue-600
-    primaryLight: 'rgb(96, 165, 250)', // blue-400
-    primaryDark: 'rgb(29, 78, 216)', // blue-700
+    name: 'Institutional Blue',
+    primary: '#0B4A8F',       // institutional anchor
+    primaryHover: '#082C56',  // deeper on hover
+    primaryLight: '#2F6CAE',  // sky accent
+    primaryDark: '#051A33',   // very dark
   },
   green: {
     id: 'green',

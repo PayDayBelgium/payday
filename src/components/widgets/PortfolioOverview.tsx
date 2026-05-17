@@ -225,9 +225,9 @@ export const PortfolioOverview: React.FC = memo(() => {
                       <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
                         {alertsOpp.alerts > 0 && (
                           <div className="relative group">
-                            <div className="flex items-center gap-1 px-2 py-1 bg-amber-100 dark:bg-amber-900/30 rounded-full cursor-help">
-                              <AlertCircle className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-                              <span className="text-xs font-semibold text-amber-600 dark:text-amber-400">
+                            <div className="flex items-center gap-1 px-2 py-1 bg-caution-50 dark:bg-caution-600/25 rounded-full cursor-help">
+                              <AlertCircle className="w-3 h-3 text-caution-600 dark:text-caution-500" />
+                              <span className="text-xs font-semibold text-caution-600 dark:text-caution-500">
                                 {alertsOpp.alerts}
                               </span>
                             </div>
@@ -241,9 +241,9 @@ export const PortfolioOverview: React.FC = memo(() => {
                         )}
                         {alertsOpp.opportunities > 0 && (
                           <div className="relative group">
-                            <div className="flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 rounded-full cursor-help">
-                              <Target className="w-3 h-3 text-green-600 dark:text-green-400" />
-                              <span className="text-xs font-semibold text-green-600 dark:text-green-400">
+                            <div className="flex items-center gap-1 px-2 py-1 bg-positive-50 dark:bg-positive-700/25 rounded-full cursor-help">
+                              <Target className="w-3 h-3 text-positive-600 dark:text-positive-500" />
+                              <span className="text-xs font-semibold text-positive-600 dark:text-positive-500">
                                 {alertsOpp.opportunities}
                               </span>
                             </div>
@@ -328,7 +328,7 @@ export const PortfolioOverview: React.FC = memo(() => {
                         </div>
                         <div className="flex">
                           <span className="text-gray-500 dark:text-gray-400 w-20">Vrije cash</span>
-                          <span className={`font-medium ${freeCash < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'}`}>
+                          <span className={`font-medium ${freeCash < 0 ? 'text-negative-600 dark:text-negative-500' : 'text-gray-900 dark:text-white'}`}>
                             {formatCurrency(freeCash, currencySymbol)}
                           </span>
                         </div>
@@ -387,7 +387,7 @@ export const PortfolioOverview: React.FC = memo(() => {
                             onClick={(e) => setTimePeriod(summary.portfolio, period, e)}
                             className={`flex-1 py-1 text-xs font-medium rounded transition-colors text-center cursor-pointer ${
                               selectedPeriod === period
-                                ? 'bg-blue-600 text-white'
+                                ? 'bg-primary-700 text-white'
                                 : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500'
                             }`}
                             role="button"
@@ -411,15 +411,15 @@ export const PortfolioOverview: React.FC = memo(() => {
                         </p>
                         <p className={`text-2xl font-bold mb-1 ${
                           gain.absolute >= 0
-                            ? 'text-green-600 dark:text-green-400'
-                            : 'text-red-600 dark:text-red-400'
+                            ? 'text-positive-600 dark:text-positive-500'
+                            : 'text-negative-600 dark:text-negative-500'
                         }`}>
                           {gain.absolute >= 0 ? '+' : ''}{formatCurrency(gain.absolute, currencySymbol)}
                         </p>
                         <p className={`text-sm font-medium flex items-center gap-1 ${
                           gain.percentage >= 0
-                            ? 'text-green-600 dark:text-green-400'
-                            : 'text-red-600 dark:text-red-400'
+                            ? 'text-positive-600 dark:text-positive-500'
+                            : 'text-negative-600 dark:text-negative-500'
                         }`}>
                           {gain.percentage >= 0 ? (
                             <TrendingUp className="w-4 h-4" />

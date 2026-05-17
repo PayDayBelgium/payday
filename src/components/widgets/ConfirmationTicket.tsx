@@ -200,9 +200,9 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
         {/* Spread Details */}
         {(type === 'spread-call' || type === 'spread-put') && longStrike && shortStrike && (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+            <div className="grid grid-cols-2 gap-4 p-4 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
               <div className="col-span-2">
-                <p className="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-2">
+                <p className="text-sm font-semibold text-primary-900 dark:text-primary-300 mb-2">
                   Long Leg ({type === 'spread-call' ? 'Lagere' : 'Hogere'} Strike)
                 </p>
               </div>
@@ -220,9 +220,9 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
+            <div className="grid grid-cols-2 gap-4 p-4 bg-caution-50 dark:bg-caution-600/15 rounded-lg border border-caution-500/30 dark:border-caution-600/40">
               <div className="col-span-2">
-                <p className="text-sm font-semibold text-orange-900 dark:text-orange-300 mb-2">
+                <p className="text-sm font-semibold text-orange-900 dark:text-caution-500 mb-2">
                   Short Leg ({type === 'spread-call' ? 'Hogere' : 'Lagere'} Strike)
                 </p>
               </div>
@@ -282,9 +282,9 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
               </div>
               <span className={`text-lg font-bold ${
                 isDebit
-                  ? 'text-red-600 dark:text-red-400'
+                  ? 'text-negative-600 dark:text-negative-500'
                   : isCredit
-                  ? 'text-green-600 dark:text-green-400'
+                  ? 'text-positive-600 dark:text-positive-500'
                   : 'text-gray-900 dark:text-white'
               }`}>
                 {isCredit ? '+' : ''}{currencySymbol}{formatNumber(Math.abs(costBasis), 2)}
@@ -305,14 +305,14 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
 
             {/* Max Profit */}
             {maxProfit !== undefined && (
-              <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+              <div className="flex items-center justify-between p-3 bg-positive-50 dark:bg-positive-700/15 rounded-lg border border-positive-500/20 dark:border-positive-700/30">
                 <div className="flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />
-                  <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                  <TrendingUp className="w-5 h-5 text-positive-600 dark:text-positive-500" />
+                  <span className="text-sm font-medium text-positive-700 dark:text-positive-500">
                     Max Winst
                   </span>
                 </div>
-                <span className="text-lg font-bold text-green-600 dark:text-green-400">
+                <span className="text-lg font-bold text-positive-600 dark:text-positive-500">
                   {maxProfit === Infinity ? '∞' : `+${currencySymbol}${formatNumber(maxProfit, 2)}`}
                 </span>
               </div>
@@ -320,14 +320,14 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
 
             {/* Max Loss */}
             {maxLoss !== undefined && (
-              <div className="flex items-center justify-between p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
+              <div className="flex items-center justify-between p-3 bg-negative-50 dark:bg-negative-700/15 rounded-lg border border-negative-500/20 dark:border-negative-700/30">
                 <div className="flex items-center gap-2">
-                  <TrendingDown className="w-5 h-5 text-red-600 dark:text-red-400" />
-                  <span className="text-sm font-medium text-red-700 dark:text-red-300">
+                  <TrendingDown className="w-5 h-5 text-negative-600 dark:text-negative-500" />
+                  <span className="text-sm font-medium text-negative-700 dark:text-negative-500">
                     Max Verlies
                   </span>
                 </div>
-                <span className="text-lg font-bold text-red-600 dark:text-red-400">
+                <span className="text-lg font-bold text-negative-600 dark:text-negative-500">
                   {maxLoss === Infinity ? '∞' : `-${currencySymbol}${formatNumber(maxLoss, 2)}`}
                 </span>
               </div>
@@ -335,14 +335,14 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
 
             {/* Cash Reserved */}
             {cashReserved !== undefined && cashReserved > 0 && (
-              <div className="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
+              <div className="flex items-center justify-between p-3 bg-caution-50 dark:bg-caution-600/15 rounded-lg border border-caution-500/30 dark:border-caution-600/40">
                 <div className="flex items-center gap-2">
-                  <AlertCircle className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                  <span className="text-sm font-medium text-orange-700 dark:text-orange-300">
+                  <AlertCircle className="w-5 h-5 text-caution-600 dark:text-caution-500" />
+                  <span className="text-sm font-medium text-caution-600 dark:text-caution-500">
                     Cash Gereserveerd
                   </span>
                 </div>
-                <span className="text-lg font-bold text-orange-600 dark:text-orange-400">
+                <span className="text-lg font-bold text-caution-600 dark:text-caution-500">
                   {currencySymbol}{formatNumber(cashReserved, 2)}
                 </span>
               </div>
@@ -372,7 +372,7 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
       {/* Footer Warning */}
       <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
         <div className="flex items-start gap-2">
-          <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
+          <AlertCircle className="w-5 h-5 text-caution-600 dark:text-caution-500 flex-shrink-0 mt-0.5" />
           <p className="text-xs text-gray-600 dark:text-gray-400">
             Controleer alle details voordat je deze positie opent. Deze actie kan niet ongedaan worden gemaakt.
           </p>

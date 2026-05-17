@@ -1,0 +1,338 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - generic [ref=e7]:
+            - img "PayDay" [ref=e8]
+            - generic [ref=e9]:
+              - heading "PayDay" [level=1] [ref=e10]
+              - paragraph [ref=e11]: Trading workspace
+          - button "Collapse sidebar" [ref=e12] [cursor=pointer]:
+            - img [ref=e13]
+        - generic [ref=e17]:
+          - heading "Analyses" [level=2] [ref=e18]
+          - paragraph [ref=e19]: Geavanceerde portfolio analyses en inzichten
+        - generic [ref=e20]:
+          - button "Click to connect" [ref=e22] [cursor=pointer]:
+            - img [ref=e23]
+          - button "Help Portal" [ref=e30] [cursor=pointer]:
+            - img [ref=e31]
+          - button "D" [ref=e35] [cursor=pointer]
+    - complementary [ref=e36]:
+      - navigation [ref=e37]:
+        - paragraph [ref=e38]: Overzicht
+        - link "Dashboard" [ref=e39] [cursor=pointer]:
+          - /url: /
+          - img [ref=e40]
+          - generic [ref=e45]: Dashboard
+        - link "Jouw Reis" [ref=e46] [cursor=pointer]:
+          - /url: /mission
+          - img [ref=e47]
+          - generic [ref=e49]: Jouw Reis
+        - link "Performance" [ref=e50] [cursor=pointer]:
+          - /url: /analytics
+          - img [ref=e52]
+          - generic [ref=e54]: Performance
+        - generic [ref=e55]:
+          - paragraph [ref=e56]: Tools
+          - link "Ticker overview" [ref=e57] [cursor=pointer]:
+            - /url: /tickers
+            - img [ref=e58]
+            - generic [ref=e61]: Ticker overview
+          - link "PMCC simulator" [ref=e62] [cursor=pointer]:
+            - /url: /tools/pmcc-calculator
+            - img [ref=e63]
+            - generic [ref=e65]: PMCC simulator
+          - link "KaChing simulator" [ref=e66] [cursor=pointer]:
+            - /url: /tools/kaching-calculator
+            - img [ref=e67]
+            - generic [ref=e70]: KaChing simulator
+          - link "Income simulator" [ref=e71] [cursor=pointer]:
+            - /url: /tools/income-calculator
+            - img [ref=e72]
+            - generic [ref=e74]: Income simulator
+          - link "Covered Call Simulator" [ref=e75] [cursor=pointer]:
+            - /url: /tools/covered-call-simulator
+            - img [ref=e76]
+            - generic [ref=e80]: Covered Call Simulator
+          - link "Meerwaardebelasting" [ref=e81] [cursor=pointer]:
+            - /url: /tools/capital-gains-tax
+            - img [ref=e82]
+            - generic [ref=e85]: Meerwaardebelasting
+          - link "P&L simulator" [ref=e86] [cursor=pointer]:
+            - /url: /tools/pnl-simulator
+            - img [ref=e87]
+            - generic [ref=e90]: P&L simulator
+      - paragraph [ref=e92]: PayDay v1.0
+    - main [ref=e93]:
+      - generic [ref=e94]:
+        - generic [ref=e96]:
+          - button "Cash & Onderpand" [ref=e97] [cursor=pointer]:
+            - img [ref=e98]
+            - text: Cash & Onderpand
+          - button "Performance" [ref=e100] [cursor=pointer]:
+            - img [ref=e101]
+            - text: Performance
+          - button "Allocatie" [ref=e104] [cursor=pointer]:
+            - img [ref=e105]
+            - text: Allocatie
+          - button "Risico Analyse" [ref=e108] [cursor=pointer]:
+            - img [ref=e109]
+            - text: Risico Analyse
+        - generic [ref=e111]:
+          - generic [ref=e112]:
+            - generic [ref=e113]:
+              - button "7 dagen" [ref=e114] [cursor=pointer]
+              - button "30 dagen" [ref=e115] [cursor=pointer]
+              - button "3 maanden" [ref=e116] [cursor=pointer]
+              - button "12 maanden" [ref=e117] [cursor=pointer]
+              - button "YTD" [ref=e118] [cursor=pointer]
+              - button "Alles" [ref=e119] [cursor=pointer]
+              - button "Custom" [ref=e120] [cursor=pointer]
+            - generic [ref=e122]:
+              - button "€ Nominaal" [ref=e123] [cursor=pointer]
+              - button "% Procent" [ref=e124] [cursor=pointer]
+          - generic [ref=e125]:
+            - img [ref=e126]
+            - generic [ref=e128]: 30 dagen
+            - generic [ref=e129]: ·
+            - generic [ref=e130]: 2026-04-17 → 2026-05-17
+          - generic [ref=e131]:
+            - generic [ref=e132]:
+              - generic [ref=e133]:
+                - img [ref=e135]
+                - paragraph [ref=e138]: Netto P&L
+              - paragraph [ref=e139]: €3.047,00
+              - paragraph [ref=e140]: +€2.9k vs vorige periode
+            - generic [ref=e141]:
+              - generic [ref=e142]:
+                - img [ref=e144]
+                - paragraph [ref=e148]: Win rate
+              - paragraph [ref=e149]: 80.0%
+              - paragraph [ref=e150]: 8 wins · 2 losses
+            - generic [ref=e151]:
+              - generic [ref=e152]:
+                - img [ref=e154]
+                - paragraph [ref=e156]: Profit factor
+              - paragraph [ref=e157]: "11.33"
+              - paragraph [ref=e158]: Sterk
+            - generic [ref=e159]:
+              - generic [ref=e160]:
+                - img [ref=e162]
+                - paragraph [ref=e167]: Contracten
+              - paragraph [ref=e168]: "506"
+              - paragraph [ref=e169]: 10 afgesloten trades
+            - generic [ref=e170]:
+              - generic [ref=e171]:
+                - img [ref=e173]
+                - paragraph [ref=e176]: Bruto winst
+              - paragraph [ref=e177]: €3.342,00
+              - paragraph [ref=e178]: Gem. €418 per win
+            - generic [ref=e179]:
+              - generic [ref=e180]:
+                - img [ref=e182]
+                - paragraph [ref=e185]: Bruto verlies
+              - paragraph [ref=e186]: "-€295,00"
+              - paragraph [ref=e187]: Gem. -€148 per loss
+            - generic [ref=e188]:
+              - generic [ref=e189]:
+                - img [ref=e191]
+                - paragraph [ref=e195]: Gem. P&L / trade
+              - paragraph [ref=e196]: €304,70
+              - paragraph [ref=e197]: Over 10 trade(s)
+            - generic [ref=e198]:
+              - generic [ref=e199]:
+                - img [ref=e201]
+                - paragraph [ref=e204]: Fees & commissies
+              - paragraph [ref=e205]: €15,50
+              - paragraph [ref=e206]: 0.5% van P&L
+          - generic [ref=e207]:
+            - generic [ref=e208]:
+              - generic [ref=e209]:
+                - generic [ref=e210]:
+                  - paragraph [ref=e211]: Verloop
+                  - heading "Cumulatieve P&L" [level=3] [ref=e212]
+                - generic [ref=e213]:
+                  - paragraph [ref=e214]: €3.047,00
+                  - paragraph [ref=e215]: 10 trade(s)
+              - application [ref=e219]:
+                - generic [ref=e228]:
+                  - generic [ref=e229]:
+                    - generic [ref=e231]: 2026-04-22
+                    - generic [ref=e233]: 2026-04-28
+                    - generic [ref=e235]: 2026-04-30
+                    - generic [ref=e237]: 2026-05-02
+                    - generic [ref=e239]: 2026-05-08
+                    - generic [ref=e241]: 2026-05-09
+                    - generic [ref=e243]: 2026-05-10
+                    - generic [ref=e245]: 2026-05-12
+                    - generic [ref=e247]: 2026-05-15
+                  - generic [ref=e248]:
+                    - generic [ref=e250]: €0
+                    - generic [ref=e252]: €800
+                    - generic [ref=e254]: €1.6k
+                    - generic [ref=e256]: €2.4k
+                    - generic [ref=e258]: €3.2k
+            - generic [ref=e259]:
+              - paragraph [ref=e260]: Verdeling
+              - heading "Wins vs. losses" [level=3] [ref=e261]
+              - generic [ref=e262]:
+                - generic [ref=e264]:
+                  - generic [ref=e265]: Winnaars
+                  - generic [ref=e266]: "8"
+                - generic [ref=e270]:
+                  - generic [ref=e271]: Verliezers
+                  - generic [ref=e272]: "2"
+              - generic [ref=e275]:
+                - generic [ref=e276]:
+                  - generic [ref=e277]: Gem. winst per win
+                  - generic [ref=e278]: €417,75
+                - generic [ref=e279]:
+                  - generic [ref=e280]: Gem. verlies per loss
+                  - generic [ref=e281]: "-€147,50"
+                - generic [ref=e282]:
+                  - generic [ref=e283]: Win/loss ratio
+                  - generic [ref=e284]: "2.83"
+          - generic [ref=e285]:
+            - generic [ref=e286]:
+              - paragraph [ref=e287]: Hoogtepunten
+              - generic [ref=e288]:
+                - generic [ref=e289]:
+                  - generic [ref=e290]:
+                    - img [ref=e291]
+                    - paragraph [ref=e297]: Beste trade
+                  - paragraph [ref=e298]: €890,00
+                  - paragraph [ref=e299]: NVDA
+                  - paragraph [ref=e300]: Covered Call · 2026-05-15
+                - generic [ref=e301]:
+                  - generic [ref=e302]:
+                    - img [ref=e303]
+                    - paragraph [ref=e305]: Slechtste trade
+                  - paragraph [ref=e306]: "-€210,00"
+                  - paragraph [ref=e307]: AMD
+                  - paragraph [ref=e308]: PMCC · 2026-05-12
+            - generic [ref=e309]:
+              - generic [ref=e311]:
+                - paragraph [ref=e312]: Per strategie
+                - heading "P&L verdeeld over strategieën" [level=3] [ref=e313]
+              - application [ref=e317]:
+                - generic [ref=e333]:
+                  - generic [ref=e334]:
+                    - generic [ref=e336]: €0
+                    - generic [ref=e338]: €400
+                    - generic [ref=e340]: €800
+                    - generic [ref=e342]: €1.2k
+                    - generic [ref=e344]: €1.6k
+                  - generic [ref=e345]:
+                    - generic [ref=e347]: Covered Call
+                    - generic [ref=e349]: Cash SecuredPut
+                    - generic [ref=e351]: PMCC
+                    - generic [ref=e353]: Wheel
+          - generic [ref=e354]:
+            - generic [ref=e356]:
+              - paragraph [ref=e357]: Afgesloten trades
+              - heading "10 trade(s) in 30 dagen" [level=3] [ref=e358]
+            - table [ref=e360]:
+              - rowgroup [ref=e361]:
+                - row "Datum Ticker Strategie Aantal Entry Exit Fees P&L" [ref=e362]:
+                  - columnheader "Datum" [ref=e363]
+                  - columnheader "Ticker" [ref=e364]
+                  - columnheader "Strategie" [ref=e365]
+                  - columnheader "Aantal" [ref=e366]
+                  - columnheader "Entry" [ref=e367]
+                  - columnheader "Exit" [ref=e368]
+                  - columnheader "Fees" [ref=e369]
+                  - columnheader "P&L" [ref=e370]
+              - rowgroup [ref=e371]:
+                - row "2026-05-15 NVDA Covered Call 100 €860,00 €870,00 €1,50 €890,00" [ref=e372]:
+                  - cell "2026-05-15" [ref=e373]
+                  - cell "NVDA" [ref=e374]
+                  - cell "Covered Call" [ref=e375]
+                  - cell "100" [ref=e376]
+                  - cell "€860,00" [ref=e377]
+                  - cell "€870,00" [ref=e378]
+                  - cell "€1,50" [ref=e379]
+                  - cell "€890,00" [ref=e380]
+                - row "2026-05-13 MSFT Wheel 100 €355,00 €360,00 €1,50 €425,00" [ref=e381]:
+                  - cell "2026-05-13" [ref=e382]
+                  - cell "MSFT" [ref=e383]
+                  - cell "Wheel" [ref=e384]
+                  - cell "100" [ref=e385]
+                  - cell "€355,00" [ref=e386]
+                  - cell "€360,00" [ref=e387]
+                  - cell "€1,50" [ref=e388]
+                  - cell "€425,00" [ref=e389]
+                - row "2026-05-12 AMD PMCC 2 €145,00 €142,00 €2,00 -€210,00" [ref=e390]:
+                  - cell "2026-05-12" [ref=e391]
+                  - cell "AMD" [ref=e392]
+                  - cell "PMCC" [ref=e393]
+                  - cell "2" [ref=e394]
+                  - cell "€145,00" [ref=e395]
+                  - cell "€142,00" [ref=e396]
+                  - cell "€2,00" [ref=e397]
+                  - cell "-€210,00" [ref=e398]
+                - row "2026-05-10 AAPL Cash Secured Put 1 €180,00 €0,00 €1,50 €175,00" [ref=e399]:
+                  - cell "2026-05-10" [ref=e400]
+                  - cell "AAPL" [ref=e401]
+                  - cell "Cash Secured Put" [ref=e402]
+                  - cell "1" [ref=e403]
+                  - cell "€180,00" [ref=e404]
+                  - cell "€0,00" [ref=e405]
+                  - cell "€1,50" [ref=e406]
+                  - cell "€175,00" [ref=e407]
+                - row "2026-05-09 META Covered Call 100 €520,00 €525,00 €1,50 €320,00" [ref=e408]:
+                  - cell "2026-05-09" [ref=e409]
+                  - cell "META" [ref=e410]
+                  - cell "Covered Call" [ref=e411]
+                  - cell "100" [ref=e412]
+                  - cell "€520,00" [ref=e413]
+                  - cell "€525,00" [ref=e414]
+                  - cell "€1,50" [ref=e415]
+                  - cell "€320,00" [ref=e416]
+                - row "2026-05-08 AMZN Wheel 1 €195,00 €192,00 €1,50 -€85,00" [ref=e417]:
+                  - cell "2026-05-08" [ref=e418]
+                  - cell "AMZN" [ref=e419]
+                  - cell "Wheel" [ref=e420]
+                  - cell "1" [ref=e421]
+                  - cell "€195,00" [ref=e422]
+                  - cell "€192,00" [ref=e423]
+                  - cell "€1,50" [ref=e424]
+                  - cell "-€85,00" [ref=e425]
+                - row "2026-05-02 GOOGL PMCC 100 €168,00 €175,00 €1,50 €680,00" [ref=e426]:
+                  - cell "2026-05-02" [ref=e427]
+                  - cell "GOOGL" [ref=e428]
+                  - cell "PMCC" [ref=e429]
+                  - cell "100" [ref=e430]
+                  - cell "€168,00" [ref=e431]
+                  - cell "€175,00" [ref=e432]
+                  - cell "€1,50" [ref=e433]
+                  - cell "€680,00" [ref=e434]
+                - row "2026-04-30 SPY Covered Call 100 €510,00 €515,00 €1,50 €195,00" [ref=e435]:
+                  - cell "2026-04-30" [ref=e436]
+                  - cell "SPY" [ref=e437]
+                  - cell "Covered Call" [ref=e438]
+                  - cell "100" [ref=e439]
+                  - cell "€510,00" [ref=e440]
+                  - cell "€515,00" [ref=e441]
+                  - cell "€1,50" [ref=e442]
+                  - cell "€195,00" [ref=e443]
+                - row "2026-04-28 NVDA Cash Secured Put 1 €850,00 €0,00 €1,50 €412,00" [ref=e444]:
+                  - cell "2026-04-28" [ref=e445]
+                  - cell "NVDA" [ref=e446]
+                  - cell "Cash Secured Put" [ref=e447]
+                  - cell "1" [ref=e448]
+                  - cell "€850,00" [ref=e449]
+                  - cell "€0,00" [ref=e450]
+                  - cell "€1,50" [ref=e451]
+                  - cell "€412,00" [ref=e452]
+                - row "2026-04-22 MSFT Cash Secured Put 1 €350,00 €0,00 €1,50 €245,00" [ref=e453]:
+                  - cell "2026-04-22" [ref=e454]
+                  - cell "MSFT" [ref=e455]
+                  - cell "Cash Secured Put" [ref=e456]
+                  - cell "1" [ref=e457]
+                  - cell "€350,00" [ref=e458]
+                  - cell "€0,00" [ref=e459]
+                  - cell "€1,50" [ref=e460]
+                  - cell "€245,00" [ref=e461]
+  - generic [ref=e462]: Covered Call

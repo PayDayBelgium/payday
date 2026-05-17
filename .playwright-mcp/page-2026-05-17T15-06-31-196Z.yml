@@ -1,0 +1,168 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - img "PayDay" [ref=e8]
+          - generic [ref=e9]:
+            - heading "PayDay" [level=1] [ref=e10]
+            - paragraph [ref=e11]: Trading workspace
+        - button "Collapse sidebar" [ref=e12] [cursor=pointer]:
+          - img [ref=e13]
+      - generic [ref=e15]:
+        - button "Click to connect" [ref=e17] [cursor=pointer]:
+          - img [ref=e18]
+        - button "Help Portal" [ref=e25] [cursor=pointer]:
+          - img [ref=e26]
+        - button "D" [ref=e30] [cursor=pointer]
+  - complementary [ref=e31]:
+    - navigation [ref=e32]:
+      - paragraph [ref=e33]: Overzicht
+      - link "Dashboard" [ref=e34] [cursor=pointer]:
+        - /url: /
+        - img [ref=e35]
+        - generic [ref=e40]: Dashboard
+      - link "Jouw Reis" [ref=e41] [cursor=pointer]:
+        - /url: /mission
+        - img [ref=e42]
+        - generic [ref=e44]: Jouw Reis
+      - generic [ref=e45]:
+        - paragraph [ref=e46]: Portefeuilles
+        - link "Lynx Lynx" [ref=e47] [cursor=pointer]:
+          - /url: /portfolio/Lynx
+          - img "Lynx" [ref=e48]
+          - generic [ref=e49]: Lynx
+        - link "FreeStoxx FreeStoxx" [ref=e50] [cursor=pointer]:
+          - /url: /portfolio/FreeStoxx
+          - img "FreeStoxx" [ref=e51]
+          - generic [ref=e52]: FreeStoxx
+        - link "DeGiro DeGiro" [ref=e53] [cursor=pointer]:
+          - /url: /portfolio/DeGiro
+          - img "DeGiro" [ref=e54]
+          - generic [ref=e55]: DeGiro
+        - link "SAXO SAXO" [ref=e56] [cursor=pointer]:
+          - /url: /portfolio/SAXO
+          - img "SAXO" [ref=e57]
+          - generic [ref=e58]: SAXO
+      - generic [ref=e59]:
+        - paragraph [ref=e60]: Tools
+        - link "Ticker overview" [ref=e61] [cursor=pointer]:
+          - /url: /tickers
+          - img [ref=e62]
+          - generic [ref=e65]: Ticker overview
+        - link "Meerwaardebelasting" [ref=e66] [cursor=pointer]:
+          - /url: /tools/capital-gains-tax
+          - img [ref=e67]
+          - generic [ref=e70]: Meerwaardebelasting
+    - paragraph [ref=e72]: PayDay v1.0
+  - main [ref=e73]:
+    - generic [ref=e74]:
+      - generic [ref=e75]:
+        - img [ref=e77]
+        - generic [ref=e80]:
+          - heading "Help Portal" [level=1] [ref=e81]
+          - paragraph [ref=e82]: everything you need to know about using PayDay
+      - generic [ref=e83]:
+        - button "Woordenlijst / Glossary Overzicht van alle termen en afkortingen gebruikt in PayDay" [ref=e85] [cursor=pointer]:
+          - generic [ref=e86]:
+            - img [ref=e89]
+            - generic [ref=e91]:
+              - heading "Woordenlijst / Glossary" [level=2] [ref=e92]
+              - paragraph [ref=e93]: Overzicht van alle termen en afkortingen gebruikt in PayDay
+          - img [ref=e94]
+        - generic [ref=e96]:
+          - button "PayDay Overview Welcome to PayDay - Your comprehensive options trading tracker" [ref=e97] [cursor=pointer]:
+            - generic [ref=e98]:
+              - img [ref=e101]
+              - generic [ref=e104]:
+                - heading "PayDay Overview" [level=2] [ref=e105]
+                - paragraph [ref=e106]: Welcome to PayDay - Your comprehensive options trading tracker
+            - img [ref=e107]
+          - generic [ref=e109]:
+            - generic [ref=e110]:
+              - heading "What is PayDay?" [level=3] [ref=e111]
+              - paragraph [ref=e112]: PayDay is a powerful tool designed to help you track and manage your options trading strategies across multiple portfolios. Whether you're running Poor Man's Covered Calls, selling Cash Secured Puts, or managing complex spreads, PayDay keeps everything organized in one place.
+            - generic [ref=e113]:
+              - heading "Key Features" [level=3] [ref=e114]
+              - paragraph [ref=e115]: Track multiple portfolios, monitor your positions in real-time, calculate potential returns with built-in calculators, manage different strategies independently, and analyze your trading performance with detailed metrics and charts.
+            - generic [ref=e116]:
+              - heading "Getting Started" [level=3] [ref=e117]
+              - paragraph [ref=e118]: Start by adding your portfolios in the Portfolio Management section. Then, choose which strategies you want to track for each portfolio. You can enter your positions manually or use our calculators to plan trades before executing them.
+        - button "Poor Man's Covered Call (PMCC) Learn about the Poor Man's Covered Call strategy and how to track it" [ref=e120] [cursor=pointer]:
+          - generic [ref=e121]:
+            - img [ref=e124]
+            - generic [ref=e126]:
+              - heading "Poor Man's Covered Call (PMCC)" [level=2] [ref=e127]
+              - paragraph [ref=e128]: Learn about the Poor Man's Covered Call strategy and how to track it
+          - img [ref=e129]
+        - button "KaChing Strategy Protected income generation with weekly premiums" [ref=e132] [cursor=pointer]:
+          - generic [ref=e133]:
+            - img [ref=e136]
+            - generic [ref=e138]:
+              - heading "KaChing Strategy" [level=2] [ref=e139]
+              - paragraph [ref=e140]: Protected income generation with weekly premiums
+          - img [ref=e141]
+        - button "Spreads Strategy Vertical spreads and other multi-leg strategies" [ref=e144] [cursor=pointer]:
+          - generic [ref=e145]:
+            - img [ref=e148]
+            - generic [ref=e151]:
+              - heading "Spreads Strategy" [level=2] [ref=e152]
+              - paragraph [ref=e153]: Vertical spreads and other multi-leg strategies
+          - img [ref=e154]
+        - button "Cash Secured Puts Generate income while potentially acquiring stock" [ref=e157] [cursor=pointer]:
+          - generic [ref=e158]:
+            - img [ref=e161]
+            - generic [ref=e163]:
+              - heading "Cash Secured Puts" [level=2] [ref=e164]
+              - paragraph [ref=e165]: Generate income while potentially acquiring stock
+          - img [ref=e166]
+        - button "Portfolio Management Set up and manage multiple portfolio accounts" [ref=e169] [cursor=pointer]:
+          - generic [ref=e170]:
+            - img [ref=e173]
+            - generic [ref=e176]:
+              - heading "Portfolio Management" [level=2] [ref=e177]
+              - paragraph [ref=e178]: Set up and manage multiple portfolio accounts
+          - img [ref=e179]
+        - button "Built-in Calculators Plan your trades before executing them" [ref=e182] [cursor=pointer]:
+          - generic [ref=e183]:
+            - img [ref=e186]
+            - generic [ref=e188]:
+              - heading "Built-in Calculators" [level=2] [ref=e189]
+              - paragraph [ref=e190]: Plan your trades before executing them
+          - img [ref=e191]
+        - button "Settings & Customization Personalize your PayDay experience" [ref=e194] [cursor=pointer]:
+          - generic [ref=e195]:
+            - img [ref=e198]
+            - generic [ref=e201]:
+              - heading "Settings & Customization" [level=2] [ref=e202]
+              - paragraph [ref=e203]: Personalize your PayDay experience
+          - img [ref=e204]
+        - button "Analytics & Reporting Track performance and analyze your trading" [ref=e207] [cursor=pointer]:
+          - generic [ref=e208]:
+            - img [ref=e211]
+            - generic [ref=e213]:
+              - heading "Analytics & Reporting" [level=2] [ref=e214]
+              - paragraph [ref=e215]: Track performance and analyze your trading
+          - img [ref=e216]
+      - generic [ref=e218]:
+        - heading "Quick Tips" [level=2] [ref=e219]
+        - list [ref=e220]:
+          - listitem [ref=e221]:
+            - generic [ref=e222]: •
+            - generic [ref=e223]: Use the calculators to plan trades before executing them - they help you understand potential returns and risks.
+          - listitem [ref=e224]:
+            - generic [ref=e225]: •
+            - generic [ref=e226]: Enable help cards from the user menu if you need reminders about how each strategy works.
+          - listitem [ref=e227]:
+            - generic [ref=e228]: •
+            - generic [ref=e229]: Regularly update your position values to track accurate P&L and make informed decisions.
+          - listitem [ref=e230]:
+            - generic [ref=e231]: •
+            - generic [ref=e232]: Watch for yellow warning indicators - they highlight positions that need attention (approaching expiration, uncovered contracts, etc.).
+          - listitem [ref=e233]:
+            - generic [ref=e234]: •
+            - generic [ref=e235]: Use the ticker overview to monitor concentration risk across all your positions.
+      - generic [ref=e236]:
+        - heading "Need More Help?" [level=2] [ref=e237]
+        - paragraph [ref=e238]: Have a question that isn't covered here? We're here to help!
+        - paragraph [ref=e239]: PayDay is constantly being improved based on user feedback.

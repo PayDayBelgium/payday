@@ -16,8 +16,8 @@ export const fr = {
 
   // Login
   login: {
-    title: 'PayDay',
-    subtitle: 'Bienvenue! Connectez-vous à votre compte.',
+    title: 'Bienvenue',
+    subtitle: 'Connectez-vous pour accéder à vos portefeuilles.',
     username: "Nom d'utilisateur",
     password: 'Mot de passe',
     language: 'Langue',

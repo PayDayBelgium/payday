@@ -14,13 +14,13 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
-  primary: 'bg-blue-600 hover:bg-blue-700 text-white disabled:bg-gray-400',
-  secondary: 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200',
-  danger: 'bg-red-600 hover:bg-red-700 text-white disabled:bg-gray-400',
-  warning: 'bg-orange-600 hover:bg-orange-700 text-white disabled:bg-gray-400',
-  success: 'bg-green-600 hover:bg-green-700 text-white disabled:bg-gray-400',
-  ghost: 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700',
-  outline: 'border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700',
+  primary: 'bg-primary-700 hover:bg-primary-800 text-white disabled:bg-ink-300',
+  secondary: 'bg-surface-muted dark:bg-trading-dark-700 hover:bg-surface-line dark:hover:bg-trading-dark-600 text-ink-700 dark:text-ink-200',
+  danger: 'bg-negative-600 hover:bg-negative-700 text-white disabled:bg-ink-300',
+  warning: 'bg-caution-600 hover:bg-caution-500 text-white disabled:bg-ink-300',
+  success: 'bg-positive-600 hover:bg-positive-700 text-white disabled:bg-ink-300',
+  ghost: 'text-ink-700 dark:text-ink-300 hover:bg-surface-subtle dark:hover:bg-trading-dark-700',
+  outline: 'border border-ink-200 dark:border-trading-dark-600 text-ink-700 dark:text-ink-300 hover:bg-surface-subtle dark:hover:bg-trading-dark-700',
 };
 
 const sizeStyles: Record<ButtonSize, string> = {

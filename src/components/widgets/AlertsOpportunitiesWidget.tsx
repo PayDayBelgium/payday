@@ -52,14 +52,14 @@ export const AlertsOpportunitiesWidget: React.FC<AlertsOpportunitiesWidgetProps>
   const renderBox = (type: 'alerts' | 'opportunities') => {
     const items = type === 'alerts' ? evaluatedAlerts : evaluatedOpportunities;
     const iconColor = type === 'alerts'
-      ? 'text-amber-600 dark:text-amber-400'
-      : 'text-green-600 dark:text-green-400';
+      ? 'text-caution-600 dark:text-caution-500'
+      : 'text-positive-600 dark:text-positive-500';
     const bgColor = type === 'alerts'
-      ? 'bg-amber-100 dark:bg-amber-900/30'
-      : 'bg-green-100 dark:bg-green-900/30';
+      ? 'bg-caution-50 dark:bg-caution-600/25'
+      : 'bg-positive-50 dark:bg-positive-700/25';
     const borderColor = type === 'alerts'
-      ? 'border-amber-200 dark:border-amber-500/30'
-      : 'border-green-200 dark:border-green-500/30';
+      ? 'border-caution-500/30 dark:border-caution-500/30'
+      : 'border-positive-500/20 dark:border-positive-700/30';
     const title = type === 'alerts' ? 'Alerts' : 'Opportunities';
     const Icon = type === 'alerts' ? AlertCircle : Target;
 

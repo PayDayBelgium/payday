@@ -499,8 +499,8 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
         return (
           <div className="p-8">
             <div className="text-center max-w-md mx-auto">
-              <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full w-fit mx-auto mb-4">
-                <TrendingUp className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+              <div className="p-3 bg-primary-50 dark:bg-primary-900/30 rounded-full w-fit mx-auto mb-4">
+                <TrendingUp className="w-8 h-8 text-primary-700 dark:text-primary-300" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                 Geen Covered Calls
@@ -513,7 +513,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               </p>
               <button
                 onClick={() => setShowStockWizard(true)}
-                className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 rounded-lg transition-colors"
+                className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-700 hover:bg-primary-800 dark:bg-primary-500 dark:hover:bg-primary-700 rounded-lg transition-colors"
               >
                 Koop Aandelen
               </button>
@@ -524,8 +524,8 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
         return (
           <div className="p-8">
             <div className="text-center max-w-md mx-auto">
-              <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-full w-fit mx-auto mb-4">
-                <Layers className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+              <div className="p-3 bg-surface-muted dark:bg-trading-dark-600 rounded-full w-fit mx-auto mb-4">
+                <Layers className="w-8 h-8 text-ink-600 dark:text-ink-300" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                 Geen Poor Man's Covered Calls
@@ -538,7 +538,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               </p>
               <button
                 onClick={() => setShowCallWizard(true)}
-                className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 rounded-lg transition-colors"
+                className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-ink-700 hover:bg-purple-700 dark:bg-ink-600 dark:hover:bg-ink-700 rounded-lg transition-colors"
               >
                 Koop LEAPS
               </button>
@@ -549,8 +549,8 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
         return (
           <div className="p-8">
             <div className="text-center max-w-md mx-auto">
-              <div className="p-3 bg-amber-100 dark:bg-amber-900/30 rounded-full w-fit mx-auto mb-4">
-                <Zap className="w-8 h-8 text-amber-600 dark:text-amber-400" />
+              <div className="p-3 bg-caution-50 dark:bg-caution-600/25 rounded-full w-fit mx-auto mb-4">
+                <Zap className="w-8 h-8 text-caution-600 dark:text-caution-500" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                 Geen KaChing Campagnes
@@ -563,7 +563,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               </p>
               <button
                 onClick={() => setShowPutWizard(true)}
-                className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 dark:bg-amber-500 dark:hover:bg-amber-600 rounded-lg transition-colors"
+                className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-caution-600 hover:bg-caution-600 dark:bg-caution-500 dark:hover:bg-caution-600 rounded-lg transition-colors"
               >
                 Koop Protective Put
               </button>
@@ -609,7 +609,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
             onClick={() => setFilter('covered-call')}
             className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
               filter === 'covered-call'
-                ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                ? 'border-primary-500 text-primary-700 dark:text-primary-300'
                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
             }`}
           >
@@ -618,7 +618,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
             {campaignCounts['covered-call'] > 0 && (
               <span className={`px-1.5 py-0.5 rounded text-xs ${
                 filter === 'covered-call'
-                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                  ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
                   : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
               }`}>
                 {campaignCounts['covered-call']}
@@ -629,7 +629,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
             onClick={() => setFilter('pmcc')}
             className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
               filter === 'pmcc'
-                ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                ? 'border-primary-500 text-primary-700 dark:text-primary-300'
                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
             }`}
           >
@@ -638,7 +638,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
             {campaignCounts['pmcc'] > 0 && (
               <span className={`px-1.5 py-0.5 rounded text-xs ${
                 filter === 'pmcc'
-                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                  ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
                   : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
               }`}>
                 {campaignCounts['pmcc']}
@@ -649,7 +649,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
             onClick={() => setFilter('kaching')}
             className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
               filter === 'kaching'
-                ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                ? 'border-primary-500 text-primary-700 dark:text-primary-300'
                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
             }`}
           >
@@ -658,7 +658,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
             {campaignCounts['kaching'] > 0 && (
               <span className={`px-1.5 py-0.5 rounded text-xs ${
                 filter === 'kaching'
-                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                  ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
                   : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
               }`}>
                 {campaignCounts['kaching']}
@@ -669,7 +669,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
             onClick={() => setFilter('wheel')}
             className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
               filter === 'wheel'
-                ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                ? 'border-primary-500 text-primary-700 dark:text-primary-300'
                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
             }`}
           >
@@ -678,7 +678,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
             {campaignCounts['wheel'] > 0 && (
               <span className={`px-1.5 py-0.5 rounded text-xs ${
                 filter === 'wheel'
-                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                  ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
                   : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
               }`}>
                 {campaignCounts['wheel']}
@@ -731,7 +731,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                         {getCampaignTypeName(campaign.type)}
                       </span>
                       {campaign.hasOpportunity && (
-                        <Lightbulb className="w-4 h-4 text-green-500" title={campaign.opportunityMessage} />
+                        <Lightbulb className="w-4 h-4 text-positive-600" title={campaign.opportunityMessage} />
                       )}
                     </div>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -787,9 +787,9 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                           return (
                             <p className={`font-bold ${
                               totalPnL > 0
-                                ? 'text-green-600 dark:text-green-400'
+                                ? 'text-positive-600 dark:text-positive-500'
                                 : totalPnL < 0
-                                ? 'text-red-600 dark:text-red-400'
+                                ? 'text-negative-600 dark:text-negative-500'
                                 : 'text-gray-900 dark:text-white'
                             }`}>
                               {totalPnL > 0 ? '+' : ''}{formatCurrency(totalPnL, currencySymbol)}
@@ -811,7 +811,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                       {/* Ontvangen premies - for non-Wheel campaigns */}
                       <div className="text-right">
                         <p className="text-xs text-gray-500 dark:text-gray-400">Ontvangen premies</p>
-                        <p className="font-semibold text-green-600 dark:text-green-400">
+                        <p className="font-semibold text-positive-600 dark:text-positive-500">
                           +{formatCurrency(campaign.root.originalCostBasis - campaign.root.adjustedCostBasis, currencySymbol)}
                         </p>
                       </div>
@@ -827,7 +827,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                         const wheelId = campaign.id.replace('wheel-', '');
                         setWheelToDelete(wheelId);
                       }}
-                      className="p-1.5 text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors rounded hover:bg-red-50 dark:hover:bg-red-900/20"
+                      className="p-1.5 text-gray-400 hover:text-negative-600 dark:hover:text-negative-500 transition-colors rounded hover:bg-negative-50 dark:hover:bg-negative-700/20"
                       title="Verwijder Wheel"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -905,8 +905,8 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                               {/* Icon */}
                               <div className={`w-8 h-8 rounded flex items-center justify-center flex-shrink-0 ${
                                 campaign.root.type === 'leaps-call'
-                                  ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
-                                  : 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                                  ? 'bg-positive-50 dark:bg-positive-700/25 text-positive-600 dark:text-positive-500'
+                                  : 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
                               }`}>
                                 {campaign.root.type === 'leaps-call' ? (
                                   <ArrowUpCircle className="w-4 h-4" />
@@ -925,8 +925,8 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                                   </h4>
                                   <span className={`px-1.5 py-0.5 text-[10px] font-semibold rounded ${
                                     campaign.root.type === 'leaps-call'
-                                      ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                                      : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
+                                      ? 'bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500'
+                                      : 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
                                   }`}>
                                     {campaign.root.type === 'leaps-call' ? 'LEAPS' : 'STOCK'}
                                   </span>
@@ -948,9 +948,9 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                                     {(campaign.root.position as CallOption).expiration && (
                                       <p className={`text-xs ${
                                         getDaysToExpiration((campaign.root.position as CallOption).expiration) <= 30
-                                          ? 'text-red-600 dark:text-red-400'
+                                          ? 'text-negative-600 dark:text-negative-500'
                                           : getDaysToExpiration((campaign.root.position as CallOption).expiration) <= 90
-                                          ? 'text-yellow-600 dark:text-yellow-400'
+                                          ? 'text-caution-600 dark:text-caution-500'
                                           : 'text-gray-500 dark:text-gray-400'
                                       }`}>
                                         {getDaysToExpiration((campaign.root.position as CallOption).expiration)}d
@@ -989,7 +989,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                                 {currentPrice && campaign.root.type !== 'leaps-call' ? (
                                   <p className={`text-sm font-medium ${
                                     currentPrice < purchasePricePerShare
-                                      ? 'text-red-600 dark:text-red-400'
+                                      ? 'text-negative-600 dark:text-negative-500'
                                       : 'text-gray-900 dark:text-white'
                                   }`}>
                                     {currentPrice > purchasePricePerShare ? '+' : ''}{formatCurrency(currentPrice - purchasePricePerShare, currencySymbol)}
@@ -1023,18 +1023,18 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                               <div>
                                 <p className={`text-sm font-medium ${
                                   profitLoss > 0
-                                    ? 'text-green-600 dark:text-green-400'
+                                    ? 'text-positive-600 dark:text-positive-500'
                                     : profitLoss < 0
-                                    ? 'text-red-600 dark:text-red-400'
+                                    ? 'text-negative-600 dark:text-negative-500'
                                     : 'text-gray-900 dark:text-white'
                                 }`}>
                                   {profitLoss > 0 ? '+' : ''}{formatCurrency(profitLoss, currencySymbol)}
                                 </p>
                                 <p className={`text-xs ${
                                   profitLossPercentage > 0
-                                    ? 'text-green-600 dark:text-green-400'
+                                    ? 'text-positive-600 dark:text-positive-500'
                                     : profitLossPercentage < 0
-                                    ? 'text-red-600 dark:text-red-400'
+                                    ? 'text-negative-600 dark:text-negative-500'
                                     : 'text-gray-500 dark:text-gray-400'
                                 }`}>
                                   {profitLossPercentage > 0 ? '+' : ''}{formatNumber(profitLossPercentage)}%
@@ -1045,13 +1045,13 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                               <div>
                                 <p className={`text-sm font-medium ${
                                   campaign.root.adjustedCostBasis < campaign.root.originalCostBasis
-                                    ? 'text-green-600 dark:text-green-400'
+                                    ? 'text-positive-600 dark:text-positive-500'
                                     : 'text-gray-900 dark:text-white'
                                 }`}>
                                   {formatCurrency(campaign.root.adjustedCostBasis, currencySymbol)}
                                 </p>
                                 {campaign.root.adjustedCostBasis < campaign.root.originalCostBasis && (
-                                  <p className="text-xs text-green-600 dark:text-green-400">
+                                  <p className="text-xs text-positive-600 dark:text-positive-500">
                                     (-{formatCurrency(campaign.root.originalCostBasis - campaign.root.adjustedCostBasis, currencySymbol)})
                                   </p>
                                 )}
@@ -1176,10 +1176,10 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
 
                   {/* Opportunity indicator with action button */}
                   {campaign.hasOpportunity && (
-                    <div className="flex items-center justify-between gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                    <div className="flex items-center justify-between gap-2 p-3 bg-positive-50 dark:bg-positive-700/15 rounded-lg border border-positive-500/20 dark:border-positive-700/30">
                       <div className="flex items-center gap-2">
-                        <Lightbulb className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0" />
-                        <p className="text-sm text-green-700 dark:text-green-300">
+                        <Lightbulb className="w-5 h-5 text-positive-600 dark:text-positive-500 flex-shrink-0" />
+                        <p className="text-sm text-positive-700 dark:text-positive-500">
                           {campaign.opportunityMessage}
                         </p>
                       </div>
@@ -1212,7 +1212,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                             setShowCallWizard(true);
                           }
                         }}
-                        className="flex items-center gap-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors"
+                        className="flex items-center gap-1 px-3 py-1.5 bg-positive-600 hover:bg-positive-700 text-white text-sm font-medium rounded-lg transition-colors"
                       >
                         <Plus className="w-4 h-4" />
                         {campaign.type === 'kaching' || (campaign.type === 'wheel' && campaign.root.type === 'protective-put') ? 'Put' : 'Call'}
@@ -1285,8 +1285,8 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                                   <p className="text-xs text-gray-500 dark:text-gray-400">Winst</p>
                                   <p className={`text-sm font-semibold ${
                                     (opt.realizedPnL || 0) >= 0
-                                      ? 'text-green-600 dark:text-green-400'
-                                      : 'text-red-600 dark:text-red-400'
+                                      ? 'text-positive-600 dark:text-positive-500'
+                                      : 'text-negative-600 dark:text-negative-500'
                                   }`}>
                                     {(opt.realizedPnL || 0) >= 0 ? '+' : ''}{formatCurrency(opt.realizedPnL || 0, currencySymbol)}
                                   </p>
@@ -1411,8 +1411,8 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
-                    <Trash2 className="w-5 h-5 text-red-600 dark:text-red-400" />
+                  <div className="p-2 bg-negative-50 dark:bg-negative-700/25 rounded-lg">
+                    <Trash2 className="w-5 h-5 text-negative-600 dark:text-negative-500" />
                   </div>
                   <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                     Wheel Verwijderen
@@ -1431,8 +1431,8 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Weet je zeker dat je deze Wheel wilt verwijderen?
                 </p>
-                <div className="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
-                  <p className="text-sm text-amber-700 dark:text-amber-300">
+                <div className="p-3 bg-caution-50 dark:bg-caution-600/15 rounded-lg border border-caution-500/30 dark:border-caution-600/40">
+                  <p className="text-sm text-caution-600 dark:text-caution-500">
                     <strong>Let op:</strong> Alleen de Wheel campagne wordt verwijderd. Je onderliggende posities (Cash Secured Puts, aandelen, covered calls) blijven behouden.
                   </p>
                 </div>
@@ -1448,7 +1448,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                 </button>
                 <button
                   onClick={() => handleDeleteWheel(wheelToDelete)}
-                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-white bg-negative-600 hover:bg-negative-700 rounded-lg transition-colors"
                 >
                   Verwijderen
                 </button>

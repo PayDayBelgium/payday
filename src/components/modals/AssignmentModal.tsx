@@ -108,17 +108,17 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-lg ${
               isPut
-                ? 'bg-purple-100 dark:bg-purple-900/30'
-                : 'bg-green-100 dark:bg-green-900/30'
+                ? 'bg-surface-muted dark:bg-trading-dark-600'
+                : 'bg-positive-50 dark:bg-positive-700/25'
             }`}>
               {isPut ? (
                 <ArrowDownLeft className={`w-5 h-5 ${
                   isPut
-                    ? 'text-purple-600 dark:text-purple-400'
-                    : 'text-green-600 dark:text-green-400'
+                    ? 'text-ink-600 dark:text-ink-300'
+                    : 'text-positive-600 dark:text-positive-500'
                 }`} />
               ) : (
-                <ArrowUpRight className="w-5 h-5 text-green-600 dark:text-green-400" />
+                <ArrowUpRight className="w-5 h-5 text-positive-600 dark:text-positive-500" />
               )}
             </div>
             <div>
@@ -143,27 +143,27 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
           {/* Info box explaining what happens */}
           <div className={`p-4 rounded-lg border ${
             isPut
-              ? 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800'
-              : 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+              ? 'bg-surface-subtle dark:bg-trading-dark-700 border-ink-200 dark:border-trading-dark-600'
+              : 'bg-positive-50 dark:bg-positive-700/15 border-positive-500/20 dark:border-positive-700/30'
           }`}>
             <div className="flex items-start gap-3">
               <Info className={`w-5 h-5 mt-0.5 flex-shrink-0 ${
                 isPut
-                  ? 'text-purple-600 dark:text-purple-400'
-                  : 'text-green-600 dark:text-green-400'
+                  ? 'text-ink-600 dark:text-ink-300'
+                  : 'text-positive-600 dark:text-positive-500'
               }`} />
               <div>
                 <p className={`font-medium ${
                   isPut
                     ? 'text-purple-900 dark:text-purple-100'
-                    : 'text-green-900 dark:text-green-100'
+                    : 'text-positive-700 dark:text-green-100'
                 }`}>
                   {assignmentCalculation.description}
                 </p>
                 <p className={`text-sm mt-1 ${
                   isPut
-                    ? 'text-purple-700 dark:text-purple-300'
-                    : 'text-green-700 dark:text-green-300'
+                    ? 'text-ink-700 dark:text-ink-300'
+                    : 'text-positive-700 dark:text-positive-500'
                 }`}>
                   De optie wordt gesloten en de aandelen worden {isPut ? 'toegevoegd aan' : 'verwijderd uit'} je portfolio.
                 </p>
@@ -185,7 +185,7 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
               </div>
               <div>
                 <span className="text-gray-500 dark:text-gray-400">Premie ontvangen:</span>
-                <span className="ml-2 font-medium text-green-600 dark:text-green-400">
+                <span className="ml-2 font-medium text-positive-600 dark:text-positive-500">
                   +{formatCurrency(Math.abs(position.costBasis), currencySymbol)}
                 </span>
               </div>
@@ -208,7 +208,7 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
                 type="date"
                 value={assignmentDate}
                 onChange={(e) => setAssignmentDate(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                 required
               />
             </div>
@@ -223,7 +223,7 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
                   type="number"
                   value={assignmentPrice}
                   onChange={(e) => setAssignmentPrice(e.target.value)}
-                  className="w-full pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                   step="0.01"
                   required
                 />
@@ -242,7 +242,7 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
               rows={2}
               placeholder="Bijv. vroege assignment, ex-dividend, etc."
             />
@@ -258,13 +258,13 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
                     <span className="text-gray-600 dark:text-gray-400">
                       Aankoopkosten ({assignmentCalculation.shares} x ${position.strike}):
                     </span>
-                    <span className="font-medium text-red-600 dark:text-red-400">
+                    <span className="font-medium text-negative-600 dark:text-negative-500">
                       -{formatCurrency(assignmentCalculation.totalCost, currencySymbol)}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-400">Premie ontvangen:</span>
-                    <span className="font-medium text-green-600 dark:text-green-400">
+                    <span className="font-medium text-positive-600 dark:text-positive-500">
                       +{formatCurrency(assignmentCalculation.premiumReceived, currencySymbol)}
                     </span>
                   </div>
@@ -293,13 +293,13 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
                     <span className="text-gray-600 dark:text-gray-400">
                       Verkoopopbrengst ({assignmentCalculation.shares} x ${position.strike}):
                     </span>
-                    <span className="font-medium text-green-600 dark:text-green-400">
+                    <span className="font-medium text-positive-600 dark:text-positive-500">
                       +{formatCurrency(assignmentCalculation.totalProceeds, currencySymbol)}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-400">Premie ontvangen:</span>
-                    <span className="font-medium text-green-600 dark:text-green-400">
+                    <span className="font-medium text-positive-600 dark:text-positive-500">
                       +{formatCurrency(assignmentCalculation.premiumReceived, currencySymbol)}
                     </span>
                   </div>
@@ -308,7 +308,7 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
                       <span className="font-semibold text-gray-700 dark:text-gray-300">
                         Totale opbrengst:
                       </span>
-                      <span className="text-lg font-bold text-green-600 dark:text-green-400">
+                      <span className="text-lg font-bold text-positive-600 dark:text-positive-500">
                         +{formatCurrency(assignmentCalculation.totalIncome, currencySymbol)}
                       </span>
                     </div>
@@ -316,7 +316,7 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
                       <span className="text-gray-600 dark:text-gray-400">
                         Per aandeel:
                       </span>
-                      <span className="font-medium text-green-600 dark:text-green-400">
+                      <span className="font-medium text-positive-600 dark:text-positive-500">
                         {formatCurrency(assignmentCalculation.effectivePricePerShare, currencySymbol)}
                       </span>
                     </div>
@@ -328,14 +328,14 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
 
           {/* Warning for wheel */}
           {position.wheelId && (
-            <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
+            <div className="p-4 bg-caution-50 dark:bg-caution-600/15 rounded-lg border border-caution-500/30 dark:border-caution-600/40">
               <div className="flex items-start gap-3">
-                <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+                <AlertTriangle className="w-5 h-5 text-caution-600 dark:text-caution-500 mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="font-medium text-amber-900 dark:text-amber-100">
                     Wheel campagne
                   </p>
-                  <p className="text-sm text-amber-700 dark:text-amber-300">
+                  <p className="text-sm text-caution-600 dark:text-caution-500">
                     {isPut
                       ? 'Na assignment gaat de Wheel naar de Stock fase. Je kunt dan covered calls schrijven.'
                       : 'Na assignment is de Wheel cycle voltooid. Je kunt een nieuwe CSP schrijven om opnieuw te beginnen.'}
@@ -358,8 +358,8 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
               type="submit"
               className={`px-4 py-2 text-white rounded-lg transition-colors flex items-center gap-2 ${
                 isPut
-                  ? 'bg-purple-600 hover:bg-purple-700'
-                  : 'bg-green-600 hover:bg-green-700'
+                  ? 'bg-ink-700 hover:bg-purple-700'
+                  : 'bg-positive-600 hover:bg-positive-700'
               }`}
             >
               {isPut ? (

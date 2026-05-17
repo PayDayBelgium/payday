@@ -191,12 +191,12 @@ const createIntroStep = (level: UserLevel): WizardStep => ({
         <strong>PayDay</strong> is gebouwd met één doel: jou stap voor stap leren beleggen,
         net zoals je leert skiën op de piste.
       </p>
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-700">
-        <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-2 flex items-center gap-2">
+      <div className="bg-primary-50 dark:bg-primary-900/20 p-4 rounded-lg border border-primary-200 dark:border-primary-700">
+        <h4 className="font-semibold text-primary-700 dark:text-primary-300 mb-2 flex items-center gap-2">
           <GraduationCap className="w-5 h-5" />
           Onze Aanpak
         </h4>
-        <p className="text-sm text-blue-700 dark:text-blue-400 mb-3">
+        <p className="text-sm text-primary-700 dark:text-primary-300 mb-3">
           Net zoals bij skiën begin je op de groene piste met de basis, en werk je
           stap voor stap naar de zwarte piste met geavanceerde strategieën.
         </p>
@@ -219,8 +219,8 @@ const createIntroStep = (level: UserLevel): WizardStep => ({
           </div>
         </div>
       </div>
-      <div className="bg-amber-50 dark:bg-amber-900/20 p-3 rounded-lg border border-amber-200 dark:border-amber-700">
-        <p className="text-sm text-amber-800 dark:text-amber-300">
+      <div className="bg-caution-50 dark:bg-caution-600/15 p-3 rounded-lg border border-caution-500/30 dark:border-caution-600/40">
+        <p className="text-sm text-caution-600 dark:text-caution-500">
           <strong>Tip:</strong> Je ontgrendelt nieuwe niveaus door te leren en credits te verdienen.
           Elke stap brengt je dichter bij financiële vrijheid!
         </p>
@@ -251,9 +251,9 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
               In PayDay kun je al je beleggingsrekeningen (portfolios) op één plek bijhouden.
               Elk portfolio vertegenwoordigt een account bij een broker.
             </p>
-            <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
-              <h4 className="font-semibold text-green-800 dark:text-green-300 mb-2">Wat kun je doen?</h4>
-              <ul className="list-disc list-inside text-sm text-green-700 dark:text-green-400 space-y-1">
+            <div className="bg-positive-50 dark:bg-positive-700/15 p-4 rounded-lg">
+              <h4 className="font-semibold text-positive-700 dark:text-positive-500 mb-2">Wat kun je doen?</h4>
+              <ul className="list-disc list-inside text-sm text-positive-700 dark:text-positive-500 space-y-1">
                 <li>Meerdere broker accounts toevoegen</li>
                 <li>Aandelen en ETFs bijhouden</li>
                 <li>Je totale vermogen overzichtelijk zien</li>
@@ -277,15 +277,15 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
               Dit vormt de basis van je beleggingsstrategie.
             </p>
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
-                <h4 className="font-semibold text-blue-800 dark:text-blue-300 text-sm mb-1">Aandelen</h4>
-                <p className="text-xs text-blue-700 dark:text-blue-400">
+              <div className="bg-primary-50 dark:bg-primary-900/20 p-3 rounded-lg">
+                <h4 className="font-semibold text-primary-700 dark:text-primary-300 text-sm mb-1">Aandelen</h4>
+                <p className="text-xs text-primary-700 dark:text-primary-300">
                   Individuele bedrijven zoals Apple, Microsoft, of ASML.
                 </p>
               </div>
-              <div className="bg-purple-50 dark:bg-purple-900/20 p-3 rounded-lg">
-                <h4 className="font-semibold text-purple-800 dark:text-purple-300 text-sm mb-1">ETFs</h4>
-                <p className="text-xs text-purple-700 dark:text-purple-400">
+              <div className="bg-surface-subtle dark:bg-trading-dark-700 p-3 rounded-lg">
+                <h4 className="font-semibold text-ink-800 dark:text-ink-200 text-sm mb-1">ETFs</h4>
+                <p className="text-xs text-ink-700 dark:text-ink-300">
                   Gespreide fondsen zoals S&P500 of World ETF.
                 </p>
               </div>
@@ -341,21 +341,21 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
               tegen een vooraf bepaalde prijs. Je kunt ze ook <strong>verkopen</strong> om inkomen te genereren.
             </p>
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg border-l-4 border-green-500">
-                <h4 className="font-semibold text-green-800 dark:text-green-300 text-sm mb-1">CALL optie</h4>
-                <p className="text-xs text-green-700 dark:text-green-400">
+              <div className="bg-positive-50 dark:bg-positive-700/15 p-3 rounded-lg border-l-4 border-positive-500">
+                <h4 className="font-semibold text-positive-700 dark:text-positive-500 text-sm mb-1">CALL optie</h4>
+                <p className="text-xs text-positive-700 dark:text-positive-500">
                   Recht om te <strong>kopen</strong> tegen de strike prijs.
                 </p>
               </div>
-              <div className="bg-red-50 dark:bg-red-900/20 p-3 rounded-lg border-l-4 border-red-500">
-                <h4 className="font-semibold text-red-800 dark:text-red-300 text-sm mb-1">PUT optie</h4>
-                <p className="text-xs text-red-700 dark:text-red-400">
+              <div className="bg-negative-50 dark:bg-negative-700/15 p-3 rounded-lg border-l-4 border-negative-500">
+                <h4 className="font-semibold text-negative-700 dark:text-negative-500 text-sm mb-1">PUT optie</h4>
+                <p className="text-xs text-negative-700 dark:text-negative-500">
                   Recht om te <strong>verkopen</strong> tegen de strike prijs.
                 </p>
               </div>
             </div>
-            <div className="bg-amber-50 dark:bg-amber-900/20 p-3 rounded-lg">
-              <p className="text-xs text-amber-800 dark:text-amber-300">
+            <div className="bg-caution-50 dark:bg-caution-600/15 p-3 rounded-lg">
+              <p className="text-xs text-caution-600 dark:text-caution-500">
                 <strong>Tip:</strong> 1 optiecontract = 100 aandelen
               </p>
             </div>
@@ -375,9 +375,9 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
               Als je 100+ aandelen bezit, kun je <strong>covered calls</strong> verkopen.
               Je ontvangt premium en geeft de koper het recht om je aandelen te kopen.
             </p>
-            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-              <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-2">Voorbeeld:</h4>
-              <ol className="list-decimal list-inside text-sm text-blue-700 dark:text-blue-400 space-y-1">
+            <div className="bg-primary-50 dark:bg-primary-900/20 p-4 rounded-lg">
+              <h4 className="font-semibold text-primary-700 dark:text-primary-300 mb-2">Voorbeeld:</h4>
+              <ol className="list-decimal list-inside text-sm text-primary-700 dark:text-primary-300 space-y-1">
                 <li>Je bezit 100 Apple aandelen @ $150</li>
                 <li>Je verkoopt een call met strike $160</li>
                 <li>Je ontvangt $3 premium ($300 totaal)</li>
@@ -400,9 +400,9 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
               Met een <strong>Cash Secured Put</strong> verkoop je het recht aan iemand om jou aandelen te
               verkopen. Je ontvangt premium en koopt mogelijk de aandelen met korting.
             </p>
-            <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
-              <h4 className="font-semibold text-purple-800 dark:text-purple-300 mb-2">Voorbeeld:</h4>
-              <ol className="list-decimal list-inside text-sm text-purple-700 dark:text-purple-400 space-y-1">
+            <div className="bg-surface-subtle dark:bg-trading-dark-700 p-4 rounded-lg">
+              <h4 className="font-semibold text-ink-800 dark:text-ink-200 mb-2">Voorbeeld:</h4>
+              <ol className="list-decimal list-inside text-sm text-ink-700 dark:text-ink-300 space-y-1">
                 <li>Apple staat op $150, je wilt kopen voor $140</li>
                 <li>Je verkoopt een put met strike $140</li>
                 <li>Je ontvangt $2.50 premium ($250 totaal)</li>
@@ -427,13 +427,13 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
             </p>
             <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
               <div className="flex flex-wrap justify-center gap-2 text-xs">
-                <span className="bg-purple-100 dark:bg-purple-900/50 px-3 py-1 rounded-full">1. Verkoop CSP</span>
+                <span className="bg-surface-muted dark:bg-trading-dark-700 px-3 py-1 rounded-full">1. Verkoop CSP</span>
                 <span className="text-gray-400">→</span>
-                <span className="bg-blue-100 dark:bg-blue-900/50 px-3 py-1 rounded-full">2. Assignment</span>
+                <span className="bg-primary-50 dark:bg-primary-900/30 px-3 py-1 rounded-full">2. Assignment</span>
                 <span className="text-gray-400">→</span>
-                <span className="bg-green-100 dark:bg-green-900/50 px-3 py-1 rounded-full">3. Verkoop CC</span>
+                <span className="bg-positive-50 dark:bg-positive-700/25 px-3 py-1 rounded-full">3. Verkoop CC</span>
                 <span className="text-gray-400">→</span>
-                <span className="bg-amber-100 dark:bg-amber-900/50 px-3 py-1 rounded-full">4. Called away</span>
+                <span className="bg-caution-50 dark:bg-caution-600/25 px-3 py-1 rounded-full">4. Called away</span>
                 <span className="text-gray-400">→</span>
                 <span className="text-gray-500">herhaal</span>
               </div>
@@ -464,9 +464,9 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
               <strong>LEAPS</strong> zijn opties met een looptijd van meer dan 1 jaar. Ze bieden
               leverage met minder tijdsrisico dan korte termijn opties.
             </p>
-            <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
-              <h4 className="font-semibold text-red-800 dark:text-red-300 mb-2">Voordelen van LEAPS:</h4>
-              <ul className="list-disc list-inside text-sm text-red-700 dark:text-red-400 space-y-1">
+            <div className="bg-negative-50 dark:bg-negative-700/15 p-4 rounded-lg">
+              <h4 className="font-semibold text-negative-700 dark:text-negative-500 mb-2">Voordelen van LEAPS:</h4>
+              <ul className="list-disc list-inside text-sm text-negative-700 dark:text-negative-500 space-y-1">
                 <li>Lagere theta decay (tijdsverlies)</li>
                 <li>Meer tijd voor je thesis om uit te komen</li>
                 <li>Kunnen dienen als onderpand voor andere strategieën</li>
@@ -488,9 +488,9 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
               De <strong>PMCC</strong> is een covered call strategie waarbij je een LEAP call
               gebruikt als onderpand in plaats van aandelen.
             </p>
-            <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 p-4 rounded-lg">
-              <h4 className="font-semibold text-red-800 dark:text-red-300 mb-2">Hoe werkt het?</h4>
-              <ol className="list-decimal list-inside text-sm text-red-700 dark:text-red-400 space-y-1">
+            <div className="bg-gradient-to-r from-negative-50 to-caution-50 dark:from-red-900/20 dark:to-orange-900/20 p-4 rounded-lg">
+              <h4 className="font-semibold text-negative-700 dark:text-negative-500 mb-2">Hoe werkt het?</h4>
+              <ol className="list-decimal list-inside text-sm text-negative-700 dark:text-negative-500 space-y-1">
                 <li>Koop een deep ITM LEAP call (delta 0.70+)</li>
                 <li>Verkoop korte termijn OTM calls ertegen</li>
                 <li>Ontvang premium terwijl je LEAP in waarde stijgt</li>
@@ -513,13 +513,13 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
               op verschillende factoren.
             </p>
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
-                <h4 className="font-semibold text-blue-800 dark:text-blue-300 text-sm">Delta (Δ)</h4>
-                <p className="text-xs text-blue-700 dark:text-blue-400">Koersgevoeligheid</p>
+              <div className="bg-primary-50 dark:bg-primary-900/20 p-3 rounded-lg">
+                <h4 className="font-semibold text-primary-700 dark:text-primary-300 text-sm">Delta (Δ)</h4>
+                <p className="text-xs text-primary-700 dark:text-primary-300">Koersgevoeligheid</p>
               </div>
-              <div className="bg-purple-50 dark:bg-purple-900/20 p-3 rounded-lg">
-                <h4 className="font-semibold text-purple-800 dark:text-purple-300 text-sm">Theta (Θ)</h4>
-                <p className="text-xs text-purple-700 dark:text-purple-400">Tijdsverval</p>
+              <div className="bg-surface-subtle dark:bg-trading-dark-700 p-3 rounded-lg">
+                <h4 className="font-semibold text-ink-800 dark:text-ink-200 text-sm">Theta (Θ)</h4>
+                <p className="text-xs text-ink-700 dark:text-ink-300">Tijdsverval</p>
               </div>
             </div>
           </div>
@@ -538,9 +538,9 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
               <strong>Rollen</strong> betekent een bestaande optiepositie sluiten en tegelijk een
               nieuwe openen. Dit helpt bij het beheren van posities.
             </p>
-            <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
-              <h4 className="font-semibold text-red-800 dark:text-red-300 mb-2">Wanneer rollen?</h4>
-              <ul className="list-disc list-inside text-sm text-red-700 dark:text-red-400 space-y-1">
+            <div className="bg-negative-50 dark:bg-negative-700/15 p-4 rounded-lg">
+              <h4 className="font-semibold text-negative-700 dark:text-negative-500 mb-2">Wanneer rollen?</h4>
+              <ul className="list-disc list-inside text-sm text-negative-700 dark:text-negative-500 space-y-1">
                 <li><strong>Roll up:</strong> Koers stijgt, verhoog strike</li>
                 <li><strong>Roll out:</strong> Verleng expiratie voor meer premium</li>
                 <li><strong>Roll down:</strong> Koers daalt, verlaag strike</li>
@@ -573,13 +573,13 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
               specifieke marktvisies uit te drukken.
             </p>
             <div className="space-y-2">
-              <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg">
-                <h4 className="font-semibold text-green-800 dark:text-green-300 text-sm">Bull Call Spread</h4>
-                <p className="text-xs text-green-700 dark:text-green-400">Bullish met beperkt risico</p>
+              <div className="bg-positive-50 dark:bg-positive-700/15 p-3 rounded-lg">
+                <h4 className="font-semibold text-positive-700 dark:text-positive-500 text-sm">Bull Call Spread</h4>
+                <p className="text-xs text-positive-700 dark:text-positive-500">Bullish met beperkt risico</p>
               </div>
-              <div className="bg-red-50 dark:bg-red-900/20 p-3 rounded-lg">
-                <h4 className="font-semibold text-red-800 dark:text-red-300 text-sm">Bear Put Spread</h4>
-                <p className="text-xs text-red-700 dark:text-red-400">Bearish met beperkt risico</p>
+              <div className="bg-negative-50 dark:bg-negative-700/15 p-3 rounded-lg">
+                <h4 className="font-semibold text-negative-700 dark:text-negative-500 text-sm">Bear Put Spread</h4>
+                <p className="text-xs text-negative-700 dark:text-negative-500">Bearish met beperkt risico</p>
               </div>
             </div>
           </div>
@@ -601,10 +601,10 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
             <div className="bg-gray-100 dark:bg-gray-700/50 p-4 rounded-lg">
               <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">4 Legs:</h4>
               <div className="space-y-1 text-sm">
-                <p className="text-red-600 dark:text-red-400">• Koop put (laagste strike)</p>
-                <p className="text-red-600 dark:text-red-400">• Verkoop put (lager-midden)</p>
-                <p className="text-green-600 dark:text-green-400">• Verkoop call (hoger-midden)</p>
-                <p className="text-green-600 dark:text-green-400">• Koop call (hoogste strike)</p>
+                <p className="text-negative-600 dark:text-negative-500">• Koop put (laagste strike)</p>
+                <p className="text-negative-600 dark:text-negative-500">• Verkoop put (lager-midden)</p>
+                <p className="text-positive-600 dark:text-positive-500">• Verkoop call (hoger-midden)</p>
+                <p className="text-positive-600 dark:text-positive-500">• Koop call (hoogste strike)</p>
               </div>
             </div>
           </div>
@@ -623,12 +623,12 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
               De <strong>Ka-Ching</strong> strategie combineert meerdere technieken voor
               optimale premium generatie.
             </p>
-            <div className="bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 p-4 rounded-lg border border-yellow-200 dark:border-yellow-700">
+            <div className="bg-caution-50 dark:bg-caution-600/15 p-4 rounded-lg border border-caution-500/30 dark:border-caution-600/40">
               <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
-                <h4 className="font-semibold text-yellow-800 dark:text-yellow-300">Ka-Ching Features</h4>
+                <Sparkles className="w-5 h-5 text-caution-600 dark:text-caution-500" />
+                <h4 className="font-semibold text-caution-600 dark:text-caution-500">Ka-Ching Features</h4>
               </div>
-              <ul className="list-disc list-inside text-sm text-yellow-700 dark:text-yellow-400 space-y-1">
+              <ul className="list-disc list-inside text-sm text-caution-600 dark:text-caution-500 space-y-1">
                 <li>Geoptimaliseerde strike selectie</li>
                 <li>Automatische roll suggesties</li>
                 <li>Premium tracking per positie</li>
@@ -651,15 +651,15 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
               <strong> Implied Volatility</strong> essentieel.
             </p>
             <div className="space-y-2">
-              <div className="bg-purple-50 dark:bg-purple-900/20 p-3 rounded-lg">
-                <h4 className="font-semibold text-purple-800 dark:text-purple-300 text-sm">Gamma Risk</h4>
-                <p className="text-xs text-purple-700 dark:text-purple-400">
+              <div className="bg-surface-subtle dark:bg-trading-dark-700 p-3 rounded-lg">
+                <h4 className="font-semibold text-ink-800 dark:text-ink-200 text-sm">Gamma Risk</h4>
+                <p className="text-xs text-ink-700 dark:text-ink-300">
                   Hoge gamma bij korte DTE = snelle delta veranderingen
                 </p>
               </div>
-              <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
-                <h4 className="font-semibold text-blue-800 dark:text-blue-300 text-sm">IV Crush</h4>
-                <p className="text-xs text-blue-700 dark:text-blue-400">
+              <div className="bg-primary-50 dark:bg-primary-900/20 p-3 rounded-lg">
+                <h4 className="font-semibold text-primary-700 dark:text-primary-300 text-sm">IV Crush</h4>
+                <p className="text-xs text-primary-700 dark:text-primary-300">
                   Na earnings daalt IV snel - timing is alles
                 </p>
               </div>
@@ -735,45 +735,68 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
 
   if (!isOpen) return null;
 
+  // Piste marker shape that matches the mountain visualization.
+  // Uses currentColor so it inherits from the parent.
+  const PisteMarker: React.FC<{ size?: number }> = ({ size = 22 }) => {
+    const color = content.slopeColor;
+    return (
+      <svg width={size} height={size} viewBox="-12 -12 24 24" aria-hidden="true">
+        {color === 'green'  && <circle cx="0" cy="0" r="7.5" fill="currentColor" />}
+        {color === 'blue'   && <rect x="-7" y="-7" width="14" height="14" fill="currentColor" />}
+        {color === 'red'    && <rect x="-6.5" y="-6.5" width="13" height="13" fill="currentColor" transform="rotate(45)" />}
+        {color === 'black'  && (
+          <>
+            <rect x="-10.5" y="-4.5" width="8.5" height="8.5" fill="currentColor" transform="rotate(45 -6.25 0)" />
+            <rect x="2"     y="-4.5" width="8.5" height="8.5" fill="currentColor" transform="rotate(45 6.25 0)" />
+          </>
+        )}
+      </svg>
+    );
+  };
+
   const slopeColorClasses = {
-    green: 'from-green-500 to-emerald-600',
-    blue: 'from-blue-500 to-indigo-600',
-    red: 'from-red-500 to-rose-600',
-    black: 'from-gray-700 to-gray-900',
-  }[content.slopeColor] || 'from-gray-500 to-gray-600';
+    green: 'bg-positive-700',
+    blue: 'bg-primary-700',
+    red: 'bg-negative-700',
+    black: 'bg-ink-900',
+  }[content.slopeColor] || 'bg-ink-700';
 
   const tabColorClasses = {
-    green: 'border-green-500 text-green-700 dark:text-green-400',
-    blue: 'border-blue-500 text-blue-700 dark:text-blue-400',
-    red: 'border-red-500 text-red-700 dark:text-red-400',
-    black: 'border-gray-700 text-gray-700 dark:text-gray-300',
-  }[content.slopeColor] || 'border-gray-500 text-gray-700';
+    green: 'border-positive-500 text-positive-700 dark:text-positive-500',
+    blue: 'border-primary-500 text-primary-700 dark:text-primary-300',
+    red: 'border-negative-500 text-negative-700 dark:text-negative-500',
+    black: 'border-ink-800 text-ink-700 dark:text-ink-300',
+  }[content.slopeColor] || 'border-ink-500 text-ink-700';
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm">
       {/* Fixed size container */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl h-[600px] flex flex-col m-4">
-        {/* Header - Fixed height */}
-        <div className={`bg-gradient-to-r ${slopeColorClasses} p-4 text-white relative rounded-t-2xl shrink-0`}>
+      <div className="bg-white dark:bg-trading-dark-800 rounded-xl shadow-2xl w-full max-w-2xl h-[620px] flex flex-col m-4 overflow-hidden border border-[var(--line)] dark:border-trading-dark-700">
+        {/* Header — restrained editorial bar with the slope's piste marker */}
+        <div className={`${slopeColorClasses} px-6 py-5 text-white relative shrink-0`}>
           <button
             onClick={onClose}
-            className="absolute top-3 right-3 p-2 hover:bg-white/20 rounded-lg transition-colors"
+            className="absolute top-3.5 right-3.5 p-1.5 hover:bg-white/15 rounded-md transition-colors"
+            aria-label="Close"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" strokeWidth={2} />
           </button>
 
-          <div className="flex items-center gap-3">
-            <span className="text-3xl">{content.slopeIcon}</span>
-            <div>
-              <h2 className="text-xl font-bold">{content.welcomeTitle}</h2>
-              <p className="text-white/80 text-sm">{content.welcomeSubtitle}</p>
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-md bg-white/10 ring-1 ring-white/20 flex items-center justify-center text-white shrink-0">
+              <PisteMarker size={22} />
+            </div>
+            <div className="leading-tight">
+              <p className="text-[10px] uppercase tracking-[0.18em] text-white/65 mb-1">PayDay · Curriculum</p>
+              <h2 className="text-lg font-semibold tracking-tight">{content.welcomeTitle}</h2>
+              <p className="text-white/75 text-[13px] mt-0.5">{content.welcomeSubtitle}</p>
             </div>
           </div>
         </div>
 
-        {/* Tabs - Fixed height */}
-        <div className="border-b border-gray-200 dark:border-gray-700 shrink-0">
-          <div className="flex overflow-x-auto px-2 -mb-px">
+        {/* Tabs */}
+        <div className="border-b border-[var(--line)] dark:border-trading-dark-700 bg-surface dark:bg-trading-dark-800/60 shrink-0">
+          <div className="flex overflow-x-auto px-4 -mb-px">
             {content.steps.map((step, index) => (
               <button
                 key={step.id}
@@ -782,10 +805,10 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   setShowGlossary(false);
                 }}
                 className={`
-                  px-3 py-2 text-xs font-medium whitespace-nowrap border-b-2 transition-colors
+                  px-3.5 py-2.5 text-[11px] uppercase tracking-[0.08em] font-semibold whitespace-nowrap border-b-2 transition-colors
                   ${index === currentStep
                     ? tabColorClasses
-                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                    : 'border-transparent text-ink-400 hover:text-ink-700 dark:text-ink-400 dark:hover:text-ink-200'
                   }
                 `}
               >
@@ -795,18 +818,21 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           </div>
         </div>
 
-        {/* Content - Scrollable with fixed height */}
-        <div className="flex-1 overflow-y-auto p-5 min-h-0">
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto px-6 py-5 min-h-0">
           {/* Step Header */}
-          <div className="flex items-center gap-3 mb-4">
-            <div className={`p-2 rounded-lg bg-gradient-to-r ${slopeColorClasses} text-white shrink-0`}>
+          <div className="flex items-center gap-3 mb-5">
+            <div className={`w-9 h-9 rounded-md ${slopeColorClasses} text-white flex items-center justify-center shrink-0`}>
               {currentStepData.icon}
             </div>
-            <div>
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+            <div className="leading-tight">
+              <p className="text-[10px] uppercase tracking-[0.16em] text-ink-400 mb-0.5">
+                Stap {currentStep + 1} van {totalSteps}
+              </p>
+              <h3 className="text-base font-semibold text-ink-900 dark:text-white tracking-tight">
                 {currentStepData.title}
               </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-ink-500 dark:text-ink-400 mt-0.5">
                 {currentStepData.description}
               </p>
             </div>
@@ -855,28 +881,29 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           )}
         </div>
 
-        {/* Footer - Fixed height */}
-        <div className="border-t border-gray-200 dark:border-gray-700 p-4 shrink-0">
-          <div className="flex items-center justify-between">
-            {/* Don't show again checkbox */}
+        {/* Footer */}
+        <div className="border-t border-[var(--line)] dark:border-trading-dark-700 bg-surface dark:bg-trading-dark-800/60 px-6 py-3.5 shrink-0">
+          <div className="flex items-center justify-between gap-4">
             {showDontShowAgain && (
-              <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 cursor-pointer">
+              <label className="flex items-center gap-2 text-xs text-ink-500 dark:text-ink-400 cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={dontShowAgain}
                   onChange={(e) => setDontShowAgain(e.target.checked)}
-                  className="w-4 h-4 rounded border-gray-300 dark:border-gray-600"
+                  className="w-3.5 h-3.5 rounded border-ink-200 text-primary-700 focus:ring-primary-500"
                 />
                 <span>Niet meer tonen voor dit niveau</span>
               </label>
             )}
 
-            {/* Navigation buttons */}
-            <div className="flex gap-2 ml-auto">
+            <div className="flex gap-2 ml-auto items-center">
+              <span className="text-[11px] text-ink-400 mr-1 tabular-nums">
+                {currentStep + 1} / {totalSteps}
+              </span>
               {currentStep > 0 && (
                 <button
                   onClick={handlePrev}
-                  className="flex items-center gap-1 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium text-ink-700 dark:text-ink-300 hover:bg-surface-subtle dark:hover:bg-trading-dark-700 rounded-md transition-colors"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   Vorige
@@ -884,7 +911,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
               )}
               <button
                 onClick={handleNext}
-                className={`flex items-center gap-1 px-4 py-2 bg-gradient-to-r ${slopeColorClasses} text-white rounded-lg font-medium hover:opacity-90 transition-opacity`}
+                className={`inline-flex items-center gap-1.5 px-4 py-2 ${slopeColorClasses} text-white rounded-md text-sm font-semibold tracking-tight shadow-sm hover:opacity-95 transition-opacity`}
               >
                 {currentStep === totalSteps - 1 ? (
                   <>

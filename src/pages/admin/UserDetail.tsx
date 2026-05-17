@@ -112,9 +112,9 @@ export const UserDetail: React.FC = () => {
       </div>
 
       {/* Danger zone */}
-      <div className="bg-white dark:bg-gray-800 border border-red-200 dark:border-red-500/30 rounded-lg shadow-sm p-6">
-        <h2 className="text-xl font-semibold text-red-600 dark:text-red-400 mb-4">Danger zone</h2>
-        <div className="flex items-center justify-between p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-500/30">
+      <div className="bg-white dark:bg-gray-800 border border-negative-500/20 dark:border-negative-700/30 rounded-lg shadow-sm p-6">
+        <h2 className="text-xl font-semibold text-negative-600 dark:text-negative-500 mb-4">Danger zone</h2>
+        <div className="flex items-center justify-between p-4 bg-negative-50 dark:bg-negative-700/15 rounded-lg border border-negative-500/20 dark:border-negative-700/30">
           <div>
             <p className="font-medium text-gray-900 dark:text-white">Delete User</p>
             <p className="text-sm text-gray-600 dark:text-gray-400">Permanently delete this user and all their data</p>
@@ -123,7 +123,7 @@ export const UserDetail: React.FC = () => {
             <div className="flex items-center gap-2">
               <button
                 onClick={handleDeleteUser}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                className="px-4 py-2 bg-negative-600 text-white rounded-lg hover:bg-negative-700 transition-colors font-medium"
               >
                 Confirm Delete
               </button>
@@ -137,7 +137,7 @@ export const UserDetail: React.FC = () => {
           ) : (
             <button
               onClick={() => setShowDeleteConfirm(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-negative-600 text-white rounded-lg hover:bg-negative-700 transition-colors"
             >
               <Trash2 className="w-4 h-4" />
               <span>Delete User</span>

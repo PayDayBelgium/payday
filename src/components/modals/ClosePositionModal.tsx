@@ -253,7 +253,7 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
                     max={totalShares}
                     value={quantity}
                     onChange={(e) => setQuantity(e.target.value)}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     placeholder={`${totalShares} (alle)`}
                   />
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -274,7 +274,7 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
                     value={closePrice}
                     onChange={(e) => setClosePrice(e.target.value)}
                     required
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     placeholder="0,00"
                   />
                 </div>
@@ -305,7 +305,7 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
                       max={totalContracts}
                       value={contractsToClose}
                       onChange={(e) => setContractsToClose(e.target.value)}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       placeholder={`${totalContracts} (alle)`}
                     />
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -338,7 +338,7 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
                     value={closePremium}
                     onChange={(e) => setClosePremium(e.target.value)}
                     required
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     placeholder="0,00"
                   />
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -362,7 +362,7 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
                 onChange={(e) => setCloseDate(e.target.value)}
                 max={new Date().toISOString().split('T')[0]}
                 required
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               />
             </div>
 
@@ -374,7 +374,7 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={3}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 placeholder="Reden voor sluiten, marktomstandigheden, ..."
               />
             </div>
@@ -384,14 +384,14 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
           {((isStockOrETF && closePrice !== '') || (isOption && closePremium !== '')) && (
             <div className={`p-4 rounded-lg border-2 ${
               isProfitable
-                ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-                : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+                ? 'bg-positive-50 dark:bg-positive-700/15 border-positive-500/20 dark:border-positive-700/30'
+                : 'bg-negative-50 dark:bg-negative-700/15 border-negative-500/20 dark:border-negative-700/30'
             }`}>
               <div className="flex items-center gap-3">
                 {isProfitable ? (
-                  <TrendingUp className="w-8 h-8 text-green-600 dark:text-green-400" />
+                  <TrendingUp className="w-8 h-8 text-positive-600 dark:text-positive-500" />
                 ) : (
-                  <TrendingDown className="w-8 h-8 text-red-600 dark:text-red-400" />
+                  <TrendingDown className="w-8 h-8 text-negative-600 dark:text-negative-500" />
                 )}
                 <div className="flex-1">
                   <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -399,8 +399,8 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
                   </p>
                   <p className={`text-2xl font-bold ${
                     isProfitable
-                      ? 'text-green-600 dark:text-green-400'
-                      : 'text-red-600 dark:text-red-400'
+                      ? 'text-positive-600 dark:text-positive-500'
+                      : 'text-negative-600 dark:text-negative-500'
                   }`}>
                     {isProfitable ? '+' : ''}{formatCurrency(realizedPnL, currencySymbol)}
                   </p>
@@ -410,8 +410,8 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
                     <p className="text-xs text-gray-500 dark:text-gray-400">Per aandeel</p>
                     <p className={`text-lg font-semibold ${
                       isProfitable
-                        ? 'text-green-600 dark:text-green-400'
-                        : 'text-red-600 dark:text-red-400'
+                        ? 'text-positive-600 dark:text-positive-500'
+                        : 'text-negative-600 dark:text-negative-500'
                     }`}>
                       {isProfitable ? '+' : ''}{formatCurrency(realizedPnL / quantityToClose, currencySymbol)}
                     </p>
@@ -451,8 +451,8 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
                     <p className="text-gray-500 dark:text-gray-400">Return %</p>
                     <p className={`font-semibold ${
                       isProfitable
-                        ? 'text-green-600 dark:text-green-400'
-                        : 'text-red-600 dark:text-red-400'
+                        ? 'text-positive-600 dark:text-positive-500'
+                        : 'text-negative-600 dark:text-negative-500'
                     }`}>
                       {(() => {
                         const costBasisForCalc = isStockOrETF && 'costBasis' in position && 'shares' in position
@@ -484,7 +484,7 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
                 (isStockOrETF && (closePrice === '' || parseFloat(closePrice) < 0)) ||
                 (isOption && (closePremium === '' || parseFloat(closePremium) < 0))
               }
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+              className="px-4 py-2 bg-primary-700 hover:bg-primary-800 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
             >
               Positie sluiten
             </button>

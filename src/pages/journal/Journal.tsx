@@ -44,11 +44,11 @@ const GOAL_TYPES: { id: GoalType; label: string; icon: JSX.Element }[] = [
 ];
 
 const MOOD_OPTIONS = [
-  { id: 'great', label: 'Great', icon: <Smile className="w-5 h-5 text-green-600" />, color: 'bg-green-100 text-green-600' },
-  { id: 'good', label: 'Good', icon: <Smile className="w-5 h-5 text-blue-600" />, color: 'bg-blue-100 text-blue-600' },
+  { id: 'great', label: 'Great', icon: <Smile className="w-5 h-5 text-positive-600" />, color: 'bg-positive-50 text-positive-600' },
+  { id: 'good', label: 'Good', icon: <Smile className="w-5 h-5 text-primary-700" />, color: 'bg-primary-50 text-primary-700' },
   { id: 'neutral', label: 'Neutral', icon: <Meh className="w-5 h-5 text-gray-600" />, color: 'bg-gray-100 text-gray-600' },
-  { id: 'bad', label: 'Bad', icon: <Frown className="w-5 h-5 text-orange-600" />, color: 'bg-orange-100 text-orange-600' },
-  { id: 'terrible', label: 'Terrible', icon: <Frown className="w-5 h-5 text-red-600" />, color: 'bg-red-100 text-red-600' },
+  { id: 'bad', label: 'Bad', icon: <Frown className="w-5 h-5 text-caution-600" />, color: 'bg-caution-50 text-caution-600' },
+  { id: 'terrible', label: 'Terrible', icon: <Frown className="w-5 h-5 text-negative-600" />, color: 'bg-negative-50 text-negative-600' },
 ];
 
 export const Journal: React.FC = () => {
@@ -248,7 +248,7 @@ export const Journal: React.FC = () => {
             onClick={() => setActiveTab('entries')}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               activeTab === 'entries'
-                ? 'bg-blue-600 text-white'
+                ? 'bg-primary-700 text-white'
                 : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
             }`}
           >
@@ -261,7 +261,7 @@ export const Journal: React.FC = () => {
             onClick={() => setActiveTab('goals')}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               activeTab === 'goals'
-                ? 'bg-blue-600 text-white'
+                ? 'bg-primary-700 text-white'
                 : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
             }`}
           >
@@ -282,7 +282,7 @@ export const Journal: React.FC = () => {
               setEditingGoal(null);
             }
           }}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-primary-700 hover:bg-primary-800 text-white rounded-lg font-medium transition-colors"
         >
           <Plus className="w-4 h-4" />
           {activeTab === 'entries' ? 'New Entry' : 'New Goal'}
@@ -309,7 +309,7 @@ export const Journal: React.FC = () => {
                       type="text"
                       value={entryForm.title}
                       onChange={(e) => setEntryForm({ ...entryForm, title: e.target.value })}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                       placeholder="Entry title..."
                     />
                   </div>
@@ -322,7 +322,7 @@ export const Journal: React.FC = () => {
                       type="date"
                       value={entryForm.date}
                       onChange={(e) => setEntryForm({ ...entryForm, date: e.target.value })}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                     />
                   </div>
 
@@ -333,7 +333,7 @@ export const Journal: React.FC = () => {
                     <select
                       value={entryForm.portfolio}
                       onChange={(e) => setEntryForm({ ...entryForm, portfolio: e.target.value })}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                     >
                       <option value="">All portfolios</option>
                       {portfolios.map((portfolio) => (
@@ -351,7 +351,7 @@ export const Journal: React.FC = () => {
                     <select
                       value={entryForm.mood}
                       onChange={(e) => setEntryForm({ ...entryForm, mood: e.target.value as JournalEntry['mood'] })}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                     >
                       {MOOD_OPTIONS.map((mood) => (
                         <option key={mood.id} value={mood.id}>
@@ -370,7 +370,7 @@ export const Journal: React.FC = () => {
                       step="0.01"
                       value={entryForm.pnl || ''}
                       onChange={(e) => setEntryForm({ ...entryForm, pnl: e.target.value ? parseFloat(e.target.value) : undefined })}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                       placeholder="0.00"
                     />
                   </div>
@@ -383,7 +383,7 @@ export const Journal: React.FC = () => {
                       type="text"
                       value={entryForm.tags}
                       onChange={(e) => setEntryForm({ ...entryForm, tags: e.target.value })}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                       placeholder="trading, analysis, strategy..."
                     />
                   </div>
@@ -396,7 +396,7 @@ export const Journal: React.FC = () => {
                   <textarea
                     value={entryForm.content}
                     onChange={(e) => setEntryForm({ ...entryForm, content: e.target.value })}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                     placeholder="What happened today? What did you learn?"
                     rows={6}
                   />
@@ -423,7 +423,7 @@ export const Journal: React.FC = () => {
                   </button>
                   <button
                     onClick={handleSaveEntry}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                    className="px-4 py-2 bg-primary-700 hover:bg-primary-800 text-white rounded-lg font-medium transition-colors"
                   >
                     {editingEntry ? 'Update Entry' : 'Save Entry'}
                   </button>
@@ -444,7 +444,7 @@ export const Journal: React.FC = () => {
               </p>
               <button
                 onClick={() => setShowEntryForm(true)}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-primary-700 hover:bg-primary-800 text-white rounded-lg font-semibold transition-colors"
               >
                 <Plus className="w-5 h-5" />
                 Create First Entry
@@ -481,7 +481,7 @@ export const Journal: React.FC = () => {
                             </div>
                           )}
                           {entry.pnl !== undefined && (
-                            <div className={`flex items-center gap-1 font-medium ${entry.pnl >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                            <div className={`flex items-center gap-1 font-medium ${entry.pnl >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
                               <DollarSign className="w-4 h-4" />
                               {entry.pnl >= 0 ? '+' : ''}${formatNumber(entry.pnl, 2)}
                             </div>
@@ -491,13 +491,13 @@ export const Journal: React.FC = () => {
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleEditEntry(entry)}
-                          className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                          className="p-2 text-primary-700 dark:text-primary-300 hover:bg-primary-50 dark:hover:bg-primary-900/25 rounded-lg transition-colors"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => setEntryToDelete(entry)}
-                          className="p-2 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                          className="p-2 text-negative-600 dark:text-negative-500 hover:bg-negative-50 dark:hover:bg-negative-700/25 rounded-lg transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -548,7 +548,7 @@ export const Journal: React.FC = () => {
                     <select
                       value={goalForm.type}
                       onChange={(e) => setGoalForm({ ...goalForm, type: e.target.value as GoalType })}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                     >
                       {GOAL_TYPES.map((type) => (
                         <option key={type.id} value={type.id}>
@@ -567,7 +567,7 @@ export const Journal: React.FC = () => {
                       step="1"
                       value={goalForm.targetValue}
                       onChange={(e) => setGoalForm({ ...goalForm, targetValue: parseFloat(e.target.value) || 0 })}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                       placeholder="500000"
                     />
                   </div>
@@ -580,7 +580,7 @@ export const Journal: React.FC = () => {
                       type="text"
                       value={goalForm.title}
                       onChange={(e) => setGoalForm({ ...goalForm, title: e.target.value })}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                       placeholder="Reach $500k total portfolio value"
                     />
                   </div>
@@ -593,7 +593,7 @@ export const Journal: React.FC = () => {
                       type="date"
                       value={goalForm.deadline}
                       onChange={(e) => setGoalForm({ ...goalForm, deadline: e.target.value })}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                     />
                   </div>
                 </div>
@@ -605,7 +605,7 @@ export const Journal: React.FC = () => {
                   <textarea
                     value={goalForm.description}
                     onChange={(e) => setGoalForm({ ...goalForm, description: e.target.value })}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                     placeholder="Why is this goal important? What's your strategy?"
                     rows={3}
                   />
@@ -630,7 +630,7 @@ export const Journal: React.FC = () => {
                   </button>
                   <button
                     onClick={handleSaveGoal}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                    className="px-4 py-2 bg-primary-700 hover:bg-primary-800 text-white rounded-lg font-medium transition-colors"
                   >
                     {editingGoal ? 'Update Goal' : 'Save Goal'}
                   </button>
@@ -651,7 +651,7 @@ export const Journal: React.FC = () => {
               </p>
               <button
                 onClick={() => setShowGoalForm(true)}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-primary-700 hover:bg-primary-800 text-white rounded-lg font-semibold transition-colors"
               >
                 <Plus className="w-5 h-5" />
                 Create First Goal
@@ -686,13 +686,13 @@ export const Journal: React.FC = () => {
                         <div className="flex gap-2">
                           <button
                             onClick={() => handleEditGoal(goal)}
-                            className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                            className="p-2 text-primary-700 dark:text-primary-300 hover:bg-primary-50 dark:hover:bg-primary-900/25 rounded-lg transition-colors"
                           >
                             <Edit className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => setGoalToDelete(goal)}
-                            className="p-2 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                            className="p-2 text-negative-600 dark:text-negative-500 hover:bg-negative-50 dark:hover:bg-negative-700/25 rounded-lg transition-colors"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -714,7 +714,7 @@ export const Journal: React.FC = () => {
                         </div>
                         <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                           <div
-                            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                            className="bg-primary-700 h-2 rounded-full transition-all duration-300"
                             style={{ width: `${progress}%` }}
                           />
                         </div>
@@ -761,8 +761,8 @@ export const Journal: React.FC = () => {
                           >
                             <div className="flex items-start justify-between mb-4">
                               <div className="flex items-center gap-3">
-                                <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded-lg">
-                                  <Check className="w-4 h-4 text-green-600 dark:text-green-400" />
+                                <div className="bg-positive-50 dark:bg-positive-700/25 p-3 rounded-lg">
+                                  <Check className="w-4 h-4 text-positive-600 dark:text-positive-500" />
                                 </div>
                                 <div>
                                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">

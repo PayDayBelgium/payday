@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DollarSign, Plus, Trash2, TrendingUp, Info } from 'lucide-react';
 import { TickerSelector } from '../../components/widgets/TickerSelector';
+import { usePageTitle } from '../../contexts/PageTitleContext';
 import type { PortfolioName, Ticker } from '../../types';
 
 interface Position {
@@ -30,9 +31,14 @@ const DEFAULT_PORTFOLIO_SETTINGS: PortfolioSettings[] = [
 ];
 
 export const MonthlyIncomeCalculator: React.FC = () => {
+  const { setPageTitle } = usePageTitle();
   const [positions, setPositions] = useState<Position[]>([]);
   const [portfolioSettings, setPortfolioSettings] = useState<PortfolioSettings[]>(DEFAULT_PORTFOLIO_SETTINGS);
   const [selectedDelta, setSelectedDelta] = useState<10 | 15 | 20>(15);
+
+  useEffect(() => {
+    setPageTitle('Monthly Income Calculator', 'Calculate potential monthly income from covered calls');
+  }, [setPageTitle]);
 
   // Add new position
   const addPosition = () => {
@@ -116,45 +122,28 @@ export const MonthlyIncomeCalculator: React.FC = () => {
   };
 
   const portfolioColors: Record<PortfolioName, string> = {
-    Lynx: 'bg-green-100 dark:bg-green-900/30 border-green-500',
-    FreeStoxx: 'bg-orange-100 dark:bg-orange-900/30 border-orange-500',
-    DeGiro: 'bg-blue-100 dark:bg-blue-900/30 border-blue-500',
-    SAXO: 'bg-red-100 dark:bg-red-900/30 border-red-500',
+    Lynx: 'bg-positive-50 dark:bg-positive-700/25 border-positive-500',
+    FreeStoxx: 'bg-caution-50 dark:bg-caution-600/25 border-caution-500',
+    DeGiro: 'bg-primary-50 dark:bg-primary-900/30 border-primary-500',
+    SAXO: 'bg-negative-50 dark:bg-negative-700/25 border-negative-500',
   };
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-3 bg-blue-500/10 rounded-lg">
-            <DollarSign className="w-8 h-8 text-blue-500" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Monthly Income Calculator
-            </h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Calculate potential monthly income from covered calls
-            </p>
-          </div>
-        </div>
-
-        {/* Delta Selector */}
-        <div className="flex items-center gap-2">
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Target Delta:
-          </label>
-          <select
-            value={selectedDelta}
-            onChange={(e) => setSelectedDelta(Number(e.target.value) as 10 | 15 | 20)}
-            className="rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-green-500 focus:ring-green-500 p-2"
-          >
-            <option value={10}>10% (Conservative)</option>
-            <option value={15}>15% (Balanced)</option>
-            <option value={20}>20% (Aggressive)</option>
-          </select>
-        </div>
+      {/* Toolbar — page title is provided by the global header */}
+      <div className="flex items-center justify-end gap-2">
+        <label className="text-sm font-medium text-ink-700 dark:text-ink-300">
+          Target Delta:
+        </label>
+        <select
+          value={selectedDelta}
+          onChange={(e) => setSelectedDelta(Number(e.target.value) as 10 | 15 | 20)}
+          className="rounded-md border-ink-200 dark:border-trading-dark-600 dark:bg-trading-dark-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
+        >
+          <option value={10}>10% (Conservative)</option>
+          <option value={15}>15% (Balanced)</option>
+          <option value={20}>20% (Aggressive)</option>
+        </select>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
@@ -169,7 +158,7 @@ export const MonthlyIncomeCalculator: React.FC = () => {
                 </h2>
                 <button
                   onClick={addPosition}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-positive-600 hover:bg-positive-700 text-white rounded-lg transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                   Add Position
@@ -301,14 +290,14 @@ export const MonthlyIncomeCalculator: React.FC = () => {
                             />
                           </td>
                           <td className="px-4 py-3">
-                            <span className="text-sm font-semibold text-green-600 dark:text-green-400">
+                            <span className="text-sm font-semibold text-positive-600 dark:text-positive-500">
                               {formatCurrency(netIncome)}
                             </span>
                           </td>
                           <td className="px-4 py-3">
                             <button
                               onClick={() => deletePosition(pos.id)}
-                              className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                              className="text-negative-600 hover:text-negative-700 dark:text-negative-500 dark:hover:text-negative-500"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -352,49 +341,49 @@ export const MonthlyIncomeCalculator: React.FC = () => {
         {/* Sidebar - Results */}
         <div className="space-y-6">
           {/* Total Summary */}
-          <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg shadow-sm border border-green-200 dark:border-green-800 p-6">
+          <div className="bg-gradient-to-br from-positive-50 to-positive-50 dark:from-positive-700/15 dark:to-emerald-900/20 rounded-lg shadow-sm border border-positive-500/20 dark:border-positive-700/30 p-6">
             <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />
-              <h3 className="text-lg font-semibold text-green-900 dark:text-green-100">
+              <TrendingUp className="w-5 h-5 text-positive-600 dark:text-positive-500" />
+              <h3 className="text-lg font-semibold text-positive-700 dark:text-green-100">
                 Monthly Summary
               </h3>
             </div>
 
             <div className="space-y-4">
               <div>
-                <p className="text-sm text-green-800 dark:text-green-300 mb-1">Gross Income</p>
-                <p className="text-2xl font-bold text-green-900 dark:text-green-100">
+                <p className="text-sm text-positive-700 dark:text-positive-500 mb-1">Gross Income</p>
+                <p className="text-2xl font-bold text-positive-700 dark:text-green-100">
                   {formatCurrency(totalGrossIncome)}
                 </p>
               </div>
 
               <div>
-                <p className="text-sm text-green-800 dark:text-green-300 mb-1">Total Fees</p>
-                <p className="text-lg font-semibold text-red-600 dark:text-red-400">
+                <p className="text-sm text-positive-700 dark:text-positive-500 mb-1">Total Fees</p>
+                <p className="text-lg font-semibold text-negative-600 dark:text-negative-500">
                   -{formatCurrency(totalFees)}
                 </p>
               </div>
 
-              <hr className="border-green-200 dark:border-green-700" />
+              <hr className="border-positive-500/20 dark:border-positive-700" />
 
               <div>
-                <p className="text-sm text-green-800 dark:text-green-300 mb-1">Net Monthly Income</p>
-                <p className="text-3xl font-bold text-green-600 dark:text-green-400">
+                <p className="text-sm text-positive-700 dark:text-positive-500 mb-1">Net Monthly Income</p>
+                <p className="text-3xl font-bold text-positive-600 dark:text-positive-500">
                   {formatCurrency(totalNetIncome)}
                 </p>
               </div>
 
               <div>
-                <p className="text-sm text-green-800 dark:text-green-300 mb-1">Annual Income</p>
-                <p className="text-xl font-bold text-green-700 dark:text-green-300">
+                <p className="text-sm text-positive-700 dark:text-positive-500 mb-1">Annual Income</p>
+                <p className="text-xl font-bold text-positive-700 dark:text-positive-500">
                   {formatCurrency(totalNetIncome * 12)}
                 </p>
               </div>
             </div>
 
-            <div className="mt-4 p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-start gap-2">
-              <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-              <p className="text-xs text-blue-800 dark:text-blue-300">
+            <div className="mt-4 p-3 bg-primary-50 dark:bg-primary-900/30 rounded-lg flex items-start gap-2">
+              <Info className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
+              <p className="text-xs text-primary-700 dark:text-primary-300">
                 Assumes you sell covered calls monthly at {selectedDelta}% delta.
                 Actual results may vary based on market conditions.
               </p>
@@ -420,7 +409,7 @@ export const MonthlyIncomeCalculator: React.FC = () => {
                       <span className="font-semibold text-gray-900 dark:text-white">
                         {portfolio}
                       </span>
-                      <span className="text-sm font-bold text-green-600 dark:text-green-400">
+                      <span className="text-sm font-bold text-positive-600 dark:text-positive-500">
                         {formatCurrency(total.net)}
                       </span>
                     </div>

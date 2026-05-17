@@ -1,12 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Settings, Wifi, Save, RotateCcw } from 'lucide-react';
 import { IBConnectionStatus } from '../../components/common/IBConnectionStatus';
 import { ibWebSocketService } from '../../services/ibWebSocketService';
+import { usePageTitle } from '../../contexts/PageTitleContext';
 import type { IBConfig } from '../../services/ibWebSocketService';
 
 export const IBSettings: React.FC = () => {
+  const { setPageTitle } = usePageTitle();
   const currentConfig = ibWebSocketService.getConfig();
   const [config, setConfig] = useState<IBConfig>(currentConfig);
+
+  useEffect(() => {
+    setPageTitle('Interactive Portfolios Settings', 'Configure connection to TWS or IB Gateway');
+  }, [setPageTitle]);
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -46,22 +52,7 @@ export const IBSettings: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <div className="p-3 bg-blue-500/10 rounded-lg">
-          <Settings className="w-8 h-8 text-blue-500" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Interactive Portfolios Settings
-          </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Configure connection to TWS or IB Gateway
-          </p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Settings Form */}
         <div className="lg:col-span-2 space-y-6">
           {/* Connection Status */}
@@ -89,7 +80,7 @@ export const IBSettings: React.FC = () => {
                   value={config.host}
                   onChange={(e) => setConfig({ ...config, host: e.target.value })}
                   placeholder="localhost"
-                  className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2"
+                  className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
                 />
                 <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   Usually 'localhost' or '127.0.0.1'
@@ -106,7 +97,7 @@ export const IBSettings: React.FC = () => {
                   value={config.port}
                   onChange={(e) => setConfig({ ...config, port: Number(e.target.value) })}
                   placeholder="7497"
-                  className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2"
+                  className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
                 />
                 <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   Default: 7497 (Paper Trading), 7496 (Live Trading), 4002 (IB Gateway)
@@ -125,7 +116,7 @@ export const IBSettings: React.FC = () => {
                   placeholder="1"
                   min="0"
                   max="32"
-                  className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2"
+                  className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
                 />
                 <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   Unique ID for this connection (0-32)
@@ -138,7 +129,7 @@ export const IBSettings: React.FC = () => {
               <button
                 onClick={handleSave}
                 disabled={isSaving}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-lg font-medium transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-primary-700 hover:bg-primary-800 disabled:opacity-50 text-white rounded-lg font-medium transition-colors"
               >
                 <Save className="w-4 h-4" />
                 {isSaving ? 'Saving...' : 'Save & Reconnect'}
@@ -158,8 +149,8 @@ export const IBSettings: React.FC = () => {
               <div
                 className={`mt-4 p-3 rounded-lg ${
                   saveMessage.type === 'success'
-                    ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
-                    : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
+                    ? 'bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500'
+                    : 'bg-negative-50 dark:bg-negative-700/25 text-negative-700 dark:text-negative-500'
                 }`}
               >
                 {saveMessage.text}
@@ -194,7 +185,7 @@ export const IBSettings: React.FC = () => {
 
               <div>
                 <p className="font-semibold text-gray-900 dark:text-white mb-1">4. WebSocket Setup</p>
-                <p className="text-yellow-600 dark:text-yellow-400">
+                <p className="text-caution-600 dark:text-caution-500">
                   Note: IB doesn't natively support WebSocket. You'll need a middleware service.
                 </p>
               </div>

@@ -19,25 +19,25 @@ export interface ConfirmDialogProps {
 
 const variantStyles = {
   danger: {
-    headerBg: 'bg-red-50 dark:bg-red-900/20',
-    headerBorder: 'border-red-200 dark:border-red-800',
-    iconColor: 'text-red-600 dark:text-red-400',
-    iconBg: 'bg-red-100 dark:bg-red-900/30',
-    button: 'bg-red-600 hover:bg-red-700 text-white',
+    headerBg: 'bg-negative-50 dark:bg-negative-700/15',
+    headerBorder: 'border-negative-500/20 dark:border-negative-700/40',
+    iconColor: 'text-negative-600 dark:text-negative-500',
+    iconBg: 'bg-negative-50 dark:bg-negative-700/25',
+    button: 'bg-negative-600 hover:bg-negative-700 text-white',
   },
   warning: {
-    headerBg: 'bg-orange-50 dark:bg-orange-900/20',
-    headerBorder: 'border-orange-200 dark:border-orange-800',
-    iconColor: 'text-amber-600 dark:text-amber-400',
-    iconBg: 'bg-amber-100 dark:bg-amber-900/30',
-    button: 'bg-orange-600 hover:bg-orange-700 text-white',
+    headerBg: 'bg-caution-50 dark:bg-caution-600/15',
+    headerBorder: 'border-caution-500/30 dark:border-caution-600/40',
+    iconColor: 'text-caution-600 dark:text-caution-500',
+    iconBg: 'bg-caution-50 dark:bg-caution-600/25',
+    button: 'bg-caution-600 hover:bg-caution-500 text-white',
   },
   info: {
-    headerBg: 'bg-blue-50 dark:bg-blue-900/20',
-    headerBorder: 'border-blue-200 dark:border-blue-800',
-    iconColor: 'text-blue-600 dark:text-blue-400',
-    iconBg: 'bg-blue-100 dark:bg-blue-900/30',
-    button: 'bg-blue-600 hover:bg-blue-700 text-white',
+    headerBg: 'bg-primary-50 dark:bg-primary-900/20',
+    headerBorder: 'border-primary-200 dark:border-primary-800',
+    iconColor: 'text-primary-700 dark:text-primary-300',
+    iconBg: 'bg-primary-100 dark:bg-primary-900/30',
+    button: 'bg-primary-700 hover:bg-primary-800 text-white',
   },
 };
 

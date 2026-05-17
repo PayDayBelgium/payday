@@ -184,14 +184,14 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
           {/* Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Regel Naam <span className="text-red-500">*</span>
+              Regel Naam <span className="text-negative-600">*</span>
             </label>
             <input
               type="text"
               required
               value={formData.name}
               onChange={(e) => updateField('name', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               placeholder="Bijv. Aandeel Stijgt 15%"
             />
           </div>
@@ -199,14 +199,14 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
           {/* Description */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Beschrijving <span className="text-red-500">*</span>
+              Beschrijving <span className="text-negative-600">*</span>
             </label>
             <textarea
               required
               value={formData.description}
               onChange={(e) => updateField('description', e.target.value)}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               placeholder="Beschrijf wanneer deze regel moet triggeren"
             />
           </div>
@@ -214,7 +214,7 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
           {/* Trigger Type */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Trigger Type <span className="text-red-500">*</span>
+              Trigger Type <span className="text-negative-600">*</span>
             </label>
             <div className="grid grid-cols-2 gap-3">
               {triggerOptions.map((option) => (
@@ -225,21 +225,21 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
                   className={`flex items-center gap-2 p-3 border-2 rounded-lg transition-all ${
                     formData.trigger === option.value
                       ? option.category === 'alert'
-                        ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20'
-                        : 'border-green-500 bg-green-50 dark:bg-green-900/20'
+                        ? 'border-caution-500 bg-caution-50 dark:bg-caution-600/15'
+                        : 'border-positive-500 bg-positive-50 dark:bg-positive-700/15'
                       : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                   }`}
                 >
                   {option.category === 'alert' ? (
                     <AlertCircle className={`w-5 h-5 ${
                       formData.trigger === option.value
-                        ? 'text-amber-600 dark:text-amber-400'
+                        ? 'text-caution-600 dark:text-caution-500'
                         : 'text-gray-400'
                     }`} />
                   ) : (
                     <Target className={`w-5 h-5 ${
                       formData.trigger === option.value
-                        ? 'text-green-600 dark:text-green-400'
+                        ? 'text-positive-600 dark:text-positive-500'
                         : 'text-gray-400'
                     }`} />
                   )}
@@ -265,7 +265,7 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
               formData.trigger === 'loss_limit') && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Percentage <span className="text-red-500">*</span>
+                  Percentage <span className="text-negative-600">*</span>
                 </label>
                 <div className="relative">
                   <input
@@ -274,7 +274,7 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
                     min="0.1"
                     value={formData.percentage}
                     onChange={(e) => updateField('percentage', e.target.value)}
-                    className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="10"
                     required
                   />
@@ -293,7 +293,7 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
                   step="0.01"
                   value={formData.threshold}
                   onChange={(e) => updateField('threshold', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   placeholder="0,5"
                 />
               </div>
@@ -307,7 +307,7 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
                 <select
                   value={formData.timeframe}
                   onChange={(e) => updateField('timeframe', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 >
                   <option value="">Selecteer tijdseenheid</option>
                   <option value="daily">Dagelijks</option>
@@ -327,7 +327,7 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
                 type="checkbox"
                 checked={formData.showOnDashboard as boolean}
                 onChange={(e) => updateField('showOnDashboard', e.target.checked)}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
+                className="w-4 h-4 text-primary-700 border-gray-300 rounded focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
               />
               <span className="text-sm text-gray-900 dark:text-white">Dashboard</span>
             </label>
@@ -337,7 +337,7 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
                 type="checkbox"
                 checked={formData.showOnPortfolioOverview as boolean}
                 onChange={(e) => updateField('showOnPortfolioOverview', e.target.checked)}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
+                className="w-4 h-4 text-primary-700 border-gray-300 rounded focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
               />
               <span className="text-sm text-gray-900 dark:text-white">Portfolio Overzicht</span>
             </label>
@@ -347,7 +347,7 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
                 type="checkbox"
                 checked={formData.showInList as boolean}
                 onChange={(e) => updateField('showInList', e.target.checked)}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
+                className="w-4 h-4 text-primary-700 border-gray-300 rounded focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
               />
               <span className="text-sm text-gray-900 dark:text-white">In Lijst</span>
             </label>
@@ -357,7 +357,7 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
                 type="checkbox"
                 checked={formData.notification as boolean}
                 onChange={(e) => updateField('notification', e.target.checked)}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
+                className="w-4 h-4 text-primary-700 border-gray-300 rounded focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
               />
               <span className="text-sm text-gray-900 dark:text-white">Notificaties</span>
             </label>
@@ -367,14 +367,14 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
           {formData.name && formData.description && (
             <div className={`border-2 rounded-lg p-4 ${
               selectedTrigger?.category === 'alert'
-                ? 'border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20'
-                : 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20'
+                ? 'border-caution-500/30 dark:border-caution-600/40 bg-caution-50 dark:bg-caution-600/15'
+                : 'border-positive-500/20 dark:border-positive-700/30 bg-positive-50 dark:bg-positive-700/15'
             }`}>
               <div className="flex items-start gap-3">
                 {selectedTrigger?.category === 'alert' ? (
-                  <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+                  <AlertCircle className="w-5 h-5 text-caution-600 dark:text-caution-500 mt-0.5 flex-shrink-0" />
                 ) : (
-                  <Target className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
+                  <Target className="w-5 h-5 text-positive-600 dark:text-positive-500 mt-0.5 flex-shrink-0" />
                 )}
                 <div className="flex-1">
                   <h4 className="font-semibold text-gray-900 dark:text-white mb-1">
@@ -406,7 +406,7 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
           <button
             onClick={handleSubmit}
             disabled={!formData.name || !formData.description}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+            className="px-4 py-2 bg-primary-700 hover:bg-primary-800 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
           >
             {isEditing ? 'Regel Bijwerken' : 'Regel Toevoegen'}
           </button>

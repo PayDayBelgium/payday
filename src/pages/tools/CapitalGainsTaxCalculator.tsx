@@ -36,36 +36,23 @@ export const CapitalGainsTaxCalculator: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-3 bg-orange-500/10 rounded-lg">
-            <Calculator className="w-8 h-8 text-orange-500" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Meerwaardebelasting simulator
-            </h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Belgische belasting op gerealiseerde meerwaarden (vanaf 1 jan 2026)
-            </p>
-          </div>
-          {/* Info Toggle Button */}
-          <button
-            onClick={() => setShowInfo(!showInfo)}
-            className="p-2 hover:bg-orange-100 dark:hover:bg-orange-900/30 rounded-full transition-colors"
-            title={showInfo ? "Verberg uitleg" : "Toon uitleg"}
-          >
-            <Info className={`w-5 h-5 ${showInfo ? 'text-orange-600 dark:text-orange-400' : 'text-gray-400 dark:text-gray-500'}`} />
-          </button>
-        </div>
+      {/* Toolbar — title is provided by the global header */}
+      <div className="flex items-center justify-end">
+        <button
+          onClick={() => setShowInfo(!showInfo)}
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-[var(--line)] text-sm text-ink-700 hover:bg-surface-subtle transition-colors"
+          title={showInfo ? 'Verberg uitleg' : 'Toon uitleg'}
+        >
+          <Info className={`w-4 h-4 ${showInfo ? 'text-caution-600 dark:text-caution-500' : 'text-ink-400'}`} />
+          {showInfo ? 'Verberg uitleg' : 'Toon uitleg'}
+        </button>
       </div>
 
       {/* Warning for non-Belgian users */}
       {nationality && nationality !== 'BE' && (
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-500/30 rounded-lg p-4">
+        <div className="bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-700/30 rounded-lg p-4">
           <div className="flex items-start gap-3">
-            <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+            <Info className="w-5 h-5 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
             <div>
               <h4 className="font-medium text-gray-900 dark:text-white mb-1">
                 Niet van toepassing
@@ -82,9 +69,9 @@ export const CapitalGainsTaxCalculator: React.FC = () => {
 
       {/* Educational Info */}
       {showInfo && (
-        <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-500/30 rounded-lg p-6">
+        <div className="bg-caution-50 dark:bg-caution-600/15 border border-caution-500/30 dark:border-caution-500/30 rounded-lg p-6">
           <div className="flex items-start gap-3">
-            <Info className="w-5 h-5 text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0" />
+            <Info className="w-5 h-5 text-caution-600 dark:text-caution-500 mt-0.5 flex-shrink-0" />
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                 Wat is de meerwaardebelasting?
@@ -96,25 +83,25 @@ export const CapitalGainsTaxCalculator: React.FC = () => {
               </p>
               <div className="space-y-2">
                 <div className="flex items-start gap-2">
-                  <ArrowRight className="w-4 h-4 text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0" />
+                  <ArrowRight className="w-4 h-4 text-caution-600 dark:text-caution-500 mt-0.5 flex-shrink-0" />
                   <p className="text-sm text-gray-700 dark:text-gray-300">
                     <strong>Tarief:</strong> 10% op de gerealiseerde meerwaarde
                   </p>
                 </div>
                 <div className="flex items-start gap-2">
-                  <ArrowRight className="w-4 h-4 text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0" />
+                  <ArrowRight className="w-4 h-4 text-caution-600 dark:text-caution-500 mt-0.5 flex-shrink-0" />
                   <p className="text-sm text-gray-700 dark:text-gray-300">
                     <strong>Vrijstelling:</strong> De eerste €10.000 meerwaarde per jaar is vrijgesteld
                   </p>
                 </div>
                 <div className="flex items-start gap-2">
-                  <ArrowRight className="w-4 h-4 text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0" />
+                  <ArrowRight className="w-4 h-4 text-caution-600 dark:text-caution-500 mt-0.5 flex-shrink-0" />
                   <p className="text-sm text-gray-700 dark:text-gray-300">
                     <strong>Maximum voordeel:</strong> Tot €1.000 belastingbesparing door de vrijstelling
                   </p>
                 </div>
                 <div className="flex items-start gap-2">
-                  <ArrowRight className="w-4 h-4 text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0" />
+                  <ArrowRight className="w-4 h-4 text-caution-600 dark:text-caution-500 mt-0.5 flex-shrink-0" />
                   <p className="text-sm text-gray-700 dark:text-gray-300">
                     <strong>Gerealiseerde meerwaarde:</strong> Alleen winst bij verkoop telt, niet onverkochte posities
                   </p>
@@ -141,7 +128,7 @@ export const CapitalGainsTaxCalculator: React.FC = () => {
             value={realizedGains}
             onChange={(e) => setRealizedGains(e.target.value)}
             placeholder="Bijvoorbeeld: 25000"
-            className="w-full px-4 py-2 bg-gray-100 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-4 py-2 bg-gray-100 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-caution-500"
           />
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
             De totale winst die je hebt gerealiseerd door aandelen te verkopen in een kalenderjaar
@@ -157,7 +144,7 @@ export const CapitalGainsTaxCalculator: React.FC = () => {
             </div>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm text-gray-600 dark:text-gray-400">Vrijstelling</span>
-              <span className="text-lg font-semibold text-green-600 dark:text-green-400">- {formatCurrency(10000)}</span>
+              <span className="text-lg font-semibold text-positive-600 dark:text-positive-500">- {formatCurrency(10000)}</span>
             </div>
             <div className="flex items-center justify-between pt-2 border-t border-gray-300 dark:border-gray-600">
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Belastbaar bedrag</span>
@@ -165,12 +152,12 @@ export const CapitalGainsTaxCalculator: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4 border border-orange-200 dark:border-orange-500/30">
+          <div className="bg-caution-50 dark:bg-caution-600/15 rounded-lg p-4 border border-caution-500/30 dark:border-caution-500/30">
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Verschuldigde belasting (10%)
               </span>
-              <span className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+              <span className="text-2xl font-bold text-caution-600 dark:text-caution-500">
                 {formatCurrency(taxDue)}
               </span>
             </div>
@@ -180,9 +167,9 @@ export const CapitalGainsTaxCalculator: React.FC = () => {
                 {formatNumber(effectiveRate, 2)}%
               </span>
             </div>
-            <div className="flex items-center justify-between pt-2 border-t border-orange-300 dark:border-orange-700">
+            <div className="flex items-center justify-between pt-2 border-t border-caution-500/40 dark:border-caution-600/40">
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Netto meerwaarde na belasting</span>
-              <span className="text-lg font-bold text-green-600 dark:text-green-400">
+              <span className="text-lg font-bold text-positive-600 dark:text-positive-500">
                 {formatCurrency(netGains)}
               </span>
             </div>
@@ -231,9 +218,9 @@ export const CapitalGainsTaxCalculator: React.FC = () => {
       </div>
 
       {/* Important Notes */}
-      <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-500/30 rounded-lg p-5">
+      <div className="bg-caution-50 dark:bg-caution-600/15 border border-caution-500/30 dark:border-caution-500/30 rounded-lg p-5">
         <h4 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-          <Info className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+          <Info className="w-5 h-5 text-caution-600 dark:text-caution-500" />
           Belangrijke opmerkingen
         </h4>
         <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-2 ml-7">

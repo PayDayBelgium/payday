@@ -80,13 +80,13 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const getStyles = (type: ToastType) => {
     switch (type) {
       case 'success':
-        return 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200';
+        return 'bg-positive-50 dark:bg-positive-700/15 border-positive-500/20 dark:border-positive-700/30 text-positive-700 dark:text-positive-500';
       case 'error':
-        return 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200';
+        return 'bg-negative-50 dark:bg-negative-700/15 border-negative-500/20 dark:border-negative-700/30 text-negative-700 dark:text-negative-500';
       case 'warning':
-        return 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200';
+        return 'bg-caution-50 dark:bg-caution-600/15 border-caution-500/30 dark:border-caution-600/40 text-caution-600 dark:text-yellow-200';
       case 'info':
-        return 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200';
+        return 'bg-primary-50 dark:bg-primary-900/20 border-primary-200 dark:border-primary-800 text-primary-700 dark:text-primary-200';
     }
   };
 

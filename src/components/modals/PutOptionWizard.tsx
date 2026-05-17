@@ -204,7 +204,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
         costBasis: longLeg.premium * longLeg.contracts * 100,
         currentValue: longLeg.premium * longLeg.contracts * 100,
         dte,
-        breakEven: calculateBreakEven(longLeg.strike, longLeg.premium),
+        breakEven: calculatePutBreakEven(longLeg.strike, longLeg.premium),
         notes: notes ? `${notes}\nSpread ID: ${spreadId}` : `Spread ID: ${spreadId}`,
       };
 
@@ -225,7 +225,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
         currentValue: -(shortLeg.premium * shortLeg.contracts * 100),
         cashReserved: action === 'credit-spread' ? cashReserved : 0, // Only credit spreads need collateral
         dte,
-        breakEven: calculateBreakEven(shortLeg.strike, shortLeg.premium),
+        breakEven: calculatePutBreakEven(shortLeg.strike, shortLeg.premium),
         notes: notes ? `${notes}\nSpread ID: ${spreadId}` : `Spread ID: ${spreadId}`,
       };
 
@@ -282,7 +282,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
         currentValue,
         cashReserved: action === 'sell' ? cashReserved : undefined,
         dte,
-        breakEven: calculateBreakEven(longLeg.strike, longLeg.premium, action === 'buy'),
+        breakEven: calculatePutBreakEven(longLeg.strike, longLeg.premium, action === 'buy'),
         notes,
         // Link to Wheel if selected (only for sell/CSP)
         wheelId: action === 'sell' && selectedWheelId ? selectedWheelId : undefined,
@@ -397,11 +397,11 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                 onClick={() => setAction('buy')}
                 className={`p-3 rounded-lg border-2 transition-all ${
                   action === 'buy'
-                    ? 'border-red-600 bg-red-50 dark:bg-red-900/20'
-                    : 'border-gray-200 dark:border-gray-700 hover:border-red-300'
+                    ? 'border-negative-600 bg-negative-50 dark:bg-negative-700/15'
+                    : 'border-gray-200 dark:border-gray-700 hover:border-negative-500/30'
                 }`}
               >
-                <TrendingDown className="w-6 h-6 mx-auto mb-1.5 text-red-600 dark:text-red-400" />
+                <TrendingDown className="w-6 h-6 mx-auto mb-1.5 text-negative-600 dark:text-negative-500" />
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-0.5">
                   {t('putWizard.actionStep.buyPut')}
                 </h3>
@@ -414,11 +414,11 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                 onClick={() => setAction('sell')}
                 className={`p-3 rounded-lg border-2 transition-all ${
                   action === 'sell'
-                    ? 'border-green-600 bg-green-50 dark:bg-green-900/20'
-                    : 'border-gray-200 dark:border-gray-700 hover:border-green-300'
+                    ? 'border-positive-600 bg-positive-50 dark:bg-positive-700/15'
+                    : 'border-gray-200 dark:border-gray-700 hover:border-positive-500/30'
                 }`}
               >
-                <TrendingUp className="w-6 h-6 mx-auto mb-1.5 text-green-600 dark:text-green-400" />
+                <TrendingUp className="w-6 h-6 mx-auto mb-1.5 text-positive-600 dark:text-positive-500" />
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-0.5">
                   {t('putWizard.actionStep.sellPut')}
                 </h3>
@@ -431,11 +431,11 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                 onClick={() => setAction('credit-spread')}
                 className={`p-3 rounded-lg border-2 transition-all ${
                   action === 'credit-spread'
-                    ? 'border-purple-600 bg-purple-50 dark:bg-purple-900/20'
-                    : 'border-gray-200 dark:border-gray-700 hover:border-purple-300'
+                    ? 'border-ink-700 bg-surface-subtle dark:bg-trading-dark-700'
+                    : 'border-gray-200 dark:border-gray-700 hover:border-ink-300'
                 }`}
               >
-                <ArrowRightLeft className="w-6 h-6 mx-auto mb-1.5 text-purple-600 dark:text-purple-400" />
+                <ArrowRightLeft className="w-6 h-6 mx-auto mb-1.5 text-ink-600 dark:text-ink-300" />
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-0.5">
                   {t('putWizard.actionStep.creditSpread')}
                 </h3>
@@ -448,11 +448,11 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                 onClick={() => setAction('debit-spread')}
                 className={`p-3 rounded-lg border-2 transition-all ${
                   action === 'debit-spread'
-                    ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                    : 'border-gray-200 dark:border-gray-700 hover:border-blue-300'
+                    ? 'border-primary-700 bg-primary-50 dark:bg-primary-900/20'
+                    : 'border-gray-200 dark:border-gray-700 hover:border-primary-300'
                 }`}
               >
-                <ArrowRightLeft className="w-6 h-6 mx-auto mb-1.5 text-blue-600 dark:text-blue-400" />
+                <ArrowRightLeft className="w-6 h-6 mx-auto mb-1.5 text-primary-700 dark:text-primary-300" />
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-0.5">
                   {t('putWizard.actionStep.debitSpread')}
                 </h3>
@@ -462,14 +462,14 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
               </button>
             </div>
 
-            <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-              <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-1.5">
+            <div className="mt-4 p-3 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
+              <h4 className="text-sm font-semibold text-primary-900 dark:text-primary-300 mb-1.5">
                 {action === 'buy' && t('putWizard.actionStep.buyPut')}
                 {action === 'sell' && t('putWizard.actionStep.sellPut')}
                 {action === 'credit-spread' && t('putWizard.actionStep.creditSpread')}
                 {action === 'debit-spread' && t('putWizard.actionStep.debitSpread')}
               </h4>
-              <p className="text-xs text-blue-800 dark:text-blue-400 mb-2">
+              <p className="text-xs text-primary-700 dark:text-primary-300 mb-2">
                 {action === 'buy' && (
                   <>
                     <strong>{t('putWizard.actionStep.buyPutInfo.when')}</strong> {t('putWizard.actionStep.buyPutInfo.whenText')}
@@ -537,20 +537,20 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                 </div>
 
                 {selectedTicker && (
-                  <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                  <div className="p-4 bg-positive-50 dark:bg-positive-700/15 rounded-lg border border-positive-500/20 dark:border-positive-700/30">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                        <TrendingUp className="w-6 h-6 text-green-600 dark:text-green-400" />
+                      <div className="w-12 h-12 bg-positive-50 dark:bg-positive-700/25 rounded-lg flex items-center justify-center">
+                        <TrendingUp className="w-6 h-6 text-positive-600 dark:text-positive-500" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-green-900 dark:text-green-300">
+                        <h4 className="font-semibold text-positive-700 dark:text-positive-500">
                           {selectedTicker.symbol}
                         </h4>
-                        <p className="text-sm text-green-700 dark:text-green-400">
+                        <p className="text-sm text-positive-700 dark:text-positive-500">
                           {selectedTicker.name}
                         </p>
                         {selectedTicker.optionsAvailable && (
-                          <p className="text-xs text-green-600 dark:text-green-500">
+                          <p className="text-xs text-positive-600 dark:text-positive-500">
                             {t('putWizard.tickerStep.optionsAvailable')}
                             {selectedTicker.miniContractsAvailable && ` • ${t('putWizard.tickerStep.miniContracts')}`}
                           </p>
@@ -562,11 +562,11 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
               </>
             ) : (
               <div className="space-y-4">
-                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                  <h4 className="font-semibold text-blue-900 dark:text-blue-300 mb-2">
+                <div className="p-4 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
+                  <h4 className="font-semibold text-primary-900 dark:text-primary-300 mb-2">
                     {t('putWizard.tickerStep.newTicker')} {newTickerData.symbol}
                   </h4>
-                  <p className="text-sm text-blue-800 dark:text-blue-400">
+                  <p className="text-sm text-primary-700 dark:text-primary-300">
                     {t('putWizard.tickerStep.newTickerDesc')}
                   </p>
                 </div>
@@ -581,7 +581,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                     onChange={(e) =>
                       setNewTickerData({ ...newTickerData, name: e.target.value })
                     }
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     placeholder="Apple Inc."
                     autoFocus
                   />
@@ -596,7 +596,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                       onClick={() => setNewTickerData({ ...newTickerData, type: 'stock' })}
                       className={`p-3 rounded-lg border-2 transition-all ${
                         newTickerData.type === 'stock'
-                          ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
+                          ? 'border-primary-700 bg-primary-50 dark:bg-primary-900/20'
                           : 'border-gray-200 dark:border-gray-700'
                       }`}
                     >
@@ -606,7 +606,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                       onClick={() => setNewTickerData({ ...newTickerData, type: 'etf' })}
                       className={`p-3 rounded-lg border-2 transition-all ${
                         newTickerData.type === 'etf'
-                          ? 'border-green-600 bg-green-50 dark:bg-green-900/20'
+                          ? 'border-positive-600 bg-positive-50 dark:bg-positive-700/15'
                           : 'border-gray-200 dark:border-gray-700'
                       }`}
                     >
@@ -626,7 +626,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                           optionsAvailable: e.target.checked,
                         })
                       }
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                      className="w-4 h-4 text-primary-700 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300">
                       Opties beschikbaar
@@ -643,7 +643,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                           miniContractsAvailable: e.target.checked,
                         })
                       }
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                      className="w-4 h-4 text-primary-700 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2">
                       Mini contracts beschikbaar
@@ -661,7 +661,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                   <button
                     onClick={handleCreateTicker}
                     disabled={!newTickerData.name}
-                    className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+                    className="flex-1 px-4 py-2 bg-primary-700 hover:bg-primary-800 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
                   >
                     Ticker Toevoegen
                   </button>
@@ -716,8 +716,8 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                   {action === 'credit-spread' ? (
                     <>
                       {/* Short Leg first for credit spread */}
-                      <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
-                        <h4 className="font-semibold text-orange-900 dark:text-orange-300 mb-3 text-sm">
+                      <div className="p-3 bg-caution-50 dark:bg-caution-600/15 rounded-lg border border-caution-500/30 dark:border-caution-600/40">
+                        <h4 className="font-semibold text-orange-900 dark:text-caution-500 mb-3 text-sm">
                           Short Leg (Verkoop - Hogere Strike)
                         </h4>
                         <div className="space-y-3">
@@ -736,7 +736,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                                   setShortLeg({ ...shortLeg, strike: parseLocalizedNumber(value) });
                                 }
                               }}
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                               placeholder={`140${getDecimalSeparator()}00`}
                             />
                           </div>
@@ -755,7 +755,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                                   setShortLeg({ ...shortLeg, premium: parseLocalizedNumber(value) });
                                 }
                               }}
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                               placeholder={`2${getDecimalSeparator()}50`}
                             />
                           </div>
@@ -763,8 +763,8 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                       </div>
 
                       {/* Long Leg second for credit spread */}
-                      <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                        <h4 className="font-semibold text-blue-900 dark:text-blue-300 mb-3 text-sm">
+                      <div className="p-3 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
+                        <h4 className="font-semibold text-primary-900 dark:text-primary-300 mb-3 text-sm">
                           Long Leg (Koop - Lagere Strike)
                         </h4>
                         <div className="space-y-3">
@@ -782,7 +782,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                                   setLongLeg({ ...longLeg, strike: parseLocalizedNumber(value) });
                                 }
                               }}
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                               placeholder={`30${getDecimalSeparator()}00`}
                             />
                           </div>
@@ -801,7 +801,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                                   setLongLeg({ ...longLeg, premium: parseLocalizedNumber(value) });
                                 }
                               }}
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                               placeholder={`0${getDecimalSeparator()}20`}
                             />
                           </div>
@@ -811,8 +811,8 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                   ) : (
                     <>
                       {/* Long Leg first for debit spread */}
-                      <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                        <h4 className="font-semibold text-blue-900 dark:text-blue-300 mb-3 text-sm">
+                      <div className="p-3 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
+                        <h4 className="font-semibold text-primary-900 dark:text-primary-300 mb-3 text-sm">
                           Long Leg (Koop - Hogere Strike)
                         </h4>
                         <div className="space-y-3">
@@ -831,7 +831,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                                   setLongLeg({ ...longLeg, strike: parseLocalizedNumber(value) });
                                 }
                               }}
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                               placeholder={`140${getDecimalSeparator()}00`}
                             />
                           </div>
@@ -850,7 +850,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                                   setLongLeg({ ...longLeg, premium: parseLocalizedNumber(value) });
                                 }
                               }}
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                               placeholder={`2${getDecimalSeparator()}50`}
                             />
                           </div>
@@ -858,8 +858,8 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                       </div>
 
                       {/* Short Leg second for debit spread */}
-                      <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
-                        <h4 className="font-semibold text-orange-900 dark:text-orange-300 mb-3 text-sm">
+                      <div className="p-3 bg-caution-50 dark:bg-caution-600/15 rounded-lg border border-caution-500/30 dark:border-caution-600/40">
+                        <h4 className="font-semibold text-orange-900 dark:text-caution-500 mb-3 text-sm">
                           Short Leg (Verkoop - Lagere Strike)
                         </h4>
                         <div className="space-y-3">
@@ -877,7 +877,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                                   setShortLeg({ ...shortLeg, strike: parseLocalizedNumber(value) });
                                 }
                               }}
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                               placeholder={`30${getDecimalSeparator()}00`}
                             />
                           </div>
@@ -896,7 +896,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                                   setShortLeg({ ...shortLeg, premium: parseLocalizedNumber(value) });
                                 }
                               }}
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                               placeholder={`0${getDecimalSeparator()}20`}
                             />
                           </div>
@@ -922,7 +922,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                           setLongLeg({ ...longLeg, expiration: date });
                           setShortLeg({ ...shortLeg, expiration: date });
                         }}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       />
                       {longLeg.expiration && (
                         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -944,7 +944,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                           setLongLeg({ ...longLeg, contracts });
                           setShortLeg({ ...shortLeg, contracts });
                         }}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                         placeholder="1"
                       />
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -956,8 +956,8 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
 
                 {/* Spread Summary */}
                 {longLeg.strike > 0 && shortLeg.strike > 0 && longLeg.premium > 0 && shortLeg.premium > 0 && (
-                  <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
-                    <h4 className="font-semibold text-purple-900 dark:text-purple-300 mb-3 text-sm flex items-center gap-2">
+                  <div className="p-3 bg-surface-subtle dark:bg-trading-dark-700 rounded-lg border border-ink-200 dark:border-trading-dark-600">
+                    <h4 className="font-semibold text-purple-900 dark:text-ink-300 mb-3 text-sm flex items-center gap-2">
                       <BarChart3 className="w-4 h-4" />
                       Spread Overzicht
                     </h4>
@@ -966,13 +966,13 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                         <p className="text-xs text-gray-600 dark:text-gray-400">
                           {action === 'credit-spread' ? 'Netto Credit' : 'Netto Debit'}
                         </p>
-                        <p className={`font-semibold ${action === 'credit-spread' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                        <p className={`font-semibold ${action === 'credit-spread' ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
                           {action === 'credit-spread' ? '+' : '-'}${formatNumber(Math.abs((shortLeg.premium - longLeg.premium) * longLeg.contracts * 100), 2)}
                         </p>
                       </div>
                       <div>
                         <p className="text-xs text-gray-600 dark:text-gray-400">Max Winst</p>
-                        <p className="font-semibold text-green-600 dark:text-green-400">
+                        <p className="font-semibold text-positive-600 dark:text-positive-500">
                           ${action === 'credit-spread'
                             ? formatNumber((shortLeg.premium - longLeg.premium) * longLeg.contracts * 100, 2)
                             : formatNumber((Math.abs(shortLeg.strike - longLeg.strike) - (longLeg.premium - shortLeg.premium)) * longLeg.contracts * 100, 2)
@@ -981,7 +981,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                       </div>
                       <div>
                         <p className="text-xs text-gray-600 dark:text-gray-400">Max Verlies</p>
-                        <p className="font-semibold text-red-600 dark:text-red-400">
+                        <p className="font-semibold text-negative-600 dark:text-negative-500">
                           -${action === 'credit-spread'
                             ? formatNumber((Math.abs(shortLeg.strike - longLeg.strike) - (shortLeg.premium - longLeg.premium)) * longLeg.contracts * 100, 2)
                             : formatNumber((longLeg.premium - shortLeg.premium) * longLeg.contracts * 100, 2)
@@ -1011,12 +1011,12 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
               <>
                 {/* Current Stock price Indicator */}
                 {currentTickerPrice && (
-                  <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <div className="mb-4 p-3 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                      <span className="text-sm font-medium text-primary-700 dark:text-primary-300">
                         Huidige Koers {selectedTicker?.symbol}
                       </span>
-                      <span className="text-lg font-bold text-blue-900 dark:text-blue-100">
+                      <span className="text-lg font-bold text-primary-900 dark:text-blue-100">
                         ${formatNumber(currentTickerPrice, 2)}
                       </span>
                     </div>
@@ -1040,7 +1040,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                           setLongLeg({ ...longLeg, strike: parseLocalizedNumber(value) });
                         }
                       }}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       placeholder={`150${getDecimalSeparator()}00`}
                     />
                   </div>
@@ -1059,7 +1059,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                           setLongLeg({ ...longLeg, premium: parseLocalizedNumber(value) });
                         }
                       }}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       placeholder={`5${getDecimalSeparator()}50`}
                     />
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -1074,7 +1074,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                     <FridayDatePicker
                       value={longLeg.expiration}
                       onChange={(date) => setLongLeg({ ...longLeg, expiration: date })}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     />
                     {longLeg.expiration && (
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -1094,7 +1094,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                       onChange={(e) =>
                         setLongLeg({ ...longLeg, contracts: parseInt(e.target.value) || 1 })
                       }
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       placeholder="1"
                     />
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -1107,14 +1107,14 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                 {longLeg.strike > 0 && longLeg.premium > 0 && (
                   <div className={`p-4 rounded-lg border ${
                     action === 'sell'
-                      ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-                      : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+                      ? 'bg-positive-50 dark:bg-positive-700/15 border-positive-500/20 dark:border-positive-700/30'
+                      : 'bg-negative-50 dark:bg-negative-700/15 border-negative-500/20 dark:border-negative-700/30'
                   }`}>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <p className="text-sm text-gray-600 dark:text-gray-400">Break-even prijs</p>
                         <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                          ${formatNumber(calculateBreakEven(longLeg.strike, longLeg.premium), 2)}
+                          ${formatNumber(calculatePutBreakEven(longLeg.strike, longLeg.premium), 2)}
                         </p>
                       </div>
                       <div>
@@ -1122,7 +1122,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                           {action === 'buy' ? 'Max Verlies' : 'Max Winst'}
                         </p>
                         <p className={`text-lg font-semibold ${
-                          action === 'buy' ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'
+                          action === 'buy' ? 'text-negative-600 dark:text-negative-500' : 'text-positive-600 dark:text-positive-500'
                         }`}>
                           {action === 'buy' ? '-' : '+'}${formatNumber(longLeg.premium * longLeg.contracts * 100, 2)}
                         </p>
@@ -1142,7 +1142,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                 type="date"
                 value={purchaseDate}
                 onChange={(e) => setPurchaseDate(e.target.value)}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               />
             </div>
 
@@ -1154,21 +1154,21 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={3}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 placeholder="Bijv. strategie notities, doelen, ..."
               />
             </div>
 
             {/* Wheel Linking for CSP */}
             {action === 'sell' && matchingWheels.length > 0 && (
-              <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
+              <div className="p-4 bg-caution-50 dark:bg-caution-600/15 rounded-lg border border-caution-500/30 dark:border-caution-600/40">
                 <div className="flex items-start gap-3">
-                  <RefreshCw className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+                  <RefreshCw className="w-5 h-5 text-caution-600 dark:text-caution-500 mt-0.5 flex-shrink-0" />
                   <div className="flex-1">
-                    <h4 className="font-semibold text-amber-900 dark:text-amber-300 mb-2">
+                    <h4 className="font-semibold text-amber-900 dark:text-caution-500 mb-2">
                       Wheel campagne Gevonden
                     </h4>
-                    <p className="text-sm text-amber-800 dark:text-amber-400 mb-3">
+                    <p className="text-sm text-caution-600 dark:text-caution-500 mb-3">
                       Er {matchingWheels.length === 1 ? 'is een actieve Wheel' : `zijn ${matchingWheels.length} actieve Wheels`} voor {selectedTicker?.symbol} in dit portfolio.
                       Wil je deze CSP koppelen aan een Wheel?
                     </p>
@@ -1178,8 +1178,8 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                           key={wheel.id}
                           className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
                             selectedWheelId === wheel.id
-                              ? 'border-amber-500 bg-amber-100 dark:bg-amber-900/40'
-                              : 'border-gray-200 dark:border-gray-700 hover:border-amber-300'
+                              ? 'border-caution-500 bg-caution-50 dark:bg-amber-900/40'
+                              : 'border-gray-200 dark:border-gray-700 hover:border-caution-500/40'
                           }`}
                         >
                           <input
@@ -1187,7 +1187,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                             name="wheel-link"
                             checked={selectedWheelId === wheel.id}
                             onChange={() => setSelectedWheelId(wheel.id)}
-                            className="w-4 h-4 text-amber-600"
+                            className="w-4 h-4 text-caution-600"
                           />
                           <div className="flex-1">
                             <p className="font-medium text-gray-900 dark:text-white text-sm">

@@ -37,11 +37,11 @@ const TodoListWidget: React.FC = () => {
             value={newTodoText}
             onChange={(e) => setNewTodoText(e.target.value)}
             placeholder={t('todos.addPlaceholder')}
-            className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
           />
           <button
             type="submit"
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2"
+            className="px-4 py-2 bg-primary-700 hover:bg-primary-800 text-white rounded-lg transition-colors flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             <span className="hidden sm:inline">{t('todos.add')}</span>
@@ -63,7 +63,7 @@ const TodoListWidget: React.FC = () => {
             >
               <button
                 onClick={() => handleToggleTodo(todo.id)}
-                className="flex-shrink-0 mt-0.5 text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors"
+                className="flex-shrink-0 mt-0.5 text-gray-400 hover:text-positive-600 dark:hover:text-positive-500 transition-colors"
               >
                 <Circle className="w-5 h-5" />
               </button>

@@ -33,8 +33,8 @@ export const StrategyRules: React.FC<StrategyRulesProps> = ({
 
   const getCategoryColor = (category: string) => {
     return category === 'alert'
-      ? 'text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30'
-      : 'text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30';
+      ? 'text-caution-600 dark:text-caution-500 bg-caution-50 dark:bg-caution-600/25'
+      : 'text-positive-600 dark:text-positive-500 bg-positive-50 dark:bg-positive-700/25';
   };
 
   return (
@@ -43,8 +43,8 @@ export const StrategyRules: React.FC<StrategyRulesProps> = ({
       <div className="space-y-3">
         {rules.length === 0 ? (
           <div className="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
-            <div className="inline-flex p-3 rounded-full mb-3 bg-blue-100 dark:bg-blue-900/30">
-              <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <div className="inline-flex p-3 rounded-full mb-3 bg-primary-50 dark:bg-primary-900/30">
+              <AlertCircle className="w-5 h-5 text-primary-700 dark:text-primary-300" />
             </div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
               Geen regels
@@ -54,7 +54,7 @@ export const StrategyRules: React.FC<StrategyRulesProps> = ({
             </p>
             <button
               onClick={() => onAddRule()}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+              className="px-4 py-2 bg-primary-700 hover:bg-primary-800 text-white rounded-lg font-medium transition-colors"
             >
               Eerste regel toevoegen
             </button>
@@ -63,7 +63,7 @@ export const StrategyRules: React.FC<StrategyRulesProps> = ({
           rules.map(rule => (
             <div
               key={rule.id}
-              className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:border-blue-300 dark:hover:border-blue-600 transition-all ${
+              className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:border-primary-300 dark:hover:border-primary-700 transition-all ${
                 !rule.enabled ? 'opacity-50' : ''
               }`}
             >
@@ -108,17 +108,17 @@ export const StrategyRules: React.FC<StrategyRulesProps> = ({
                   {/* Actions */}
                   <div className="flex flex-wrap gap-2 text-xs text-gray-600 dark:text-gray-400">
                     {rule.actions.showOnDashboard && (
-                      <span className="flex items-center gap-1 px-2 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 rounded">
+                      <span className="flex items-center gap-1 px-2 py-1 bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300 rounded">
                         Dashboard
                       </span>
                     )}
                     {rule.actions.showOnPortfolioOverview && (
-                      <span className="flex items-center gap-1 px-2 py-1 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 rounded">
+                      <span className="flex items-center gap-1 px-2 py-1 bg-surface-subtle dark:bg-trading-dark-700 text-ink-700 dark:text-ink-300 rounded">
                         Portfolio Overzicht
                       </span>
                     )}
                     {rule.actions.showInList && (
-                      <span className="flex items-center gap-1 px-2 py-1 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded">
+                      <span className="flex items-center gap-1 px-2 py-1 bg-positive-50 dark:bg-positive-700/15 text-positive-700 dark:text-positive-500 rounded">
                         In Lijst
                       </span>
                     )}
@@ -135,7 +135,7 @@ export const StrategyRules: React.FC<StrategyRulesProps> = ({
                     }}
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                       rule.enabled
-                        ? 'bg-blue-600 dark:bg-blue-500'
+                        ? 'bg-primary-700 dark:bg-primary-500'
                         : 'bg-gray-200 dark:bg-gray-700'
                     }`}
                     title={rule.enabled ? "Deactiveren" : "Activeren"}
@@ -153,10 +153,10 @@ export const StrategyRules: React.FC<StrategyRulesProps> = ({
                       e.stopPropagation();
                       setDeleteConfirm({ isOpen: true, rule });
                     }}
-                    className="p-2 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors"
+                    className="p-2 hover:bg-negative-50 dark:hover:bg-negative-700/25 rounded transition-colors"
                     title="Verwijderen"
                   >
-                    <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
+                    <Trash2 className="w-4 h-4 text-negative-600 dark:text-negative-500" />
                   </button>
                 </div>
               </div>

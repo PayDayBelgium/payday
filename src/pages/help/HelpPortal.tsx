@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { HelpCircle, ChevronRight, ChevronDown, Calculator, TrendingUp, DollarSign, Zap, WalletMinimal, Settings, Briefcase, BarChart3, BookOpen } from 'lucide-react';
+import { usePageTitle } from '../../contexts/PageTitleContext';
 
 interface HelpSection {
   id: string;
@@ -296,7 +297,12 @@ const helpSections: HelpSection[] = [
 ];
 
 export const HelpPortal: React.FC = () => {
+  const { setPageTitle } = usePageTitle();
   const [expandedSections, setExpandedSections] = useState<string[]>(['overview']);
+
+  useEffect(() => {
+    setPageTitle('Help Portal', 'Everything you need to know about using PayDay');
+  }, [setPageTitle]);
 
   const toggleSection = (sectionId: string) => {
     setExpandedSections(prev =>
@@ -308,20 +314,6 @@ export const HelpPortal: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <div className="p-3 icon-bg-primary rounded-lg">
-          <HelpCircle className="w-8 h-8 icon-text-primary" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Help Portal
-          </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            everything you need to know about using PayDay
-          </p>
-        </div>
-      </div>
 
       {/* Help Sections */}
       <div className="space-y-4">

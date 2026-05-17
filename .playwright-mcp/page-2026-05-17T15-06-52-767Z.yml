@@ -1,0 +1,91 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - img "PayDay" [ref=e8]
+          - generic [ref=e9]:
+            - heading "PayDay" [level=1] [ref=e10]
+            - paragraph [ref=e11]: Trading workspace
+        - button "Collapse sidebar" [ref=e12] [cursor=pointer]:
+          - img [ref=e13]
+      - generic [ref=e17]:
+        - heading "Aandelen & ETFs" [level=2] [ref=e18]
+        - paragraph [ref=e19]: De basis van je portfolio - long-term holdings
+      - generic [ref=e20]:
+        - button "Click to connect" [ref=e22] [cursor=pointer]:
+          - img [ref=e23]
+        - button "Help Portal" [ref=e30] [cursor=pointer]:
+          - img [ref=e31]
+        - button "D" [ref=e35] [cursor=pointer]
+  - complementary [ref=e36]:
+    - navigation [ref=e37]:
+      - paragraph [ref=e38]: Overzicht
+      - link "Dashboard" [ref=e39] [cursor=pointer]:
+        - /url: /
+        - img [ref=e40]
+        - generic [ref=e45]: Dashboard
+      - link "Jouw Reis" [ref=e46] [cursor=pointer]:
+        - /url: /mission
+        - img [ref=e47]
+        - generic [ref=e49]: Jouw Reis
+      - generic [ref=e50]:
+        - paragraph [ref=e51]: Portefeuilles
+        - link "Lynx Lynx" [ref=e52] [cursor=pointer]:
+          - /url: /portfolio/Lynx
+          - img "Lynx" [ref=e54]
+          - generic [ref=e55]: Lynx
+        - link "FreeStoxx FreeStoxx" [ref=e56] [cursor=pointer]:
+          - /url: /portfolio/FreeStoxx
+          - img "FreeStoxx" [ref=e57]
+          - generic [ref=e58]: FreeStoxx
+        - link "DeGiro DeGiro" [ref=e59] [cursor=pointer]:
+          - /url: /portfolio/DeGiro
+          - img "DeGiro" [ref=e60]
+          - generic [ref=e61]: DeGiro
+        - link "SAXO SAXO" [ref=e62] [cursor=pointer]:
+          - /url: /portfolio/SAXO
+          - img "SAXO" [ref=e63]
+          - generic [ref=e64]: SAXO
+      - generic [ref=e65]:
+        - paragraph [ref=e66]: Tools
+        - link "Ticker overview" [ref=e67] [cursor=pointer]:
+          - /url: /tickers
+          - img [ref=e68]
+          - generic [ref=e71]: Ticker overview
+        - link "Meerwaardebelasting" [ref=e72] [cursor=pointer]:
+          - /url: /tools/capital-gains-tax
+          - img [ref=e73]
+          - generic [ref=e76]: Meerwaardebelasting
+    - paragraph [ref=e78]: PayDay v1.0
+  - main [ref=e79]:
+    - generic [ref=e80]:
+      - generic [ref=e81]:
+        - generic [ref=e82]:
+          - button "Posities" [ref=e83] [cursor=pointer]
+          - button "Regels 4" [ref=e84] [cursor=pointer]:
+            - img [ref=e85]
+            - text: Regels
+            - generic [ref=e88]: "4"
+          - button "Informatie" [ref=e89] [cursor=pointer]:
+            - img [ref=e90]
+            - text: Informatie
+        - button "Aandeel/ETF Toevoegen" [ref=e92] [cursor=pointer]:
+          - img [ref=e93]
+          - text: Aandeel/ETF Toevoegen
+      - generic [ref=e94]:
+        - generic [ref=e95]:
+          - paragraph [ref=e96]: Totale Waarde
+          - paragraph [ref=e97]: 0,00
+        - generic [ref=e98]:
+          - paragraph [ref=e99]: Aantal Posities
+          - paragraph [ref=e100]: "0"
+        - generic [ref=e101]:
+          - paragraph [ref=e102]: Beschikbaar voor Covered Calls
+          - paragraph [ref=e103]: "0"
+          - paragraph [ref=e104]: Niet gedekt met calls
+      - generic [ref=e105]:
+        - img [ref=e106]
+        - heading "Geen aandelen of ETFs" [level=3] [ref=e109]
+        - paragraph [ref=e110]: Begin met het toevoegen van je eerste aandelen of ETFs aan je portfolio
+        - button "Voeg je eerste positie toe" [ref=e111] [cursor=pointer]

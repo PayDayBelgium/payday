@@ -271,7 +271,7 @@ export const PortfolioDetail: React.FC = () => {
           value={formatCurrency(portfolioStats.freeCash || portfolioStats.cashValue, getCurrencySymbol(portfolio?.currency ?? 'USD'))}
           icon={<Wallet className="w-6 h-6" />}
           tooltip="Cash die niet gereserveerd is als collateral voor short posities"
-          valueClassName={(portfolioStats.freeCash || portfolioStats.cashValue) < 0 ? 'text-red-600 dark:text-red-400' : undefined}
+          valueClassName={(portfolioStats.freeCash || portfolioStats.cashValue) < 0 ? 'text-negative-600 dark:text-negative-500' : undefined}
           showAlert={(portfolioStats.freeCash || portfolioStats.cashValue) < 0}
           alertMessage="Je vrije cash is negatief. Dit betekent dat je meer collateral nodig hebt dan je beschikbare cash. Overweeg posities te sluiten of extra kapitaal toe te voegen."
         />
@@ -287,7 +287,7 @@ export const PortfolioDetail: React.FC = () => {
               onClick={() => setActiveTab('portfolio')}
               className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === 'portfolio'
-                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                  ? 'border-primary-500 text-primary-700 dark:text-primary-300'
                   : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
               }`}
             >
@@ -299,7 +299,7 @@ export const PortfolioDetail: React.FC = () => {
                 onClick={() => setActiveTab('campaigns')}
                 className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === 'campaigns'
-                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                    ? 'border-primary-500 text-primary-700 dark:text-primary-300'
                     : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
                 }`}
               >
@@ -312,7 +312,7 @@ export const PortfolioDetail: React.FC = () => {
                 onClick={() => setActiveTab('freecash')}
                 className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === 'freecash'
-                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                    ? 'border-primary-500 text-primary-700 dark:text-primary-300'
                     : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
                 }`}
               >
@@ -324,7 +324,7 @@ export const PortfolioDetail: React.FC = () => {
               onClick={() => setActiveTab('chart')}
               className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === 'chart'
-                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                  ? 'border-primary-500 text-primary-700 dark:text-primary-300'
                   : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
               }`}
             >
@@ -335,7 +335,7 @@ export const PortfolioDetail: React.FC = () => {
               onClick={() => setActiveTab('transactions')}
               className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === 'transactions'
-                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                  ? 'border-primary-500 text-primary-700 dark:text-primary-300'
                   : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
               }`}
             >
@@ -347,7 +347,7 @@ export const PortfolioDetail: React.FC = () => {
                 onClick={() => setActiveTab('information')}
                 className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === 'information'
-                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                    ? 'border-primary-500 text-primary-700 dark:text-primary-300'
                     : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
                 }`}
               >
@@ -360,7 +360,7 @@ export const PortfolioDetail: React.FC = () => {
                 onClick={() => setActiveTab('insights')}
                 className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === 'insights'
-                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                    ? 'border-primary-500 text-primary-700 dark:text-primary-300'
                     : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
                 }`}
               >
@@ -373,14 +373,14 @@ export const PortfolioDetail: React.FC = () => {
                 onClick={() => setActiveTab('alerts')}
                 className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === 'alerts'
-                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                    ? 'border-primary-500 text-primary-700 dark:text-primary-300'
                     : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
                 }`}
               >
                 <AlertCircle className="w-4 h-4" />
                 Alerts & Opportunities
                 {(alertsData.alerts.length > 0 || alertsData.opportunities.length > 0) && (
-                  <span className="px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900/30 rounded-full text-xs font-semibold text-amber-600 dark:text-amber-400">
+                  <span className="px-1.5 py-0.5 bg-caution-50 dark:bg-caution-600/25 rounded-full text-xs font-semibold text-caution-600 dark:text-caution-500">
                     {alertsData.alerts.length + alertsData.opportunities.length}
                   </span>
                 )}
@@ -398,10 +398,10 @@ export const PortfolioDetail: React.FC = () => {
               <div className="flex gap-2 flex-shrink-0 mb-4">
                   <button
                     onClick={() => setIsStockWizardOpen(true)}
-                    className="flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-800 hover:border-blue-400 dark:hover:border-blue-600 transition-all text-left cursor-pointer w-36"
+                    className="flex items-center gap-2 px-3 py-2 bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-50 dark:hover:bg-primary-900/25 rounded-lg border border-primary-200 dark:border-primary-800 hover:border-primary-400 dark:hover:border-primary-700 transition-all text-left cursor-pointer w-36"
                   >
-                    <Plus className="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
-                    <span className="text-sm font-medium text-blue-700 dark:text-blue-300 truncate">
+                    <Plus className="w-4 h-4 text-primary-700 dark:text-primary-300 flex-shrink-0" />
+                    <span className="text-sm font-medium text-primary-700 dark:text-primary-300 truncate">
                       Aandeel/ETF
                     </span>
                   </button>
@@ -409,10 +409,10 @@ export const PortfolioDetail: React.FC = () => {
                   {hasOptionsAccess && (
                     <button
                       onClick={() => setIsCallOptionWizardOpen(true)}
-                      className="flex items-center gap-2 px-3 py-2 bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-lg border border-green-200 dark:border-green-800 hover:border-green-400 dark:hover:border-green-600 transition-all text-left cursor-pointer w-36"
+                      className="flex items-center gap-2 px-3 py-2 bg-positive-50 dark:bg-positive-700/15 hover:bg-positive-50 dark:hover:bg-positive-700/25 rounded-lg border border-positive-500/20 dark:border-positive-700/30 hover:border-positive-500/40 dark:hover:border-positive-600 transition-all text-left cursor-pointer w-36"
                     >
-                      <Plus className="w-4 h-4 text-green-600 dark:text-green-400 flex-shrink-0" />
-                      <span className="text-sm font-medium text-green-700 dark:text-green-300 truncate">
+                      <Plus className="w-4 h-4 text-positive-600 dark:text-positive-500 flex-shrink-0" />
+                      <span className="text-sm font-medium text-positive-700 dark:text-positive-500 truncate">
                         Call Optie
                       </span>
                     </button>
@@ -421,10 +421,10 @@ export const PortfolioDetail: React.FC = () => {
                   {hasOptionsAccess && (
                     <button
                       onClick={() => setIsPutOptionWizardOpen(true)}
-                      className="flex items-center gap-2 px-3 py-2 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/30 rounded-lg border border-purple-200 dark:border-purple-800 hover:border-purple-400 dark:hover:border-purple-600 transition-all text-left cursor-pointer w-36"
+                      className="flex items-center gap-2 px-3 py-2 bg-surface-subtle dark:bg-trading-dark-700 hover:bg-surface-muted dark:hover:bg-purple-900/30 rounded-lg border border-ink-200 dark:border-trading-dark-600 hover:border-purple-400 dark:hover:border-ink-700 transition-all text-left cursor-pointer w-36"
                     >
-                      <Plus className="w-4 h-4 text-purple-600 dark:text-purple-400 flex-shrink-0" />
-                      <span className="text-sm font-medium text-purple-700 dark:text-purple-300 truncate">
+                      <Plus className="w-4 h-4 text-ink-600 dark:text-ink-300 flex-shrink-0" />
+                      <span className="text-sm font-medium text-ink-700 dark:text-ink-300 truncate">
                         Put Optie
                       </span>
                     </button>
@@ -432,10 +432,10 @@ export const PortfolioDetail: React.FC = () => {
 
                   <button
                     onClick={() => setIsTransactionModalOpen(true)}
-                    className="flex items-center gap-2 px-3 py-2 bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 rounded-lg border border-amber-200 dark:border-amber-800 hover:border-amber-400 dark:hover:border-amber-600 transition-all text-left cursor-pointer w-36"
+                    className="flex items-center gap-2 px-3 py-2 bg-caution-50 dark:bg-caution-600/15 hover:bg-caution-50 dark:hover:bg-amber-900/30 rounded-lg border border-caution-500/30 dark:border-caution-600/40 hover:border-caution-500 dark:hover:border-caution-600 transition-all text-left cursor-pointer w-36"
                   >
-                    <Plus className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
-                    <span className="text-sm font-medium text-amber-700 dark:text-amber-300 truncate">
+                    <Plus className="w-4 h-4 text-caution-600 dark:text-caution-500 flex-shrink-0" />
+                    <span className="text-sm font-medium text-caution-600 dark:text-caution-500 truncate">
                       Transactie
                     </span>
                   </button>
@@ -586,12 +586,12 @@ export const PortfolioDetail: React.FC = () => {
                             <div key={item.id} className="py-3 border-b border-gray-200 dark:border-gray-700">
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                  <ShieldAlert className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                                  <ShieldAlert className="w-4 h-4 text-caution-600 dark:text-caution-500" />
                                   <span className="text-sm text-gray-700 dark:text-gray-300">
                                     {item.ticker} {item.strike ? `$${item.strike}` : ''} {item.label} {item.expiration}
                                   </span>
                                 </div>
-                                <span className="text-sm font-medium text-orange-600 dark:text-orange-400">
+                                <span className="text-sm font-medium text-caution-600 dark:text-caution-500">
                                   -{formatCurrency(item.collateral, getCurrencySymbol(portfolio?.currency ?? 'USD'))}
                                 </span>
                               </div>
@@ -616,8 +616,8 @@ export const PortfolioDetail: React.FC = () => {
                             </span>
                             <span className={`text-xl font-bold ${
                               freeCash >= 0
-                                ? 'text-green-600 dark:text-green-400'
-                                : 'text-red-600 dark:text-red-400'
+                                ? 'text-positive-600 dark:text-positive-500'
+                                : 'text-negative-600 dark:text-negative-500'
                             }`}>
                               {formatCurrency(freeCash, getCurrencySymbol(portfolio?.currency ?? 'USD'))}
                             </span>
@@ -634,8 +634,8 @@ export const PortfolioDetail: React.FC = () => {
           {activeTab === 'information' && (
             <div className="p-6 space-y-6 h-full overflow-y-auto">
               {/* PMCC Strategy */}
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-5 border border-blue-200 dark:border-blue-800">
-                <h4 className="text-lg font-semibold text-blue-900 dark:text-blue-300 mb-3 flex items-center gap-2">
+              <div className="bg-gradient-to-br from-primary-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-5 border border-primary-200 dark:border-primary-800">
+                <h4 className="text-lg font-semibold text-primary-900 dark:text-primary-300 mb-3 flex items-center gap-2">
                   <TrendingUp className="w-5 h-5" />
                   Poor Man's Covered Call (PMCC)
                 </h4>
@@ -648,8 +648,8 @@ export const PortfolioDetail: React.FC = () => {
               </div>
 
               {/* KaChing Strategy */}
-              <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-lg p-5 border border-purple-200 dark:border-purple-800">
-                <h4 className="text-lg font-semibold text-purple-900 dark:text-purple-300 mb-3 flex items-center gap-2">
+              <div className="bg-gradient-to-br from-surface-subtle to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-lg p-5 border border-ink-200 dark:border-trading-dark-600">
+                <h4 className="text-lg font-semibold text-purple-900 dark:text-ink-300 mb-3 flex items-center gap-2">
                   <Banknote className="w-5 h-5" />
                   KaChing Strategy
                 </h4>
@@ -662,8 +662,8 @@ export const PortfolioDetail: React.FC = () => {
               </div>
 
               {/* Cash Secured Puts */}
-              <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg p-5 border border-green-200 dark:border-green-800">
-                <h4 className="text-lg font-semibold text-green-900 dark:text-green-300 mb-3 flex items-center gap-2">
+              <div className="bg-gradient-to-br from-positive-50 to-positive-50 dark:from-positive-700/15 dark:to-green-800/20 rounded-lg p-5 border border-positive-500/20 dark:border-positive-700/30">
+                <h4 className="text-lg font-semibold text-positive-700 dark:text-positive-500 mb-3 flex items-center gap-2">
                   <ShieldAlert className="w-5 h-5" />
                   Cash Secured Puts (CSP)
                 </h4>
@@ -691,8 +691,8 @@ export const PortfolioDetail: React.FC = () => {
               </div>
 
               {/* Risk Management */}
-              <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-5 border border-orange-200 dark:border-orange-800">
-                <h4 className="text-lg font-semibold text-orange-900 dark:text-orange-300 mb-3">
+              <div className="bg-caution-50 dark:bg-caution-600/15 rounded-lg p-5 border border-caution-500/30 dark:border-caution-600/40">
+                <h4 className="text-lg font-semibold text-orange-900 dark:text-caution-500 mb-3">
                   ⚠️ Risicobeheer
                 </h4>
                 <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300 list-disc list-inside">
@@ -713,7 +713,7 @@ export const PortfolioDetail: React.FC = () => {
                     href={portfolio.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-primary-700 hover:bg-primary-800 text-white rounded-lg font-medium transition-colors"
                   >
                     <ExternalLink className="w-4 h-4" />
                     Open {portfolio.name}
@@ -829,7 +829,7 @@ export const PortfolioDetail: React.FC = () => {
                                 </div>
                               </div>
                               <div className="text-right">
-                                <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                                <p className="text-lg font-bold text-primary-700 dark:text-primary-300">
                                   {formatCurrency(virtualValue, getCurrencySymbol(portfolio?.currency ?? 'USD'))}
                                 </p>
                               </div>
@@ -857,10 +857,10 @@ export const PortfolioDetail: React.FC = () => {
                                             </span>
                                             <span className={`text-xs px-2 py-0.5 rounded-full ${
                                               daysToExp <= 30
-                                                ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                                                ? 'bg-negative-50 text-negative-700 dark:bg-negative-700/25 dark:text-negative-500'
                                                 : daysToExp <= 90
-                                                ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
-                                                : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                                                ? 'bg-caution-50 text-caution-600 dark:bg-caution-600/25 dark:text-caution-500'
+                                                : 'bg-positive-50 text-positive-700 dark:bg-positive-700/25 dark:text-positive-500'
                                             }`}>
                                               {daysToExp} DTE
                                             </span>
@@ -886,12 +886,12 @@ export const PortfolioDetail: React.FC = () => {
                       })}
 
                       {/* Total */}
-                      <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border-2 border-blue-200 dark:border-blue-800">
+                      <div className="bg-primary-50 dark:bg-primary-900/20 rounded-lg p-4 border-2 border-primary-200 dark:border-primary-800">
                         <div className="flex items-center justify-between">
                           <h4 className="text-base font-bold text-gray-900 dark:text-white">
                             Totaal Virtueel portfolio
                           </h4>
-                          <p className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                          <p className="text-xl font-bold text-primary-700 dark:text-primary-300">
                             {formatCurrency(totalVirtualValue, getCurrencySymbol(portfolio?.currency ?? 'USD'))}
                           </p>
                         </div>
@@ -907,14 +907,14 @@ export const PortfolioDetail: React.FC = () => {
             <div className="p-6 h-full overflow-y-auto">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
                 {/* Alerts Section */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-amber-200 dark:border-amber-500/30 p-6 flex flex-col">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-caution-500/30 dark:border-caution-500/30 p-6 flex flex-col">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
-                      <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                      <AlertCircle className="w-5 h-5 text-caution-600 dark:text-caution-500" />
                       <h4 className="text-lg font-semibold text-gray-900 dark:text-white">Alerts</h4>
                     </div>
                     {alertsData.alerts.length > 0 && (
-                      <span className="px-2 py-1 bg-amber-100 dark:bg-amber-900/30 rounded-full text-sm font-semibold text-amber-600 dark:text-amber-400">
+                      <span className="px-2 py-1 bg-caution-50 dark:bg-caution-600/25 rounded-full text-sm font-semibold text-caution-600 dark:text-caution-500">
                         {alertsData.alerts.length}
                       </span>
                     )}
@@ -923,8 +923,8 @@ export const PortfolioDetail: React.FC = () => {
                   <div className="space-y-2 flex-1 overflow-y-auto">
                     {alertsData.alerts.length === 0 ? (
                       <div className="text-center py-8">
-                        <div className="inline-flex p-3 rounded-full mb-3 bg-amber-100 dark:bg-amber-900/30">
-                          <AlertCircle className="w-6 h-6 text-amber-600 dark:text-amber-400" />
+                        <div className="inline-flex p-3 rounded-full mb-3 bg-caution-50 dark:bg-caution-600/25">
+                          <AlertCircle className="w-6 h-6 text-caution-600 dark:text-caution-500" />
                         </div>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
                           Geen actieve alerts
@@ -938,8 +938,8 @@ export const PortfolioDetail: React.FC = () => {
                             <div className="flex items-start gap-2">
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1">
-                                  <div className="p-1 rounded bg-amber-100 dark:bg-amber-900/30">
-                                    <AlertIcon className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                                  <div className="p-1 rounded bg-caution-50 dark:bg-caution-600/25">
+                                    <AlertIcon className="w-3 h-3 text-caution-600 dark:text-caution-500" />
                                   </div>
                                   <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                                     {item.ticker}
@@ -958,14 +958,14 @@ export const PortfolioDetail: React.FC = () => {
                 </div>
 
                 {/* Opportunities Section */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-green-200 dark:border-green-500/30 p-6 flex flex-col">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-positive-500/20 dark:border-positive-700/30 p-6 flex flex-col">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
-                      <Target className="w-5 h-5 text-green-600 dark:text-green-400" />
+                      <Target className="w-5 h-5 text-positive-600 dark:text-positive-500" />
                       <h4 className="text-lg font-semibold text-gray-900 dark:text-white">Opportunities</h4>
                     </div>
                     {alertsData.opportunities.length > 0 && (
-                      <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 rounded-full text-sm font-semibold text-green-600 dark:text-green-400">
+                      <span className="px-2 py-1 bg-positive-50 dark:bg-positive-700/25 rounded-full text-sm font-semibold text-positive-600 dark:text-positive-500">
                         {alertsData.opportunities.length}
                       </span>
                     )}
@@ -974,8 +974,8 @@ export const PortfolioDetail: React.FC = () => {
                   <div className="space-y-2 flex-1 overflow-y-auto">
                     {alertsData.opportunities.length === 0 ? (
                       <div className="text-center py-8">
-                        <div className="inline-flex p-3 rounded-full mb-3 bg-green-100 dark:bg-green-900/30">
-                          <Target className="w-6 h-6 text-green-600 dark:text-green-400" />
+                        <div className="inline-flex p-3 rounded-full mb-3 bg-positive-50 dark:bg-positive-700/25">
+                          <Target className="w-6 h-6 text-positive-600 dark:text-positive-500" />
                         </div>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
                           Geen actieve opportunities
@@ -989,8 +989,8 @@ export const PortfolioDetail: React.FC = () => {
                             <div className="flex items-start gap-2">
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1">
-                                  <div className="p-1 rounded bg-green-100 dark:bg-green-900/30">
-                                    <OppIcon className="w-3 h-3 text-green-600 dark:text-green-400" />
+                                  <div className="p-1 rounded bg-positive-50 dark:bg-positive-700/25">
+                                    <OppIcon className="w-3 h-3 text-positive-600 dark:text-positive-500" />
                                   </div>
                                   <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                                     {item.ticker}

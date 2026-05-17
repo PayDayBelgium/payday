@@ -40,19 +40,19 @@ const getTransactionColor = (type: PortfolioTransaction['type']) => {
     case 'deposit':
     case 'premium_collected':
     case 'dividend':
-      return 'text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30';
+      return 'text-positive-600 dark:text-positive-500 bg-positive-50 dark:bg-positive-700/25';
     case 'withdrawal':
     case 'premium_paid':
     case 'fee':
-      return 'text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30';
+      return 'text-negative-600 dark:text-negative-500 bg-negative-50 dark:bg-negative-700/25';
     case 'adjustment':
-      return 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30';
+      return 'text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/30';
     case 'position_buy':
-      return 'text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/30';
+      return 'text-ink-600 dark:text-ink-300 bg-surface-muted dark:bg-trading-dark-600';
     case 'position_sell':
-      return 'text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/30';
+      return 'text-caution-600 dark:text-caution-500 bg-caution-50 dark:bg-caution-600/25';
     case 'option_roll':
-      return 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30';
+      return 'text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/30';
     default:
       return 'text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-900/30';
   }
@@ -172,8 +172,8 @@ export const TransactionLog: React.FC<TransactionLogProps> = ({
                     <div className="text-right flex-shrink-0">
                       <p className={`text-lg font-bold ${
                         isPositive
-                          ? 'text-green-600 dark:text-green-400'
-                          : 'text-red-600 dark:text-red-400'
+                          ? 'text-positive-600 dark:text-positive-500'
+                          : 'text-negative-600 dark:text-negative-500'
                       }`}>
                         {isPositive ? '+' : ''}{formatCurrency(Math.abs(transaction.amount), currencySymbol)}
                       </p>

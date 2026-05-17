@@ -181,8 +181,8 @@ export const CashOnderpandAnalysis: React.FC = () => {
 
   if (cashAnalysis.length === 0) {
     return (
-      <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-500/30 rounded-lg p-4">
-        <p className="text-sm text-amber-800 dark:text-amber-200">
+      <div className="bg-caution-50 dark:bg-caution-600/15 border border-caution-500/30 dark:border-caution-500/30 rounded-lg p-4">
+        <p className="text-sm text-caution-600 dark:text-amber-200">
           Geen portfolios met opties gevonden. Deze analyse is alleen beschikbaar voor portfolios die opties ondersteunen.
         </p>
       </div>
@@ -195,7 +195,7 @@ export const CashOnderpandAnalysis: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center gap-2 mb-2">
-            <DollarSign className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <DollarSign className="w-5 h-5 text-primary-700 dark:text-primary-300" />
             <p className="text-sm text-gray-600 dark:text-gray-400">Totale Cash</p>
           </div>
           <p className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -208,10 +208,10 @@ export const CashOnderpandAnalysis: React.FC = () => {
 
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center gap-2 mb-2">
-            <Shield className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+            <Shield className="w-5 h-5 text-ink-600 dark:text-ink-300" />
             <p className="text-sm text-gray-600 dark:text-gray-400">Totaal Onderpand</p>
           </div>
-          <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+          <p className="text-2xl font-bold text-ink-600 dark:text-ink-300">
             {formatCurrency(totalAnalysis.totalOnderpand, portfolios)}
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -221,10 +221,10 @@ export const CashOnderpandAnalysis: React.FC = () => {
 
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center gap-2 mb-2">
-            <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />
+            <TrendingUp className="w-5 h-5 text-positive-600 dark:text-positive-500" />
             <p className="text-sm text-gray-600 dark:text-gray-400">Vrije cash</p>
           </div>
-          <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+          <p className="text-2xl font-bold text-positive-600 dark:text-positive-500">
             {formatCurrency(totalAnalysis.freeCash, portfolios)}
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -234,7 +234,7 @@ export const CashOnderpandAnalysis: React.FC = () => {
 
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center gap-2 mb-2">
-            <Calendar className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+            <Calendar className="w-5 h-5 text-caution-600 dark:text-caution-500" />
             <p className="text-sm text-gray-600 dark:text-gray-400">Onderpand %</p>
           </div>
           <p className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -255,7 +255,7 @@ export const CashOnderpandAnalysis: React.FC = () => {
           className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
         >
           {/* Portfolio Header */}
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-750 p-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="bg-gradient-to-r from-primary-50 to-primary-50 dark:from-gray-700 dark:to-gray-750 p-4 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white">{portfolio.portfolio}</h3>
               <div className="flex gap-4 text-sm">
@@ -267,13 +267,13 @@ export const CashOnderpandAnalysis: React.FC = () => {
                 </div>
                 <div className="text-right">
                   <p className="text-gray-600 dark:text-gray-400">Onderpand</p>
-                  <p className="font-bold text-purple-600 dark:text-purple-400">
+                  <p className="font-bold text-ink-600 dark:text-ink-300">
                     {formatCurrency(portfolio.totalOnderpand, portfolios)}
                   </p>
                 </div>
                 <div className="text-right">
                   <p className="text-gray-600 dark:text-gray-400">Vrij</p>
-                  <p className="font-bold text-green-600 dark:text-green-400">
+                  <p className="font-bold text-positive-600 dark:text-positive-500">
                     {formatCurrency(portfolio.freeCash, portfolios)}
                   </p>
                 </div>
@@ -321,9 +321,9 @@ export const CashOnderpandAnalysis: React.FC = () => {
                       <td className="px-4 py-3 whitespace-nowrap">
                         <span className={`px-2 py-1 text-xs rounded-full ${
                           position.type === 'cash-secured-put'
-                            ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400'
+                            ? 'bg-surface-muted dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300'
                             : position.type === 'credit-spread'
-                            ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
+                            ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
                             : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400'
                         }`}>
                           {position.type === 'cash-secured-put' ? 'Cash Secured Put' : position.type === 'credit-spread' ? 'Spread' : 'IC'}
@@ -340,9 +340,9 @@ export const CashOnderpandAnalysis: React.FC = () => {
                       <td className="px-4 py-3 whitespace-nowrap text-center">
                         <span className={`font-medium ${
                           position.daysToExpiration < 7
-                            ? 'text-orange-600 dark:text-orange-400'
+                            ? 'text-caution-600 dark:text-caution-500'
                             : position.daysToExpiration < 14
-                            ? 'text-yellow-600 dark:text-yellow-400'
+                            ? 'text-caution-600 dark:text-caution-500'
                             : 'text-gray-600 dark:text-gray-400'
                         }`}>
                           {position.daysToExpiration}d
@@ -351,10 +351,10 @@ export const CashOnderpandAnalysis: React.FC = () => {
                       <td className="px-4 py-3 whitespace-nowrap text-center">
                         <span className={`font-medium ${
                           (position.delta || 0) > 0.5
-                            ? 'text-red-600 dark:text-red-400'
+                            ? 'text-negative-600 dark:text-negative-500'
                             : (position.delta || 0) > 0.3
-                            ? 'text-orange-600 dark:text-orange-400'
-                            : 'text-green-600 dark:text-green-400'
+                            ? 'text-caution-600 dark:text-caution-500'
+                            : 'text-positive-600 dark:text-positive-500'
                         }`}>
                           {position.delta ? formatNumber(position.delta, 2) : 'N/A'}
                         </span>
@@ -362,8 +362,8 @@ export const CashOnderpandAnalysis: React.FC = () => {
                       <td className="px-4 py-3 whitespace-nowrap text-center">
                         {position.canCloseEarly ? (
                           <div className="flex items-center justify-center gap-1">
-                            <AlertCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
-                            <span className="text-xs text-green-600 dark:text-green-400 font-medium">
+                            <AlertCircle className="w-4 h-4 text-positive-600 dark:text-positive-500" />
+                            <span className="text-xs text-positive-600 dark:text-positive-500 font-medium">
                               Overweeg sluiten
                             </span>
                           </div>
@@ -385,14 +385,14 @@ export const CashOnderpandAnalysis: React.FC = () => {
       ))}
 
       {/* Info Box */}
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-500/30 rounded-lg p-4">
+      <div className="bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-700/30 rounded-lg p-4">
         <div className="flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+          <AlertCircle className="w-5 h-5 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
           <div className="flex-1">
-            <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
+            <h4 className="font-semibold text-primary-900 dark:text-blue-100 mb-2">
               Hoe gebruik je deze analyse?
             </h4>
-            <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
+            <ul className="text-sm text-primary-700 dark:text-primary-200 space-y-1">
               <li>• <strong>Vrije cash</strong>: Dit is het bedrag dat je kunt gebruiken voor nieuwe Cash Secured Puts of spreads</li>
               <li>• <strong>DTE (Days To Expiration)</strong>: Oranje (&lt;7 dagen) = expireert binnenkort, overweeg vroeg sluiten als winstgevend</li>
               <li>• <strong>Delta</strong>: Hoe dichtbij de strike price. Groen (&lt;0.3) = veilig, Oranje (0.3-0.5) = let op, Rood (&gt;0.5) = ITM risk</li>

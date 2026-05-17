@@ -1219,13 +1219,13 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                   onClick={() => setShowFilterPopup(!showFilterPopup)}
                   className={`flex items-center gap-2 px-3 py-1 rounded text-sm font-medium transition-colors ${
                     filterExpiration !== 'all' || filterOpportunities || filterAlerts || filterIdeas
-                      ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-2 border-blue-500 dark:border-blue-500'
+                      ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 border-2 border-primary-500 dark:border-primary-500'
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   <Filter className="w-4 h-4" />
                   {(filterExpiration !== 'all' || filterOpportunities || filterAlerts || filterIdeas) && (
-                    <span className="ml-1 px-1.5 py-0.5 bg-blue-600 dark:bg-blue-500 text-white text-xs rounded-full">
+                    <span className="ml-1 px-1.5 py-0.5 bg-primary-700 dark:bg-primary-500 text-white text-xs rounded-full">
                       {[
                         filterExpiration !== 'all' ? 1 : 0,
                         filterOpportunities ? 1 : 0,
@@ -1264,7 +1264,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                               setFilterAlerts(false);
                               setFilterIdeas(false);
                             }}
-                            className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                            className="text-xs text-primary-700 dark:text-primary-300 hover:underline"
                           >
                             Reset
                           </button>
@@ -1301,7 +1301,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                 onChange={(e) => setFilterOpportunities(e.target.checked)}
                                 className="w-4 h-4 rounded border-gray-300 dark:border-gray-600"
                               />
-                              <Target className="w-4 h-4 text-green-600 dark:text-green-400" />
+                              <Target className="w-4 h-4 text-positive-600 dark:text-positive-500" />
                               <span>Opportunities</span>
                             </label>
                             <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700/50">
@@ -1311,7 +1311,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                 onChange={(e) => setFilterAlerts(e.target.checked)}
                                 className="w-4 h-4 rounded border-gray-300 dark:border-gray-600"
                               />
-                              <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
+                              <AlertCircle className="w-4 h-4 text-negative-600 dark:text-negative-500" />
                               <span>Alerts</span>
                             </label>
                             <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700/50">
@@ -1321,7 +1321,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                 onChange={(e) => setFilterIdeas(e.target.checked)}
                                 className="w-4 h-4 rounded border-gray-300 dark:border-gray-600"
                               />
-                              <Lightbulb className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
+                              <Lightbulb className="w-4 h-4 text-caution-600 dark:text-caution-500" />
                               <span>Ideas</span>
                             </label>
                           </div>
@@ -1367,8 +1367,8 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                 <div className="flex items-center gap-3">
                   <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
                     group.type === 'stock'
-                      ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-                      : 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
+                      ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                      : 'bg-positive-50 dark:bg-positive-700/25 text-positive-600 dark:text-positive-500'
                   }`}>
                     {group.type === 'stock' ? (
                       <TrendingUp className="w-6 h-6" />
@@ -1383,8 +1383,8 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                       </h4>
                       <span className={`text-xs px-2 py-0.5 rounded ${
                         group.type === 'stock'
-                          ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
-                          : 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                          ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                          : 'bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500'
                       }`}>
                         {group.type === 'stock' ? 'Aandeel' : 'ETF'}
                       </span>
@@ -1401,18 +1401,18 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                 <div className="text-right">
                   <p className={`text-lg font-bold ${
                     group.unrealizedPnL > 0
-                      ? 'text-green-600 dark:text-green-400'
+                      ? 'text-positive-600 dark:text-positive-500'
                       : group.unrealizedPnL < 0
-                      ? 'text-red-600 dark:text-red-400'
+                      ? 'text-negative-600 dark:text-negative-500'
                       : 'text-gray-900 dark:text-white'
                   }`}>
                     {group.unrealizedPnL > 0 ? '+' : ''}{formatCurrency(group.unrealizedPnL, currencySymbol)}
                   </p>
                   <p className={`text-sm font-medium ${
                     group.unrealizedPnL > 0
-                      ? 'text-green-600 dark:text-green-400'
+                      ? 'text-positive-600 dark:text-positive-500'
                       : group.unrealizedPnL < 0
-                      ? 'text-red-600 dark:text-red-400'
+                      ? 'text-negative-600 dark:text-negative-500'
                       : 'text-gray-900 dark:text-white'
                   }`}>
                     {group.unrealizedPnL > 0 ? '+' : ''}{formatNumber(group.unrealizedPnLPercent)}%
@@ -1465,7 +1465,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                       >
                         <button
                           onClick={() => setPositionToClose(position)}
-                          className="absolute top-2 right-2 p-1.5 bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="absolute top-2 right-2 p-1.5 bg-negative-50 dark:bg-negative-700/25 hover:bg-negative-50 dark:hover:bg-negative-700/50 text-negative-600 dark:text-negative-500 rounded opacity-0 group-hover:opacity-100 transition-opacity"
                           title="Positie sluiten"
                         >
                           <XIcon className="w-4 h-4" />
@@ -1476,9 +1476,9 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                           </p>
                           <p className={`text-sm font-semibold ${
                             positionPnL > 0
-                              ? 'text-green-600 dark:text-green-400'
+                              ? 'text-positive-600 dark:text-positive-500'
                               : positionPnL < 0
-                              ? 'text-red-600 dark:text-red-400'
+                              ? 'text-negative-600 dark:text-negative-500'
                               : 'text-gray-900 dark:text-white'
                           }`}>
                             {positionPnL > 0 ? '+' : ''}{formatCurrency(positionPnL, currencySymbol)} ({positionPnL > 0 ? '+' : ''}{formatNumber(positionPnLPercent)}%)
@@ -1626,7 +1626,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                           e.stopPropagation();
                           setGroupFilterPopup(groupFilterPopup === strategyName ? null : strategyName);
                         }}
-                        className={`p-1 rounded hover:bg-gray-300 dark:hover:bg-gray-700 ${hasGroupFilter ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}
+                        className={`p-1 rounded hover:bg-gray-300 dark:hover:bg-gray-700 ${hasGroupFilter ? 'text-primary-700 dark:text-primary-300' : 'text-gray-500 dark:text-gray-400'}`}
                         title="Filter groep"
                       >
                         <Filter className="w-4 h-4" />
@@ -1643,7 +1643,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                 e.stopPropagation();
                                 resetGroupFilter(strategyName);
                               }}
-                              className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                              className="text-xs text-primary-700 dark:text-primary-300 hover:underline"
                             >
                               Reset
                             </button>
@@ -1682,7 +1682,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                 onClick={(e) => e.stopPropagation()}
                                 className="w-3 h-3 rounded border-gray-300 dark:border-gray-600"
                               />
-                              <Target className="w-3 h-3 text-green-600 dark:text-green-400" />
+                              <Target className="w-3 h-3 text-positive-600 dark:text-positive-500" />
                               <span>Opportunities</span>
                             </label>
                             <label className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-300 cursor-pointer p-1 rounded hover:bg-gray-50 dark:hover:bg-gray-700/50">
@@ -1696,7 +1696,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                 onClick={(e) => e.stopPropagation()}
                                 className="w-3 h-3 rounded border-gray-300 dark:border-gray-600"
                               />
-                              <AlertCircle className="w-3 h-3 text-red-600 dark:text-red-400" />
+                              <AlertCircle className="w-3 h-3 text-negative-600 dark:text-negative-500" />
                               <span>Alerts</span>
                             </label>
                             <label className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-300 cursor-pointer p-1 rounded hover:bg-gray-50 dark:hover:bg-gray-700/50">
@@ -1710,7 +1710,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                 onClick={(e) => e.stopPropagation()}
                                 className="w-3 h-3 rounded border-gray-300 dark:border-gray-600"
                               />
-                              <Lightbulb className="w-3 h-3 text-yellow-600 dark:text-yellow-400" />
+                              <Lightbulb className="w-3 h-3 text-caution-600 dark:text-caution-500" />
                               <span>Ideas</span>
                             </label>
                           </div>
@@ -1810,7 +1810,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                         return (
                           <React.Fragment key={spread.id}>
                             {/* Spread Summary Row */}
-                            <div className={`px-6 py-3 hover:bg-white dark:hover:bg-gray-700/30 transition-colors border-b border-gray-200 dark:border-gray-700 bg-purple-50/30 dark:bg-purple-900/10 border-l-4 ${getSpreadBorderColor()}`}
+                            <div className={`px-6 py-3 hover:bg-white dark:hover:bg-gray-700/30 transition-colors border-b border-gray-200 dark:border-gray-700 bg-surface-subtle/30 dark:bg-trading-dark-700 border-l-4 ${getSpreadBorderColor()}`}
                             >
                               <div className="grid grid-cols-[32px_minmax(140px,1fr)_80px_70px_70px_70px_85px_85px_90px_70px_16px_130px] gap-2 items-start">
                                 {/* Icon with expand/collapse indicator - clickable for expand */}
@@ -1819,7 +1819,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                     e.stopPropagation();
                                     toggleSpread(spread.id);
                                   }}
-                                  className="w-8 h-8 rounded flex items-center justify-center flex-shrink-0 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 cursor-pointer hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors"
+                                  className="w-8 h-8 rounded flex items-center justify-center flex-shrink-0 bg-surface-muted dark:bg-trading-dark-600 text-ink-600 dark:text-ink-300 cursor-pointer hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors"
                                 >
                                   {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                                 </div>
@@ -1837,13 +1837,13 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                     <h4 className="text-sm font-bold text-gray-900 dark:text-white">
                                       {summary.contracts}x {summary.ticker}
                                     </h4>
-                                    <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400">
+                                    <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-surface-muted dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300">
                                       {summary.type.toUpperCase()} SPREAD
                                     </span>
                                     <span className={`px-1.5 py-0.5 text-[10px] font-semibold rounded ${
                                       summary.spreadType === 'credit'
-                                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                                        : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
+                                        ? 'bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500'
+                                        : 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
                                     }`}>
                                       {summary.spreadType === 'credit' ? 'CREDIT' : 'DEBIT'}
                                     </span>
@@ -1853,10 +1853,10 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                           ref={getTooltipRef(`spread-alert-${spread.id}`)}
                                           onMouseEnter={() => setShowTooltip(`spread-alert-${spread.id}`)}
                                           onMouseLeave={() => setShowTooltip(null)}
-                                          className="flex items-center gap-1 px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900/30 rounded-full cursor-help"
+                                          className="flex items-center gap-1 px-1.5 py-0.5 bg-caution-50 dark:bg-caution-600/25 rounded-full cursor-help"
                                         >
-                                          <AlertCircle className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-                                          <span className="text-[10px] font-semibold text-amber-600 dark:text-amber-400">
+                                          <AlertCircle className="w-3 h-3 text-caution-600 dark:text-caution-500" />
+                                          <span className="text-[10px] font-semibold text-caution-600 dark:text-caution-500">
                                             {uniqueSpreadAlerts.length || 1}
                                           </span>
                                         </div>
@@ -1864,7 +1864,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                           triggerRef={getTooltipRef(`spread-alert-${spread.id}`)}
                                           show={showTooltip === `spread-alert-${spread.id}`}
                                         >
-                                          <div className="w-72 p-3 bg-white dark:bg-gray-800 border-2 border-amber-200 dark:border-amber-800 rounded-lg shadow-xl">
+                                          <div className="w-72 p-3 bg-white dark:bg-gray-800 border-2 border-caution-500/30 dark:border-caution-600/40 rounded-lg shadow-xl">
                                             <AlertTooltipContent
                                               items={uniqueSpreadAlerts.length > 0
                                                 ? uniqueSpreadAlerts.map(a => ({ ticker: a.ticker, message: a.message }))
@@ -1883,13 +1883,13 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                           onMouseEnter={() => setShowTooltip(`spread-opp-${spread.id}`)}
                                           onMouseLeave={() => setShowTooltip(null)}
                                         >
-                                          <Target className="w-3.5 h-3.5 text-green-600 dark:text-green-400 cursor-help" />
+                                          <Target className="w-3.5 h-3.5 text-positive-600 dark:text-positive-500 cursor-help" />
                                         </div>
                                         <PortalTooltip
                                           triggerRef={getTooltipRef(`spread-opp-${spread.id}`)}
                                           show={showTooltip === `spread-opp-${spread.id}`}
                                         >
-                                          <div className="w-72 p-3 bg-white dark:bg-gray-800 border-2 border-green-200 dark:border-green-800 rounded-lg shadow-xl">
+                                          <div className="w-72 p-3 bg-white dark:bg-gray-800 border-2 border-positive-500/20 dark:border-positive-700/30 rounded-lg shadow-xl">
                                             <AlertTooltipContent
                                               items={[{ ticker: summary.ticker, message: opportunityMessage }]}
                                               type="opportunity"
@@ -1911,9 +1911,9 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                   </p>
                                   <p className={`text-xs ${
                                     daysToExpiration <= 7 && daysToExpiration > 0
-                                      ? 'text-red-600 dark:text-red-400 font-semibold'
+                                      ? 'text-negative-600 dark:text-negative-500 font-semibold'
                                       : expiresWithinTwoWeeks
-                                      ? 'text-amber-500 dark:text-amber-400 font-semibold'
+                                      ? 'text-caution-500 dark:text-caution-500 font-semibold'
                                       : 'text-gray-500 dark:text-gray-400'
                                   }`}>
                                     {daysToExpiration > 0 ? `${daysToExpiration}d` : daysToExpiration === 0 ? 'Vandaag' : 'Verlopen'}
@@ -1949,7 +1949,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                         const isCallSpread = summary.type === 'call';
                                         const isBadForPosition = isCallSpread ? priceDifference > 0 : priceDifference < 0;
 
-                                        if (isBadForPosition) return 'text-red-600 dark:text-red-400';
+                                        if (isBadForPosition) return 'text-negative-600 dark:text-negative-500';
                                         return 'text-gray-900 dark:text-white';
                                       })()
                                     }`}>
@@ -2008,18 +2008,18 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                 <div>
                                   <p className={`text-sm font-bold ${
                                     summary.totalPnL > 0
-                                      ? 'text-green-600 dark:text-green-400'
+                                      ? 'text-positive-600 dark:text-positive-500'
                                       : summary.totalPnL < 0
-                                      ? 'text-red-600 dark:text-red-400'
+                                      ? 'text-negative-600 dark:text-negative-500'
                                       : 'text-gray-900 dark:text-white'
                                   }`}>
                                     {summary.totalPnL > 0 ? '+' : ''}{formatCurrency(summary.totalPnL, currencySymbol)}
                                   </p>
                                   <p className={`text-xs font-medium ${
                                     summary.totalPnL > 0
-                                      ? 'text-green-600 dark:text-green-400'
+                                      ? 'text-positive-600 dark:text-positive-500'
                                       : summary.totalPnL < 0
-                                      ? 'text-red-600 dark:text-red-400'
+                                      ? 'text-negative-600 dark:text-negative-500'
                                       : 'text-gray-900 dark:text-white'
                                   }`}>
                                     {summary.totalPnL > 0 ? '+' : ''}{formatNumber((summary.totalPnL / Math.abs(summary.totalCostBasis)) * 100)}%
@@ -2043,7 +2043,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
                                       return (
                                         <>
-                                          <p className="text-sm font-semibold text-orange-600 dark:text-orange-400">
+                                          <p className="text-sm font-semibold text-caution-600 dark:text-caution-500">
                                             Cash
                                           </p>
                                           <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -2074,7 +2074,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                         setSpreadToRoll({ longLeg, shortLeg });
                                       }
                                     }}
-                                    className="p-1.5 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded"
+                                    className="p-1.5 hover:bg-primary-50 dark:hover:bg-primary-900/25 text-primary-700 dark:text-primary-300 rounded"
                                     title="Spread Rollen"
                                   >
                                     <Redo2 className="w-4 h-4" />
@@ -2086,7 +2086,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                       // and handle the second leg in the modal
                                       setPositionToClose(spread.legs[0]);
                                     }}
-                                    className="p-1.5 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded"
+                                    className="p-1.5 hover:bg-negative-50 dark:hover:bg-negative-700/25 text-negative-600 dark:text-negative-500 rounded"
                                     title="Spread Sluiten"
                                   >
                                     <XIcon className="w-4 h-4" />

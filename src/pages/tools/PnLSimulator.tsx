@@ -355,7 +355,7 @@ export const PnLSimulator: React.FC = () => {
         <p className="font-medium text-gray-900 dark:text-white">
           Prijs: ${formatNumber(label, 2)}
         </p>
-        <p className={`font-bold ${pnl >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+        <p className={`font-bold ${pnl >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
           P&L: {pnl >= 0 ? '+' : ''}{formatCurrency(pnl, '$')}
         </p>
         {showIndividualLegs && legs.map((leg, i) => {
@@ -437,7 +437,7 @@ export const PnLSimulator: React.FC = () => {
                   onClick={() => setNewLeg(prev => ({ ...prev, type: 'call' }))}
                   className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
                     newLeg.type === 'call'
-                      ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 border-2 border-green-500'
+                      ? 'bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 border-2 border-positive-500'
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-2 border-transparent'
                   }`}
                 >
@@ -448,7 +448,7 @@ export const PnLSimulator: React.FC = () => {
                   onClick={() => setNewLeg(prev => ({ ...prev, type: 'put' }))}
                   className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
                     newLeg.type === 'put'
-                      ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 border-2 border-purple-500'
+                      ? 'bg-surface-muted dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300 border-2 border-ink-600'
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-2 border-transparent'
                   }`}
                 >
@@ -463,7 +463,7 @@ export const PnLSimulator: React.FC = () => {
                   onClick={() => setNewLeg(prev => ({ ...prev, action: 'buy' }))}
                   className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                     newLeg.action === 'buy'
-                      ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-2 border-blue-500'
+                      ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 border-2 border-primary-500'
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-2 border-transparent'
                   }`}
                 >
@@ -473,7 +473,7 @@ export const PnLSimulator: React.FC = () => {
                   onClick={() => setNewLeg(prev => ({ ...prev, action: 'sell' }))}
                   className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                     newLeg.action === 'sell'
-                      ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border-2 border-orange-500'
+                      ? 'bg-caution-50 dark:bg-caution-600/25 text-caution-600 dark:text-caution-500 border-2 border-caution-500'
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-2 border-transparent'
                   }`}
                 >
@@ -556,7 +556,7 @@ export const PnLSimulator: React.FC = () => {
                 </h2>
                 <button
                   onClick={clearAllLegs}
-                  className="flex items-center gap-1 text-sm text-red-600 hover:text-red-700 dark:text-red-400"
+                  className="flex items-center gap-1 text-sm text-negative-600 hover:text-negative-700 dark:text-negative-500"
                 >
                   <RotateCcw className="w-4 h-4" />
                   Reset
@@ -589,7 +589,7 @@ export const PnLSimulator: React.FC = () => {
                     </div>
                     <button
                       onClick={() => removeLeg(leg.id)}
-                      className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                      className="p-1 text-gray-400 hover:text-negative-600 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -617,19 +617,19 @@ export const PnLSimulator: React.FC = () => {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3">
               <div className="flex items-center gap-1.5 mb-1">
-                <Target className="w-3.5 h-3.5 text-green-500" />
+                <Target className="w-3.5 h-3.5 text-positive-600" />
                 <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Max Winst</span>
               </div>
-              <p className={`text-lg font-bold ${metrics.maxProfitUnlimited || metrics.maxProfit >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+              <p className={`text-lg font-bold ${metrics.maxProfitUnlimited || metrics.maxProfit >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
                 {metrics.maxProfitUnlimited ? '∞ Onbeperkt' : formatCurrency(metrics.maxProfit, '$')}
               </p>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3">
               <div className="flex items-center gap-1.5 mb-1">
-                <Target className="w-3.5 h-3.5 text-red-500" />
+                <Target className="w-3.5 h-3.5 text-negative-600" />
                 <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Max Verlies</span>
               </div>
-              <p className={`text-lg font-bold ${metrics.maxLossUnlimited ? 'text-red-600 dark:text-red-400' : metrics.maxLoss >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+              <p className={`text-lg font-bold ${metrics.maxLossUnlimited ? 'text-negative-600 dark:text-negative-500' : metrics.maxLoss >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
                 {metrics.maxLossUnlimited ? '∞ Onbeperkt' : formatCurrency(metrics.maxLoss, '$')}
               </p>
             </div>
@@ -638,7 +638,7 @@ export const PnLSimulator: React.FC = () => {
                 <DollarSign className="w-3.5 h-3.5 text-indigo-500" />
                 <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Netto Premium</span>
               </div>
-              <p className={`text-lg font-bold ${metrics.totalPremium >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+              <p className={`text-lg font-bold ${metrics.totalPremium >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
                 {metrics.totalPremium >= 0 ? '+' : ''}{formatCurrency(metrics.totalPremium, '$')}
               </p>
               <p className="text-[10px] text-gray-500 dark:text-gray-400">
@@ -647,16 +647,16 @@ export const PnLSimulator: React.FC = () => {
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3">
               <div className="flex items-center gap-1.5 mb-1">
-                <TrendingUp className="w-3.5 h-3.5 text-blue-500" />
+                <TrendingUp className="w-3.5 h-3.5 text-primary-600" />
                 <span className="text-xs font-medium text-gray-500 dark:text-gray-400">P&L @ ${formatNumber(currentPrice, 0)}</span>
               </div>
-              <p className={`text-lg font-bold ${metrics.pnlAtCurrentPrice >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+              <p className={`text-lg font-bold ${metrics.pnlAtCurrentPrice >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
                 {metrics.pnlAtCurrentPrice >= 0 ? '+' : ''}{formatCurrency(metrics.pnlAtCurrentPrice, '$')}
               </p>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3">
               <div className="flex items-center gap-1.5 mb-1">
-                <div className="w-3.5 h-3.5 rounded-full bg-amber-500" />
+                <div className="w-3.5 h-3.5 rounded-full bg-caution-500" />
                 <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Break-even</span>
               </div>
               {metrics.breakEvenPoints.length > 0 ? (
@@ -664,7 +664,7 @@ export const PnLSimulator: React.FC = () => {
                   {metrics.breakEvenPoints.map((be, index) => (
                     <span
                       key={index}
-                      className="text-lg font-bold text-amber-600 dark:text-amber-400"
+                      className="text-lg font-bold text-caution-600 dark:text-caution-500"
                     >
                       ${formatNumber(be, 0)}{index < metrics.breakEvenPoints.length - 1 ? ',' : ''}
                     </span>

@@ -1,0 +1,164 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - img "PayDay" [ref=e8]
+          - generic [ref=e9]:
+            - heading "PayDay" [level=1] [ref=e10]
+            - paragraph [ref=e11]: Trading workspace
+        - button "Collapse sidebar" [ref=e12] [cursor=pointer]:
+          - img [ref=e13]
+      - generic [ref=e17]:
+        - heading "Analyses" [level=2] [ref=e18]
+        - paragraph [ref=e19]: Geavanceerde portfolio analyses en inzichten
+      - generic [ref=e20]:
+        - button "Click to connect" [ref=e22] [cursor=pointer]:
+          - img [ref=e23]
+        - button "Help Portal" [ref=e30] [cursor=pointer]:
+          - img [ref=e31]
+        - button "D" [ref=e35] [cursor=pointer]
+  - complementary [ref=e36]:
+    - navigation [ref=e37]:
+      - paragraph [ref=e38]: Overzicht
+      - link "Dashboard" [ref=e39] [cursor=pointer]:
+        - /url: /
+        - img [ref=e40]
+        - generic [ref=e45]: Dashboard
+      - link "Jouw Reis" [ref=e46] [cursor=pointer]:
+        - /url: /mission
+        - img [ref=e47]
+        - generic [ref=e49]: Jouw Reis
+      - generic [ref=e50]:
+        - paragraph [ref=e51]: Portefeuilles
+        - link "Lynx Lynx" [ref=e52] [cursor=pointer]:
+          - /url: /portfolio/Lynx
+          - img "Lynx" [ref=e53]
+          - generic [ref=e54]: Lynx
+        - link "FreeStoxx FreeStoxx" [ref=e55] [cursor=pointer]:
+          - /url: /portfolio/FreeStoxx
+          - img "FreeStoxx" [ref=e56]
+          - generic [ref=e57]: FreeStoxx
+        - link "DeGiro DeGiro" [ref=e58] [cursor=pointer]:
+          - /url: /portfolio/DeGiro
+          - img "DeGiro" [ref=e59]
+          - generic [ref=e60]: DeGiro
+        - link "SAXO SAXO" [ref=e61] [cursor=pointer]:
+          - /url: /portfolio/SAXO
+          - img "SAXO" [ref=e62]
+          - generic [ref=e63]: SAXO
+      - generic [ref=e64]:
+        - paragraph [ref=e65]: Tools
+        - link "Ticker overview" [ref=e66] [cursor=pointer]:
+          - /url: /tickers
+          - img [ref=e67]
+          - generic [ref=e70]: Ticker overview
+        - link "Meerwaardebelasting" [ref=e71] [cursor=pointer]:
+          - /url: /tools/capital-gains-tax
+          - img [ref=e72]
+          - generic [ref=e75]: Meerwaardebelasting
+    - paragraph [ref=e77]: PayDay v1.0
+  - main [ref=e78]:
+    - generic [ref=e79]:
+      - generic [ref=e81]:
+        - button "Cash & Onderpand" [ref=e82] [cursor=pointer]:
+          - img [ref=e83]
+          - text: Cash & Onderpand
+        - button "Performance" [ref=e85] [cursor=pointer]:
+          - img [ref=e86]
+          - text: Performance
+        - button "Allocatie" [ref=e89] [cursor=pointer]:
+          - img [ref=e90]
+          - text: Allocatie
+        - button "Risico Analyse" [ref=e93] [cursor=pointer]:
+          - img [ref=e94]
+          - text: Risico Analyse
+      - generic [ref=e96]:
+        - generic [ref=e97]:
+          - generic [ref=e98]:
+            - generic [ref=e99]:
+              - img [ref=e100]
+              - paragraph [ref=e102]: Totale Cash
+            - paragraph [ref=e103]: 30.000,00
+            - paragraph [ref=e104]: Alle portfolios met opties
+          - generic [ref=e105]:
+            - generic [ref=e106]:
+              - img [ref=e107]
+              - paragraph [ref=e109]: Totaal Onderpand
+            - paragraph [ref=e110]: 0,00
+            - paragraph [ref=e111]: 0 posities
+          - generic [ref=e112]:
+            - generic [ref=e113]:
+              - img [ref=e114]
+              - paragraph [ref=e117]: Vrije cash
+            - paragraph [ref=e118]: 30.000,00
+            - paragraph [ref=e119]: Beschikbaar voor nieuwe posities
+          - generic [ref=e120]:
+            - generic [ref=e121]:
+              - img [ref=e122]
+              - paragraph [ref=e124]: Onderpand %
+            - paragraph [ref=e125]: 0,0%
+            - paragraph [ref=e126]: Van totale cash
+        - generic [ref=e127]:
+          - generic [ref=e129]:
+            - heading "Lynx" [level=3] [ref=e130]
+            - generic [ref=e131]:
+              - generic [ref=e132]:
+                - paragraph [ref=e133]: Cash
+                - paragraph [ref=e134]: 10.000,00
+              - generic [ref=e135]:
+                - paragraph [ref=e136]: Onderpand
+                - paragraph [ref=e137]: 0,00
+              - generic [ref=e138]:
+                - paragraph [ref=e139]: Vrij
+                - paragraph [ref=e140]: 10.000,00
+          - generic [ref=e141]: Geen posities met onderpand vereisten
+        - generic [ref=e142]:
+          - generic [ref=e144]:
+            - heading "FreeStoxx" [level=3] [ref=e145]
+            - generic [ref=e146]:
+              - generic [ref=e147]:
+                - paragraph [ref=e148]: Cash
+                - paragraph [ref=e149]: 10.000,00
+              - generic [ref=e150]:
+                - paragraph [ref=e151]: Onderpand
+                - paragraph [ref=e152]: 0,00
+              - generic [ref=e153]:
+                - paragraph [ref=e154]: Vrij
+                - paragraph [ref=e155]: 10.000,00
+          - generic [ref=e156]: Geen posities met onderpand vereisten
+        - generic [ref=e157]:
+          - generic [ref=e159]:
+            - heading "SAXO" [level=3] [ref=e160]
+            - generic [ref=e161]:
+              - generic [ref=e162]:
+                - paragraph [ref=e163]: Cash
+                - paragraph [ref=e164]: 10.000,00
+              - generic [ref=e165]:
+                - paragraph [ref=e166]: Onderpand
+                - paragraph [ref=e167]: 0,00
+              - generic [ref=e168]:
+                - paragraph [ref=e169]: Vrij
+                - paragraph [ref=e170]: 10.000,00
+          - generic [ref=e171]: Geen posities met onderpand vereisten
+        - generic [ref=e173]:
+          - img [ref=e174]
+          - generic [ref=e176]:
+            - heading "Hoe gebruik je deze analyse?" [level=4] [ref=e177]
+            - list [ref=e178]:
+              - listitem [ref=e179]:
+                - text: â€¢
+                - strong [ref=e180]: Vrije cash
+                - text: ": Dit is het bedrag dat je kunt gebruiken voor nieuwe Cash Secured Puts of spreads"
+              - listitem [ref=e181]:
+                - text: â€¢
+                - strong [ref=e182]: DTE (Days To Expiration)
+                - text: ": Oranje (<7 dagen) = expireert binnenkort, overweeg vroeg sluiten als winstgevend"
+              - listitem [ref=e183]:
+                - text: â€¢
+                - strong [ref=e184]: Delta
+                - text: ": Hoe dichtbij de strike price. Groen (<0.3) = veilig, Oranje (0.3-0.5) = let op, Rood (>0.5) = ITM risk"
+              - listitem [ref=e185]:
+                - text: â€¢
+                - strong [ref=e186]: Actie
+                - text: ": \"Overweeg sluiten\" = positie is <7 DTE Ã©n winstgevend, onderpand kan vrijkomen voor nieuwe trades"

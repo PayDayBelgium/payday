@@ -3,6 +3,7 @@ import { DollarSign, TrendingUp, AlertTriangle, Calendar } from 'lucide-react';
 import { FridayDatePicker } from '../../components/common/FridayDatePicker';
 import { TickerSelector } from '../../components/widgets/TickerSelector';
 import { formatNumber } from '../../utils/numberFormat';
+import { usePageTitle } from '../../contexts/PageTitleContext';
 import type { Ticker } from '../../types';
 
 interface KaChingInputs {
@@ -36,6 +37,10 @@ interface KaChingResults {
 }
 
 export const KaChingCalculator: React.FC = () => {
+  const { setPageTitle } = usePageTitle();
+  useEffect(() => {
+    setPageTitle('KaChing Strategy Calculator', 'Calculate returns from selling weekly puts against a protective put');
+  }, [setPageTitle]);
   const [inputs, setInputs] = useState<KaChingInputs>({
     ticker: '',
     underlyingPrice: 0,
@@ -168,21 +173,6 @@ export const KaChingCalculator: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <div className="p-3 bg-blue-500/10 rounded-lg">
-          <DollarSign className="w-8 h-8 text-blue-500" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            KaChing Strategy Calculator
-          </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Calculate returns from selling weekly puts against a protective put
-          </p>
-        </div>
-      </div>
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left Column: Inputs */}
         <div className="space-y-6">
@@ -216,7 +206,7 @@ export const KaChingCalculator: React.FC = () => {
                   value={inputs.underlyingPrice || ''}
                   onChange={(e) => handleInputChange('underlyingPrice', parseFloat(e.target.value) || 0)}
                   placeholder="450,00"
-                  className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2"
+                  className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
                 />
               </div>
             </div>
@@ -248,7 +238,7 @@ export const KaChingCalculator: React.FC = () => {
                     value={inputs.protectivePutStrike || ''}
                     onChange={(e) => handleInputChange('protectivePutStrike', parseFloat(e.target.value) || 0)}
                     placeholder="440,00"
-                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2"
+                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
                   />
                 </div>
                 <div>
@@ -260,7 +250,7 @@ export const KaChingCalculator: React.FC = () => {
                     value={inputs.protectivePutPremium || ''}
                     onChange={(e) => handleInputChange('protectivePutPremium', parseFloat(e.target.value) || 0)}
                     placeholder="5,00"
-                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2"
+                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
                   />
                 </div>
               </div>
@@ -273,7 +263,7 @@ export const KaChingCalculator: React.FC = () => {
                     type="date"
                     value={inputs.protectivePutPurchaseDate}
                     onChange={(e) => handleInputChange('protectivePutPurchaseDate', e.target.value)}
-                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2"
+                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
                   />
                 </div>
                 <div>
@@ -283,7 +273,7 @@ export const KaChingCalculator: React.FC = () => {
                   <FridayDatePicker
                     value={inputs.protectivePutExpiration}
                     onChange={(date) => handleInputChange('protectivePutExpiration', date)}
-                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2"
+                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
                   />
                 </div>
               </div>
@@ -316,7 +306,7 @@ export const KaChingCalculator: React.FC = () => {
                     value={inputs.weeklyPutStrike || ''}
                     onChange={(e) => handleInputChange('weeklyPutStrike', parseFloat(e.target.value) || 0)}
                     placeholder="438,00"
-                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2"
+                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
                   />
                 </div>
                 <div>
@@ -328,7 +318,7 @@ export const KaChingCalculator: React.FC = () => {
                     value={inputs.weeklyPutPremium || ''}
                     onChange={(e) => handleInputChange('weeklyPutPremium', parseFloat(e.target.value) || 0)}
                     placeholder="0,75"
-                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2"
+                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
                   />
                 </div>
               </div>
@@ -368,7 +358,7 @@ export const KaChingCalculator: React.FC = () => {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Weekly Premium</p>
-                      <p className="text-xl font-bold text-green-600 dark:text-green-400">
+                      <p className="text-xl font-bold text-positive-600 dark:text-positive-500">
                         {formatCurrency(results.weeklyPremiumCollected)}
                       </p>
                     </div>
@@ -390,7 +380,7 @@ export const KaChingCalculator: React.FC = () => {
                     <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       Protective Put Cost
                     </span>
-                    <span className="text-sm font-semibold text-red-600 dark:text-red-400">
+                    <span className="text-sm font-semibold text-negative-600 dark:text-negative-500">
                       -{formatCurrency(results.initialInvestment)}
                     </span>
                   </div>
@@ -399,7 +389,7 @@ export const KaChingCalculator: React.FC = () => {
                     <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       Total Premium Collected
                     </span>
-                    <span className="text-sm font-semibold text-green-600 dark:text-green-400">
+                    <span className="text-sm font-semibold text-positive-600 dark:text-positive-500">
                       +{formatCurrency(results.totalPremiumCollected)}
                     </span>
                   </div>
@@ -409,7 +399,7 @@ export const KaChingCalculator: React.FC = () => {
                       <span className="text-base font-bold text-gray-900 dark:text-gray-100">
                         Net Cost
                       </span>
-                      <span className={`text-xl font-bold ${results.netCost <= 0 ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'}`}>
+                      <span className={`text-xl font-bold ${results.netCost <= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-caution-600 dark:text-caution-500'}`}>
                         {formatCurrency(Math.abs(results.netCost))}
                         {results.netCost <= 0 && ' profit'}
                       </span>
@@ -426,7 +416,7 @@ export const KaChingCalculator: React.FC = () => {
                       <span className="text-base font-bold text-gray-900 dark:text-gray-100">
                         Net Profit / Loss
                       </span>
-                      <span className={`text-2xl font-bold ${results.netPnL >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                      <span className={`text-2xl font-bold ${results.netPnL >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
                         {formatCurrency(results.netPnL)}
                       </span>
                     </div>
@@ -437,7 +427,7 @@ export const KaChingCalculator: React.FC = () => {
                       <span className="text-base font-bold text-gray-900 dark:text-gray-100">
                         ROI
                       </span>
-                      <span className={`text-2xl font-bold ${results.roi >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                      <span className={`text-2xl font-bold ${results.roi >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
                         {formatPercentage(results.roi)}
                       </span>
                     </div>
@@ -451,7 +441,7 @@ export const KaChingCalculator: React.FC = () => {
                           Annualized ROI
                         </span>
                       </div>
-                      <span className={`text-2xl font-bold ${results.annualizedROI >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                      <span className={`text-2xl font-bold ${results.annualizedROI >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
                         {formatPercentage(results.annualizedROI)}
                       </span>
                     </div>
@@ -463,13 +453,13 @@ export const KaChingCalculator: React.FC = () => {
                   {/* Bonus: Profit Weeks Info */}
                   {results.weeksAfterBreakeven > 0 && (
                     <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
-                      <div className="flex items-center gap-2 bg-green-100 dark:bg-green-900/30 p-3 rounded-lg">
-                        <Calendar className="w-5 h-5 text-green-600 dark:text-green-400" />
+                      <div className="flex items-center gap-2 bg-positive-50 dark:bg-positive-700/25 p-3 rounded-lg">
+                        <Calendar className="w-5 h-5 text-positive-600 dark:text-positive-500" />
                         <div className="flex-1">
-                          <p className="text-sm font-semibold text-green-800 dark:text-green-300">
+                          <p className="text-sm font-semibold text-positive-700 dark:text-positive-500">
                             {results.weeksAfterBreakeven} weeks of pure profit!
                           </p>
-                          <p className="text-xs text-green-700 dark:text-green-400">
+                          <p className="text-xs text-positive-700 dark:text-positive-500">
                             After break-even at week {results.breakevenWeeks}
                           </p>
                         </div>
@@ -480,7 +470,7 @@ export const KaChingCalculator: React.FC = () => {
               </div>
             ) : (
               <div className="text-center py-12">
-                <DollarSign className="w-16 h-16 text-purple-300 dark:text-purple-600 mx-auto mb-4" />
+                <DollarSign className="w-16 h-16 text-purple-300 dark:text-ink-600 mx-auto mb-4" />
                 <p className="text-gray-600 dark:text-gray-400">
                   Fill in all fields to see results
                 </p>
@@ -494,12 +484,12 @@ export const KaChingCalculator: React.FC = () => {
               {warnings.map((warning, index) => (
                 <div
                   key={index}
-                  className="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 dark:border-yellow-600 p-4 rounded-md flex items-start gap-3"
+                  className="bg-caution-50 dark:bg-caution-600/15 border-l-4 border-caution-500 dark:border-caution-600 p-4 rounded-md flex items-start gap-3"
                 >
-                  <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5" />
+                  <AlertTriangle className="w-5 h-5 text-caution-600 dark:text-caution-500 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-bold text-yellow-800 dark:text-yellow-300">Warning</p>
-                    <p className="text-sm text-yellow-700 dark:text-yellow-400">{warning}</p>
+                    <p className="font-bold text-caution-600 dark:text-caution-500">Warning</p>
+                    <p className="text-sm text-caution-600 dark:text-caution-500">{warning}</p>
                   </div>
                 </div>
               ))}

@@ -73,12 +73,12 @@ export const SpreadsStrategy: React.FC = () => {
             onClick={() => setActiveTab('positions')}
             className={`px-4 py-2 font-medium transition-colors flex items-center gap-2 ${
               activeTab === 'positions'
-                ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
+                ? 'text-primary-700 dark:text-primary-300 border-b-2 border-primary-700 dark:border-primary-400'
                 : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
             }`}
           >
             Posities
-            <span className="px-2 py-0.5 rounded-full text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
+            <span className="px-2 py-0.5 rounded-full text-xs bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
               0
             </span>
           </button>
@@ -86,14 +86,14 @@ export const SpreadsStrategy: React.FC = () => {
             onClick={() => setActiveTab('rules')}
             className={`px-4 py-2 font-medium transition-colors flex items-center gap-2 ${
               activeTab === 'rules'
-                ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
+                ? 'text-primary-700 dark:text-primary-300 border-b-2 border-primary-700 dark:border-primary-400'
                 : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
             }`}
           >
             <ListTodo className="w-4 h-4" />
             Regels
             {strategyRules.length > 0 && (
-              <span className="px-2 py-0.5 rounded-full text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
+              <span className="px-2 py-0.5 rounded-full text-xs bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
                 {strategyRules.length}
               </span>
             )}
@@ -102,7 +102,7 @@ export const SpreadsStrategy: React.FC = () => {
             onClick={() => setActiveTab('info')}
             className={`px-4 py-2 font-medium transition-colors flex items-center gap-2 ${
               activeTab === 'info'
-                ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
+                ? 'text-primary-700 dark:text-primary-300 border-b-2 border-primary-700 dark:border-primary-400'
                 : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
             }`}
           >
@@ -113,7 +113,7 @@ export const SpreadsStrategy: React.FC = () => {
         {(activeTab === 'positions' || activeTab === 'rules') && (
           <button
             onClick={() => activeTab === 'positions' ? {} : handleAddRule()}
-            className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 bg-primary-700 hover:bg-primary-800 text-white rounded-lg text-sm font-medium transition-colors"
           >
             <Plus className="w-4 h-4" />
             {activeTab === 'positions' ? 'Spread Toevoegen' : 'Regel Toevoegen'}
@@ -132,7 +132,7 @@ export const SpreadsStrategy: React.FC = () => {
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <p className="text-sm text-gray-600 dark:text-gray-400">Total Credit Ontvangen</p>
-          <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">$0.00</p>
+          <p className="text-2xl font-bold text-primary-700 dark:text-primary-300 mt-1">$0.00</p>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <p className="text-sm text-gray-600 dark:text-gray-400">Buying Power Used</p>
@@ -154,7 +154,7 @@ export const SpreadsStrategy: React.FC = () => {
         <p className="text-gray-600 dark:text-gray-400 mb-4">
           Voeg je eerste spread toe - het systeem herkent automatisch of het een Bull Put, Bear Call of Iron Condor is
         </p>
-        <button className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
+        <button className="px-6 py-3 bg-primary-700 hover:bg-primary-800 text-white rounded-lg font-medium transition-colors">
           Voeg je eerste spread toe
         </button>
       </div>
@@ -165,9 +165,9 @@ export const SpreadsStrategy: React.FC = () => {
       {activeTab === 'info' && (
         <div className="space-y-6">
           {/* Education Section */}
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-500/30 rounded-lg p-6">
+          <div className="bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-700/30 rounded-lg p-6">
             <div className="flex items-start gap-3">
-              <Lightbulb className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+              <Lightbulb className="w-5 h-5 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
               <div className="flex-1 space-y-6">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
@@ -178,25 +178,25 @@ export const SpreadsStrategy: React.FC = () => {
                   </p>
                   <div className="space-y-2">
                     <div className="flex items-start gap-2">
-                      <ArrowRight className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                      <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                       <p className="text-sm text-gray-700 dark:text-gray-300">
                         <strong>Bull Put Spread:</strong> Bullish - verkoop put + koop put (lagere strike) voor bescherming
                       </p>
                     </div>
                     <div className="flex items-start gap-2">
-                      <ArrowRight className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                      <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                       <p className="text-sm text-gray-700 dark:text-gray-300">
                         <strong>Bear Call Spread:</strong> Bearish - verkoop call + koop call (hogere strike) voor bescherming
                       </p>
                     </div>
                     <div className="flex items-start gap-2">
-                      <ArrowRight className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                      <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                       <p className="text-sm text-gray-700 dark:text-gray-300">
                         <strong>Iron Condor:</strong> Combinatie van beide - Bull Put Spread + Bear Call Spread = dubbele premie bij neutraal verwachting
                       </p>
                     </div>
                     <div className="flex items-start gap-2">
-                      <ArrowRight className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                      <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                       <p className="text-sm text-gray-700 dark:text-gray-300">
                         <strong>Voordeel:</strong> Gedefinieerd risico - je weet vooraf exact hoeveel je maximaal kunt verliezen
                       </p>
@@ -206,9 +206,9 @@ export const SpreadsStrategy: React.FC = () => {
 
                 {/* Spread types comparison */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-500/30 rounded-lg p-5">
+                  <div className="bg-positive-50 dark:bg-positive-700/15 border border-positive-500/20 dark:border-positive-700/30 rounded-lg p-5">
                     <div className="flex items-center gap-3 mb-3">
-                      <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />
+                      <TrendingUp className="w-5 h-5 text-positive-600 dark:text-positive-500" />
                       <h4 className="font-semibold text-gray-900 dark:text-white">
                         Bull Put Spread
                       </h4>
@@ -223,9 +223,9 @@ export const SpreadsStrategy: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-500/30 rounded-lg p-5">
+                  <div className="bg-negative-50 dark:bg-negative-700/15 border border-negative-500/20 dark:border-negative-700/30 rounded-lg p-5">
                     <div className="flex items-center gap-3 mb-3">
-                      <TrendingDown className="w-5 h-5 text-red-600 dark:text-red-400" />
+                      <TrendingDown className="w-5 h-5 text-negative-600 dark:text-negative-500" />
                       <h4 className="font-semibold text-gray-900 dark:text-white">
                         Bear Call Spread
                       </h4>
@@ -240,9 +240,9 @@ export const SpreadsStrategy: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-500/30 rounded-lg p-5">
+                  <div className="bg-surface-subtle dark:bg-trading-dark-700 border border-ink-200 dark:border-ink-600/30 rounded-lg p-5">
                     <div className="flex items-center gap-3 mb-3">
-                      <ArrowRight className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                      <ArrowRight className="w-5 h-5 text-ink-600 dark:text-ink-300" />
                       <h4 className="font-semibold text-gray-900 dark:text-white">
                         Iron Condor
                       </h4>
@@ -259,7 +259,7 @@ export const SpreadsStrategy: React.FC = () => {
                 </div>
 
                 {/* Intelligent Recognition */}
-                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-500/30 rounded-lg p-5">
+                <div className="bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-700/30 rounded-lg p-5">
                   <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
                     Intelligente Herkenning
                   </h4>
@@ -280,9 +280,9 @@ export const SpreadsStrategy: React.FC = () => {
           </div>
 
           {/* Next Steps Section */}
-          <div className="bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/10 dark:to-green-900/10 border border-blue-200 dark:border-blue-500/30 rounded-lg p-6">
+          <div className="bg-gradient-to-r from-primary-50 to-positive-50 dark:from-blue-900/10 dark:to-green-900/10 border border-primary-200 dark:border-primary-700/30 rounded-lg p-6">
             <div className="flex items-start gap-3 mb-4">
-              <GraduationCap className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+              <GraduationCap className="w-5 h-5 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Volgende Stappen
               </h3>
@@ -293,7 +293,7 @@ export const SpreadsStrategy: React.FC = () => {
                   pushNavigation(`/portfolio/${portfolio}/csp`, 'Cash Secured Puts');
                   navigate(`/portfolio/${portfolio}/csp`);
                 }}
-                className="w-full flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-500 transition-colors"
+                className="w-full flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-500 transition-colors"
               >
                 <div className="flex-1 text-left">
                   <p className="font-medium text-gray-900 dark:text-white">Cash Secured Puts</p>
@@ -308,7 +308,7 @@ export const SpreadsStrategy: React.FC = () => {
                   pushNavigation(`/portfolio/${portfolio}/covered-calls`, 'Covered Calls');
                   navigate(`/portfolio/${portfolio}/covered-calls`);
                 }}
-                className="w-full flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-500 transition-colors"
+                className="w-full flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-500 transition-colors"
               >
                 <div className="flex-1 text-left">
                   <p className="font-medium text-gray-900 dark:text-white">Covered Calls</p>
