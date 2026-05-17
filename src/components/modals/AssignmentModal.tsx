@@ -259,7 +259,7 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
                       Aankoopkosten ({assignmentCalculation.shares} x ${position.strike}):
                     </span>
                     <span className="font-medium text-negative-600 dark:text-negative-500">
-                      -{formatCurrency(assignmentCalculation.totalCost, currencySymbol)}
+                      -{formatCurrency(assignmentCalculation.totalCost ?? 0, currencySymbol)}
                     </span>
                   </div>
                   <div className="flex justify-between">
@@ -274,7 +274,7 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
                         Effectieve kost:
                       </span>
                       <span className="text-lg font-bold text-gray-900 dark:text-white">
-                        {formatCurrency(assignmentCalculation.effectiveCost, currencySymbol)}
+                        {formatCurrency(assignmentCalculation.effectiveCost ?? 0, currencySymbol)}
                       </span>
                     </div>
                     <div className="flex justify-between items-center mt-1">
@@ -294,7 +294,7 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
                       Verkoopopbrengst ({assignmentCalculation.shares} x ${position.strike}):
                     </span>
                     <span className="font-medium text-positive-600 dark:text-positive-500">
-                      +{formatCurrency(assignmentCalculation.totalProceeds, currencySymbol)}
+                      +{formatCurrency(assignmentCalculation.totalProceeds ?? 0, currencySymbol)}
                     </span>
                   </div>
                   <div className="flex justify-between">
@@ -309,7 +309,7 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
                         Totale opbrengst:
                       </span>
                       <span className="text-lg font-bold text-positive-600 dark:text-positive-500">
-                        +{formatCurrency(assignmentCalculation.totalIncome, currencySymbol)}
+                        +{formatCurrency(assignmentCalculation.totalIncome ?? 0, currencySymbol)}
                       </span>
                     </div>
                     <div className="flex justify-between items-center mt-1">

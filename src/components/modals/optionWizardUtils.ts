@@ -8,7 +8,7 @@ import { getDecimalSeparator, getThousandSeparator } from '../../utils/numberFor
 
 // ============ TYPES ============
 
-export type OptionAction = 'buy' | 'sell' | 'credit-spread' | 'debit-spread';
+export type OptionAction = 'buy' | 'sell' | 'credit-spread' | 'debit-spread' | 'covered-call' | 'spread';
 
 export interface OptionLegData {
   strike: number;

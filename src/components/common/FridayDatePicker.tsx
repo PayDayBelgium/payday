@@ -84,10 +84,10 @@ export const FridayDatePicker: React.FC<FridayDatePickerProps> = ({
   };
 
   // Check if previous button should be disabled
-  const isPrevDisabled = disabled || !value || (min && getPreviousFriday(new Date(value)).toISOString().split('T')[0] < min);
+  const isPrevDisabled = Boolean(disabled || !value || (min && getPreviousFriday(new Date(value)).toISOString().split('T')[0] < min));
 
   // Check if next button should be disabled
-  const isNextDisabled = disabled || (max && getNextFriday(value ? new Date(value) : new Date()).toISOString().split('T')[0] > max);
+  const isNextDisabled = Boolean(disabled || (max && getNextFriday(value ? new Date(value) : new Date()).toISOString().split('T')[0] > max));
 
   return (
     <div className="flex items-stretch">

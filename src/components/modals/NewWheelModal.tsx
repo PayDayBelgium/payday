@@ -54,7 +54,7 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
       p => p.status === 'open' &&
       p.ticker.toUpperCase() === selectedTicker.symbol.toUpperCase() &&
       p.portfolio === portfolioName &&
-      !p.wheelId // Not already linked to a wheel
+      !(p as { wheelId?: string }).wheelId // Not already linked to a wheel
     );
 
     const csps = openPositions.filter(

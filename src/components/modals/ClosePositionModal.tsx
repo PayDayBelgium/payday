@@ -199,7 +199,7 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
     } else if (position.type === 'stock' || position.type === 'etf') {
       return `${position.ticker} - ${position.type === 'stock' ? 'Aandeel' : 'ETF'}`;
     } else if (position.type === 'call' || position.type === 'put') {
-      const action = position.action === 'buy' ? 'Koop' : 'Verkoop';
+      const action = (position as { action?: string }).action === 'buy' ? 'Koop' : 'Verkoop';
       const type = position.type === 'call' ? 'Call' : 'Put';
       return `${position.ticker} ${action} ${type}`;
     }
@@ -321,7 +321,7 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                       {isSpread
                         ? 'Sluit Premuim per aandeel *'
-                        : position.action === 'buy' ? 'Verkoop Premuim per aandeel *' : 'Terugkoop Premuim per aandeel *'}
+                        : (position as { action?: string }).action === 'buy' ? 'Verkoop Premuim per aandeel *' : 'Terugkoop Premuim per aandeel *'}
                     </label>
                     <button
                       type="button"
@@ -344,7 +344,7 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     {isSpread
                       ? 'Premium voor sluiten van spread (beide legs)'
-                      : position.action === 'buy'
+                      : (position as { action?: string }).action === 'buy'
                       ? 'Premium ontvangen bij verkoop van de optie'
                       : 'Premium betaald om de optie terug te kopen'}
                   </p>

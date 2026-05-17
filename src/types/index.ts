@@ -171,10 +171,13 @@ export interface CallOption extends BasePosition {
   premium: number; // Prijs per contract
   costBasis: number; // Totale kost (buy) of opbrengst (sell)
   currentValue: number;
+  cashReserved?: number; // Voor symmetrie met PutOption (zelden gebruikt op calls)
   underlyingId?: string; // Optioneel: link naar underlying stock/leap
   wheelId?: string; // Optioneel: link naar Wheel campaign
   dte?: number; // Days to expiration (berekend)
   breakEven?: number; // Break-even prijs (berekend)
+  currentPremium?: number; // Live premium voor live-tracking
+  strategy?: string; // Strategie-label voor analytics
 }
 
 // Nieuwe generieke Put Position
@@ -193,6 +196,8 @@ export interface PutOption extends BasePosition {
   wheelId?: string; // Optioneel: link naar Wheel campaign
   dte?: number; // Days to expiration (berekend)
   breakEven?: number; // Break-even prijs (berekend)
+  currentPremium?: number; // Live premium voor live-tracking
+  strategy?: string; // Strategie-label voor analytics
 }
 
 // Spread Position (call of put spread)
@@ -338,10 +343,11 @@ export interface StrategyRule {
     [key: string]: any;
   };
   actions: {
-    showOnDashboard: boolean;
-    showOnPortfolioOverview: boolean;
-    showInList: boolean;
+    showOnDashboard?: boolean;
+    showOnPortfolioOverview?: boolean;
+    showInList?: boolean;
     notification?: boolean;
+    notify?: boolean;
   };
   createdAt: string;
   updatedAt?: string;
@@ -447,7 +453,7 @@ export interface Ticker {
   type: 'stock' | 'etf';
   optionsAvailable: boolean; // Zijn er opties beschikbaar?
   miniContractsAvailable: boolean; // Zijn mini contracts beschikbaar?
-  hasDividend: boolean; // Betaalt dit aandeel/ETF dividend?
+  hasDividend?: boolean; // Betaalt dit aandeel/ETF dividend?
   lastUsed?: string; // Laatst gebruikt (voor autocomplete sortering)
   currentPrice?: number; // Huidige prijs (wordt later via service opgehaald)
   isWatchlist?: boolean; // Is dit een watchlist ticker (geen posities)

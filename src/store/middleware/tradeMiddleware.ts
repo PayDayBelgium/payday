@@ -1,7 +1,12 @@
-import type { Middleware } from '@reduxjs/toolkit';
+import type { Middleware, UnknownAction } from '@reduxjs/toolkit';
 import type { RootState } from '../index';
 import { addTrade } from '../slices/tradesSlice';
 import type { Trade, Position, StockPosition, CallOption, PutOption } from '../../types';
+
+type ClosePositionAction = UnknownAction & {
+  type: 'positions/closePosition';
+  payload: { id: string; closeDate: string; closePrice?: number; closePremium?: number; realizedPnL?: number; notes?: string };
+};
 
 /**
  * Middleware to automatically create trade records when positions are closed
@@ -14,10 +19,12 @@ export const tradeMiddleware: Middleware = (store) => (next) => (action) => {
   const result = next(action);
 
   // Handle position closing - this creates a complete trade record
-  if (action.type === 'positions/closePosition') {
-    const position = stateBefore.positions.positions.find(p => p.id === action.payload.id);
+  const a = action as UnknownAction;
+  if (a.type === 'positions/closePosition') {
+    const closeAction = a as ClosePositionAction;
+    const position = stateBefore.positions.positions.find(p => p.id === closeAction.payload.id);
     if (position) {
-      const trade = createTradeFromPosition(position, action.payload);
+      const trade = createTradeFromPosition(position, closeAction.payload);
       if (trade) {
         store.dispatch(addTrade(trade));
       }
