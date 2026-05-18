@@ -229,7 +229,7 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription, isSi
               <img src={logo} alt="PayDay" className="w-9 h-9 rounded-md ring-1 ring-[var(--line)]" />
               <div className="leading-tight">
                 <h1 className="text-xl font-semibold text-ink-900 dark:text-white tracking-tight">PayDay</h1>
-                <p className="text-[10px] uppercase tracking-[0.16em] text-ink-400 -mt-0.5">Trading workspace</p>
+                <p className="text-[10px] uppercase tracking-[0.16em] text-ink-400 -mt-0.5">Stock management</p>
               </div>
             </div>
           )}
