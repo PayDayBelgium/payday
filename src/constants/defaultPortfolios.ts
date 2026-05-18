@@ -1,8 +1,8 @@
-import SaxoLogo from '../assets/Portfolios/Saxo.png';
-import DeGiroLogo from '../assets/Portfolios/DeGiro.png';
-import LynxLogo from '../assets/Portfolios/Lynx.png';
-import IBKRLogo from '../assets/Portfolios/IBKR.jpeg';
-import BoleroLogo from '../assets/Portfolios/Bolero.png';
+import SaxoLogo from '../assets/portfolios/Saxo.png';
+import DeGiroLogo from '../assets/portfolios/DeGiro.png';
+import LynxLogo from '../assets/portfolios/Lynx.png';
+import IBKRLogo from '../assets/portfolios/IBKR.jpeg';
+import BoleroLogo from '../assets/portfolios/Bolero.png';
 
 export interface DefaultPortfolio {
   id: string;
