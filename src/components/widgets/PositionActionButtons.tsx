@@ -1,15 +1,17 @@
 import React from 'react';
-import { Redo2, X as XIcon, Layers, ArrowDownLeft } from 'lucide-react';
+import { Redo2, X as XIcon, Layers, ArrowDownLeft, Pencil } from 'lucide-react';
 
 interface PositionActionButtonsProps {
   onRoll?: () => void;
   onClose?: () => void;
   onAssign?: () => void;
+  onEdit?: () => void;
   onNavigateToCampaigns?: () => void;
   // Labels for tooltips
   rollTitle?: string;
   closeTitle?: string;
   assignTitle?: string;
+  editTitle?: string;
   campaignTitle?: string;
 }
 
@@ -17,10 +19,12 @@ export const PositionActionButtons: React.FC<PositionActionButtonsProps> = ({
   onRoll,
   onClose,
   onAssign,
+  onEdit,
   onNavigateToCampaigns,
   rollTitle = 'Roll Optie',
   closeTitle = 'Positie sluiten',
   assignTitle = 'Assignment',
+  editTitle = 'Bewerken',
   campaignTitle = 'Bekijk Campagne',
 }) => {
   return (
@@ -44,6 +48,16 @@ export const PositionActionButtons: React.FC<PositionActionButtonsProps> = ({
             title={campaignTitle}
           >
             <Layers className="w-4 h-4" />
+          </button>
+        )}
+        {/* Edit button */}
+        {onEdit && (
+          <button
+            onClick={onEdit}
+            className="p-1 hover:bg-surface-subtle text-ink-600 dark:text-ink-300 rounded"
+            title={editTitle}
+          >
+            <Pencil className="w-4 h-4" />
           </button>
         )}
         {/* Roll button */}

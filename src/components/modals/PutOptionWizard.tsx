@@ -271,7 +271,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
         ticker: selectedTicker.symbol,
         name: selectedTicker.name,
         type: 'put',
-        action,
+        action: action as 'buy' | 'sell',
         status: 'open',
         openDate: purchaseDate,
         strike: longLeg.strike,

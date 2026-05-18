@@ -61,7 +61,7 @@ export const StocksETFsStrategy: React.FC = () => {
 
       // Migration: Fix category based on trigger type
       const migratedRules = rules.map(rule => {
-        let correctCategory: 'alert' | 'opportunity' = rule.category;
+        let correctCategory: 'alert' | 'opportunity' = rule.category as 'alert' | 'opportunity';
 
         // Determine correct category based on trigger
         if (rule.trigger === 'price_increase' || rule.trigger === 'profit_target' ||
@@ -131,7 +131,7 @@ export const StocksETFsStrategy: React.FC = () => {
             alerts.push({
               id: alertId,
               message,
-              category: rule.category,
+              category: rule.category as 'alert' | 'opportunity',
             });
           }
         }

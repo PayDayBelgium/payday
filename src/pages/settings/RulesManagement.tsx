@@ -8,7 +8,7 @@ type WizardStep = 'asset-type' | 'configure';
 type AssetType = 'stocks-etfs' | 'options' | 'general';
 
 // Default rules that are initialized for each portfolio
-const DEFAULT_RULES: Omit<StrategyRule, 'id' | 'portfolio'>[] = [
+const DEFAULT_RULES: Omit<StrategyRule, 'id' | 'portfolio' | 'createdAt'>[] = [
   {
     strategyType: 'stocks-etfs',
     name: 'Aandeel Gedaald 10%',
@@ -114,7 +114,8 @@ export const RulesManagement: React.FC = () => {
         ...rule,
         id: `default-${Date.now()}-${index}`,
         portfolio: 'global', // Global rules apply to all portfolios
-      }));
+        createdAt: new Date().toISOString(),
+      })) as StrategyRule[];
       setRules(defaultRules);
       // Save defaults to localStorage
       saveRulesToStorage(defaultRules);
@@ -202,6 +203,7 @@ export const RulesManagement: React.FC = () => {
         threshold: wizardFormData.threshold,
       },
       actions: { notify: true },
+      createdAt: new Date().toISOString(),
     };
 
     const updatedRules = [...rules, newRule];

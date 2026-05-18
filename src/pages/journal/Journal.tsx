@@ -36,7 +36,7 @@ import {
 } from 'lucide-react';
 import { ConfirmDialog } from '../../components/modals/ConfirmDialog';
 
-const GOAL_TYPES: { id: GoalType; label: string; icon: JSX.Element }[] = [
+const GOAL_TYPES: { id: GoalType; label: string; icon: React.ReactNode }[] = [
   { id: 'total-value', label: 'Total portfolio Value', icon: <TrendingUp className="w-4 h-4" /> },
   { id: 'assets-under-management', label: 'Assets Under Management', icon: <DollarSign className="w-4 h-4" /> },
   { id: 'monthly-premium', label: 'Monthly Premium Income', icon: <Coins className="w-4 h-4" /> },

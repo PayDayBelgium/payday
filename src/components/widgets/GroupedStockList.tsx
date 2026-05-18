@@ -428,10 +428,10 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                                         {positionAlerts.some(a => !a.category || a.category === 'alert') && (
                                           <AlertCircle className="w-3.5 h-3.5 text-negative-600 dark:text-negative-500" />
                                         )}
-                                        {positionStrategyAlerts.some(a => a.category === 'alert') && (
+                                        {positionStrategyAlerts.some((a: StrategyAlert) => a.category === 'alert') && (
                                           <AlertCircle className="w-3.5 h-3.5 text-caution-600 dark:text-caution-500" />
                                         )}
-                                        {(positionAlerts.some(a => a.category === 'opportunity') || positionStrategyAlerts.some(a => a.category === 'opportunity')) && (
+                                        {(positionAlerts.some((a: any) => a.category === 'opportunity') || positionStrategyAlerts.some((a: StrategyAlert) => a.category === 'opportunity')) && (
                                           <Target className="w-3.5 h-3.5 text-positive-600 dark:text-positive-500" />
                                         )}
                                       </div>
@@ -535,7 +535,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                                 })}
 
                                 {/* Strategy Alerts */}
-                                {positionStrategyAlerts.map((alert) => {
+                                {positionStrategyAlerts.map((alert: StrategyAlert) => {
                                   const isAlert = alert.category === 'alert';
                                   const Icon = isAlert ? AlertCircle : Target;
                                   const bgColor = isAlert

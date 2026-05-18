@@ -290,7 +290,7 @@ export const Dashboard: React.FC = () => {
           <div className="grid grid-cols-2 gap-4">
             {/* Portfolio Value Chart - Combined view of all portfolios */}
             <PortfolioValueChart
-              data={aggregatedDailyData}
+              data={aggregatedDailyData as any}
               currency={totalStats.currencySymbol === '€' ? 'EUR' : 'USD'}
               portfolioName="Alle Portefeuilles"
               title="Totale portfolio waarde"

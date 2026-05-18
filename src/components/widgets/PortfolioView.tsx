@@ -658,12 +658,10 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
       const purchasePricePerShare = positionToClose.costBasis / positionToClose.shares;
 
       dispatch(updatePosition({
-        id: positionToClose.id,
-        updates: {
-          shares: remainingShares,
-          costBasis: remainingCostBasis,
-          currentValue: remainingShares * purchasePricePerShare, // Will be updated by price service
-        },
+        ...positionToClose,
+        shares: remainingShares,
+        costBasis: remainingCostBasis,
+        currentValue: remainingShares * purchasePricePerShare, // Will be updated by price service
       }));
 
       // Log transaction for partial sale

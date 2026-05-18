@@ -160,6 +160,7 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({
       name: '',
       optionsAvailable: false,
       miniContractsAvailable: false,
+      hasDividend: false,
     });
     setPurchaseDetails({
       shares: 0,
@@ -301,7 +302,7 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({
               <button
                 onClick={() => {
                   setIsCreatingTicker(false);
-                  setNewTickerData({ symbol: '', name: '', optionsAvailable: false, miniContractsAvailable: false });
+                  setNewTickerData({ symbol: '', name: '', optionsAvailable: false, miniContractsAvailable: false, hasDividend: false });
                 }}
                 className="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg font-medium transition-colors"
               >

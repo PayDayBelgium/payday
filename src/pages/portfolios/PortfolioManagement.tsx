@@ -183,8 +183,10 @@ export const PortfolioManagement: React.FC = () => {
       // Add new portfolio
       const newPortfolio: Portfolio = {
         id: Date.now().toString(),
+        hasOptions: true,
+        strategies: [],
         ...formData,
-        logoOriginal,
+        logoOriginal: logoOriginal ?? undefined,
         logoMetadata,
         currentValue: formData.initialCapital, // Initial value equals initial capital
       };
@@ -222,8 +224,10 @@ export const PortfolioManagement: React.FC = () => {
 
       dispatch(updatePortfolio({
         id: editingPortfolioId,
+        hasOptions: true,
+        strategies: [],
         ...formData,
-        logoOriginal,
+        logoOriginal: logoOriginal ?? undefined,
         logoMetadata,
         oldName: originalPortfolioName || undefined
       }));

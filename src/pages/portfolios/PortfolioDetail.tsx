@@ -7,6 +7,7 @@ import { DollarSign, Banknote, ShieldAlert, TrendingUp, TrendingDown, ExternalLi
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { selectTransactionsByPortfolio, addTransaction, selectDailyData } from '../../store/slices/portfoliosSlice';
+import { selectAllTickers } from '../../store/slices/tickersSlice';
 import { selectUnlockedLevels, isFeatureAvailable } from '../../store/slices/userProgressSlice';
 import { useAlerts } from '../../hooks/useAlerts';
 import { StatCard } from '../../components/widgets/StatCard';
@@ -62,6 +63,7 @@ export const PortfolioDetail: React.FC = () => {
   const { canGoBack, pushNavigation } = useNavigation();
   const portfolios = useAppSelector((state) => state.portfolios.portfolios);
   const positions = useAppSelector((state) => state.positions.positions);
+  const tickerList = useAppSelector(selectAllTickers);
   const portfolio = portfolios.find((b) => b.name === portfolioName);
   const transactions = useAppSelector((state) => selectTransactionsByPortfolio(state, portfolioName || ''));
   const dailyData = useAppSelector(selectDailyData);
@@ -180,7 +182,7 @@ export const PortfolioDetail: React.FC = () => {
   }, [portfolio, positions, portfolioName]);
 
   const handleTransactionSubmit = (transactionData: {
-    type: 'deposit' | 'withdrawal' | 'adjustment';
+    type: 'deposit' | 'withdrawal' | 'adjustment' | string;
     amount: number;
     description: string;
     date: string;
@@ -199,7 +201,7 @@ export const PortfolioDetail: React.FC = () => {
       createdAt: new Date().toISOString(),
     };
 
-    dispatch(addTransaction(transaction));
+    dispatch(addTransaction(transaction as any));
   };
 
   // If portfolio not found, show error
@@ -761,7 +763,7 @@ export const PortfolioDetail: React.FC = () => {
                   const shares = call.contracts * contractMultiplier;
 
                   // Get current price from tickers
-                  const tickerData = tickers.find(t => t.symbol.toUpperCase() === call.ticker.toUpperCase());
+                  const tickerData = tickerList.find((t) => t.symbol.toUpperCase() === call.ticker.toUpperCase());
                   const currentPrice = tickerData?.currentPrice || 0;
 
                   if (!virtualPortfolio[call.ticker]) {

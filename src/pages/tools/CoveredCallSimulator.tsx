@@ -298,7 +298,7 @@ export const CoveredCallSimulator: React.FC = () => {
               ) : (
                 <TickerSelector
                   value={inputs.ticker}
-                  onChange={(value) => handleInputChange('ticker', value)}
+                  onChange={(ticker) => handleInputChange('ticker', ticker.symbol)}
                   onCreateNew={handleOpenCreateTicker}
                 />
               )}

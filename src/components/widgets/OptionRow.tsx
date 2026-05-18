@@ -63,11 +63,11 @@ export const OptionRow: React.FC<OptionRowProps> = ({
 }) => {
   const { t } = useTranslation();
   const [showTooltip, setShowTooltip] = useState<string | null>(null);
-  const tooltipRefs = useRef<Map<string, React.RefObject<HTMLDivElement>>>(new Map());
+  const tooltipRefs = useRef<Map<string, React.RefObject<HTMLDivElement | null>>>(new Map());
 
-  const getTooltipRef = (key: string) => {
+  const getTooltipRef = (key: string): React.RefObject<HTMLDivElement | null> => {
     if (!tooltipRefs.current.has(key)) {
-      tooltipRefs.current.set(key, React.createRef<HTMLDivElement>());
+      tooltipRefs.current.set(key, React.createRef<HTMLDivElement | null>());
     }
     return tooltipRefs.current.get(key)!;
   };

@@ -352,7 +352,7 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
                   </button>
                   <div className="flex items-center gap-3">
                     <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                      {formatCurrency(strategyValue, getCurrencySymbol(currency))}
+                      {formatCurrency(strategyValue, getCurrencySymbol(currency as 'USD' | 'EUR'))}
                     </span>
                     <button
                       onClick={() => setSelectedStrategyForLinking(isLinking ? null : strategy.id)}
@@ -407,7 +407,7 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
                               </div>
                               <div className="flex items-center gap-3">
                                 <span className="text-sm font-medium text-gray-900 dark:text-white">
-                                  {formatCurrency(value, getCurrencySymbol(currency))}
+                                  {formatCurrency(value, getCurrencySymbol(currency as 'USD' | 'EUR'))}
                                 </span>
                                 <button
                                   onClick={() => handleUnlinkPosition(strategy.id, pos.id)}
@@ -449,7 +449,7 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
                               </p>
                             </div>
                             <span className="text-sm text-gray-600 dark:text-gray-400">
-                              {formatCurrency(value, getCurrencySymbol(currency))}
+                              {formatCurrency(value, getCurrencySymbol(currency as 'USD' | 'EUR'))}
                             </span>
                           </button>
                         );
@@ -488,7 +488,7 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
                       </p>
                     </div>
                     <span className="text-sm font-medium text-gray-900 dark:text-white">
-                      {formatCurrency(value, getCurrencySymbol(currency))}
+                      {formatCurrency(value, getCurrencySymbol(currency as 'USD' | 'EUR'))}
                     </span>
                   </div>
                 );

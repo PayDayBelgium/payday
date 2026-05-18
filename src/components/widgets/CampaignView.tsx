@@ -391,6 +391,8 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
       // Log transaction
       dispatch(addTransaction({
         id: `txn-${Date.now()}`,
+        portfolio: option.portfolio,
+        createdAt: new Date().toISOString(),
         date: assignmentData.assignmentDate,
         type: 'position_buy' as const,
         amount: -effectiveCost,
@@ -448,6 +450,8 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
         // Log transaction
         dispatch(addTransaction({
           id: `txn-${Date.now()}`,
+          portfolio: option.portfolio,
+          createdAt: new Date().toISOString(),
           date: assignmentData.assignmentDate,
           type: 'position_sell' as const,
           amount: totalProceeds + premiumReceived,
@@ -731,7 +735,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                         {getCampaignTypeName(campaign.type)}
                       </span>
                       {campaign.hasOpportunity && (
-                        <Lightbulb className="w-4 h-4 text-positive-600" title={campaign.opportunityMessage} />
+                        <Lightbulb className="w-4 h-4 text-positive-600" aria-label={campaign.opportunityMessage} />
                       )}
                     </div>
                     <p className="text-sm text-gray-500 dark:text-gray-400">

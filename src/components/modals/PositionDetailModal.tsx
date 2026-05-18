@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save, TrendingUp, TrendingDown, ArrowUpCircle, ArrowDownCircle, Calendar, DollarSign, FileText, BarChart3 } from 'lucide-react';
+import { X, Save, TrendingUp, TrendingDown, ArrowUpCircle, ArrowDownCircle, Calendar, DollarSign, FileText, BarChart3, Building2 } from 'lucide-react';
 import { getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency, formatNumber } from '../../utils/numberFormat';
 import { formatNumberInput, parseNumberInput, validateNumberInput } from '../../utils/inputFormat';

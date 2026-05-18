@@ -76,9 +76,9 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
           percentage: existingRule.parameters.percentage?.toString() || '',
           threshold: existingRule.parameters.threshold?.toString() || '',
           timeframe: existingRule.parameters.timeframe || '',
-          showOnDashboard: existingRule.actions.showOnDashboard,
-          showOnPortfolioOverview: existingRule.actions.showOnPortfolioOverview,
-          showInList: existingRule.actions.showInList,
+          showOnDashboard: existingRule.actions.showOnDashboard ?? false,
+          showOnPortfolioOverview: existingRule.actions.showOnPortfolioOverview ?? false,
+          showInList: existingRule.actions.showInList ?? false,
           notification: existingRule.actions.notification || false,
         });
       } else {
