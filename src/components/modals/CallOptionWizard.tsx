@@ -140,7 +140,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
     const portfolioPositions = allPositions.filter(p => p.portfolio === portfolio.name && p.status === 'open');
 
     // Stocks/ETFs aggregated per ticker, with >= 1 free (uncovered) contract
-    const eligibleStocks: Holding[] = groupHoldings(allPositions, portfolio.name)
+    const eligibleStocks: Holding[] = groupHoldings(portfolioPositions, portfolio.name)
       .filter(h => h.canWriteCoveredCall);
 
     // LEAPs: long calls with expiry > 3 months (90 days)
@@ -217,7 +217,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
   // For covered calls: max contracts is capped at the holding's freeContracts
   const maxCoveredCallContracts = useMemo(() => {
     if (action !== 'covered-call' || !selectedTicker) return Infinity;
-    const holding = eligibleUnderlyings.stocks.find(h => h.ticker === selectedTicker.symbol);
+    const holding = eligibleUnderlyings.stocks.find(h => h.ticker.toUpperCase() === selectedTicker.symbol.toUpperCase());
     return holding ? holding.freeContracts : Infinity;
   }, [action, selectedTicker, eligibleUnderlyings.stocks]);
 
@@ -1140,10 +1140,11 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                     <input
                       type="number"
                       min="1"
+                      max={Number.isFinite(maxCoveredCallContracts) ? maxCoveredCallContracts : undefined}
                       value={longLeg.contracts || ''}
                       onChange={(e) => {
                         const requested = parseInt(e.target.value, 10) || 1;
-                        const contracts = Number.isFinite(maxCoveredCallContracts)
+                        const contracts = Number.isFinite(maxCoveredCallContracts) && maxCoveredCallContracts > 0
                           ? Math.min(requested, maxCoveredCallContracts)
                           : requested;
                         setLongLeg({ ...longLeg, contracts });

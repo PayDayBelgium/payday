@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronRight, AlertCircle, CheckCircle, Search, Edit2, Check, X, TrendingDown, Target } from 'lucide-react';
-import type { StockPosition, PriceAlert, Portfolio } from '../../types';
-import type { CallOption } from '../../types';
+import type { StockPosition, PriceAlert, Portfolio, CallOption } from '../../types';
 import { formatCurrency } from '../../utils/currencyHelpers';
 import { formatNumber } from '../../utils/numberFormat';
 import { useAppDispatch } from '../../hooks/useAppDispatch';

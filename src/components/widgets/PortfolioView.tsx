@@ -406,19 +406,19 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
           const stock = p as any;
 
           const tickerLots = positions.filter(
-            (p): p is StockPosition =>
-              (p.type === 'stock' || p.type === 'etf') &&
-              p.status === 'open' &&
-              p.portfolio === stock.portfolio &&
-              p.ticker === stock.ticker
+            (pos): pos is StockPosition =>
+              (pos.type === 'stock' || pos.type === 'etf') &&
+              pos.status === 'open' &&
+              pos.portfolio === stock.portfolio &&
+              pos.ticker === stock.ticker
           );
           const tickerSoldCalls = positions.filter(
-            (p): p is CallOption =>
-              p.type === 'call' &&
-              (p as CallOption).action === 'sell' &&
-              p.status === 'open' &&
-              p.portfolio === stock.portfolio &&
-              p.ticker === stock.ticker
+            (pos): pos is CallOption =>
+              pos.type === 'call' &&
+              (pos as CallOption).action === 'sell' &&
+              pos.status === 'open' &&
+              pos.portfolio === stock.portfolio &&
+              pos.ticker === stock.ticker
           );
           const ccCapacity = computeCoveredCallCapacity(tickerLots, tickerSoldCalls);
           return ccCapacity.canWriteCoveredCall;
