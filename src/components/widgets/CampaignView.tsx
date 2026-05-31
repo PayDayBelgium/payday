@@ -760,7 +760,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                               </p>
                             ) : (
                               <p className="font-semibold text-gray-900 dark:text-white">
-                                {(campaign.root.position as any).shares || 100}
+                                {campaign.root.quantity}
                                 <span className="text-xs text-gray-500 ml-1">aandelen</span>
                               </p>
                             )}
@@ -1120,7 +1120,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                           if (campaign.type === 'covered-call') {
                             collateralType = 'stock';
                             collateralValue = campaign.root.originalCostBasis;
-                            collateralDescription = `Deze call is gedekt door ${campaign.root.position.type === 'stock' ? 'aandelen' : 'ETF'} (${(campaign.root.position as any).shares || 100} stuks). Bij assignment lever je de aandelen, geen cash nodig.`;
+                            collateralDescription = `Deze call is gedekt door ${campaign.root.position.type === 'stock' ? 'aandelen' : 'ETF'} (${campaign.root.quantity} stuks). Bij assignment lever je de aandelen, geen cash nodig.`;
                           } else if (campaign.type === 'pmcc') {
                             collateralType = 'leaps';
                             collateralValue = campaign.root.originalCostBasis;

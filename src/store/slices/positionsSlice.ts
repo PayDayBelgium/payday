@@ -2,6 +2,7 @@ import { createSlice, createSelector } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { Position, PortfolioName, PriceAlertRule, PriceAlert } from '../../types';
 import type { RootState } from '../index';
+import { groupHoldings } from '../../utils/holdings';
 
 interface PositionsState {
   positions: Position[];
@@ -287,6 +288,13 @@ export const selectOpenPositionsByPortfolio = (portfolioName: PortfolioName) =>
   createSelector(
     [selectPositions],
     (positions) => positions.filter((p) => p.portfolio === portfolioName && p.status === 'open')
+  );
+
+// Memoized selector: per-ticker Holdings (aggregated lots + covered-call capacity)
+export const selectHoldingsByPortfolio = (portfolioName: PortfolioName) =>
+  createSelector(
+    [selectPositions],
+    (positions) => groupHoldings(positions, portfolioName)
   );
 
 // Price Alert Rule selectors

@@ -9,7 +9,7 @@ import { TrendingUp, Plus, Info, ArrowRight, X, ListTodo, GraduationCap, Lightbu
 import { StrategyRuleModal } from '../../components/modals/StrategyRuleModal';
 import { GroupedStockList } from '../../components/widgets/GroupedStockList';
 import { StrategyRules } from '../../components/strategy/StrategyRules';
-import { selectPositionsByPortfolioAndType, selectAllPriceAlerts } from '../../store/slices/positionsSlice';
+import { selectPositionsByPortfolioAndType, selectAllPriceAlerts, selectHoldingsByPortfolio } from '../../store/slices/positionsSlice';
 import { selectPortfolios } from '../../store/slices/portfoliosSlice';
 import { formatCurrency } from '../../utils/currencyHelpers';
 import { getDefaultRulesForStrategy } from '../../utils/defaultStrategyRules';
@@ -93,6 +93,10 @@ export const StocksETFsStrategy: React.FC = () => {
   // Get all price alerts once at component level (avoids Hooks violation in map)
   const allPriceAlerts = useAppSelector(selectAllPriceAlerts);
 
+  // Holdings: per-ticker aggregated lots with covered-call capacity
+  const holdingsSelector = useMemo(() => selectHoldingsByPortfolio(portfolio || ''), [portfolio]);
+  const holdings = useAppSelector(holdingsSelector);
+
   // Evaluate strategy rules for each position
   const positionStrategyAlerts = useMemo(() => {
     const alertsMap = new Map<string, StrategyAlert[]>();
@@ -153,10 +157,7 @@ export const StocksETFsStrategy: React.FC = () => {
   const openPositions = allPositions.filter(pos => pos.status === 'open');
   const totalValue = openPositions.reduce((sum, pos) => sum + pos.currentValue, 0);
   const totalPositions = openPositions.length;
-  const availableForCC = openPositions.filter(pos => {
-    const minShares = pos.miniContractsSupported ? 10 : 100;
-    return pos.shares >= minShares && pos.optionsSupported;
-  }).length;
+  const availableForCC = holdings.filter(h => h.canWriteCoveredCall).length;
 
   const handleToggleInfo = useCallback(() => {
     setShowInfo(prev => {

@@ -19,6 +19,8 @@ interface StockETFCardProps {
   onCardClick?: () => void;
   onEdit?: (position: StockPosition) => void;
   onDismissStrategyAlert?: (alertId: string) => void;
+  /** Covered-call eligibility for the whole ticker group; overrides per-lot calc when provided. */
+  canWriteCoveredCallsOverride?: boolean;
 }
 
 export const StockETFCard: React.FC<StockETFCardProps> = ({
@@ -28,7 +30,8 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
   allPortfolios,
   onCardClick,
   onEdit,
-  onDismissStrategyAlert
+  onDismissStrategyAlert,
+  canWriteCoveredCallsOverride,
 }) => {
   const [confirmDismiss, setConfirmDismiss] = useState<{ isOpen: boolean; alertId: string | null; message: string }>({
     isOpen: false,
@@ -43,7 +46,9 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
 
   // Determine if covered calls can be written
   const minShares = position.miniContractsSupported ? 10 : 100;
-  const canWriteCoveredCalls = position.shares >= minShares && position.optionsSupported;
+  const canWriteCoveredCalls =
+    canWriteCoveredCallsOverride ??
+    (position.shares >= minShares && position.optionsSupported);
 
   // Count unread alerts and separate by type
   const unreadAlerts = alerts.filter(a => !a.isRead);

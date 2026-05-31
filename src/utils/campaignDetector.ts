@@ -1,5 +1,6 @@
 import type { Position, CallOption, PutOption, StockPosition, WheelCampaign } from '../types';
 import { differenceInDays, parseISO } from 'date-fns';
+import { computeCoveredCallCapacity } from './coveredCallEligibility';
 
 export type CampaignType = 'covered-call' | 'pmcc' | 'kaching' | 'wheel';
 
@@ -108,20 +109,19 @@ export function detectCampaigns(
       p.type === 'call' && (p as CallOption).action === 'sell' && !p.wheelId
     ) as CallOption[];
 
-    stocks.forEach(stock => {
-      if (stock.shares >= 100) {
-        const campaign = createCoveredCallCampaign(
-          stock,
-          shortCalls,
-          closedTickerPositions,
-          ticker,
-          portfolio
-        );
-        if (campaign) {
-          campaigns.push(campaign);
-        }
+    const capacity = computeCoveredCallCapacity(stocks, shortCalls);
+    if (capacity.maxContracts >= 1) {
+      const campaign = createCoveredCallCampaign(
+        stocks,
+        shortCalls,
+        closedTickerPositions,
+        ticker,
+        portfolio
+      );
+      if (campaign) {
+        campaigns.push(campaign);
       }
-    });
+    }
 
     // 2. Check for PMCC campaigns (LEAPS call + short calls)
     // Exclude positions that are already linked to a wheel
@@ -173,37 +173,35 @@ export function detectCampaigns(
 }
 
 function createCoveredCallCampaign(
-  stock: StockPosition,
+  stocks: StockPosition[],
   shortCalls: CallOption[],
   closedPositions: Position[],
   ticker: string,
   portfolio: string
 ): Campaign | null {
-  const contractsNeeded = Math.floor(stock.shares / 100);
+  if (stocks.length === 0) return null;
+  // Oldest lot is the representative position for display fields (price, etc.)
+  const representative = [...stocks].sort(
+    (a, b) => new Date(a.openDate).getTime() - new Date(b.openDate).getTime()
+  )[0];
+  const capacity = computeCoveredCallCapacity(stocks, shortCalls);
+  const totalShares = capacity.totalShares;
+  const contractsNeeded = capacity.maxContracts;
+  const totalCostBasis = stocks.reduce((sum, s) => sum + s.costBasis, 0);
+  const lotIds = new Set(stocks.map(s => s.id));
 
-  // Filter short calls that belong to this stock position
-  // - If underlyingId matches this stock, include it
-  // - If no underlyingId is set, include it (backwards compatibility) but only if contracts fit
-  const relevantShortCalls = shortCalls.filter(c => {
-    if (c.underlyingId) {
-      return c.underlyingId === stock.id;
-    }
-    // No underlyingId set - include if contracts could cover this stock
-    return c.contracts <= contractsNeeded;
-  });
+  // Include calls linked to ANY lot of this ticker, or calls with no underlyingId
+  const relevantShortCalls = shortCalls.filter(c =>
+    c.underlyingId ? lotIds.has(c.underlyingId) : true
+  );
   const totalCoveredContracts = relevantShortCalls.reduce((sum, c) => sum + c.contracts, 0);
 
-  // Get historical covered calls for this stock
+  // Get historical covered calls for all lots of this ticker
   const historicalCalls = closedPositions.filter(p => {
     if (p.type !== 'call') return false;
     const call = p as CallOption;
     if (call.action !== 'sell' || p.status !== 'closed') return false;
-
-    // If underlyingId is set, it must match this stock
-    if (call.underlyingId) {
-      return call.underlyingId === stock.id;
-    }
-    // No underlyingId - include for backwards compatibility
+    if (call.underlyingId) return lotIds.has(call.underlyingId);
     return true;
   }) as CallOption[];
 
@@ -213,7 +211,7 @@ function createCoveredCallCampaign(
   const historicalPnL = historicalCalls.reduce((sum, c) => sum + ((c as any).realizedPnL || 0), 0);
 
   const totalPremiumCollected = activePremium + historicalPremium;
-  const adjustedCostBasis = stock.costBasis - historicalPnL;
+  const adjustedCostBasis = totalCostBasis - historicalPnL;
 
   const hasOpportunity = totalCoveredContracts < contractsNeeded;
   const opportunityMessage = hasOpportunity
@@ -221,15 +219,15 @@ function createCoveredCallCampaign(
     : undefined;
 
   return {
-    id: `cc-${stock.id}`,
+    id: `cc-${ticker}-${portfolio}`,
     type: 'covered-call',
     ticker,
     portfolio,
     root: {
-      position: stock,
+      position: representative,
       type: 'stock',
-      quantity: stock.shares,
-      originalCostBasis: stock.costBasis,
+      quantity: totalShares,
+      originalCostBasis: totalCostBasis,
       adjustedCostBasis,
       totalPremiumCollected,
     },

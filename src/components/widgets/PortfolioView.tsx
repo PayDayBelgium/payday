@@ -24,6 +24,7 @@ import { getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency, formatNumber } from '../../utils/numberFormat';
 import { parseNumberInput, validateNumberInput } from '../../utils/inputFormat';
 import { getSpreadId } from '../../utils/spreadHelpers';
+import { computeCoveredCallCapacity } from '../../utils/coveredCallEligibility';
 import { StockRow } from './StockRow';
 import { OptionRow } from './OptionRow';
 import type { CollateralType } from './OptionRow';
@@ -404,22 +405,23 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
           // Check for Covered Call opportunity
           const stock = p as any;
 
-          const existingCoveredCalls = positions.filter(pos =>
-            pos.type === 'call' &&
-            'action' in pos && pos.action === 'sell' &&
-            pos.ticker === stock.ticker &&
-            pos.status === 'open'
+          const tickerLots = positions.filter(
+            (pos): pos is StockPosition =>
+              (pos.type === 'stock' || pos.type === 'etf') &&
+              pos.status === 'open' &&
+              pos.portfolio === stock.portfolio &&
+              pos.ticker === stock.ticker
           );
-
-          // Always allow CC if enough shares (100+ standard, 10+ for mini contracts)
-          const minShares = stock.miniContractsSupported ? 10 : 100;
-          const canWriteCoveredCalls = stock.shares >= minShares;
-
-          if (!canWriteCoveredCalls) return false;
-
-          const coveredCallContracts = existingCoveredCalls.reduce((sum, cc: any) => sum + (cc.contracts || 0), 0);
-          const contractsNeeded = Math.floor(stock.shares / (stock.miniContractsSupported ? 10 : 100));
-          return coveredCallContracts < contractsNeeded;
+          const tickerSoldCalls = positions.filter(
+            (pos): pos is CallOption =>
+              pos.type === 'call' &&
+              (pos as CallOption).action === 'sell' &&
+              pos.status === 'open' &&
+              pos.portfolio === stock.portfolio &&
+              pos.ticker === stock.ticker
+          );
+          const ccCapacity = computeCoveredCallCapacity(tickerLots, tickerSoldCalls);
+          return ccCapacity.canWriteCoveredCall;
         } else if (p.type === 'call' || p.type === 'put') {
           // Check for option opportunity - 80% of max profit reached
           const option = p as CallOption | PutOption;
@@ -2230,15 +2232,25 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                     // Get ticker data for current price from Redux store
                     const tickerData = tickers.find(t => t.symbol === stock.ticker);
 
-                    // Check if there are existing covered calls
-                    const existingCoveredCalls = positions.filter(p =>
-                      p.type === 'call' &&
-                      'action' in p && p.action === 'sell' &&
-                      p.ticker === stock.ticker &&
-                      p.status === 'open'
+                    // Compute aggregate covered-call capacity for this ticker
+                    const stockTickerLots = positions.filter(
+                      (p): p is StockPosition =>
+                        (p.type === 'stock' || p.type === 'etf') &&
+                        p.status === 'open' &&
+                        p.portfolio === stock.portfolio &&
+                        p.ticker === stock.ticker
                     );
+                    const stockTickerSoldCalls = positions.filter(
+                      (p): p is CallOption =>
+                        p.type === 'call' &&
+                        (p as CallOption).action === 'sell' &&
+                        p.status === 'open' &&
+                        p.portfolio === stock.portfolio &&
+                        p.ticker === stock.ticker
+                    );
+                    const stockCcCapacity = computeCoveredCallCapacity(stockTickerLots, stockTickerSoldCalls);
 
-                    const coveredCallContracts = existingCoveredCalls.reduce((sum, cc: any) => sum + (cc.contracts || 0), 0);
+                    const coveredCallContracts = stockCcCapacity.coveredContracts;
 
                     // Check for opportunities from central evaluator
                     const stockOpportunities = positionOpportunities.get(stock.id) || [];
@@ -2260,6 +2272,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                         coveredCallContracts={coveredCallContracts}
                         hasOpportunity={hasOptionsAccess && hasStockOpportunity}
                         opportunityMessage={stockOpportunityMessage}
+                        canWriteCoveredCallsOverride={stockCcCapacity.canWriteCoveredCall}
                       />
                     );
                   }

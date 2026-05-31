@@ -13,7 +13,8 @@ import { TickerSelector } from '../widgets/TickerSelector';
 import { PnLCurve } from '../widgets/PnLCurve';
 import { FridayDatePicker } from '../common/FridayDatePicker';
 import { parseLocalizedNumber, formatNumber, getDecimalSeparator } from '../../utils/numberFormat';
-import type { CallOption, Ticker, PortfolioName, CurrencyType, Position, StockPosition } from '../../types';
+import type { CallOption, Ticker, PortfolioName, CurrencyType, Position } from '../../types';
+import { groupHoldings, type Holding } from '../../utils/holdings';
 import type { RootState } from '../../store';
 import {
   type OptionAction,
@@ -138,12 +139,9 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
   const eligibleUnderlyings = useMemo(() => {
     const portfolioPositions = allPositions.filter(p => p.portfolio === portfolio.name && p.status === 'open');
 
-    // Stocks/ETFs with >= 100 shares
-    const eligibleStocks = portfolioPositions.filter(p => {
-      if (p.type !== 'stock' && p.type !== 'etf') return false;
-      const stock = p as StockPosition;
-      return stock.shares >= 100;
-    });
+    // Stocks/ETFs aggregated per ticker, with >= 1 free (uncovered) contract
+    const eligibleStocks: Holding[] = groupHoldings(portfolioPositions, portfolio.name)
+      .filter(h => h.canWriteCoveredCall);
 
     // LEAPs: long calls with expiry > 3 months (90 days)
     const today = new Date();
@@ -215,6 +213,13 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
     );
     return tickerData?.currentPrice || null;
   }, [selectedTicker, allTickers]);
+
+  // For covered calls: max contracts is capped at the holding's freeContracts
+  const maxCoveredCallContracts = useMemo(() => {
+    if (action !== 'covered-call' || !selectedTicker) return Infinity;
+    const holding = eligibleUnderlyings.stocks.find(h => h.ticker.toUpperCase() === selectedTicker.symbol.toUpperCase());
+    return holding ? holding.freeContracts : Infinity;
+  }, [action, selectedTicker, eligibleUnderlyings.stocks]);
 
   const handleComplete = () => {
     if (!selectedTicker) return;
@@ -1135,10 +1140,15 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                     <input
                       type="number"
                       min="1"
+                      max={Number.isFinite(maxCoveredCallContracts) ? maxCoveredCallContracts : undefined}
                       value={longLeg.contracts || ''}
-                      onChange={(e) =>
-                        setLongLeg({ ...longLeg, contracts: parseInt(e.target.value) || 1 })
-                      }
+                      onChange={(e) => {
+                        const requested = parseInt(e.target.value, 10) || 1;
+                        const contracts = Number.isFinite(maxCoveredCallContracts) && maxCoveredCallContracts > 0
+                          ? Math.min(requested, maxCoveredCallContracts)
+                          : requested;
+                        setLongLeg({ ...longLeg, contracts });
+                      }}
                       disabled={wheelLockedContracts !== null}
                       className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white ${
                         wheelLockedContracts !== null ? 'opacity-60 cursor-not-allowed' : ''
@@ -1153,6 +1163,11 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                         </span>
                       )}
                     </p>
+                    {action === 'covered-call' && Number.isFinite(maxCoveredCallContracts) && (
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Max {maxCoveredCallContracts} vrij contract{maxCoveredCallContracts === 1 ? '' : 'en'} beschikbaar
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -1327,6 +1342,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
       matchingWheels,
       selectedWheelId,
       wheelLockedContracts,
+      maxCoveredCallContracts,
     ]
   );
 
