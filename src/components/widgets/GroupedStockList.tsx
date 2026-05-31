@@ -5,7 +5,8 @@ import type { CallOption } from '../../types';
 import { formatCurrency } from '../../utils/currencyHelpers';
 import { formatNumber } from '../../utils/numberFormat';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
-import { updatePosition, markPriceAlertAsRead } from '../../store/slices/positionsSlice';
+import { useAppSelector } from '../../hooks/useAppSelector';
+import { updatePosition, markPriceAlertAsRead, selectPositions } from '../../store/slices/positionsSlice';
 import { updateTickerPrice } from '../../store/slices/tickersSlice';
 import { computeCoveredCallCapacity } from '../../utils/coveredCallEligibility';
 // import { SellStockModal } from '../modals/SellStockModal';
@@ -49,6 +50,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
   onDismissStrategyAlert,
 }) => {
   const dispatch = useAppDispatch();
+  const allStorePositions = useAppSelector(selectPositions);
   const [expandedTickers, setExpandedTickers] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState('');
   const [editingTicker, setEditingTicker] = useState<string | null>(null);
@@ -228,12 +230,20 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
             const portfolio = allPortfolios.find(b => b.name === group.positions[0].portfolio);
             const portfolioSupportsOptions = portfolio?.hasOptions ?? false;
 
-            // positions prop is StockPosition[]; sold calls are not available here.
-            // Pass empty array — capacity uses aggregate shares to determine eligibility.
-            const emptySoldCalls: CallOption[] = [];
+            // Sold calls for this ticker+portfolio come from the full store (the
+            // positions prop only carries stock lots), so the badge reflects FREE
+            // (uncovered) contracts — consistent with the wizard and alerts.
+            const groupSoldCalls = allStorePositions.filter(
+              (p): p is CallOption =>
+                p.type === 'call' &&
+                (p as CallOption).action === 'sell' &&
+                p.status === 'open' &&
+                p.portfolio === group.positions[0].portfolio &&
+                p.ticker === group.ticker
+            );
             const ccCapacity = computeCoveredCallCapacity(
               group.positions as StockPosition[],
-              emptySoldCalls
+              groupSoldCalls
             );
             const canWriteCoveredCalls = portfolioSupportsOptions && ccCapacity.canWriteCoveredCall;
 
