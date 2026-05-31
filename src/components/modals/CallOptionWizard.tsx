@@ -13,7 +13,7 @@ import { TickerSelector } from '../widgets/TickerSelector';
 import { PnLCurve } from '../widgets/PnLCurve';
 import { FridayDatePicker } from '../common/FridayDatePicker';
 import { parseLocalizedNumber, formatNumber, getDecimalSeparator } from '../../utils/numberFormat';
-import type { CallOption, Ticker, PortfolioName, CurrencyType, Position, StockPosition } from '../../types';
+import type { CallOption, Ticker, PortfolioName, CurrencyType, Position } from '../../types';
 import { groupHoldings, type Holding } from '../../utils/holdings';
 import type { RootState } from '../../store';
 import {
