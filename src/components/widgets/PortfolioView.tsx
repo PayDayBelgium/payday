@@ -24,6 +24,7 @@ import { getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency, formatNumber } from '../../utils/numberFormat';
 import { parseNumberInput, validateNumberInput } from '../../utils/inputFormat';
 import { getSpreadId } from '../../utils/spreadHelpers';
+import { computeCoveredCallCapacity } from '../../utils/coveredCallEligibility';
 import { StockRow } from './StockRow';
 import { OptionRow } from './OptionRow';
 import type { CollateralType } from './OptionRow';
@@ -404,22 +405,23 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
           // Check for Covered Call opportunity
           const stock = p as any;
 
-          const existingCoveredCalls = positions.filter(pos =>
-            pos.type === 'call' &&
-            'action' in pos && pos.action === 'sell' &&
-            pos.ticker === stock.ticker &&
-            pos.status === 'open'
+          const tickerLots = positions.filter(
+            (p): p is StockPosition =>
+              (p.type === 'stock' || p.type === 'etf') &&
+              p.status === 'open' &&
+              p.portfolio === stock.portfolio &&
+              p.ticker === stock.ticker
           );
-
-          // Always allow CC if enough shares (100+ standard, 10+ for mini contracts)
-          const minShares = stock.miniContractsSupported ? 10 : 100;
-          const canWriteCoveredCalls = stock.shares >= minShares;
-
-          if (!canWriteCoveredCalls) return false;
-
-          const coveredCallContracts = existingCoveredCalls.reduce((sum, cc: any) => sum + (cc.contracts || 0), 0);
-          const contractsNeeded = Math.floor(stock.shares / (stock.miniContractsSupported ? 10 : 100));
-          return coveredCallContracts < contractsNeeded;
+          const tickerSoldCalls = positions.filter(
+            (p): p is CallOption =>
+              p.type === 'call' &&
+              (p as CallOption).action === 'sell' &&
+              p.status === 'open' &&
+              p.portfolio === stock.portfolio &&
+              p.ticker === stock.ticker
+          );
+          const ccCapacity = computeCoveredCallCapacity(tickerLots, tickerSoldCalls);
+          return ccCapacity.canWriteCoveredCall;
         } else if (p.type === 'call' || p.type === 'put') {
           // Check for option opportunity - 80% of max profit reached
           const option = p as CallOption | PutOption;
