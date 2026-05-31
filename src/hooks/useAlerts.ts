@@ -127,9 +127,10 @@ export const useAlerts = (portfolioFilter?: string) => {
   }, [alerts]);
 
   const getOpportunitiesForPosition = useCallback((positionId: string): AlertItem[] => {
+    const position = positions.find(p => p.id === positionId);
     return opportunities.filter(opp => {
-      // Stock CC: stock-cc-opportunity-{positionId}
-      if (opp.id === `stock-cc-opportunity-${positionId}`) return true;
+      // Stock CC opportunities are aggregated per ticker+portfolio
+      if (position && opp.id === `stock-cc-opportunity-${position.ticker}-${position.portfolio}`) return true;
       // LEAPS CC: leaps-cc-opportunity-{positionId}
       if (opp.id === `leaps-cc-opportunity-${positionId}`) return true;
       // KaChing: kaching-opportunity-{positionId}
@@ -138,7 +139,7 @@ export const useAlerts = (portfolioFilter?: string) => {
       if (opp.id === `profit-opportunity-${positionId}`) return true;
       return false;
     });
-  }, [opportunities]);
+  }, [opportunities, positions]);
 
   // Dismiss an alert
   const dismissAlert = useCallback((alertId: string) => {
