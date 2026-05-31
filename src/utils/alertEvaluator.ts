@@ -3,6 +3,7 @@ import { getCurrencySymbol } from './currency';
 import { formatNumber } from './numberFormat';
 import { isKaChingEligible } from './campaignDetector';
 import { isSpreadLeg, getSpreadId } from './spreadHelpers';
+import { computeCoveredCallCapacity } from './coveredCallEligibility';
 import type { Position, StockPosition, CallOption, PutOption, StrategyRule, Portfolio, Ticker } from '../types';
 
 // Alert item interface
@@ -323,68 +324,64 @@ export const evaluateStockCoveredCallOpportunities = (
          (!portfolioFilter || p.portfolio === portfolioFilter)
   ) as CallOption[];
 
-  // Find stocks that can have covered calls written
-  stockPositions.forEach(stock => {
-    // Check existing sold calls for this ticker in the same portfolio
-    // Only count calls that are linked to THIS stock position (underlyingId matches)
-    // or calls that have no underlyingId but match ticker (legacy data)
-    const existingCalls = soldCalls.filter(sc =>
-      sc.ticker === stock.ticker &&
-      sc.portfolio === stock.portfolio &&
-      (sc.underlyingId === stock.id || !sc.underlyingId)
-    );
-    const coveredContracts = existingCalls.reduce((sum, sc) => sum + sc.contracts, 0);
+  // Group stock lots by ticker+portfolio and iterate once per ticker
+  const groups = new Map<string, { lots: StockPosition[]; calls: CallOption[] }>();
+  for (const stock of stockPositions) {
+    const key = `${stock.portfolio}::${stock.ticker}`;
+    const entry = groups.get(key) ?? {
+      lots: [],
+      calls: soldCalls.filter(sc => sc.ticker === stock.ticker && sc.portfolio === stock.portfolio),
+    };
+    entry.lots.push(stock);
+    groups.set(key, entry);
+  }
 
-    // Check if stock supports options (or if there are already CCs, which means options are supported)
-    const hasExistingCalls = existingCalls.length > 0;
-    if (!stock.optionsSupported && !hasExistingCalls) return;
+  for (const { lots, calls } of groups.values()) {
+    const stock = lots[0];
+    const capacity = computeCoveredCallCapacity(lots, calls);
 
-    // Calculate how many contracts can be written
-    const sharesPerContract = stock.miniContractsSupported ? 10 : 100;
-    const maxContracts = Math.floor(stock.shares / sharesPerContract);
+    const hasExistingCalls = capacity.coveredContracts > 0;
+    if (!capacity.optionsSupported && !hasExistingCalls) continue;
 
-    if (maxContracts < 1) return;
+    const uncoveredContracts = capacity.freeContracts;
+    if (uncoveredContracts <= 0) continue;
 
-    // Calculate uncovered contracts
-    const uncoveredContracts = maxContracts - coveredContracts;
+    const coveredContracts = capacity.coveredContracts;
+    const totalShares = capacity.totalShares;
 
-    // Only show opportunity if there are uncovered contracts available
-    // If all shares are covered by active calls, no opportunity exists
-    if (uncoveredContracts <= 0) return;
+    const alertId = `stock-cc-opportunity-${stock.ticker}-${stock.portfolio}`;
+    if (dismissedAlerts.has(alertId)) continue;
 
-    const alertId = `stock-cc-opportunity-${stock.id}`;
-    if (!dismissedAlerts.has(alertId)) {
-      let message = `Verkoop ${uncoveredContracts} covered call${uncoveredContracts > 1 ? 's' : ''} op ${stock.ticker} (${stock.shares} aandelen)`;
-      if (coveredContracts > 0) {
-        message += `\n${coveredContracts} covered call${coveredContracts > 1 ? 's' : ''} actief`;
-      }
-
-      opportunities.push({
-        id: alertId,
-        ticker: stock.ticker,
-        portfolio: stock.portfolio,
-        message,
-        type: 'opportunity',
-        rule: {
-          id: 'stock-cc-opportunity',
-          strategyType: 'options',
-          portfolio: stock.portfolio,
-          name: 'Stock Covered Call Opportunity',
-          description: 'Opportunity om covered calls te verkopen op aandelen positie',
-          category: 'opportunity',
-          trigger: 'time_based',
-          enabled: true,
-          parameters: {},
-          actions: {
-            showOnDashboard: true,
-            showOnPortfolioOverview: true,
-            showInList: true,
-          },
-          createdAt: new Date().toISOString(),
-        },
-      });
+    let message = `Verkoop ${uncoveredContracts} covered call${uncoveredContracts > 1 ? 's' : ''} op ${stock.ticker} (${totalShares} aandelen)`;
+    if (coveredContracts > 0) {
+      message += `\n${coveredContracts} covered call${coveredContracts > 1 ? 's' : ''} actief`;
     }
-  });
+
+    opportunities.push({
+      id: alertId,
+      ticker: stock.ticker,
+      portfolio: stock.portfolio,
+      message,
+      type: 'opportunity',
+      rule: {
+        id: 'stock-cc-opportunity',
+        strategyType: 'options',
+        portfolio: stock.portfolio,
+        name: 'Stock Covered Call Opportunity',
+        description: 'Opportunity om covered calls te verkopen op aandelen positie',
+        category: 'opportunity',
+        trigger: 'time_based',
+        enabled: true,
+        parameters: {},
+        actions: {
+          showOnDashboard: true,
+          showOnPortfolioOverview: true,
+          showInList: true,
+        },
+        createdAt: new Date().toISOString(),
+      },
+    });
+  }
 
   return opportunities;
 };
