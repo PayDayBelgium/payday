@@ -2232,15 +2232,25 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                     // Get ticker data for current price from Redux store
                     const tickerData = tickers.find(t => t.symbol === stock.ticker);
 
-                    // Check if there are existing covered calls
-                    const existingCoveredCalls = positions.filter(p =>
-                      p.type === 'call' &&
-                      'action' in p && p.action === 'sell' &&
-                      p.ticker === stock.ticker &&
-                      p.status === 'open'
+                    // Compute aggregate covered-call capacity for this ticker
+                    const stockTickerLots = positions.filter(
+                      (p): p is StockPosition =>
+                        (p.type === 'stock' || p.type === 'etf') &&
+                        p.status === 'open' &&
+                        p.portfolio === stock.portfolio &&
+                        p.ticker === stock.ticker
                     );
+                    const stockTickerSoldCalls = positions.filter(
+                      (p): p is CallOption =>
+                        p.type === 'call' &&
+                        (p as CallOption).action === 'sell' &&
+                        p.status === 'open' &&
+                        p.portfolio === stock.portfolio &&
+                        p.ticker === stock.ticker
+                    );
+                    const stockCcCapacity = computeCoveredCallCapacity(stockTickerLots, stockTickerSoldCalls);
 
-                    const coveredCallContracts = existingCoveredCalls.reduce((sum, cc: any) => sum + (cc.contracts || 0), 0);
+                    const coveredCallContracts = stockCcCapacity.coveredContracts;
 
                     // Check for opportunities from central evaluator
                     const stockOpportunities = positionOpportunities.get(stock.id) || [];
@@ -2262,6 +2272,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                         coveredCallContracts={coveredCallContracts}
                         hasOpportunity={hasOptionsAccess && hasStockOpportunity}
                         opportunityMessage={stockOpportunityMessage}
+                        canWriteCoveredCallsOverride={stockCcCapacity.canWriteCoveredCall}
                       />
                     );
                   }

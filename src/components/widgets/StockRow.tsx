@@ -22,6 +22,8 @@ interface StockRowProps {
   // External opportunities from central evaluator
   hasOpportunity?: boolean;
   opportunityMessage?: string;
+  /** Covered-call eligibility for the whole ticker group; overrides per-lot calc when provided. */
+  canWriteCoveredCallsOverride?: boolean;
 }
 
 export const StockRow: React.FC<StockRowProps> = ({
@@ -37,6 +39,7 @@ export const StockRow: React.FC<StockRowProps> = ({
   className = '',
   hasOpportunity = false,
   opportunityMessage = '',
+  canWriteCoveredCallsOverride,
 }) => {
   const currencySymbol = getCurrencySymbol(currency);
 
@@ -51,7 +54,8 @@ export const StockRow: React.FC<StockRowProps> = ({
 
   // Check for Covered Call opportunity - use external opportunity if provided, otherwise calculate locally
   const minShares = position.miniContractsSupported ? 10 : 100;
-  const canWriteCoveredCalls = position.shares >= minShares;
+  const canWriteCoveredCalls =
+    canWriteCoveredCallsOverride ?? (position.shares >= minShares);
   const contractsNeeded = Math.floor(position.shares / (position.miniContractsSupported ? 10 : 100));
   const hasUncoveredShares = canWriteCoveredCalls && coveredCallContracts < contractsNeeded;
 
