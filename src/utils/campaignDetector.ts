@@ -1,5 +1,6 @@
 import type { Position, CallOption, PutOption, StockPosition, WheelCampaign } from '../types';
 import { differenceInDays, parseISO } from 'date-fns';
+import { computeCoveredCallCapacity } from './coveredCallEligibility';
 
 export type CampaignType = 'covered-call' | 'pmcc' | 'kaching' | 'wheel';
 
@@ -108,8 +109,10 @@ export function detectCampaigns(
       p.type === 'call' && (p as CallOption).action === 'sell' && !p.wheelId
     ) as CallOption[];
 
-    stocks.forEach(stock => {
-      if (stock.shares >= 100) {
+    const tickerLots = stocks;
+    const tickerSoldCalls = shortCalls;
+    if (computeCoveredCallCapacity(tickerLots, tickerSoldCalls).maxContracts >= 1) {
+      stocks.forEach(stock => {
         const campaign = createCoveredCallCampaign(
           stock,
           shortCalls,
@@ -120,8 +123,8 @@ export function detectCampaigns(
         if (campaign) {
           campaigns.push(campaign);
         }
-      }
-    });
+      });
+    }
 
     // 2. Check for PMCC campaigns (LEAPS call + short calls)
     // Exclude positions that are already linked to a wheel
