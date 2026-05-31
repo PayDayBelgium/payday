@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronRight, AlertCircle, CheckCircle, Search, Edit2, Check, X, TrendingDown, Target } from 'lucide-react';
 import type { StockPosition, PriceAlert, Portfolio } from '../../types';
+import type { CallOption } from '../../types';
 import { formatCurrency } from '../../utils/currencyHelpers';
 import { formatNumber } from '../../utils/numberFormat';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { updatePosition, markPriceAlertAsRead } from '../../store/slices/positionsSlice';
 import { updateTickerPrice } from '../../store/slices/tickersSlice';
+import { computeCoveredCallCapacity } from '../../utils/coveredCallEligibility';
 // import { SellStockModal } from '../modals/SellStockModal';
 // import { ConfirmModal } from '../modals/ConfirmModal';
 
@@ -226,10 +228,14 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
             const portfolio = allPortfolios.find(b => b.name === group.positions[0].portfolio);
             const portfolioSupportsOptions = portfolio?.hasOptions ?? false;
 
-            const canWriteCoveredCalls = portfolioSupportsOptions && group.positions.some(pos => {
-              const minShares = pos.miniContractsSupported ? 10 : 100;
-              return pos.shares >= minShares && pos.optionsSupported;
-            });
+            // positions prop is StockPosition[]; sold calls are not available here.
+            // Pass empty array — capacity uses aggregate shares to determine eligibility.
+            const emptySoldCalls: CallOption[] = [];
+            const ccCapacity = computeCoveredCallCapacity(
+              group.positions as StockPosition[],
+              emptySoldCalls
+            );
+            const canWriteCoveredCalls = portfolioSupportsOptions && ccCapacity.canWriteCoveredCall;
 
             return (
               <div
