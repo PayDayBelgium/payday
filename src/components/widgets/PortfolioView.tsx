@@ -44,6 +44,8 @@ interface PortfolioViewProps {
   portfolioCurrentValue: number;
   className?: string;
   onNavigateToCampaigns?: () => void;
+  /** Opens the covered-call wizard for a ticker (threaded down to the grouped stock list). */
+  onWriteCoveredCall?: (ticker: string) => void;
 }
 
 interface GroupedPosition {
@@ -66,6 +68,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   portfolioCurrentValue,
   className = '',
   onNavigateToCampaigns,
+  onWriteCoveredCall,
 }) => {
   const dispatch = useAppDispatch();
   const tickers = useAppSelector(selectAllTickers);
@@ -1543,6 +1546,8 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
               alerts={priceAlerts}
               allPortfolios={portfolios}
               onEditPosition={setPositionToView}
+              onWriteCoveredCall={onWriteCoveredCall}
+              onSellPosition={setPositionToClose}
             />
           </div>
         )}

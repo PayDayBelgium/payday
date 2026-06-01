@@ -24,6 +24,10 @@ interface GroupedStockListProps {
   allPortfolios: Portfolio[];
   onEditPosition: (position: StockPosition) => void;
   onDismissStrategyAlert?: (alertId: string) => void;
+  /** When provided, the "CC" badge becomes a button that opens the covered-call wizard for the ticker. */
+  onWriteCoveredCall?: (ticker: string) => void;
+  /** When provided, a sell button is shown that delegates selling a lot to the host's close/sell flow. */
+  onSellPosition?: (position: StockPosition) => void;
 }
 
 interface TickerGroup {
@@ -47,6 +51,8 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
   allPortfolios,
   onEditPosition,
   onDismissStrategyAlert,
+  onWriteCoveredCall,
+  onSellPosition,
 }) => {
   const dispatch = useAppDispatch();
   const allStorePositions = useAppSelector(selectPositions);
@@ -54,7 +60,6 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [editingTicker, setEditingTicker] = useState<string | null>(null);
   const [editPrice, setEditPrice] = useState('');
-  const [sellModalTicker, setSellModalTicker] = useState<string | null>(null);
   const [dismissConfirm, setDismissConfirm] = useState<{ isOpen: boolean; alert: PriceAlert | null }>({
     isOpen: false,
     alert: null,
@@ -312,13 +317,27 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                             </div>
                           )}
                           {canWriteCoveredCalls && (
-                            <div
-                              className="flex items-center gap-1 px-2 py-1 bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 rounded-full text-xs font-medium"
-                              title="Covered Calls mogelijk - Voldoende aandelen om covered calls te schrijven"
-                            >
-                              <CheckCircle className="w-3.5 h-3.5" />
-                              CC
-                            </div>
+                            onWriteCoveredCall ? (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onWriteCoveredCall(group.ticker);
+                                }}
+                                className="flex items-center gap-1 px-2 py-1 bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 rounded-full text-xs font-medium hover:bg-positive-100 dark:hover:bg-positive-700/40 transition-colors"
+                                title="Schrijf een covered call op deze aandelen"
+                              >
+                                <CheckCircle className="w-3.5 h-3.5" />
+                                CC
+                              </button>
+                            ) : (
+                              <div
+                                className="flex items-center gap-1 px-2 py-1 bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 rounded-full text-xs font-medium"
+                                title="Covered Calls mogelijk - Voldoende aandelen om covered calls te schrijven"
+                              >
+                                <CheckCircle className="w-3.5 h-3.5" />
+                                CC
+                              </div>
+                            )
                           )}
                         </div>
 
@@ -396,18 +415,25 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                     </div>
 
                     {/* Sell button in gray zone */}
-                    <div className="flex-shrink-0 bg-gray-100 dark:bg-gray-700/50 rounded-lg px-3 py-3">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSellModalTicker(group.ticker);
-                        }}
-                        className="w-8 h-8 flex items-center justify-center bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-200 rounded font-semibold text-sm transition-colors"
-                        title="Verkoop"
-                      >
-                        S
-                      </button>
-                    </div>
+                    {onSellPosition && (
+                      <div className="flex-shrink-0 bg-gray-100 dark:bg-gray-700/50 rounded-lg px-3 py-3">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (group.positions.length === 1) {
+                              onSellPosition(group.positions[0]);
+                            } else {
+                              // Multiple lots: expand so the user can sell a specific lot
+                              setExpandedTickers(prev => new Set(prev).add(group.ticker));
+                            }
+                          }}
+                          className="w-8 h-8 flex items-center justify-center bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-200 rounded font-semibold text-sm transition-colors"
+                          title={group.positions.length === 1 ? 'Verkoop' : 'Verkoop een lot (klap uit)'}
+                        >
+                          S
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -505,6 +531,19 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                                     {isPosProfit ? '+' : ''}{formatNumber(posProfitPct, 2)}%
                                   </p>
                                 </div>
+
+                                {onSellPosition && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onSellPosition(position);
+                                    }}
+                                    className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-200 rounded font-semibold text-sm transition-colors"
+                                    title="Verkoop dit lot"
+                                  >
+                                    S
+                                  </button>
+                                )}
                               </div>
                             </div>
 

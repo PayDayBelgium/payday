@@ -8,6 +8,7 @@ import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { selectTransactionsByPortfolio, addTransaction, selectDailyData } from '../../store/slices/portfoliosSlice';
 import { selectAllTickers } from '../../store/slices/tickersSlice';
+import type { Ticker } from '../../types';
 import { selectUnlockedLevels, isFeatureAvailable } from '../../store/slices/userProgressSlice';
 import { useAlerts } from '../../hooks/useAlerts';
 import { StatCard } from '../../components/widgets/StatCard';
@@ -85,8 +86,18 @@ export const PortfolioDetail: React.FC = () => {
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
   const [isStockWizardOpen, setIsStockWizardOpen] = useState(false);
   const [isCallOptionWizardOpen, setIsCallOptionWizardOpen] = useState(false);
+  const [callWizardInitialTicker, setCallWizardInitialTicker] = useState<Ticker | undefined>(undefined);
+  const [callWizardInitialAction, setCallWizardInitialAction] = useState<'covered-call' | undefined>(undefined);
   const [isPutOptionWizardOpen, setIsPutOptionWizardOpen] = useState(false);
   const [expandedTickers, setExpandedTickers] = useState<Set<string>>(new Set());
+
+  // Open the call wizard pre-filled to write a covered call on a specific ticker.
+  const handleWriteCoveredCall = (tickerSymbol: string) => {
+    const ticker = tickerList.find(t => t.symbol.toUpperCase() === tickerSymbol.toUpperCase());
+    setCallWizardInitialTicker(ticker);
+    setCallWizardInitialAction('covered-call');
+    setIsCallOptionWizardOpen(true);
+  };
 
   useEffect(() => {
     setPageTitle(portfolioName || 'Portfolio Details', t('portfolioDetail.pageSubtitle'));
@@ -410,7 +421,11 @@ export const PortfolioDetail: React.FC = () => {
 
                   {hasOptionsAccess && (
                     <button
-                      onClick={() => setIsCallOptionWizardOpen(true)}
+                      onClick={() => {
+                        setCallWizardInitialTicker(undefined);
+                        setCallWizardInitialAction(undefined);
+                        setIsCallOptionWizardOpen(true);
+                      }}
                       className="flex items-center gap-2 px-3 py-2 bg-positive-50 dark:bg-positive-700/15 hover:bg-positive-50 dark:hover:bg-positive-700/25 rounded-lg border border-positive-500/20 dark:border-positive-700/30 hover:border-positive-500/40 dark:hover:border-positive-600 transition-all text-left cursor-pointer w-36"
                     >
                       <Plus className="w-4 h-4 text-positive-600 dark:text-positive-500 flex-shrink-0" />
@@ -451,6 +466,7 @@ export const PortfolioDetail: React.FC = () => {
                   portfolioName={portfolioName || ''}
                   portfolioCurrentValue={portfolio?.currentValue || 0}
                   onNavigateToCampaigns={() => setActiveTab('campaigns')}
+                  onWriteCoveredCall={handleWriteCoveredCall}
                 />
               </div>
             </div>
@@ -1049,6 +1065,8 @@ export const PortfolioDetail: React.FC = () => {
           <CallOptionWizard
             isOpen={isCallOptionWizardOpen}
             onClose={() => setIsCallOptionWizardOpen(false)}
+            initialTicker={callWizardInitialTicker}
+            initialAction={callWizardInitialAction}
             portfolio={{
               name: portfolio.name,
               currency: portfolio.currency,
