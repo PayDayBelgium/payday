@@ -18,7 +18,7 @@ import { SpreadRollModal } from '../modals/SpreadRollModal';
 import { AssignmentModal } from '../modals/AssignmentModal';
 import { addPosition } from '../../store/slices/positionsSlice';
 import { updateWheelPhase, incrementWheelCycle, updateWheelPremium } from '../../store/slices/wheelsSlice';
-import type { StockPosition, PriceAlert } from '../../types';
+import type { StockPosition } from '../../types';
 import type { Position, CurrencyType, CallOption, PutOption } from '../../types';
 import { getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency, formatNumber } from '../../utils/numberFormat';
@@ -1542,7 +1542,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
               positions={stockLots}
               alerts={priceAlerts}
               allPortfolios={portfolios}
-              onEditPosition={(position) => setPositionToView(position)}
+              onEditPosition={setPositionToView}
             />
           </div>
         )}
@@ -2253,6 +2253,10 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                       {/* Render standalone positions */}
                       {strategyStandalonePositions.map((position) => {
                         // Check if this is a stock/ETF or option
+                        // NOTE: stocks/ETFs are excluded from groupedAllPositions and rendered
+                        // by GroupedStockList above, so this branch is currently unreachable.
+                        // If you ever re-add stocks to groupedAllPositions, remove this branch
+                        // to avoid double-rendering them.
                         const isStockOrETF = position.type === 'stock' || position.type === 'etf';
 
                   if (isStockOrETF) {
