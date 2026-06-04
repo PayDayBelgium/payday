@@ -51,11 +51,22 @@ export const LEVEL_CONFIGS: LevelConfig[] = [
     creditsRequired: 0,
     priceEUR: 0,
   },
+  {
+    level: 'offpiste',
+    name: 'Off-piste',
+    slopeName: 'Off-piste',
+    slopeColor: 'orange',
+    icon: '🟠',
+    description: 'Verlaat de geprepareerde piste: kwantitatieve modellen, edge-detectie en data-gedreven trading. Ontgrendel via de community.',
+    features: ['quant_trading'],
+    creditsRequired: 100,
+    priceEUR: 0,
+  },
 ];
 
 // Get all features up to and including a level
 export const getFeaturesForLevel = (level: UserLevel): FeatureId[] => {
-  const levelOrder: UserLevel[] = ['beginner', 'medior', 'senior', 'expert'];
+  const levelOrder: UserLevel[] = ['beginner', 'medior', 'senior', 'expert', 'offpiste'];
   const levelIndex = levelOrder.indexOf(level);
 
   return LEVEL_CONFIGS
@@ -159,7 +170,7 @@ const userProgressSlice = createSlice({
         state.progress.unlockedLevels.push(level);
 
         // Update current level if this is higher
-        const levelOrder: UserLevel[] = ['beginner', 'medior', 'senior', 'expert'];
+        const levelOrder: UserLevel[] = ['beginner', 'medior', 'senior', 'expert', 'offpiste'];
         const currentIndex = levelOrder.indexOf(state.progress.currentLevel);
         const newIndex = levelOrder.indexOf(level);
 
@@ -266,7 +277,7 @@ export const selectCurrentLevelConfig = (state: RootState) =>
   getLevelConfig(state.userProgress.progress.currentLevel);
 
 export const selectNextLevel = (state: RootState): LevelConfig | null => {
-  const levelOrder: UserLevel[] = ['beginner', 'medior', 'senior', 'expert'];
+  const levelOrder: UserLevel[] = ['beginner', 'medior', 'senior', 'expert', 'offpiste'];
   const currentIndex = levelOrder.indexOf(state.userProgress.progress.currentLevel);
 
   if (currentIndex < levelOrder.length - 1) {
