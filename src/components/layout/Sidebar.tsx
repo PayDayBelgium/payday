@@ -12,11 +12,14 @@ import {
   Mountain,
   Target,
   Activity,
+  MessageSquare,
+  Sigma,
 } from 'lucide-react';
 import type { FeatureId } from '../../types';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useNavigation } from '../../contexts/NavigationContext';
 import { selectUnlockedLevels, isFeatureAvailable } from '../../store/slices/userProgressSlice';
+import { FeatureLockIndicator } from '../features/FeatureGate';
 
 // Map routes to required features - only routes that need gating
 const ROUTE_FEATURE_MAP: Record<string, FeatureId> = {
@@ -25,6 +28,7 @@ const ROUTE_FEATURE_MAP: Record<string, FeatureId> = {
   '/tools/pnl-simulator': 'advanced_analytics',
   '/tools/income-calculator': 'covered_calls',
   '/tools/covered-call-simulator': 'covered_calls',
+  '/quant': 'quant_trading',
 };
 
 interface SidebarProps {
@@ -113,6 +117,41 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '', isCollapsed })
               <ActiveBar active={isActive} />
               <Activity className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={1.75} />
               {!isCollapsed && <span>Performance</span>}
+            </>
+          )}
+        </NavLink>
+
+        <NavLink
+          to="/community"
+          onClick={() => handleMenuClick('/community', t('sidebar.community'))}
+          className={({ isActive }) => navClass(isActive, isCollapsed)}
+          title={isCollapsed ? t('sidebar.community') : ''}
+        >
+          {({ isActive }) => (
+            <>
+              <ActiveBar active={isActive} />
+              <MessageSquare className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={1.75} />
+              {!isCollapsed && <span>{t('sidebar.community')}</span>}
+            </>
+          )}
+        </NavLink>
+
+        <NavLink
+          to="/quant"
+          onClick={() => handleMenuClick('/quant', t('sidebar.quantTrading'))}
+          className={({ isActive }) => navClass(isActive, isCollapsed)}
+          title={isCollapsed ? t('sidebar.quantTrading') : ''}
+        >
+          {({ isActive }) => (
+            <>
+              <ActiveBar active={isActive} />
+              <Sigma className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={1.75} />
+              {!isCollapsed && (
+                <span className="flex items-center gap-1.5">
+                  {t('sidebar.quantTrading')}
+                  <FeatureLockIndicator feature="quant_trading" />
+                </span>
+              )}
             </>
           )}
         </NavLink>
