@@ -628,6 +628,97 @@ const expertResources: ExternalResource[] = [
 ];
 
 // =====================================================
+// OFF-PISTE LEVEL - Oranje Route (Quant)
+// =====================================================
+
+const offpisteTips: TradingTip[] = [
+  {
+    id: 'tip-o-1',
+    level: 'offpiste',
+    title: 'Meet je Edge, Vertrouw hem Niet Blind',
+    content: 'Off-piste trading draait om verwachtingswaarde. Onderbouw elke strategie met data en backtests, en herzie je aannames zodra de cijfers afwijken.',
+    category: 'strategy',
+    icon: '📊',
+    relatedFeatures: ['quant_trading'],
+  },
+  {
+    id: 'tip-o-2',
+    level: 'offpiste',
+    title: 'Vermijd Overfitting',
+    content: 'Een model dat het verleden perfect verklaart, voorspelt de toekomst zelden. Test out-of-sample en gebruik walk-forward analyse voordat je live gaat.',
+    category: 'risk',
+    icon: '🧪',
+    relatedFeatures: ['quant_trading'],
+  },
+  {
+    id: 'tip-o-3',
+    level: 'offpiste',
+    title: 'Positiegrootte als Systeem',
+    content: 'Laat je positiegrootte bepalen door een vaste, data-gedreven regel (bijvoorbeeld een fractie van Kelly) in plaats van door emotie.',
+    category: 'psychology',
+    icon: '🎚️',
+    relatedFeatures: ['quant_trading'],
+  },
+];
+
+const offpisteBooks: RecommendedBook[] = [
+  {
+    id: 'book-o-1',
+    level: 'offpiste',
+    title: 'Advances in Financial Machine Learning',
+    author: 'Marcos López de Prado',
+    description: 'Praktische methodes om kwantitatieve strategieën op te bouwen zonder in overfitting te trappen.',
+    category: 'options',
+    rating: 5,
+    difficulty: 'advanced',
+  },
+  {
+    id: 'book-o-2',
+    level: 'offpiste',
+    title: 'Trading Systems and Methods',
+    author: 'Perry J. Kaufman',
+    description: 'Standaardwerk over het systematisch ontwerpen, testen en beheren van kwantitatieve handelssystemen.',
+    category: 'options',
+    rating: 4,
+    difficulty: 'advanced',
+  },
+];
+
+const offpisteVideos: VideoTutorial[] = [
+  {
+    id: 'vid-o-1',
+    level: 'offpiste',
+    title: 'Een Edge Backtesten van A tot Z',
+    description: 'Stap-voor-stap een hypothese omzetten in een toetsbare, data-gedreven strategie.',
+    duration: '24:10',
+    platform: 'youtube',
+    category: 'analysis',
+    creditsAwarded: 20,
+  },
+];
+
+const offpisteResources: ExternalResource[] = [
+  {
+    id: 'res-o-1',
+    level: 'offpiste',
+    title: 'QuantConnect',
+    description: 'Cloud-platform om kwantitatieve strategieën te backtesten en live te draaien.',
+    url: 'https://www.quantconnect.com/',
+    type: 'tool',
+    isFree: true,
+  },
+  {
+    id: 'res-o-2',
+    level: 'offpiste',
+    title: 'Quantitative Finance Stack Exchange',
+    description: 'Community van quants over modellen, statistiek en data-gedreven trading.',
+    url: 'https://quant.stackexchange.com/',
+    type: 'community',
+    isFree: true,
+  },
+];
+
+// =====================================================
 // EXPORT ALL RESOURCES
 // =====================================================
 
@@ -659,6 +750,13 @@ export const LEVEL_RESOURCES: Record<UserLevel, LevelResources> = {
     books: expertBooks,
     videos: expertVideos,
     externalResources: expertResources,
+  },
+  offpiste: {
+    level: 'offpiste',
+    tips: offpisteTips,
+    books: offpisteBooks,
+    videos: offpisteVideos,
+    externalResources: offpisteResources,
   },
 };
 

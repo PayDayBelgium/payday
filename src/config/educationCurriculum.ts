@@ -2319,6 +2319,96 @@ const expertChapters: EducationChapter[] = [
 ];
 
 // =====================================================
+// LEVEL 5: OFF-PISTE (QUANT) - Oranje Route
+// Kwantitatieve, data-gedreven trading buiten de gebaande piste
+// =====================================================
+
+const offpisteChapters: EducationChapter[] = [
+  {
+    id: 'ch-o-1',
+    level: 'offpiste',
+    title: 'Kwantitatief Denken',
+    description: 'De overstap van discretionair naar data-gedreven trading: edge, verwachtingswaarde en systematische besluitvorming.',
+    icon: '📊',
+    order: 1,
+    estimatedDuration: '40 min',
+    lessons: [
+      {
+        id: 'les-o-1-1',
+        chapterId: 'ch-o-1',
+        title: 'Wat is een Edge?',
+        order: 1,
+        creditsAwarded: 40,
+        estimatedDuration: '20 min',
+        content: [
+          {
+            type: 'heading',
+            content: 'Van onderbuikgevoel naar verwachtingswaarde'
+          },
+          {
+            type: 'text',
+            content: 'Off-piste trading verlaat de geprepareerde piste van vaste strategieën. In plaats van losse trades beoordeel je elke setup op zijn statistische verwachtingswaarde: gemiddelde winst maal winkans, min gemiddeld verlies maal verlieskans.'
+          },
+          {
+            type: 'definition',
+            term: 'Edge',
+            content: 'Een meetbaar, herhaalbaar voordeel waardoor je verwachtingswaarde over veel trades positief is. Zonder edge is trading op de lange termijn een verliezend spel na kosten.'
+          },
+          {
+            type: 'formula',
+            content: 'EV = (Winkans × Gem. Winst) − (Verlieskans × Gem. Verlies)'
+          },
+          {
+            type: 'callout',
+            variant: 'warning',
+            content: 'Off-piste betekent meer vrijheid maar ook meer risico. Een edge moet je aantonen met data en backtests, niet aannemen op basis van een paar mooie trades.'
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'ch-o-2',
+    level: 'offpiste',
+    title: 'Backtesten & Datakwaliteit',
+    description: 'Hoe je een strategie objectief test op historische data zonder jezelf voor de gek te houden.',
+    icon: '🧪',
+    order: 2,
+    estimatedDuration: '35 min',
+    lessons: [
+      {
+        id: 'les-o-2-1',
+        chapterId: 'ch-o-2',
+        title: 'Overfitting Vermijden',
+        order: 1,
+        creditsAwarded: 35,
+        estimatedDuration: '18 min',
+        content: [
+          {
+            type: 'heading',
+            content: 'Een model dat het verleden perfect verklaart'
+          },
+          {
+            type: 'text',
+            content: 'Een veelvoorkomende valkuil bij kwantitatieve trading is overfitting: je optimaliseert parameters zo lang tot ze de historische data perfect passen, maar het model voorspelt de toekomst niet. Out-of-sample testen en walk-forward analyse beschermen je hiertegen.'
+          },
+          {
+            type: 'definition',
+            term: 'Overfitting',
+            content: 'Het te nauw afstemmen van een model op historische ruis in plaats van op een echte, structurele edge. Het resultaat ziet er prachtig uit op de testdata en faalt live.'
+          },
+          {
+            type: 'callout',
+            variant: 'tip',
+            content: 'Houd altijd een deel van je data apart (out-of-sample) dat je model nog nooit heeft gezien. Pas als de edge daar standhoudt, mag je hem vertrouwen.'
+          }
+        ]
+      }
+    ]
+  }
+];
+
+// =====================================================
 // EXPORT ALL CURRICULUM
 // =====================================================
 
@@ -2327,6 +2417,7 @@ export const EDUCATION_CURRICULUM: Record<UserLevel, EducationChapter[]> = {
   medior: mediorChapters,
   senior: seniorChapters,
   expert: expertChapters,
+  offpiste: offpisteChapters,
 };
 
 // Helper functions
@@ -2336,6 +2427,7 @@ export const getAllChapters = (): EducationChapter[] => {
     ...mediorChapters,
     ...seniorChapters,
     ...expertChapters,
+    ...offpisteChapters,
   ];
 };
 
