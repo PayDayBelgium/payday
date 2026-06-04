@@ -352,6 +352,7 @@ const LevelCard: React.FC<{
       case 'blue': return 'border-primary-500 bg-primary-50 dark:bg-primary-900/20';
       case 'red': return 'border-negative-500 bg-negative-50 dark:bg-negative-700/15';
       case 'black': return 'border-gray-900 dark:border-gray-100 bg-gray-50 dark:bg-gray-800';
+      case 'orange': return 'border-caution-500 bg-caution-50 dark:bg-caution-600/15';
       default: return 'border-gray-300 bg-gray-50';
     }
   };
@@ -362,6 +363,7 @@ const LevelCard: React.FC<{
       case 'blue': return 'bg-primary-700';
       case 'red': return 'bg-negative-700';
       case 'black': return 'bg-ink-900 dark:bg-ink-100';
+      case 'orange': return 'bg-caution-500';
       default: return 'bg-ink-700';
     }
   };
