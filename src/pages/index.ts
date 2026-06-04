@@ -46,6 +46,12 @@ export { HelpPortal } from './help/HelpPortal';
 // Mission
 export { MissionStatement } from './mission/MissionStatement';
 
+// Community
+export { Community } from './community/Community';
+
+// Quant
+export { QuantTrading } from './quant/QuantTrading';
+
 // Admin
 export { AdminDashboard } from './admin/AdminDashboard';
 export { UsersList } from './admin/UsersList';

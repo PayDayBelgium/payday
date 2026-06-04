@@ -25,6 +25,8 @@ import {
   Analytics,
   HelpPortal,
   MissionStatement,
+  Community,
+  QuantTrading,
 } from './pages';
 import { AdminLayout } from './components/layout/AdminLayout';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
@@ -89,6 +91,8 @@ function AppContent() {
         <Route path="settings/portfolios" element={<PortfolioManagement />} />
         <Route path="help" element={<HelpPortal />} />
         <Route path="mission" element={<MissionStatement />} />
+        <Route path="community" element={<Community />} />
+        <Route path="quant" element={<FeatureGate feature="quant_trading"><QuantTrading /></FeatureGate>} />
         {/* TODO: Add more routes */}
         <Route path="*" element={<ComingSoon />} />
       </Route>
