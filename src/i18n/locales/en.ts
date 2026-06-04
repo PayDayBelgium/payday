@@ -60,6 +60,8 @@ export const en = {
     settings: 'Settings',
     ibConnection: 'IB connection',
     account: 'Account',
+    community: 'Community',
+    quantTrading: 'Quant trading',
   },
 
   // Strategies
