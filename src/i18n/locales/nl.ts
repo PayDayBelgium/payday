@@ -42,6 +42,7 @@ export const nl = {
     confirmCreate: 'Aanmaken',
     created: 'Aangemaakt:',
     cancelled: 'Geannuleerd.',
+    newChat: 'Nieuw gesprek',
   },
 
   // Login

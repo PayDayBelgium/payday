@@ -42,6 +42,7 @@ export const en = {
     confirmCreate: 'Create',
     created: 'Created:',
     cancelled: 'Cancelled.',
+    newChat: 'New conversation',
   },
 
   // Login

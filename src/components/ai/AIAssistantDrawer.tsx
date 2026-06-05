@@ -1,6 +1,6 @@
 // src/components/ai/AIAssistantDrawer.tsx
 import React from 'react';
-import { Sparkles, X } from 'lucide-react';
+import { Sparkles, X, SquarePen } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAIAssistant } from '../../contexts/AIAssistantContext';
 import { MessageList } from './MessageList';
@@ -8,7 +8,7 @@ import { AIComposer } from './AIComposer';
 import { ProposedChangesCard } from './ProposedChangesCard';
 
 export const AIAssistantDrawer: React.FC = () => {
-  const { isOpen, close } = useAIAssistant();
+  const { isOpen, close, clear, messages, isStreaming } = useAIAssistant();
   const { t } = useTranslation();
 
   return (
@@ -25,13 +25,24 @@ export const AIAssistantDrawer: React.FC = () => {
           <Sparkles className="h-5 w-5 text-primary-600" />
           {t('ai.title')}
         </div>
-        <button
-          onClick={close}
-          aria-label={t('common.close')}
-          className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-surface-subtle dark:hover:bg-trading-dark-700 text-ink-600 dark:text-ink-300"
-        >
-          <X className="h-5 w-5" />
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={clear}
+            disabled={isStreaming || messages.length === 0}
+            aria-label={t('ai.newChat')}
+            title={t('ai.newChat')}
+            className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-surface-subtle dark:hover:bg-trading-dark-700 text-ink-600 dark:text-ink-300 disabled:opacity-40"
+          >
+            <SquarePen className="h-[18px] w-[18px]" />
+          </button>
+          <button
+            onClick={close}
+            aria-label={t('common.close')}
+            className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-surface-subtle dark:hover:bg-trading-dark-700 text-ink-600 dark:text-ink-300"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
       </div>
       <MessageList />
       <ProposedChangesCard />
