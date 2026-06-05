@@ -784,3 +784,29 @@ export interface CommunityPost {
   tradeIdea?: TradeIdea;
 }
 
+// Mentorship (ski-school) — losgekoppeld van credits/levels.
+export type MentorshipFocus =
+  | 'options'      // optiestrategieën
+  | 'risk'         // risicobeheer
+  | 'psychology'   // trading-psychologie
+  | 'portfolio'    // portefeuille-opbouw
+  | 'quant';       // kwantitatief / off-piste
+
+export type MentorStyle =
+  | 'hands_on'     // intensief, samen traden
+  | 'coaching'     // periodieke coaching/reviews
+  | 'async';       // asynchroon (berichten/feedback)
+
+export type MentorshipStatus = 'pending';
+
+export interface MentorshipRequest {
+  id: string;
+  focus: MentorshipFocus;
+  level: UserLevel;        // huidig niveau van de aanvrager
+  style: MentorStyle;
+  availability: string;    // vrije tekst, bv. "weekends, 2u/week"
+  message: string;         // motivatie / context
+  createdAt: string;       // ISO
+  status: MentorshipStatus;
+}
+
