@@ -358,8 +358,8 @@ worden **niet** door de agent verzonnen.
 4. **Feature-gating (FAB).** *Beslist:* de FAB is **altijd zichtbaar**, ongeacht niveau — de
    bestaande `ai_assistant` expert-feature-flag wordt hiervoor niet gebruikt. (Let op: dit gaat over
    de *zichtbaarheid van de knop*; het *gedrag* van de agent blijft wél level-gegate, §6.2.)
-5. **Output-guard (optioneel).** Of we de conversationele laag (§6.2 punt 4) waterdicht maken met
-   een tweede output-scan. Niet in v1 tenzij gewenst; te beslissen.
+5. **Output-guard.** *Beslist:* **niet in v1** — de conversationele laag (§6.2 punt 4) blijft
+   tool-only + prompt. Een tweede output-scan is een mogelijke latere uitbreiding.
 
 ## 10. Testing (Vitest)
 
