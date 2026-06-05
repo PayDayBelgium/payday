@@ -31,7 +31,7 @@ function mulberry32(seed: number): () => number {
 }
 
 export function generateMockOptionData(symbol: string, seed = 0): MockOptionData {
-  const rng = mulberry32(hashSeed(symbol.toUpperCase()) + seed);
+  const rng = mulberry32((hashSeed(symbol.toUpperCase()) + seed) >>> 0);
   const between = (min: number, max: number) => min + rng() * (max - min);
   const round1 = (n: number) => Math.round(n * 10) / 10;
   return {
@@ -62,7 +62,7 @@ export interface CandidateAssessment {
   criteria: CriterionResult[];
 }
 
-const statusFromScore = (score: number): CriterionStatus =>
+const liquidityStatusFromScore = (score: number): CriterionStatus =>
   score >= 75 ? 'good' : score >= 45 ? 'ok' : 'bad';
 
 export function scoreOptionCandidate(ticker: Ticker, data: MockOptionData): CandidateAssessment {
@@ -86,7 +86,7 @@ export function scoreOptionCandidate(ticker: Ticker, data: MockOptionData): Cand
   const liquidity: CriterionResult = {
     key: 'liquidity',
     label: 'Optie-liquiditeit',
-    status: statusFromScore(liquidityScore),
+    status: liquidityStatusFromScore(liquidityScore),
     score: liquidityScore,
     detail: `OI ${data.openInterest}, volume ${data.optionVolume}/dag, spread ${data.bidAskSpreadPct}%.`,
   };
@@ -127,6 +127,7 @@ export function scoreOptionCandidate(ticker: Ticker, data: MockOptionData): Cand
   };
 
   const criteria = [optionable, liquidity, ivRank, premium, earnings];
+  // 'optionable' is always 100 when options exist, so an optionable ticker scores >= 20.
   const totalScore = ticker.optionsAvailable
     ? Math.round(criteria.reduce((sum, c) => sum + c.score, 0) / criteria.length)
     : 0;

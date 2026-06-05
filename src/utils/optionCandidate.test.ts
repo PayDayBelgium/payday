@@ -95,3 +95,40 @@ describe('scoreOptionCandidate', () => {
     expect(hi.status).toBe('good');
   });
 });
+
+describe('scoreOptionCandidate verdict tiers and boundaries', () => {
+  it('a middling candidate scores suitable (60–79)', () => {
+    // optionable 100, liquidity ~50 (OI 300, vol 150, spread 8), ivRank 55, premium 60, earnings 60
+    const r = scoreOptionCandidate(
+      ticker(),
+      data({ ivRank: 55, openInterest: 300, optionVolume: 150, bidAskSpreadPct: 8, annualizedPremiumPct: 12, daysToEarnings: 10 })
+    );
+    expect(r.verdict).toBe('suitable');
+    expect(r.totalScore).toBeGreaterThanOrEqual(60);
+    expect(r.totalScore).toBeLessThan(80);
+  });
+
+  it('a mediocre candidate scores mediocre (40–59)', () => {
+    const r = scoreOptionCandidate(
+      ticker(),
+      data({ ivRank: 30, openInterest: 300, optionVolume: 150, bidAskSpreadPct: 8, annualizedPremiumPct: 6, daysToEarnings: 10 })
+    );
+    expect(r.verdict).toBe('mediocre');
+    expect(r.totalScore).toBeGreaterThanOrEqual(40);
+    expect(r.totalScore).toBeLessThan(60);
+  });
+
+  it('earnings boundary: 7 days is ok, 21 days is good', () => {
+    const at7 = scoreOptionCandidate(ticker(), data({ daysToEarnings: 7 })).criteria.find((c) => c.key === 'earnings')!;
+    const at21 = scoreOptionCandidate(ticker(), data({ daysToEarnings: 21 })).criteria.find((c) => c.key === 'earnings')!;
+    expect(at7.status).toBe('ok');
+    expect(at21.status).toBe('good');
+  });
+
+  it('premium boundary: 10% is ok, 20% is good', () => {
+    const at10 = scoreOptionCandidate(ticker(), data({ annualizedPremiumPct: 10 })).criteria.find((c) => c.key === 'premium')!;
+    const at20 = scoreOptionCandidate(ticker(), data({ annualizedPremiumPct: 20 })).criteria.find((c) => c.key === 'premium')!;
+    expect(at10.status).toBe('ok');
+    expect(at20.status).toBe('good');
+  });
+});
