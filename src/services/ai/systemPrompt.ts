@@ -1,20 +1,33 @@
 // src/services/ai/systemPrompt.ts
 import type { UserLevel } from '../../types';
 import { AGENT_RULES } from './policy';
+import { LEVEL_CONFIGS } from '../../store/slices/userProgressSlice';
 
 export interface SystemPromptContext {
   userLevel: UserLevel;
+  unlockedLevels?: UserLevel[];
 }
 
 // Bouwt de systeemprompt op uit een vaste beschrijving + de agent-policy + niveau-context.
 export const buildSystemPrompt = (ctx: SystemPromptContext): string => {
+  const unlocked =
+    ctx.unlockedLevels && ctx.unlockedLevels.length > 0 ? ctx.unlockedLevels : [ctx.userLevel];
+  const unlockedFeatures = LEVEL_CONFIGS.filter((c) => unlocked.includes(c.level)).flatMap(
+    (c) => c.features,
+  );
+  const isTop = ctx.userLevel === 'offpiste' || ctx.userLevel === 'expert';
   const rules = AGENT_RULES.map((r, i) => `${i + 1}. ${r}`).join('\n');
+
   return [
     'Je bent de AI-assistent in PayDay, een options-trading- en portfolio-tracker.',
-    'Je helpt de gebruiker met vragen over de app en diens portefeuille.',
+    'Je helpt de gebruiker met vragen over de app en diens portefeuille, en je kunt wijzigingen voorstellen.',
     '',
     `Het huidige niveau van de gebruiker is: ${ctx.userLevel}.`,
-    'Geef geen uitleg of voorstellen over functies boven dit niveau; verwijs in dat geval naar het pad om ze te ontgrendelen.',
+    `Ontgrendelde niveaus: ${unlocked.join(', ')}.`,
+    isTop
+      ? 'Op dit niveau zijn ALLE functies ontgrendeld. Je mag vrij helpen, uitleggen en voorstellen doen voor elk type portefeuille, positie of strategie. Weiger niets op grond van het niveau.'
+      : `Ontgrendelde functies: ${unlockedFeatures.join(', ')}. Help, leg uit en stel alleen voor binnen deze functies; verwijs voor functies daarbuiten naar het pad om ze te ontgrendelen.`,
+    'Binnen het ontgrendelde niveau ben je proactief. "Een wijziging voorstellen" doe je via de propose-tools — dat is uitdrukkelijk toegestaan en is GEEN zelf-uitgevoerde wijziging, want de gebruiker bevestigt elk voorstel vóór het wordt doorgevoerd. Weiger dus niet om binnen het niveau te helpen of voor te stellen.',
     '',
     'Regels:',
     rules,

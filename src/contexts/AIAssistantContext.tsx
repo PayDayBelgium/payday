@@ -3,7 +3,7 @@ import React, { createContext, useCallback, useContext, useMemo, useRef, useStat
 import { useStore } from 'react-redux';
 import { useAppSelector } from '../hooks/useAppSelector';
 import { useAppDispatch } from '../hooks/useAppDispatch';
-import { selectCurrentLevel } from '../store/slices/userProgressSlice';
+import { selectCurrentLevel, selectUnlockedLevels } from '../store/slices/userProgressSlice';
 import type { RootState } from '../store';
 import { loadAIConfig } from '../services/ai/config';
 import { createProvider } from '../services/ai/providers';
@@ -61,6 +61,7 @@ export const AIAssistantProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const abortRef = useRef<AbortController | null>(null);
   const convoRef = useRef<AIMessage[]>([]); // volledige provider-conversatie (incl. tools)
   const userLevel = useAppSelector(selectCurrentLevel);
+  const unlockedLevels = useAppSelector(selectUnlockedLevels);
   const dispatch = useAppDispatch();
   const store = useStore<RootState>();
 
@@ -121,7 +122,7 @@ export const AIAssistantProvider: React.FC<{ children: React.ReactNode }> = ({ c
       try {
         const cfg = loadAIConfig();
         const provider = createProvider(cfg);
-        const system = buildSystemPrompt({ userLevel });
+        const system = buildSystemPrompt({ userLevel, unlockedLevels });
         const model = cfg.model;
 
         for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
@@ -210,7 +211,7 @@ export const AIAssistantProvider: React.FC<{ children: React.ReactNode }> = ({ c
         abortRef.current = null;
       }
     },
-    [isStreaming, userLevel, addAssistantBubble, store],
+    [isStreaming, userLevel, unlockedLevels, addAssistantBubble, store],
   );
 
   const confirmChanges = useCallback(() => {
