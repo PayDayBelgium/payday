@@ -5,20 +5,15 @@ import { usePageTitle } from '../../contexts/PageTitleContext';
 export const QuantTrading: React.FC = () => {
   const { setPageTitle } = usePageTitle();
   useEffect(() => {
-    setPageTitle('Quant trading', 'Off-piste · data-gedreven strategieën');
+    setPageTitle('Quant trading', 'Data-gedreven strategieën');
   }, [setPageTitle]);
 
   return (
     <div className="space-y-6">
-      {/* Hero */}
-      <div className="relative overflow-hidden rounded-xl border border-caution-500/40 bg-caution-50 dark:bg-caution-600/10 p-8">
-        <p className="eyebrow text-caution-600 mb-2">Off-piste ontgrendeld</p>
-        <h1 className="text-2xl font-semibold tracking-tight text-ink-900 dark:text-white mb-2">Quant trading</h1>
-        <p className="text-sm text-ink-600 dark:text-ink-300 max-w-xl leading-relaxed">
-          Je hebt de geprepareerde pistes verlaten. Hier draait alles om data: kwantitatieve modellen,
-          edge-detectie en systematische signalen. Dit is een voorproefje — de tools volgen.
-        </p>
-      </div>
+      <p className="text-sm text-ink-600 dark:text-ink-300 max-w-2xl leading-relaxed">
+        Hier draait alles om data: kwantitatieve modellen, edge-detectie en systematische
+        signalen. Dit is een voorproefje — de tools volgen.
+      </p>
 
       {/* Concept cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-[var(--line)] rounded-md overflow-hidden">
