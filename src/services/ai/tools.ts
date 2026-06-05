@@ -13,7 +13,7 @@ import type {
 } from '../../types';
 import { addPortfolio, addTransaction } from '../../store/slices/portfoliosSlice';
 import { addPosition } from '../../store/slices/positionsSlice';
-import { addTicker } from '../../store/slices/tickersSlice';
+import { addTicker, updateTickerPrice } from '../../store/slices/tickersSlice';
 import { selectPortfolios } from '../../store/slices/portfoliosSlice';
 import { selectAllTickers } from '../../store/slices/tickersSlice';
 import type { ToolSchema } from './types';
@@ -86,7 +86,11 @@ export const TOOL_SCHEMAS: ToolSchema[] = [
         strike: { type: 'number' },
         expiration: { type: 'string', description: 'Expiratiedatum (YYYY-MM-DD)' },
         contracts: { type: 'number' },
-        premium: { type: 'number', description: 'Premie per contract (per aandeel)' },
+        premium: { type: 'number', description: 'Premie per contract bij opening (open-prijs/aankoopprijs)' },
+        currentPremium: {
+          type: 'number',
+          description: 'Huidige premie per contract (de "last price" / huidige koers van de optie), zoals op het scherm getoond. Laat weg als niet zichtbaar.',
+        },
         openDate: { type: 'string', description: 'Openingsdatum (YYYY-MM-DD). Laat weg als onbekend.' },
       },
       required: ['portfolio', 'ticker', 'optionType', 'action', 'strike', 'expiration', 'contracts', 'premium'],
@@ -129,6 +133,7 @@ export type ProposedChange =
       expiration: string;
       contracts: number;
       premium: number;
+      currentPremium?: number;
       openDate: string;
     };
 
@@ -190,6 +195,7 @@ export const parseProposedChange = (
         expiration: asString(o.expiration),
         contracts: asNumber(o.contracts, 1),
         premium: asNumber(o.premium),
+        currentPremium: asOptionalNumber(o.currentPremium),
         openDate: asString(o.openDate, today()),
       };
     default:
@@ -260,11 +266,11 @@ const ensureTicker = (
   dispatch(addTicker(ticker));
 };
 
-// Waarde van een positie (voor de totale-storting-berekening).
+// Huidige waarde van een positie (voor de totale-storting-berekening).
 const positionValue = (c: ProposedChange): number => {
   if (c.kind === 'stock') return c.shares * (c.currentPrice ?? c.purchasePrice);
   if (c.kind === 'option') {
-    const total = c.premium * c.contracts * 100;
+    const total = (c.currentPremium ?? c.premium) * c.contracts * 100;
     return c.action === 'buy' ? total : -total;
   }
   return 0;
@@ -313,6 +319,11 @@ const applyStock = (
 ): void => {
   const price = c.currentPrice ?? c.purchasePrice;
   ensureTicker(getState, dispatch, c.ticker, c.name, c.assetType, price);
+  // Werk de huidige koers op de ticker bij (ook als de ticker al bestond),
+  // want de huidige waarde van aandelenposities komt van de ticker-prijs.
+  if (c.currentPrice !== undefined) {
+    dispatch(updateTickerPrice({ symbol: c.ticker, price: c.currentPrice }));
+  }
   const costBasis = c.shares * c.purchasePrice;
   const position: StockPosition = {
     id: uid('pos'),
@@ -354,8 +365,12 @@ const applyOption = (
 ): void => {
   // Onderliggende ticker aanmaken indien nodig (naam vragen gebeurt door de agent).
   ensureTicker(getState, dispatch, c.ticker, c.tickerName ?? c.ticker, 'stock');
-  const total = c.premium * c.contracts * 100;
-  const costBasis = c.action === 'buy' ? total : -total;
+  const openTotal = c.premium * c.contracts * 100;
+  const costBasis = c.action === 'buy' ? openTotal : -openTotal;
+  // Huidige premie (last price) bepaalt de huidige waarde; valt terug op de open-premie.
+  const curPremium = c.currentPremium ?? c.premium;
+  const curTotal = curPremium * c.contracts * 100;
+  const currentValue = c.action === 'buy' ? curTotal : -curTotal;
   const breakEven = c.optionType === 'call' ? c.strike + c.premium : c.strike - c.premium;
   const base = {
     id: uid('pos'),
@@ -368,8 +383,9 @@ const applyOption = (
     expiration: c.expiration,
     contracts: c.contracts,
     premium: c.premium,
+    currentPremium: c.currentPremium,
     costBasis,
-    currentValue: costBasis,
+    currentValue,
     breakEven,
   };
   const position: CallOption | PutOption =
@@ -387,7 +403,7 @@ const applyOption = (
     portfolio: c.portfolio,
     date: c.openDate,
     type: c.action === 'buy' ? 'premium_paid' : 'premium_collected',
-    amount: c.action === 'buy' ? -total : total,
+    amount: c.action === 'buy' ? -openTotal : openTotal,
     description: `${c.action === 'buy' ? 'Long' : 'Short'} ${c.optionType.toUpperCase()} ${c.ticker} ${c.strike} ×${c.contracts}`,
     relatedPositionId: position.id,
     previousValue: prev,
