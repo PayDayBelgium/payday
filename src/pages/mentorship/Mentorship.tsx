@@ -57,7 +57,7 @@ export const Mentorship: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6">
       {/* Hero */}
       <div className="flex items-center gap-3 rounded-xl border border-caution-500/40 bg-caution-50 dark:bg-caution-600/10 px-4 py-3">
         <div className="w-9 h-9 rounded-lg bg-caution-500 text-white flex items-center justify-center">
@@ -69,7 +69,7 @@ export const Mentorship: React.FC = () => {
         </div>
       </div>
 
-      <p className="text-sm text-ink-600 dark:text-ink-300 leading-relaxed">
+      <p className="text-sm text-ink-600 dark:text-ink-300 leading-relaxed max-w-3xl">
         Een ski-leraar leert je de berg lezen. Onze ski-school koppelt je aan een mentor voor
         opleiding en begeleiding. Dit staat los van credits en pistes — je vraagt het gewoon aan.
       </p>
@@ -96,35 +96,37 @@ export const Mentorship: React.FC = () => {
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="surface-card p-6 space-y-4">
-          <div>
-            <label htmlFor="mentor-focus" className="block text-xs font-semibold text-ink-500 mb-1.5">Focusgebied</label>
-            <select id="mentor-focus" className={fieldClass} value={focus} onChange={(e) => setFocus(e.target.value as MentorshipFocus)}>
-              {FOCUS_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="mentor-level" className="block text-xs font-semibold text-ink-500 mb-1.5">Huidig niveau</label>
-            <select id="mentor-level" className={fieldClass} value={level} onChange={(e) => setLevel(e.target.value as UserLevel)}>
-              {LEVEL_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="mentor-style" className="block text-xs font-semibold text-ink-500 mb-1.5">Voorkeur mentor-stijl</label>
-            <select id="mentor-style" className={fieldClass} value={style} onChange={(e) => setStyle(e.target.value as MentorStyle)}>
-              {STYLE_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="mentor-availability" className="block text-xs font-semibold text-ink-500 mb-1.5">Beschikbaarheid</label>
-            <input id="mentor-availability" className={fieldClass} type="text" placeholder="bv. weekends, 2u per week" value={availability} onChange={(e) => setAvailability(e.target.value)} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="mentor-focus" className="block text-xs font-semibold text-ink-500 mb-1.5">Focusgebied</label>
+              <select id="mentor-focus" className={fieldClass} value={focus} onChange={(e) => setFocus(e.target.value as MentorshipFocus)}>
+                {FOCUS_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="mentor-level" className="block text-xs font-semibold text-ink-500 mb-1.5">Huidig niveau</label>
+              <select id="mentor-level" className={fieldClass} value={level} onChange={(e) => setLevel(e.target.value as UserLevel)}>
+                {LEVEL_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="mentor-style" className="block text-xs font-semibold text-ink-500 mb-1.5">Voorkeur mentor-stijl</label>
+              <select id="mentor-style" className={fieldClass} value={style} onChange={(e) => setStyle(e.target.value as MentorStyle)}>
+                {STYLE_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="mentor-availability" className="block text-xs font-semibold text-ink-500 mb-1.5">Beschikbaarheid</label>
+              <input id="mentor-availability" className={fieldClass} type="text" placeholder="bv. weekends, 2u per week" value={availability} onChange={(e) => setAvailability(e.target.value)} />
+            </div>
           </div>
           <div>
             <label htmlFor="mentor-message" className="block text-xs font-semibold text-ink-500 mb-1.5">Bericht / motivatie</label>
-            <textarea id="mentor-message" className={`${fieldClass} min-h-[96px] resize-y`} placeholder="Waar wil je in groeien?" value={message} onChange={(e) => setMessage(e.target.value)} />
+            <textarea id="mentor-message" className={`${fieldClass} min-h-[120px] resize-y`} placeholder="Waar wil je in groeien?" value={message} onChange={(e) => setMessage(e.target.value)} />
           </div>
           <button
             type="submit"
-            className="w-full rounded-md bg-primary-700 text-white text-sm font-semibold py-2.5 hover:bg-primary-800 transition-colors"
+            className="w-full sm:w-auto sm:px-10 rounded-md bg-primary-700 text-white text-sm font-semibold py-2.5 hover:bg-primary-800 transition-colors"
           >
             Aanvraag versturen
           </button>
