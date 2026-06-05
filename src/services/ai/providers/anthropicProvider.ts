@@ -41,52 +41,87 @@ const normalizeError = (err: unknown): string => {
   return raw || 'Onbekende fout';
 };
 
+// Wacht, maar breek meteen af als de gebruiker annuleert.
+const sleep = (ms: number, signal: AbortSignal): Promise<void> =>
+  new Promise((resolve) => {
+    if (signal.aborted) return resolve();
+    const timer = setTimeout(resolve, ms);
+    signal.addEventListener('abort', () => {
+      clearTimeout(timer);
+      resolve();
+    }, { once: true });
+  });
+
+// Oplopende wachttijden vóór een nieuwe poging bij overbelasting/limiet.
+const RETRY_DELAYS_MS = [1000, 2500];
+
 export const createAnthropicProvider = (apiKey: string): AIProvider => {
   const client = new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
 
   return {
     id: 'anthropic',
     async *streamChat(input: StreamChatInput): AsyncIterable<AIStreamEvent> {
-      try {
-        const stream = client.messages.stream(
-          {
-            model: input.model,
-            max_tokens: 4096,
-            system: input.system,
-            messages: toAnthropicMessages(input.messages),
-            ...(input.tools && input.tools.length > 0
-              ? { tools: input.tools as Anthropic.Tool[] }
-              : {}),
-          },
-          { signal: input.signal },
-        );
+      // Maximaal RETRY_DELAYS_MS.length nieuwe pogingen bij overbelasting/limiet,
+      // zolang er nog geen tekst/tool is gestreamd in deze poging.
+      for (let attempt = 0; ; attempt++) {
+        let yieldedAnything = false;
+        try {
+          const stream = client.messages.stream(
+            {
+              model: input.model,
+              max_tokens: 4096,
+              system: input.system,
+              messages: toAnthropicMessages(input.messages),
+              ...(input.tools && input.tools.length > 0
+                ? { tools: input.tools as Anthropic.Tool[] }
+                : {}),
+            },
+            { signal: input.signal },
+          );
 
-        for await (const event of stream) {
-          if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
-            yield { type: 'text_delta', text: event.delta.text };
+          for await (const event of stream) {
+            if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+              yieldedAnything = true;
+              yield { type: 'text_delta', text: event.delta.text };
+            }
           }
-        }
 
-        const final = await stream.finalMessage();
-        // Tool-use-blokken uit het uiteindelijke bericht doorgeven.
-        for (const block of final.content) {
-          if (block.type === 'tool_use') {
-            yield { type: 'tool_use', id: block.id, name: block.name, input: block.input };
+          const final = await stream.finalMessage();
+          for (const block of final.content) {
+            if (block.type === 'tool_use') {
+              yieldedAnything = true;
+              yield { type: 'tool_use', id: block.id, name: block.name, input: block.input };
+            }
           }
-        }
-        const stop =
-          final.stop_reason === 'tool_use'
-            ? 'tool_use'
-            : final.stop_reason === 'max_tokens'
-              ? 'max_tokens'
-              : 'end';
-        yield { type: 'done', stopReason: stop };
-      } catch (err) {
-        if (input.signal.aborted) {
-          yield { type: 'done', stopReason: 'aborted' };
+          const stop =
+            final.stop_reason === 'tool_use'
+              ? 'tool_use'
+              : final.stop_reason === 'max_tokens'
+                ? 'max_tokens'
+                : 'end';
+          yield { type: 'done', stopReason: stop };
+          return;
+        } catch (err) {
+          if (input.signal.aborted) {
+            yield { type: 'done', stopReason: 'aborted' };
+            return;
+          }
+          const code = normalizeError(err);
+          const retryable =
+            (code === 'OVERLOADED' || code === 'RATE_LIMIT') &&
+            !yieldedAnything &&
+            attempt < RETRY_DELAYS_MS.length;
+          if (retryable) {
+            await sleep(RETRY_DELAYS_MS[attempt], input.signal);
+            if (input.signal.aborted) {
+              yield { type: 'done', stopReason: 'aborted' };
+              return;
+            }
+            continue;
+          }
+          yield { type: 'error', message: code };
           return;
         }
-        yield { type: 'error', message: normalizeError(err) };
       }
     },
   };
