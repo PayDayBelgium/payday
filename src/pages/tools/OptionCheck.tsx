@@ -88,7 +88,7 @@ export const OptionCheck: React.FC = () => {
       </div>
 
       {/* Ticker keuze / toevoegen */}
-      <div className="surface-card p-5 max-w-xl">
+      <div className="surface-card p-5">
         <p className="text-xs font-semibold text-ink-500 mb-1.5">Ticker</p>
         {isCreatingTicker ? (
           <div className="space-y-3">
