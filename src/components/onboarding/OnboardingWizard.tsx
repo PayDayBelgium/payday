@@ -178,6 +178,54 @@ const EXPERT_TERMS: GlossaryTerm[] = [
   },
 ];
 
+const OFFPISTE_TERMS: GlossaryTerm[] = [
+  {
+    term: 'Quant Trading',
+    definition: 'Kwantitatief beleggen: beslissingen nemen op basis van data, statistiek en vaste regels in plaats van onderbuikgevoel.',
+    example: 'Een model koopt automatisch als een aandeel 2 standaarddeviaties onder zijn gemiddelde zakt.',
+  },
+  {
+    term: 'Edge',
+    definition: 'Een statistisch voordeel: een herhaalbare reden waarom je strategie op lange termijn winst maakt.',
+    example: 'Historisch stijgt deze ETF vaker na 3 dalende dagen — dat is een edge.',
+  },
+  {
+    term: 'Backtest',
+    definition: 'Een strategie testen op historische data om te zien hoe ze zou hebben gepresteerd, vóór je echt geld inzet.',
+    example: 'Je test je regels op 10 jaar koersdata en meet rendement, drawdown en aantal trades.',
+  },
+  {
+    term: 'Sharpe Ratio',
+    definition: 'Rendement gecorrigeerd voor risico. Hoe hoger, hoe meer rendement je krijgt per eenheid risico.',
+    example: 'Een Sharpe van 1.5 is sterk; onder 1 is matig.',
+  },
+  {
+    term: 'Drawdown',
+    definition: 'De maximale daling van piek naar dal in je portefeuillewaarde — de pijn die je moet kunnen uitzitten.',
+    example: 'Een strategie met 40% max drawdown verloor ooit 40% vanaf de top.',
+  },
+  {
+    term: 'Mean Reversion',
+    definition: 'De aanname dat een koers na een extreme beweging terugkeert naar zijn gemiddelde.',
+    example: 'Koop bij oversold, verkoop bij overbought.',
+  },
+  {
+    term: 'Momentum',
+    definition: 'De aanname dat stijgende koersen blijven stijgen en dalende blijven dalen.',
+    example: 'Koop de sterkste aandelen van de afgelopen 6 maanden.',
+  },
+  {
+    term: 'Slippage',
+    definition: 'Het verschil tussen de verwachte en de werkelijk uitgevoerde prijs van een order.',
+    example: 'Je model rekent op $100, maar je order vult op $100,15 — dat is slippage.',
+  },
+  {
+    term: 'Position Sizing',
+    definition: 'Bepalen hoeveel kapitaal je per trade inzet om risico te beheersen.',
+    example: 'Riskeer nooit meer dan 1% van je portefeuille per trade.',
+  },
+];
+
 // Intro step content (same for all levels, but styled per level)
 const createIntroStep = (level: UserLevel): WizardStep => ({
   id: 'intro',
@@ -670,6 +718,143 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
       },
     ],
   },
+  {
+    level: 'offpiste',
+    welcomeTitle: 'Welkom Off-piste!',
+    welcomeSubtitle: 'Kwantitatief en data-gedreven traden voorbij de geprepareerde piste',
+    slopeIcon: '🟠',
+    slopeColor: 'orange',
+    steps: [
+      createIntroStep('offpiste'),
+      {
+        id: 'quant-intro',
+        title: 'Wat is Quant Trading?',
+        shortTitle: 'Quant',
+        description: 'Data en regels in plaats van onderbuikgevoel',
+        icon: <Zap className="w-6 h-6" />,
+        content: (
+          <div className="space-y-4">
+            <p className="text-gray-700 dark:text-gray-300">
+              <strong>Quant trading</strong> (kwantitatief beleggen) vervangt onderbuikgevoel door
+              <strong> data, statistiek en vaste regels</strong>. Je bouwt een hypothese, test die op
+              historische data, en laat de cijfers — niet je emoties — beslissen.
+            </p>
+            <div className="bg-caution-50 dark:bg-caution-600/15 p-4 rounded-lg border border-caution-500/30 dark:border-caution-600/40">
+              <h4 className="font-semibold text-caution-600 dark:text-caution-500 mb-2">Discretionair vs. kwantitatief</h4>
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div>
+                  <p className="font-semibold text-ink-700 dark:text-ink-200 mb-1">Discretionair</p>
+                  <p className="text-ink-600 dark:text-ink-400">Beslissen per geval, op gevoel en nieuws.</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-caution-600 dark:text-caution-500 mb-1">Kwantitatief</p>
+                  <p className="text-caution-600 dark:text-caution-500">Vaste, geteste regels die je consistent volgt.</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-negative-50 dark:bg-negative-700/15 p-3 rounded-lg">
+              <p className="text-xs text-negative-700 dark:text-negative-500">
+                <strong>Let op:</strong> off-piste betekent meer vrijheid én meer risico. Zonder discipline
+                en risicobeheer kan een model je sneller pijn doen dan helpen.
+              </p>
+            </div>
+          </div>
+        ),
+        glossaryTerms: OFFPISTE_TERMS.slice(0, 3),
+      },
+      {
+        id: 'edge-backtest',
+        title: 'Edge & Backtesting',
+        shortTitle: 'Backtest',
+        description: 'Een voordeel vinden en het bewijzen op historische data',
+        icon: <Target className="w-6 h-6" />,
+        content: (
+          <div className="space-y-4">
+            <p className="text-gray-700 dark:text-gray-300">
+              Een winstgevende strategie heeft een <strong>edge</strong>: een herhaalbare, statistische
+              reden waarom ze werkt. Die toon je aan met een <strong>backtest</strong> op historische data.
+            </p>
+            <div className="bg-primary-50 dark:bg-primary-900/20 p-4 rounded-lg">
+              <h4 className="font-semibold text-primary-700 dark:text-primary-300 mb-2">Twee klassieke edges</h4>
+              <ul className="list-disc list-inside text-sm text-primary-700 dark:text-primary-300 space-y-1">
+                <li><strong>Mean reversion:</strong> koop het oversold, verkoop het overbought.</li>
+                <li><strong>Momentum:</strong> rijd mee met wat al sterk stijgt.</li>
+              </ul>
+            </div>
+            <div className="bg-surface-subtle dark:bg-trading-dark-700 p-3 rounded-lg">
+              <p className="text-xs text-ink-700 dark:text-ink-300">
+                <strong>Valkuil:</strong> overfitting. Een model dat perfect op het verleden past, faalt
+                vaak in de praktijk. Houd je regels simpel en test op data die je niet gebruikt hebt om te bouwen.
+              </p>
+            </div>
+          </div>
+        ),
+        glossaryTerms: [OFFPISTE_TERMS[1], OFFPISTE_TERMS[2], OFFPISTE_TERMS[5], OFFPISTE_TERMS[6]],
+      },
+      {
+        id: 'risk-metrics',
+        title: 'Risico & Metrics',
+        shortTitle: 'Risico',
+        description: 'Sharpe, drawdown en position sizing',
+        icon: <BookOpen className="w-6 h-6" />,
+        content: (
+          <div className="space-y-4">
+            <p className="text-gray-700 dark:text-gray-300">
+              Rendement zonder risicobesef is gevaarlijk. Beoordeel een strategie altijd op
+              <strong> voor risico gecorrigeerde</strong> maatstaven, niet alleen op winst.
+            </p>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-positive-50 dark:bg-positive-700/15 p-3 rounded-lg">
+                <h4 className="font-semibold text-positive-700 dark:text-positive-500 text-sm">Sharpe Ratio</h4>
+                <p className="text-xs text-positive-700 dark:text-positive-500">Rendement per eenheid risico. Hoger = beter.</p>
+              </div>
+              <div className="bg-negative-50 dark:bg-negative-700/15 p-3 rounded-lg">
+                <h4 className="font-semibold text-negative-700 dark:text-negative-500 text-sm">Max Drawdown</h4>
+                <p className="text-xs text-negative-700 dark:text-negative-500">Grootste val van piek naar dal. Kun je die uitzitten?</p>
+              </div>
+            </div>
+            <div className="bg-caution-50 dark:bg-caution-600/15 p-3 rounded-lg border border-caution-500/30 dark:border-caution-600/40">
+              <p className="text-xs text-caution-600 dark:text-caution-500">
+                <strong>Position sizing:</strong> bepaal vóór elke trade hoeveel je riskeert (bv. max 1% per trade).
+                Goede sizing houdt je in het spel, ook na een reeks verliezen.
+              </p>
+            </div>
+          </div>
+        ),
+        glossaryTerms: [OFFPISTE_TERMS[3], OFFPISTE_TERMS[4], OFFPISTE_TERMS[8]],
+      },
+      {
+        id: 'execution',
+        title: 'Van Model naar Uitvoering',
+        shortTitle: 'Uitvoering',
+        description: 'Discipline, automatisering en valkuilen',
+        icon: <Sparkles className="w-6 h-6" />,
+        content: (
+          <div className="space-y-4">
+            <p className="text-gray-700 dark:text-gray-300">
+              Een edge op papier is niets waard zonder <strong>gedisciplineerde uitvoering</strong>. De
+              echte wereld voegt kosten en wrijving toe die je backtest vaak onderschat.
+            </p>
+            <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+              <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">Houd rekening met</h4>
+              <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                <li><strong>Slippage & kosten:</strong> elke trade kost iets; te vaak handelen vreet je edge op.</li>
+                <li><strong>Regels volgen:</strong> de moeilijkste trade is die je model neemt en jij niet zou durven.</li>
+                <li><strong>Blijf monitoren:</strong> markten veranderen — een edge kan uitdoven.</li>
+              </ul>
+            </div>
+            <div className="bg-caution-50 dark:bg-caution-600/15 p-3 rounded-lg">
+              <p className="text-xs text-caution-600 dark:text-caution-500">
+                <strong>Tip:</strong> begin klein, log elke trade, en vergelijk je live resultaten met je backtest.
+                Wijkt het sterk af? Onderzoek waarom vóór je opschaalt.
+              </p>
+            </div>
+          </div>
+        ),
+        glossaryTerms: [OFFPISTE_TERMS[7]],
+      },
+    ],
+  },
 ];
 
 interface OnboardingWizardProps {
@@ -750,6 +935,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
             <rect x="2"     y="-4.5" width="8.5" height="8.5" fill="currentColor" transform="rotate(45 6.25 0)" />
           </>
         )}
+        {color === 'orange' && <path d="M0,-9 L9,7 L-9,7 Z" fill="currentColor" />}
       </svg>
     );
   };
@@ -759,6 +945,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     blue: 'bg-primary-700',
     red: 'bg-negative-700',
     black: 'bg-ink-900',
+    orange: 'bg-caution-600',
   }[content.slopeColor] || 'bg-ink-700';
 
   const tabColorClasses = {
@@ -766,6 +953,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     blue: 'border-primary-500 text-primary-700 dark:text-primary-300',
     red: 'border-negative-500 text-negative-700 dark:text-negative-500',
     black: 'border-ink-800 text-ink-700 dark:text-ink-300',
+    orange: 'border-caution-500 text-caution-600 dark:text-caution-500',
   }[content.slopeColor] || 'border-ink-500 text-ink-700';
 
   return (
