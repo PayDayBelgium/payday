@@ -130,7 +130,7 @@ export const PaydayMountain: React.FC<PaydayMountainProps> = ({
           </g>
           {/* label-pill */}
           <g transform="translate(0 30)" filter="url(#pm-soft)">
-            <rect x="-66" y="-9" width="132" height="18" rx="9" fill="#fff" stroke="#E3E8EF" />
+            <rect x="-78" y="-9" width="156" height="18" rx="9" fill="#fff" stroke="#E3E8EF" />
             <text y="3" fontSize="9.5" fontWeight="700" fill="#9A3412" textAnchor="middle">SKI-SCHOOL · MENTORSHIP</text>
           </g>
           {/* status: aangevraagd */}
