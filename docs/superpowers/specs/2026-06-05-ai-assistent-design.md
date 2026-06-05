@@ -275,9 +275,8 @@ worden **niet** door de agent verzonnen.
 2. **Default model per provider.** Concrete model-ID's (Anthropic eerst) vastleggen in config.
 3. **Prijs-service bij import.** Of/hoe `currentPrice` direct opgehaald wordt via de bestaande
    price-service, of voorlopig leeg blijft.
-4. **Feature-gating.** In `types.ts` bestaat al `ai_assistant` als **expert-level** feature.
-   Te beslissen: de FAB gaten achter die feature (alleen zichtbaar vanaf expert) of altijd
-   beschikbaar maken. Voorlopige aanname in dit ontwerp: **altijd beschikbaar**; te bevestigen.
+4. **Feature-gating.** *Beslist:* de FAB is **altijd zichtbaar**, ongeacht niveau — de bestaande
+   `ai_assistant` expert-feature-flag wordt hiervoor niet gebruikt.
 
 ## 10. Testing (Vitest)
 
