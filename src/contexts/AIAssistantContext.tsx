@@ -186,6 +186,7 @@ export const AIAssistantProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
           // Tools afhandelen.
           const resultBlocks: ContentBlock[] = [];
+          let proposedThisRound = false;
           for (const tu of toolUses) {
             if (isReadTool(tu.name)) {
               const res = executeReadTool(tu.name, () => store.getState());
@@ -194,6 +195,7 @@ export const AIAssistantProvider: React.FC<{ children: React.ReactNode }> = ({ c
               const change = parseProposedChange(tu.name, tu.input, tu.id);
               if (change) {
                 collected.push(change);
+                proposedThisRound = true;
                 resultBlocks.push({
                   kind: 'tool_result',
                   toolUseId: tu.id,
@@ -210,6 +212,11 @@ export const AIAssistantProvider: React.FC<{ children: React.ReactNode }> = ({ c
             }
           }
           convoRef.current.push({ role: 'user', content: resultBlocks });
+
+          // Na een voorstel stoppen we de beurt: de gebruiker moet eerst
+          // bevestigen/annuleren (via de kaart). Zo blijft het model niet
+          // doorpraten en geeft de knop weer 'versturen' i.p.v. 'stop'.
+          if (proposedThisRound) break;
         }
       } catch (err) {
         const code = err instanceof Error ? err.message : 'ERROR';
@@ -238,6 +245,11 @@ export const AIAssistantProvider: React.FC<{ children: React.ReactNode }> = ({ c
         content: [{ kind: 'text', text: `${i18n.t('ai.created')}\n${summary}` }],
       },
     ]);
+    // Houd de gesprekscontext op de hoogte voor een volgende beurt.
+    convoRef.current.push({
+      role: 'user',
+      content: [{ kind: 'text', text: 'Ik heb de voorgestelde wijzigingen bevestigd; ze zijn nu aangemaakt.' }],
+    });
     setPendingChanges([]);
   }, [pendingChanges, dispatch, store]);
 
@@ -247,6 +259,10 @@ export const AIAssistantProvider: React.FC<{ children: React.ReactNode }> = ({ c
       ...prev,
       { id: nextId(), role: 'assistant', content: [{ kind: 'text', text: i18n.t('ai.cancelled') }] },
     ]);
+    convoRef.current.push({
+      role: 'user',
+      content: [{ kind: 'text', text: 'Ik heb de voorgestelde wijzigingen geannuleerd; maak ze niet aan.' }],
+    });
     setPendingChanges([]);
   }, [pendingChanges]);
 
