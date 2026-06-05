@@ -32,13 +32,6 @@ export const Community: React.FC = () => {
 
   return (
     <div className="space-y-5">
-      {/* Header */}
-      <div className="border-b border-[var(--line)] pb-4">
-        <p className="eyebrow mb-1">Community</p>
-        <h1 className="text-xl font-semibold text-ink-900 dark:text-white tracking-tight">Trading ideas &amp; gesprekken</h1>
-        <p className="text-sm text-ink-500 dark:text-ink-400 mt-1">Deel ideeën, stel vragen en leer van andere PayDay-traders.</p>
-      </div>
-
       {/* Channel tabs */}
       <div className="flex gap-1.5">
         {CHANNELS.map((c) => {
