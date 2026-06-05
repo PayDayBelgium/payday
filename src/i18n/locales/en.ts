@@ -62,6 +62,7 @@ export const en = {
     account: 'Account',
     community: 'Community',
     quantTrading: 'Quant trading',
+    mentorship: 'Mentorship',
   },
 
   // Strategies
