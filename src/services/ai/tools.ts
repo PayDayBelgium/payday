@@ -84,6 +84,19 @@ export const TOOL_SCHEMAS: ToolSchema[] = [
 
 export const isReadTool = (name: string): boolean => name === 'get_portfolios';
 
+// Eigen fallback-logo (inline SVG, blauwe afgeronde tegel met aktekoffer)
+// voor automatisch aangemaakte portefeuilles, zodat het icoon nooit ontbreekt.
+export const DEFAULT_PORTFOLIO_LOGO =
+  'data:image/svg+xml,' +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">' +
+      '<rect width="64" height="64" rx="12" fill="#0B4A8F"/>' +
+      '<rect x="17" y="26" width="30" height="20" rx="3" fill="#ffffff"/>' +
+      '<path d="M26 26v-3a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v3" fill="none" stroke="#ffffff" stroke-width="3"/>' +
+      '<rect x="29" y="33" width="6" height="5" rx="1" fill="#0B4A8F"/>' +
+      '</svg>',
+  );
+
 // ---------------------------------------------------------------------------
 // Voorgestelde wijzigingen (verzameld tot de gebruiker bevestigt).
 // ---------------------------------------------------------------------------
@@ -237,7 +250,7 @@ const applyChange = (c: ProposedChange, getState: () => RootState, dispatch: App
     const portfolio: Portfolio = {
       id: uid('pf'),
       name: c.name,
-      logo: '',
+      logo: DEFAULT_PORTFOLIO_LOGO,
       pricePerContract: 100,
       strategy: '',
       hasOptions: true,
@@ -248,6 +261,21 @@ const applyChange = (c: ProposedChange, getState: () => RootState, dispatch: App
       currentValue: c.initialCapital,
     };
     dispatch(addPortfolio(portfolio));
+    // Initiële storting als deposit-transactie (startkapitaal bij de broker).
+    if (c.initialCapital > 0) {
+      const deposit: PortfolioTransaction = {
+        id: uid('txn'),
+        portfolio: c.name,
+        date: today(),
+        type: 'deposit',
+        amount: c.initialCapital,
+        description: 'Initiële storting',
+        previousValue: 0,
+        newValue: c.initialCapital,
+        createdAt: new Date().toISOString(),
+      };
+      dispatch(addTransaction(deposit));
+    }
     return;
   }
 
