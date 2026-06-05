@@ -31,6 +31,17 @@ export const nl = {
     saved: 'Opgeslagen',
     noKeyError: 'Geen API-sleutel ingesteld. Ga naar Instellingen → AI-assistent om er een toe te voegen.',
     providerUnavailable: 'Deze provider is nog niet beschikbaar.',
+    attach: 'Screenshot toevoegen',
+    examples: [
+      'Ik wil een broker toevoegen — ik upload zo een screenshot ervan.',
+      'Leg uit wat een covered call is.',
+      'Wat is het verschil tussen een call en een put?',
+      'Hoe werkt de wheel-strategie?',
+    ],
+    proposalTitle: 'Voorgestelde wijzigingen — bevestig om aan te maken:',
+    confirmCreate: 'Aanmaken',
+    created: 'Aangemaakt:',
+    cancelled: 'Geannuleerd.',
   },
 
   // Login

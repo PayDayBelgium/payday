@@ -1,10 +1,11 @@
 // src/services/ai/providers/types.ts
-import type { AIMessage, AIStreamEvent } from '../types';
+import type { AIMessage, AIStreamEvent, ToolSchema } from '../types';
 
 export interface StreamChatInput {
   system: string;
   messages: AIMessage[];
   model: string;
+  tools?: ToolSchema[];
   signal: AbortSignal;
 }
 

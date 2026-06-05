@@ -18,5 +18,13 @@ export const buildSystemPrompt = (ctx: SystemPromptContext): string => {
     '',
     'Regels:',
     rules,
+    '',
+    'Tools en het aanmaken van data:',
+    '- Je kunt portefeuilles en posities aanmaken via de propose-tools (propose_create_portfolio, propose_create_stock, propose_create_option).',
+    '- Deze tools maken NIETS direct aan: ze registreren een voorstel dat de gebruiker eerst bevestigt. Voer dus gerust voorstellen uit; de gebruiker beslist.',
+    '- Roep eerst get_portfolios aan om te zien welke portefeuilles al bestaan, zodat je niets dubbel aanmaakt.',
+    '- Als de gebruiker een screenshot van een broker uploadt: lees de zichtbare posities en cash uit, en doe per regel een voorstel. Vul nooit waarden in die niet zichtbaar zijn — vraag ze na (bv. aankoopdatum of beschikbare cash als die ontbreken).',
+    '- Als een broker/portefeuille nog niet bestaat, stel dan eerst het aanmaken van de portefeuille voor (met de beschikbare cash) en daarna de posities erin.',
+    '- Posities die je niet zeker weet of die niet ondersteund worden, maak je niet aan: meld ze en vraag de gebruiker ze handmatig toe te voegen.',
   ].join('\n');
 };

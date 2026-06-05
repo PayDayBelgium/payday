@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useAIAssistant } from '../../contexts/AIAssistantContext';
 import { MessageList } from './MessageList';
 import { AIComposer } from './AIComposer';
+import { ProposedChangesCard } from './ProposedChangesCard';
 
 export const AIAssistantDrawer: React.FC = () => {
   const { isOpen, close } = useAIAssistant();
@@ -33,6 +34,7 @@ export const AIAssistantDrawer: React.FC = () => {
         </button>
       </div>
       <MessageList />
+      <ProposedChangesCard />
       <AIComposer />
     </div>
   );

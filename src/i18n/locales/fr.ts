@@ -31,6 +31,17 @@ export const fr = {
     saved: 'Enregistré',
     noKeyError: 'Aucune clé API définie. Ouvrez Paramètres → Assistant IA pour en ajouter une.',
     providerUnavailable: "Ce fournisseur n'est pas encore disponible.",
+    attach: 'Ajouter une capture',
+    examples: [
+      "Je veux ajouter un courtier — je vais téléverser une capture d'écran.",
+      "Expliquez ce qu'est un covered call.",
+      'Quelle est la différence entre un call et un put ?',
+      'Comment fonctionne la stratégie wheel ?',
+    ],
+    proposalTitle: 'Modifications proposées — confirmez pour créer :',
+    confirmCreate: 'Créer',
+    created: 'Créé :',
+    cancelled: 'Annulé.',
   },
 
   // Login

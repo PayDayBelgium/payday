@@ -31,6 +31,17 @@ export const en = {
     saved: 'Saved',
     noKeyError: 'No API key set. Open Settings → AI Assistant to add one.',
     providerUnavailable: 'This provider is not available yet.',
+    attach: 'Add screenshot',
+    examples: [
+      'I want to add a broker — I will upload a screenshot of it.',
+      'Explain what a covered call is.',
+      'What is the difference between a call and a put?',
+      'How does the wheel strategy work?',
+    ],
+    proposalTitle: 'Proposed changes — confirm to create:',
+    confirmCreate: 'Create',
+    created: 'Created:',
+    cancelled: 'Cancelled.',
   },
 
   // Login

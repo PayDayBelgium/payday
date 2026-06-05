@@ -5,21 +5,30 @@ export type AIProviderId = 'anthropic' | 'openai' | 'gemini';
 
 export type AIRole = 'user' | 'assistant';
 
-// Inhoudsblokken van een bericht. In Fase A gebruiken we 'text';
-// 'image' staat klaar voor de broker-screenshot (Fase D).
+// Inhoudsblokken van een bericht.
 export type ContentBlock =
   | { kind: 'text'; text: string }
-  | { kind: 'image'; mediaType: string; dataBase64: string };
+  | { kind: 'image'; mediaType: string; dataBase64: string }
+  | { kind: 'tool_use'; id: string; name: string; input: unknown }
+  | { kind: 'tool_result'; toolUseId: string; content: string; isError?: boolean };
 
 export interface AIMessage {
   role: AIRole;
   content: ContentBlock[];
 }
 
+// Tooldefinitie die naar de provider gaat (JSON-schema voor de argumenten).
+export interface ToolSchema {
+  name: string;
+  description: string;
+  input_schema: Record<string, unknown>;
+}
+
 // Genormaliseerde stream-events die elke provider-adapter teruggeeft.
 export type AIStreamEvent =
   | { type: 'text_delta'; text: string }
-  | { type: 'done'; stopReason: 'end' | 'max_tokens' | 'aborted' }
+  | { type: 'tool_use'; id: string; name: string; input: unknown }
+  | { type: 'done'; stopReason: 'end' | 'tool_use' | 'max_tokens' | 'aborted' }
   | { type: 'error'; message: string };
 
 // Helper om snel een tekstbericht te maken.
