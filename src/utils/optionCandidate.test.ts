@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { generateMockOptionData } from './optionCandidate';
+import { generateMockOptionData, scoreOptionCandidate } from './optionCandidate';
+import type { MockOptionData } from './optionCandidate';
+import type { Ticker } from '../types';
 
 describe('generateMockOptionData', () => {
   it('is deterministic for the same symbol + seed', () => {
@@ -31,5 +33,65 @@ describe('generateMockOptionData', () => {
       expect(d.daysToEarnings).toBeGreaterThanOrEqual(1);
       expect(d.daysToEarnings).toBeLessThanOrEqual(60);
     }
+  });
+});
+
+const ticker = (over: Partial<Ticker> = {}): Ticker => ({
+  symbol: 'AAPL',
+  name: 'Apple',
+  type: 'stock',
+  optionsAvailable: true,
+  miniContractsAvailable: false,
+  ...over,
+});
+
+const data = (over: Partial<MockOptionData> = {}): MockOptionData => ({
+  ivRank: 70,
+  openInterest: 2000,
+  optionVolume: 1000,
+  bidAskSpreadPct: 3,
+  annualizedPremiumPct: 25,
+  daysToEarnings: 30,
+  ...over,
+});
+
+describe('scoreOptionCandidate', () => {
+  it('a strong candidate scores excellent', () => {
+    const r = scoreOptionCandidate(ticker(), data());
+    expect(r.verdict).toBe('excellent');
+    expect(r.totalScore).toBeGreaterThanOrEqual(80);
+    expect(r.criteria).toHaveLength(5);
+  });
+
+  it('no options available forces unsuitable and score 0', () => {
+    const r = scoreOptionCandidate(ticker({ optionsAvailable: false }), data());
+    expect(r.verdict).toBe('unsuitable');
+    expect(r.totalScore).toBe(0);
+    const optionable = r.criteria.find((c) => c.key === 'optionable');
+    expect(optionable!.status).toBe('bad');
+  });
+
+  it('a weak candidate scores unsuitable', () => {
+    const r = scoreOptionCandidate(
+      ticker(),
+      data({ ivRank: 10, openInterest: 50, optionVolume: 10, bidAskSpreadPct: 20, annualizedPremiumPct: 2, daysToEarnings: 3 })
+    );
+    expect(r.verdict).toBe('unsuitable');
+    expect(r.totalScore).toBeLessThan(40);
+  });
+
+  it('flags imminent earnings as bad', () => {
+    const r = scoreOptionCandidate(ticker(), data({ daysToEarnings: 3 }));
+    const earnings = r.criteria.find((c) => c.key === 'earnings');
+    expect(earnings!.status).toBe('bad');
+  });
+
+  it('low IV-rank is bad, mid is ok, high is good', () => {
+    const lo = scoreOptionCandidate(ticker(), data({ ivRank: 10 })).criteria.find((c) => c.key === 'ivRank')!;
+    const mid = scoreOptionCandidate(ticker(), data({ ivRank: 40 })).criteria.find((c) => c.key === 'ivRank')!;
+    const hi = scoreOptionCandidate(ticker(), data({ ivRank: 70 })).criteria.find((c) => c.key === 'ivRank')!;
+    expect(lo.status).toBe('bad');
+    expect(mid.status).toBe('ok');
+    expect(hi.status).toBe('good');
   });
 });
