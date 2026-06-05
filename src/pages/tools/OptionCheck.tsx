@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ScanSearch, Info } from 'lucide-react';
+import { Info } from 'lucide-react';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { usePageTitle } from '../../contexts/PageTitleContext';
 import { selectAllTickers } from '../../store/slices/tickersSlice';
