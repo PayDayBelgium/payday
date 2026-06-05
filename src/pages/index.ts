@@ -52,6 +52,9 @@ export { Community } from './community/Community';
 // Quant
 export { QuantTrading } from './quant/QuantTrading';
 
+// Mentorship
+export { Mentorship } from './mentorship/Mentorship';
+
 // Admin
 export { AdminDashboard } from './admin/AdminDashboard';
 export { UsersList } from './admin/UsersList';
