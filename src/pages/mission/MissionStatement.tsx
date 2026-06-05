@@ -31,6 +31,7 @@ import { LearningResources } from '../../components/learning/LearningResources';
 import { EducationCurriculum } from '../../components/learning/EducationCurriculum';
 import { OnboardingWizard, resetWizardForLevel } from '../../components/onboarding/OnboardingWizard';
 import { PaydayMountain } from '../../components/mission/PaydayMountain';
+import { selectHasPendingRequest } from '../../store/slices/mentorshipSlice';
 import type { UserLevel, LevelConfig } from '../../types';
 
 // Level card component
@@ -200,6 +201,7 @@ export const MissionStatement: React.FC = () => {
   const progress = useAppSelector(selectUserProgress);
   const currentLevelConfig = useAppSelector(selectCurrentLevelConfig);
   const nextLevel = useAppSelector(selectNextLevel);
+  const mentorshipRequested = useAppSelector(selectHasPendingRequest);
 
   useEffect(() => {
     setPageTitle('Jouw Reis', 'Curriculum, niveaus en leertraject');
@@ -334,6 +336,8 @@ export const MissionStatement: React.FC = () => {
           unlockedLevels={progress.unlockedLevels}
           onOpenCommunity={() => handleNavigate('/community', 'Community')}
           onOpenQuant={() => handleNavigate('/quant', 'Quant trading')}
+          onOpenMentorship={() => handleNavigate('/mentorship', 'Mentorship')}
+          mentorshipRequested={mentorshipRequested}
         />
       </section>
 

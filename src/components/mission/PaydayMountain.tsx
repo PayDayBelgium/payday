@@ -6,12 +6,16 @@ interface PaydayMountainProps {
   unlockedLevels: UserLevel[];
   onOpenCommunity?: () => void;
   onOpenQuant?: () => void;
+  onOpenMentorship?: () => void;
+  mentorshipRequested?: boolean;
 }
 
 export const PaydayMountain: React.FC<PaydayMountainProps> = ({
   unlockedLevels,
   onOpenCommunity,
   onOpenQuant,
+  onOpenMentorship,
+  mentorshipRequested,
 }) => {
   const offpisteUnlocked = unlockedLevels.includes('offpiste');
 
@@ -96,6 +100,44 @@ export const PaydayMountain: React.FC<PaydayMountainProps> = ({
             <g transform="translate(692 184)" filter="url(#pm-soft)" onClick={onOpenQuant} style={{ cursor: onOpenQuant ? 'pointer' : 'default' }}>
               <rect x="-39" y="-7.5" width="78" height="15" rx="7.5" fill="#FFF7ED" stroke="#F08C2E" strokeWidth="0.9" />
               <text x="0" y="2.6" fontSize="7.6" fontWeight="700" fill="#9A3412" textAnchor="middle" letterSpacing="0.04em">ONTGRENDELEN</text>
+            </g>
+          )}
+        </g>
+
+        {/* ski-school = mentorship (clickable) */}
+        <g transform="translate(390 352)" onClick={onOpenMentorship} style={{ cursor: onOpenMentorship ? 'pointer' : 'default' }}>
+          {/* schaduw */}
+          <ellipse cx="0" cy="20" rx="34" ry="5" fill="#0B4A8F" opacity="0.10" />
+          {/* leraar (instructeur, rood) */}
+          <g filter="url(#pm-soft)">
+            <circle cx="-9" cy="-14" r="4" fill="#F4C9A0" />
+            <rect x="-12.5" y="-10" width="7" height="15" rx="3" fill="#D14343" />
+            {/* arm met stok, wijzend */}
+            <line x1="-6" y1="-6" x2="4" y2="-12" stroke="#D14343" strokeWidth="2" strokeLinecap="round" />
+            <line x1="4" y1="-12" x2="6" y2="2" stroke="#7A4E2A" strokeWidth="1.2" strokeLinecap="round" />
+            {/* benen + ski */}
+            <line x1="-10.5" y1="5" x2="-12" y2="13" stroke="#33425C" strokeWidth="2" strokeLinecap="round" />
+            <line x1="-7.5" y1="5" x2="-6" y2="13" stroke="#33425C" strokeWidth="2" strokeLinecap="round" />
+            <rect x="-18" y="13" width="18" height="2.4" rx="1.2" fill="#2F6CAE" />
+          </g>
+          {/* leerling (kleiner, blauw) */}
+          <g filter="url(#pm-soft)">
+            <circle cx="11" cy="-7" r="3.3" fill="#F4C9A0" />
+            <rect x="8" y="-3.5" width="6" height="12" rx="2.6" fill="#2F6CAE" />
+            <line x1="9.5" y1="8" x2="8.5" y2="14" stroke="#33425C" strokeWidth="1.8" strokeLinecap="round" />
+            <line x1="12.5" y1="8" x2="13.5" y2="14" stroke="#33425C" strokeWidth="1.8" strokeLinecap="round" />
+            <rect x="4" y="14" width="15" height="2.2" rx="1.1" fill="#0F9D58" />
+          </g>
+          {/* label-pill */}
+          <g transform="translate(0 30)" filter="url(#pm-soft)">
+            <rect x="-66" y="-9" width="132" height="18" rx="9" fill="#fff" stroke="#E3E8EF" />
+            <text y="3" fontSize="9.5" fontWeight="700" fill="#9A3412" textAnchor="middle">SKI-SCHOOL · MENTORSHIP</text>
+          </g>
+          {/* status: aangevraagd */}
+          {mentorshipRequested && (
+            <g transform="translate(0 45)" filter="url(#pm-soft)">
+              <rect x="-34" y="-7.5" width="68" height="15" rx="7.5" fill="#ECFDF3" stroke="#0F9D58" strokeWidth="0.9" />
+              <text y="2.6" fontSize="7.6" fontWeight="700" fill="#0A6B3B" textAnchor="middle" letterSpacing="0.04em">AANGEVRAAGD</text>
             </g>
           )}
         </g>
