@@ -9,6 +9,8 @@ import { StatCard } from '../../components/widgets/StatCard';
 import { UpcomingEvents } from '../../components/widgets/UpcomingEvents';
 import { GoalsOverview } from '../../components/widgets/GoalsOverview';
 import { AlertsOpportunitiesWidget } from '../../components/widgets/AlertsOpportunitiesWidget';
+import { TradingIdeasWidget } from '../../components/widgets/TradingIdeasWidget';
+import { CommunityWidget } from '../../components/widgets/CommunityWidget';
 // import TodoListWidget from '../../components/widgets/TodoListWidget';
 import { BackupWarning } from '../../components/widgets/BackupWarning';
 import { PortfolioValueChart } from '../../components/widgets/PortfolioValueChart';
@@ -313,6 +315,12 @@ export const Dashboard: React.FC = () => {
             <AlertsOpportunitiesWidget type="alerts" />
             <AlertsOpportunitiesWidget type="opportunities" />
             <UpcomingEvents />
+          </div>
+
+          {/* Community & Trading ideas */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <TradingIdeasWidget />
+            <CommunityWidget />
           </div>
         </>
       )}

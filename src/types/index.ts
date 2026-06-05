@@ -500,7 +500,7 @@ export type DataMode = 'demo' | 'demo-feed' | 'live';
 // =====================================================
 
 // User Experience Levels (like ski slopes)
-export type UserLevel = 'beginner' | 'medior' | 'senior' | 'expert';
+export type UserLevel = 'beginner' | 'medior' | 'senior' | 'expert' | 'offpiste';
 
 // Level configuration with ski slope names
 export interface LevelConfig {
@@ -542,7 +542,12 @@ export type FeatureId =
   | 'kaching'
   | 'complex_strategies'
   | 'paper_trading'
-  | 'ai_assistant';
+  | 'ai_assistant'
+  // Off-piste features
+  | 'quant_trading';
+
+// Vrije modules (geen level/credits) die je activeert om in de sidebar te tonen.
+export type ModuleId = 'community' | 'mentorship';
 
 // User progress and credits
 export interface UserProgress {
@@ -551,6 +556,7 @@ export interface UserProgress {
   unlockedLevels: UserLevel[];
   completedLessons: string[];
   achievements: Achievement[];
+  activatedModules: ModuleId[];
   paperTradingEnabled: boolean;
   joinedAt: string;
   lastActiveAt: string;
@@ -737,5 +743,74 @@ export interface EducationProgress {
   quizScores: Record<string, number>; // Lesson ID -> Score
   currentLesson?: string; // Currently active lesson ID
   lastAccessedAt: string;
+}
+
+// =====================================================
+// Community / Trading ideas
+// =====================================================
+
+export type CommunityChannel = 'ideas' | 'general' | 'quant';
+
+export interface CommunityAuthor {
+  name: string;
+  initials: string;
+  color: string;        // avatar-achtergrondkleur (hex)
+  level: UserLevel;     // bepaalt de piste-badge
+}
+
+export interface TradeIdea {
+  ticker: string;
+  strategy: FeatureId;  // bv. 'cash_secured_puts' | 'covered_calls'
+  expiry: string;
+  strike?: number;
+  premium?: number;
+  returnPct?: number;
+  delta?: number;
+  ivRank: number;       // 0–100, de "juice"
+}
+
+export interface CommunityReply {
+  id: string;
+  author: CommunityAuthor;
+  text: string;
+  createdAt: string;
+}
+
+export interface CommunityPost {
+  id: string;
+  author: CommunityAuthor;
+  channel: CommunityChannel;
+  text: string;
+  createdAt: string;
+  likes: number;
+  likedByMe: boolean;
+  replies: CommunityReply[];
+  tradeIdea?: TradeIdea;
+}
+
+// Mentorship (ski-school) — losgekoppeld van credits/levels.
+export type MentorshipFocus =
+  | 'options'      // optiestrategieën
+  | 'risk'         // risicobeheer
+  | 'psychology'   // trading-psychologie
+  | 'portfolio'    // portefeuille-opbouw
+  | 'quant';       // kwantitatief / off-piste
+
+export type MentorStyle =
+  | 'hands_on'     // intensief, samen traden
+  | 'coaching'     // periodieke coaching/reviews
+  | 'async';       // asynchroon (berichten/feedback)
+
+export type MentorshipStatus = 'pending';
+
+export interface MentorshipRequest {
+  id: string;
+  focus: MentorshipFocus;
+  level: UserLevel;        // huidig niveau van de aanvrager
+  style: MentorStyle;
+  availability: string;    // vrije tekst, bv. "weekends, 2u/week"
+  message: string;         // motivatie / context
+  createdAt: string;       // ISO
+  status: MentorshipStatus;
 }
 

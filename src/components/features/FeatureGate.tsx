@@ -47,6 +47,7 @@ export const FeatureGate: React.FC<FeatureGateProps> = ({
           ${levelConfig?.slopeColor === 'green' ? 'bg-positive-50 dark:bg-positive-700/25' :
             levelConfig?.slopeColor === 'blue' ? 'bg-primary-50 dark:bg-primary-900/30' :
             levelConfig?.slopeColor === 'red' ? 'bg-negative-50 dark:bg-negative-700/25' :
+            levelConfig?.slopeColor === 'orange' ? 'bg-caution-50 dark:bg-caution-600/25' :
             'bg-gray-100 dark:bg-gray-700'}
         `}>
           <Lock className={`
@@ -54,6 +55,7 @@ export const FeatureGate: React.FC<FeatureGateProps> = ({
             ${levelConfig?.slopeColor === 'green' ? 'text-positive-600 dark:text-positive-500' :
               levelConfig?.slopeColor === 'blue' ? 'text-primary-700 dark:text-primary-300' :
               levelConfig?.slopeColor === 'red' ? 'text-negative-600 dark:text-negative-500' :
+              levelConfig?.slopeColor === 'orange' ? 'text-caution-600 dark:text-caution-500' :
               'text-gray-600 dark:text-gray-400'}
           `} />
         </div>
@@ -76,6 +78,7 @@ export const FeatureGate: React.FC<FeatureGateProps> = ({
             ${levelConfig.slopeColor === 'green' ? 'bg-positive-50 dark:bg-positive-700/15 border border-positive-500/20 dark:border-positive-700' :
               levelConfig.slopeColor === 'blue' ? 'bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-700' :
               levelConfig.slopeColor === 'red' ? 'bg-negative-50 dark:bg-negative-700/15 border border-negative-500/20 dark:border-negative-700' :
+              levelConfig.slopeColor === 'orange' ? 'bg-caution-50 dark:bg-caution-600/15 border border-caution-500/30 dark:border-caution-600' :
               'bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600'}
           `}>
             <div className="flex items-center justify-center gap-2 mb-2">

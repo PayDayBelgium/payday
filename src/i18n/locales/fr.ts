@@ -60,6 +60,10 @@ export const fr = {
     settings: 'Paramètres',
     ibConnection: 'Connexion IB',
     account: 'Compte',
+    community: 'Communauté',
+    quantTrading: 'Trading quant',
+    mentorship: 'Mentorat',
+    optionCheck: "Vérification d'options",
   },
 
   // Strategies

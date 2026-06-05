@@ -60,6 +60,10 @@ export const nl = {
     settings: 'Instellingen',
     ibConnection: 'IB-verbinding',
     account: 'Account',
+    community: 'Community',
+    quantTrading: 'Quant trading',
+    mentorship: 'Mentorship',
+    optionCheck: 'Optie-Check',
   },
 
   // Strategies

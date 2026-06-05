@@ -24,6 +24,7 @@ export { MonthlyIncomeCalculator } from './tools/MonthlyIncomeCalculator';
 export { CapitalGainsTaxCalculator } from './tools/CapitalGainsTaxCalculator';
 export { PnLSimulator } from './tools/PnLSimulator';
 export { CoveredCallSimulator } from './tools/CoveredCallSimulator';
+export { OptionCheck } from './tools/OptionCheck';
 
 // Settings
 export { Settings } from './settings/Settings';
@@ -45,6 +46,15 @@ export { HelpPortal } from './help/HelpPortal';
 
 // Mission
 export { MissionStatement } from './mission/MissionStatement';
+
+// Community
+export { Community } from './community/Community';
+
+// Quant
+export { QuantTrading } from './quant/QuantTrading';
+
+// Mentorship
+export { Mentorship } from './mentorship/Mentorship';
 
 // Admin
 export { AdminDashboard } from './admin/AdminDashboard';

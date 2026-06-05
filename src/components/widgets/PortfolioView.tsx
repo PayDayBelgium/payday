@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { TrendingUp, Building2, X as XIcon, ArrowUpCircle, ArrowDownCircle, MessageSquare, ChevronDown, ChevronUp, ChevronRight, Target, AlertCircle, Lightbulb, Filter, Redo2, Layers, ArrowDownLeft } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
-import { closePosition, updatePosition } from '../../store/slices/positionsSlice';
+import { closePosition, updatePosition, selectAllPriceAlerts } from '../../store/slices/positionsSlice';
 import { selectUnlockedLevels, isFeatureAvailable } from '../../store/slices/userProgressSlice';
 import { addTransaction } from '../../store/slices/portfoliosSlice';
 import { selectAllTickers } from '../../store/slices/tickersSlice';
@@ -26,6 +26,7 @@ import { parseNumberInput, validateNumberInput } from '../../utils/inputFormat';
 import { getSpreadId } from '../../utils/spreadHelpers';
 import { computeCoveredCallCapacity } from '../../utils/coveredCallEligibility';
 import { StockRow } from './StockRow';
+import { GroupedStockList } from './GroupedStockList';
 import { OptionRow } from './OptionRow';
 import type { CollateralType } from './OptionRow';
 import { calculateOptionUnrealizedPnL, calculatePnLPercentage } from '../../utils/pnlCalculations';
@@ -43,6 +44,8 @@ interface PortfolioViewProps {
   portfolioCurrentValue: number;
   className?: string;
   onNavigateToCampaigns?: () => void;
+  /** Opens the covered-call wizard for a ticker (threaded down to the grouped stock list). */
+  onWriteCoveredCall?: (ticker: string) => void;
 }
 
 interface GroupedPosition {
@@ -65,11 +68,13 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   portfolioCurrentValue,
   className = '',
   onNavigateToCampaigns,
+  onWriteCoveredCall,
 }) => {
   const dispatch = useAppDispatch();
   const tickers = useAppSelector(selectAllTickers);
   const portfolios = useAppSelector((state) => state.portfolios.portfolios);
   const storePositions = useAppSelector((state) => state.positions.positions);
+  const priceAlerts = useAppSelector(selectAllPriceAlerts);
   const unlockedLevels = useAppSelector(selectUnlockedLevels);
   const hasOptionsAccess = isFeatureAvailable('covered_calls', unlockedLevels);
   const currencySymbol = getCurrencySymbol(currency);
@@ -498,17 +503,33 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
     };
   }, [filteredPositions]);
 
+  // Open stock/ETF lots for this portfolio — rendered as a grouped, expandable tree
+  const stockLots = useMemo(
+    () =>
+      positions.filter(
+        (p): p is StockPosition =>
+          (p.type === 'stock' || p.type === 'etf') && p.status === 'open'
+      ),
+    [positions]
+  );
+
   // Group all positions by strategy if needed
   // This groups both standalone positions and spreads
   const groupedAllPositions = useMemo(() => {
+    // Stocks/ETFs are rendered separately by GroupedStockList — keep them out of the
+    // strategy/expiry/ticker grouping so they don't appear twice.
+    const nonStockPositions = filteredPositions.filter(
+      p => p.type !== 'stock' && p.type !== 'etf'
+    );
+
     if (groupBy === 'none') {
-      return { 'Alle Posities': filteredPositions };
+      return { 'Alle Posities': nonStockPositions };
     }
 
     const groups: Record<string, Position[]> = {};
     const processedSpreadIds = new Set<string>();
 
-    filteredPositions.forEach(position => {
+    nonStockPositions.forEach(position => {
       // Check if this is part of a spread
       const spreadId = getSpreadId(position);
 
@@ -1517,6 +1538,20 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
           );
         })}
 
+        {/* Grouped Stock/ETF Tree */}
+        {stockLots.length > 0 && (
+          <div className="mb-4">
+            <GroupedStockList
+              positions={stockLots}
+              alerts={priceAlerts}
+              allPortfolios={portfolios}
+              onEditPosition={setPositionToView}
+              onWriteCoveredCall={onWriteCoveredCall}
+              onSellPosition={setPositionToClose}
+            />
+          </div>
+        )}
+
         {/* All Positions Table */}
         {allPositions.length > 0 && (
           <div className="bg-gray-50 dark:bg-gray-800/50 overflow-x-auto">
@@ -2223,6 +2258,10 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                       {/* Render standalone positions */}
                       {strategyStandalonePositions.map((position) => {
                         // Check if this is a stock/ETF or option
+                        // NOTE: stocks/ETFs are excluded from groupedAllPositions and rendered
+                        // by GroupedStockList above, so this branch is currently unreachable.
+                        // If you ever re-add stocks to groupedAllPositions, remove this branch
+                        // to avoid double-rendering them.
                         const isStockOrETF = position.type === 'stock' || position.type === 'etf';
 
                   if (isStockOrETF) {

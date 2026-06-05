@@ -14,6 +14,7 @@ import {
   Play,
   CreditCard,
   RefreshCw,
+  MessageSquare,
 } from 'lucide-react';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
@@ -23,317 +24,18 @@ import {
   selectUserProgress,
   selectCurrentLevelConfig,
   selectNextLevel,
+  selectActivatedModules,
   LEVEL_CONFIGS,
   unlockLevel,
   spendCredits,
+  activateModule,
 } from '../../store/slices/userProgressSlice';
 import { LearningResources } from '../../components/learning/LearningResources';
 import { EducationCurriculum } from '../../components/learning/EducationCurriculum';
 import { OnboardingWizard, resetWizardForLevel } from '../../components/onboarding/OnboardingWizard';
-import type { UserLevel, LevelConfig } from '../../types';
-
-// ─────────────────────────────────────────────────────────────────
-// PayDay Mountain — illustrated alpine scene with working ski-lift.
-// Gondolas travel up the cable on a continuous loop, snow falls,
-// and authentic piste-markers (green ●, blue ▪, red ◆, black ◆◆)
-// mark each level on the route. Your current level pulses softly.
-// ─────────────────────────────────────────────────────────────────
-const SkiSlope: React.FC<{ activeLevel: UserLevel; unlockedLevels: UserLevel[] }> = ({
-  activeLevel,
-  unlockedLevels,
-}) => {
-  // Station positions along the cable path (used both for sign placement and the cable curve)
-  // Path goes from valley (bottom-left) up to the summit (top-right).
-  const stations: Array<{
-    level: UserLevel;
-    x: number; y: number;            // coordinates inside the 800×420 viewBox
-    pisteColor: string;              // CSS color of the piste marker
-    pisteShape: 'circle' | 'square' | 'diamond' | 'double-diamond';
-    label: string;
-    sub: string;
-  }> = [
-    { level: 'beginner', x: 130, y: 340, pisteColor: '#0F9D58', pisteShape: 'circle',         label: 'Groene piste', sub: 'Fundamenten' },
-    { level: 'medior',   x: 320, y: 240, pisteColor: '#2F6CAE', pisteShape: 'square',         label: 'Blauwe piste', sub: 'Premium-inkomen' },
-    { level: 'senior',   x: 510, y: 150, pisteColor: '#D14343', pisteShape: 'diamond',        label: 'Rode piste',   sub: 'Spreads & PMCC' },
-    { level: 'expert',   x: 680, y: 110, pisteColor: '#0F1E36', pisteShape: 'double-diamond', label: 'Zwarte piste', sub: 'Mastery' },
-  ];
-
-  const SnowFlake: React.FC<{ index: number }> = ({ index }) => {
-    const left = (index * 73) % 100;
-    const size = (index % 3) + 1.5;
-    const delay = (index * 0.6) % 8;
-    const duration = 7 + (index % 4) * 1.5;
-    return (
-      <div
-        className="absolute rounded-full bg-white pointer-events-none"
-        style={{
-          width: `${size}px`,
-          height: `${size}px`,
-          left: `${left}%`,
-          top: '-8px',
-          opacity: 0.85,
-          animation: `snow-fall ${duration}s linear ${delay}s infinite`,
-          boxShadow: '0 0 4px rgba(255,255,255,0.6)',
-        }}
-      />
-    );
-  };
-
-  const PisteMarker: React.FC<{ shape: typeof stations[number]['pisteShape']; color: string }> = ({ shape, color }) => {
-    if (shape === 'circle') {
-      return <circle cx="0" cy="0" r="6" fill={color} stroke="#fff" strokeWidth="1.5" />;
-    }
-    if (shape === 'square') {
-      return <rect x="-5.5" y="-5.5" width="11" height="11" fill={color} stroke="#fff" strokeWidth="1.5" />;
-    }
-    if (shape === 'diamond') {
-      return <rect x="-5" y="-5" width="10" height="10" fill={color} stroke="#fff" strokeWidth="1.5" transform="rotate(45)" />;
-    }
-    return (
-      <g>
-        <rect x="-9" y="-4" width="8" height="8" fill={color} stroke="#fff" strokeWidth="1.5" transform="rotate(45 -5 0)" />
-        <rect x="1"  y="-4" width="8" height="8" fill={color} stroke="#fff" strokeWidth="1.5" transform="rotate(45 5 0)" />
-      </g>
-    );
-  };
-
-  // Cable path expressed once — used for the visible line AND the gondola motion.
-  const CABLE_PATH = 'M 60 360 Q 220 220, 380 140 T 720 40';
-
-  return (
-    <div className="relative w-full rounded-xl overflow-hidden border border-[var(--line)] bg-sky-fade">
-      {/* Snow flakes (HTML overlay — covers the full container) */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
-        {Array.from({ length: 28 }).map((_, i) => <SnowFlake key={i} index={i} />)}
-      </div>
-
-      {/* The mountain scene — aspect-ratio container ensures no clipping at any width */}
-      <svg
-        viewBox="0 0 800 420"
-        className="relative w-full block"
-        style={{ aspectRatio: '800 / 420' }}
-        preserveAspectRatio="xMidYMid meet"
-      >
-        <defs>
-          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"  stopColor="#E8F0FA" />
-            <stop offset="100%" stopColor="#F4F7FB" />
-          </linearGradient>
-          <linearGradient id="far-range" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"  stopColor="#B6CDEA" />
-            <stop offset="100%" stopColor="#DCE7F5" />
-          </linearGradient>
-          <linearGradient id="mid-range" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"  stopColor="#86AED9" />
-            <stop offset="100%" stopColor="#B6CDEA" />
-          </linearGradient>
-          <linearGradient id="near-range" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"  stopColor="#5188C2" />
-            <stop offset="100%" stopColor="#86AED9" />
-          </linearGradient>
-          <linearGradient id="snow-cap" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"  stopColor="#FFFFFF" />
-            <stop offset="100%" stopColor="#E8F0FA" />
-          </linearGradient>
-          <linearGradient id="shadow" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%"  stopColor="rgba(11,74,143,0.20)" />
-            <stop offset="100%" stopColor="rgba(11,74,143,0)" />
-          </linearGradient>
-          <filter id="soft-shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="3" />
-          </filter>
-        </defs>
-
-        {/* Sky */}
-        <rect x="0" y="0" width="800" height="420" fill="url(#sky)" />
-
-        {/* Sun glow */}
-        <circle cx="745" cy="55" r="38" fill="rgba(255, 231, 170, 0.5)" />
-        <circle cx="745" cy="55" r="18" fill="rgba(255, 231, 170, 0.8)" />
-
-        {/* Distant range */}
-        <path
-          d="M 0 230  L 90 170  L 160 200  L 240 130  L 330 175  L 420 110  L 510 170  L 600 130  L 700 180  L 800 150  L 800 280 L 0 280 Z"
-          fill="url(#far-range)"
-          opacity="0.7"
-        />
-
-        {/* Mid range with snow caps */}
-        <path
-          d="M 0 290  L 60 240  L 130 280  L 220 200  L 300 270  L 380 190  L 460 250  L 560 180  L 660 240  L 760 200  L 800 230  L 800 320 L 0 320 Z"
-          fill="url(#mid-range)"
-        />
-        {/* Snow caps on mid range */}
-        <path d="M 220 200 L 240 217 L 230 220 L 215 213 Z"  fill="url(#snow-cap)" />
-        <path d="M 380 190 L 405 210 L 395 215 L 372 205 Z"  fill="url(#snow-cap)" />
-        <path d="M 560 180 L 585 198 L 575 204 L 552 195 Z"  fill="url(#snow-cap)" />
-
-        {/* Main mountain (front) — the route climbs this one */}
-        <path
-          d="M 0 420 L 0 360 L 90 320 L 180 280 L 260 230 L 340 180 L 420 130 L 500 90 L 570 50 L 640 30 L 720 50 L 800 90 L 800 420 Z"
-          fill="url(#near-range)"
-        />
-        {/* Snowy summit + crown */}
-        <path
-          d="M 500 90 L 570 50 L 640 30 L 720 50 L 705 75 L 685 60 L 660 78 L 630 56 L 605 80 L 575 64 L 555 86 L 520 95 Z"
-          fill="url(#snow-cap)"
-        />
-        {/* Side shadow on main mountain */}
-        <path
-          d="M 640 30 L 720 50 L 800 90 L 800 420 L 720 420 Z"
-          fill="url(#shadow)"
-        />
-
-        {/* Snow patches / ski runs scribed down the face */}
-        <path d="M 640 36 Q 600 110 540 170 Q 480 230 410 290 Q 340 350 270 410"
-              fill="none" stroke="#FFFFFF" strokeWidth="22" strokeLinecap="round" opacity="0.55" />
-        <path d="M 640 36 Q 600 110 540 170 Q 480 230 410 290 Q 340 350 270 410"
-              fill="none" stroke="#FFFFFF" strokeWidth="10" strokeLinecap="round" opacity="0.85" />
-
-        {/* Pine trees at the base */}
-        {[
-          [40, 380], [75, 395], [110, 385], [155, 400], [200, 392],
-          [50, 360], [88, 372], [128, 365], [175, 378],
-          [250, 405], [285, 395]
-        ].map(([x, y], i) => (
-          <g key={i} transform={`translate(${x} ${y})`}>
-            <polygon points="0,-18 -8,4 8,4" fill="#1F5594" />
-            <polygon points="0,-10 -10,10 10,10" fill="#0B4A8F" />
-            <rect x="-1.5" y="9" width="3" height="6" fill="#2A3B57" />
-          </g>
-        ))}
-
-        {/* ─── Ski-lift cable ─── */}
-        {/* Lift towers */}
-        {[
-          { x: 80,  yTop: 340, yBot: 420 },
-          { x: 230, yTop: 220, yBot: 380 },
-          { x: 380, yTop: 130, yBot: 310 },
-          { x: 530, yTop: 75,  yBot: 240 },
-          { x: 680, yTop: 35,  yBot: 170 },
-        ].map((t, i) => (
-          <g key={i}>
-            <line x1={t.x} y1={t.yTop} x2={t.x} y2={t.yBot}
-                  stroke="#2A3B57" strokeWidth="2.5" strokeLinecap="round" />
-            {/* Top crossbar */}
-            <line x1={t.x - 12} y1={t.yTop} x2={t.x + 12} y2={t.yTop}
-                  stroke="#2A3B57" strokeWidth="2.5" strokeLinecap="round" />
-            {/* Cable pulley */}
-            <circle cx={t.x} cy={t.yTop} r="3" fill="#0F1E36" />
-            {/* Base block */}
-            <rect x={t.x - 5} y={t.yBot - 4} width="10" height="5" fill="#1A2B45" />
-          </g>
-        ))}
-
-        {/* Cable shadow */}
-        <path d={CABLE_PATH} fill="none" stroke="rgba(11,74,143,0.10)" strokeWidth="3" transform="translate(1 2)" />
-        {/* Cable — quadratic curve following the towers */}
-        <path id="cable-route" d={CABLE_PATH} fill="none" stroke="#1A2B45" strokeWidth="1.5" />
-
-        {/* ─── Station markers (piste signs on the cable route) ─── */}
-        {stations.map((s) => {
-          const isUnlocked = unlockedLevels.includes(s.level);
-          const isActive   = activeLevel === s.level;
-          return (
-            <g key={s.level} transform={`translate(${s.x} ${s.y})`}>
-              {/* Pole */}
-              <line x1="0" y1="0" x2="0" y2="36" stroke="#2A3B57" strokeWidth="1.5" />
-              {/* Sign plate */}
-              <g transform="translate(0 -2)">
-                <rect x="-30" y="-26" width="60" height="22" rx="3"
-                      fill={isUnlocked ? '#FFFFFF' : '#EDF2F8'}
-                      stroke={isUnlocked ? s.pisteColor : '#B4BFCF'}
-                      strokeWidth={isUnlocked ? 1.5 : 1}
-                      filter="url(#soft-shadow)" />
-                <rect x="-30" y="-26" width="60" height="22" rx="3"
-                      fill={isUnlocked ? '#FFFFFF' : '#EDF2F8'}
-                      stroke={isUnlocked ? s.pisteColor : '#B4BFCF'}
-                      strokeWidth={isUnlocked ? 1.5 : 1} />
-                <g transform="translate(-20 -15)" opacity={isUnlocked ? 1 : 0.45}>
-                  <PisteMarker shape={s.pisteShape} color={s.pisteColor} />
-                </g>
-                <text x="8" y="-12" fontSize="9" fontWeight="600" textAnchor="middle" fill={isUnlocked ? '#0F1E36' : '#8A99B0'}
-                      style={{ fontFamily: 'Inter Tight, sans-serif', letterSpacing: '-0.01em' }}>
-                  {s.level === 'beginner' ? 'GROEN'
-                    : s.level === 'medior' ? 'BLAUW'
-                    : s.level === 'senior' ? 'ROOD'
-                    : 'ZWART'}
-                </text>
-              </g>
-              {/* Caption under the pole — white backdrop keeps text readable
-                  over snow, slopes and trees at any zoom level. */}
-              <g transform="translate(0 50)">
-                <rect x="-58" y="-9" width="116" height="28" rx="4"
-                      fill="rgba(255,255,255,0.92)" stroke="rgba(11,30,54,0.08)" strokeWidth="0.6" />
-                <text textAnchor="middle" y="2" fontSize="10" fontWeight="600" fill="#0F1E36"
-                      style={{ fontFamily: 'Inter Tight, sans-serif' }}>
-                  {s.label}
-                </text>
-                <text textAnchor="middle" y="14" fontSize="9" fill="#5A6B82"
-                      style={{ fontFamily: 'Inter Tight, sans-serif' }}>
-                  {isUnlocked ? s.sub : '— vergrendeld —'}
-                </text>
-              </g>
-              {/* Active pulse */}
-              {isActive && (
-                <>
-                  <circle cx="0" cy="36" r="6" fill={s.pisteColor} opacity="0.35">
-                    <animate attributeName="r" values="6;16;6" dur="2s" repeatCount="indefinite" />
-                    <animate attributeName="opacity" values="0.4;0;0.4" dur="2s" repeatCount="indefinite" />
-                  </circle>
-                  <circle cx="0" cy="36" r="4" fill={s.pisteColor} />
-                </>
-              )}
-              {/* Lock badge if not unlocked */}
-              {!isUnlocked && (
-                <g transform="translate(0 36)">
-                  <circle r="6" fill="#FFFFFF" stroke="#B4BFCF" strokeWidth="1.2" />
-                  <path d="M -2 -1 L -2 -3 Q -2 -4.5 0 -4.5 Q 2 -4.5 2 -3 L 2 -1 M -2.5 -1 L 2.5 -1 L 2.5 2.5 L -2.5 2.5 Z"
-                        fill="none" stroke="#5A6B82" strokeWidth="0.9" strokeLinecap="round" />
-                </g>
-              )}
-            </g>
-          );
-        })}
-
-        {/* Gondolas — rendered inside the SVG so they always stay on the cable, regardless of container width.
-            Each gondola's origin (0,0) follows the cable; the hanger drops down and the body hangs below. */}
-        {[0, -6, -12].map((delay, i) => (
-          <g key={i}>
-            {/* Hanger drops 5 units below the cable, gondola body hangs from there */}
-            <line x1="0" y1="0" x2="0" y2="5" stroke="#1A2B45" strokeWidth="0.8" />
-            <rect x="-7" y="5" width="14" height="9" rx="2" fill="#FFFFFF" stroke="#1A2B45" strokeWidth="0.8" />
-            <rect x="-5" y="7.5" width="10" height="4" rx="1" fill="#0B4A8F" opacity="0.85" />
-            {/* Drop shadow */}
-            <ellipse cx="0" cy="14.5" rx="6" ry="0.8" fill="rgba(11,74,143,0.18)" />
-            <animateMotion
-              dur="22s"
-              repeatCount="indefinite"
-              begin={`${delay}s`}
-            >
-              <mpath href="#cable-route" />
-            </animateMotion>
-          </g>
-        ))}
-
-        {/* Caption strip — placed inside SVG so it scales nicely too */}
-        <g>
-          {/* Legend (right) */}
-          <g transform="translate(540 400)" style={{ fontFamily: 'Inter, sans-serif' }}>
-            <circle cx="0"  cy="0" r="3.5" fill="#0F9D58" />
-            <text   x="8"  y="3" fontSize="9.5" fill="#5A6B82" letterSpacing="0.06em">GROEN</text>
-            <rect   x="55" y="-3.5" width="7" height="7" fill="#2F6CAE" />
-            <text   x="66" y="3" fontSize="9.5" fill="#5A6B82" letterSpacing="0.06em">BLAUW</text>
-            <rect   x="115" y="-3.5" width="7" height="7" fill="#D14343" transform="rotate(45 118.5 0)" />
-            <text   x="128" y="3" fontSize="9.5" fill="#5A6B82" letterSpacing="0.06em">ROOD</text>
-            <rect   x="175" y="-3.5" width="7" height="7" fill="#0F1E36" transform="rotate(45 178.5 0)" />
-            <text   x="188" y="3" fontSize="9.5" fill="#5A6B82" letterSpacing="0.06em">ZWART</text>
-          </g>
-        </g>
-      </svg>
-    </div>
-  );
-};
+import { PaydayMountain } from '../../components/mission/PaydayMountain';
+import { selectHasPendingRequest } from '../../store/slices/mentorshipSlice';
+import type { UserLevel, LevelConfig, ModuleId } from '../../types';
 
 // Level card component
 const LevelCard: React.FC<{
@@ -352,6 +54,7 @@ const LevelCard: React.FC<{
       case 'blue': return 'border-primary-500 bg-primary-50 dark:bg-primary-900/20';
       case 'red': return 'border-negative-500 bg-negative-50 dark:bg-negative-700/15';
       case 'black': return 'border-gray-900 dark:border-gray-100 bg-gray-50 dark:bg-gray-800';
+      case 'orange': return 'border-caution-500 bg-caution-50 dark:bg-caution-600/15';
       default: return 'border-gray-300 bg-gray-50';
     }
   };
@@ -362,6 +65,7 @@ const LevelCard: React.FC<{
       case 'blue': return 'bg-primary-700';
       case 'red': return 'bg-negative-700';
       case 'black': return 'bg-ink-900 dark:bg-ink-100';
+      case 'orange': return 'bg-caution-500';
       default: return 'bg-ink-700';
     }
   };
@@ -492,6 +196,79 @@ const LevelCard: React.FC<{
   );
 };
 
+// Vrije modules (geen level/credits) — activeren toont ze in de sidebar.
+const MODULE_CONFIGS: {
+  id: ModuleId;
+  name: string;
+  description: string;
+  path: string;
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+}[] = [
+  {
+    id: 'community',
+    name: 'Community',
+    description: 'Deel trading ideas en ga in gesprek met andere PayDay-traders in de après-ski bar.',
+    path: '/community',
+    icon: MessageSquare,
+  },
+  {
+    id: 'mentorship',
+    name: 'Mentorship',
+    description: 'Vraag persoonlijke begeleiding aan via de ski-school. Opleiding op maat, los van credits.',
+    path: '/mentorship',
+    icon: GraduationCap,
+  },
+];
+
+// Module card — gratis activeren (geen credits), daarna zichtbaar in de sidebar.
+const ModuleCard: React.FC<{
+  config: (typeof MODULE_CONFIGS)[number];
+  isActivated: boolean;
+  onActivate: () => void;
+  onOpen: () => void;
+}> = ({ config, isActivated, onActivate, onOpen }) => {
+  const Icon = config.icon;
+  return (
+    <div className={`
+      relative rounded-xl border-2 overflow-hidden transition-all duration-300
+      ${isActivated ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'}
+    `}>
+      <div className="p-4">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-10 h-10 rounded-md bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 flex items-center justify-center flex-shrink-0">
+            <Icon className="w-[18px] h-[18px]" strokeWidth={1.75} />
+          </div>
+          <div>
+            <h3 className="font-bold text-ink-900 dark:text-white tracking-tight">{config.name}</h3>
+            <p className="text-xs text-ink-500 dark:text-ink-400">Module</p>
+          </div>
+          {isActivated && (
+            <span className="ml-auto flex items-center gap-1 bg-primary-700 text-white px-2 py-1 rounded-full text-xs font-medium">
+              <Check className="w-3.5 h-3.5" /> Actief
+            </span>
+          )}
+        </div>
+        <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">{config.description}</p>
+        {isActivated ? (
+          <button
+            onClick={onOpen}
+            className="flex items-center gap-2 text-sm font-medium text-primary-700 dark:text-primary-300 hover:underline"
+          >
+            Openen <ChevronRight className="w-4 h-4" />
+          </button>
+        ) : (
+          <button
+            onClick={onActivate}
+            className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium text-sm transition-colors"
+          >
+            <Star className="w-4 h-4" /> Activeren
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export const MissionStatement: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -500,6 +277,8 @@ export const MissionStatement: React.FC = () => {
   const progress = useAppSelector(selectUserProgress);
   const currentLevelConfig = useAppSelector(selectCurrentLevelConfig);
   const nextLevel = useAppSelector(selectNextLevel);
+  const mentorshipRequested = useAppSelector(selectHasPendingRequest);
+  const activatedModules = useAppSelector(selectActivatedModules);
 
   useEffect(() => {
     setPageTitle('Jouw Reis', 'Curriculum, niveaus en leertraject');
@@ -567,12 +346,13 @@ export const MissionStatement: React.FC = () => {
             <div className="relative">
               {/* Connecting dotted route */}
               <div className="absolute left-0 right-0 top-[14px] border-t border-dashed border-[var(--line)] z-0" />
-              <ul className="relative z-10 grid grid-cols-4 gap-2">
+              <ul className="relative z-10 grid grid-cols-5 gap-2">
                 {([
                   { level: 'beginner' as UserLevel, label: 'Groen',  sub: 'Fundamenten',     color: '#0F9D58', shape: 'circle'         as const },
                   { level: 'medior'   as UserLevel, label: 'Blauw',  sub: 'Premium-inkomen', color: '#2F6CAE', shape: 'square'         as const },
                   { level: 'senior'   as UserLevel, label: 'Rood',   sub: 'Spreads · PMCC',  color: '#D14343', shape: 'diamond'        as const },
                   { level: 'expert'   as UserLevel, label: 'Zwart',  sub: 'Mastery',         color: '#0F1E36', shape: 'double-diamond' as const },
+                  { level: 'offpiste'  as UserLevel, label: 'Off-piste', sub: 'Quant trading',    color: '#F08C2E', shape: 'double-diamond' as const },
                 ]).map((step) => {
                   const isUnlocked = progress.unlockedLevels.includes(step.level);
                   const isActive   = progress.currentLevel === step.level;
@@ -628,7 +408,14 @@ export const MissionStatement: React.FC = () => {
             <span>Live · Skilift in bedrijf</span>
           </div>
         </div>
-        <SkiSlope activeLevel={progress.currentLevel} unlockedLevels={progress.unlockedLevels} />
+        <PaydayMountain
+          activeLevel={progress.currentLevel}
+          unlockedLevels={progress.unlockedLevels}
+          onOpenCommunity={() => handleNavigate('/community', 'Community')}
+          onOpenQuant={() => handleNavigate('/quant', 'Quant trading')}
+          onOpenMentorship={() => handleNavigate('/mentorship', 'Mentorship')}
+          mentorshipRequested={mentorshipRequested}
+        />
       </section>
 
       {/* Mission Statement */}
@@ -671,7 +458,7 @@ export const MissionStatement: React.FC = () => {
       <div>
         <p className="eyebrow mb-2">Curriculum</p>
         <h2 className="text-lg font-semibold text-ink-900 dark:text-white tracking-tight mb-5">
-          De vier niveaus
+          De niveaus
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {LEVEL_CONFIGS.map((config) => (
@@ -683,6 +470,25 @@ export const MissionStatement: React.FC = () => {
               onUnlock={() => handleUnlockLevel(config.level)}
               onRestartWizard={() => handleRestartWizard(config.level)}
               userCredits={progress.credits}
+            />
+          ))}
+        </div>
+
+        {/* Extra modules — activeer om ze in de sidebar te tonen */}
+        <h3 className="text-base font-semibold text-ink-900 dark:text-white tracking-tight mt-8 mb-1">
+          Extra modules
+        </h3>
+        <p className="text-sm text-ink-500 dark:text-ink-400 mb-4">
+          Activeer een module om die in je zijbalk te tonen. Geen credits nodig.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {MODULE_CONFIGS.map((mod) => (
+            <ModuleCard
+              key={mod.id}
+              config={mod}
+              isActivated={activatedModules.includes(mod.id)}
+              onActivate={() => dispatch(activateModule(mod.id))}
+              onOpen={() => handleNavigate(mod.path, mod.name)}
             />
           ))}
         </div>

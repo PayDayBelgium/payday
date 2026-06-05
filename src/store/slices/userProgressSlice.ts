@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '../index';
-import type { UserLevel, UserProgress, Achievement, CreditTransaction, LevelConfig, FeatureId } from '../../types';
+import type { UserLevel, UserProgress, Achievement, CreditTransaction, LevelConfig, FeatureId, ModuleId } from '../../types';
 
 // Level configurations with ski slope analogy
 // Note: priceEUR is set to 0 for all levels - unlock only via credits
@@ -51,11 +51,22 @@ export const LEVEL_CONFIGS: LevelConfig[] = [
     creditsRequired: 0,
     priceEUR: 0,
   },
+  {
+    level: 'offpiste',
+    name: 'Off-piste',
+    slopeName: 'Off-piste',
+    slopeColor: 'orange',
+    icon: '🟠',
+    description: 'Verlaat de geprepareerde piste: kwantitatieve modellen, edge-detectie en data-gedreven trading. Ontgrendel via de community.',
+    features: ['quant_trading'],
+    creditsRequired: 0,
+    priceEUR: 0,
+  },
 ];
 
 // Get all features up to and including a level
 export const getFeaturesForLevel = (level: UserLevel): FeatureId[] => {
-  const levelOrder: UserLevel[] = ['beginner', 'medior', 'senior', 'expert'];
+  const levelOrder: UserLevel[] = ['beginner', 'medior', 'senior', 'expert', 'offpiste'];
   const levelIndex = levelOrder.indexOf(level);
 
   return LEVEL_CONFIGS
@@ -91,6 +102,7 @@ const initialState: UserProgressState = {
     unlockedLevels: ['beginner'],
     completedLessons: [],
     achievements: [],
+    activatedModules: [],
     paperTradingEnabled: true, // Start with paper trading by default
     joinedAt: new Date().toISOString(),
     lastActiveAt: new Date().toISOString(),
@@ -159,7 +171,7 @@ const userProgressSlice = createSlice({
         state.progress.unlockedLevels.push(level);
 
         // Update current level if this is higher
-        const levelOrder: UserLevel[] = ['beginner', 'medior', 'senior', 'expert'];
+        const levelOrder: UserLevel[] = ['beginner', 'medior', 'senior', 'expert', 'offpiste'];
         const currentIndex = levelOrder.indexOf(state.progress.currentLevel);
         const newIndex = levelOrder.indexOf(level);
 
@@ -167,6 +179,18 @@ const userProgressSlice = createSlice({
           state.progress.currentLevel = level;
         }
       }
+    },
+
+    // Activate a free module (community, mentorship) so it shows up in the sidebar
+    activateModule: (state, action: PayloadAction<ModuleId>) => {
+      const moduleId = action.payload;
+      if (!state.progress.activatedModules) {
+        state.progress.activatedModules = [];
+      }
+      if (!state.progress.activatedModules.includes(moduleId)) {
+        state.progress.activatedModules.push(moduleId);
+      }
+      state.progress.lastActiveAt = new Date().toISOString();
     },
 
     // Set current active level (for users who want to practice at lower levels)
@@ -237,6 +261,7 @@ export const {
   spendCredits,
   purchaseCredits,
   unlockLevel,
+  activateModule,
   setCurrentLevel,
   completeLesson,
   addAchievement,
@@ -254,6 +279,10 @@ export const selectCreditHistory = (state: RootState) => state.userProgress.cred
 export const selectPaperTradingEnabled = (state: RootState) => state.userProgress.progress.paperTradingEnabled;
 export const selectCompletedLessons = (state: RootState) => state.userProgress.progress.completedLessons;
 export const selectAchievements = (state: RootState) => state.userProgress.progress.achievements;
+export const selectActivatedModules = (state: RootState): ModuleId[] =>
+  state.userProgress.progress.activatedModules ?? [];
+export const selectIsModuleActivated = (moduleId: ModuleId) => (state: RootState): boolean =>
+  (state.userProgress.progress.activatedModules ?? []).includes(moduleId);
 
 // Computed selectors
 export const selectCanAccessLevel = (level: UserLevel) => (state: RootState) =>
@@ -266,7 +295,7 @@ export const selectCurrentLevelConfig = (state: RootState) =>
   getLevelConfig(state.userProgress.progress.currentLevel);
 
 export const selectNextLevel = (state: RootState): LevelConfig | null => {
-  const levelOrder: UserLevel[] = ['beginner', 'medior', 'senior', 'expert'];
+  const levelOrder: UserLevel[] = ['beginner', 'medior', 'senior', 'expert', 'offpiste'];
   const currentIndex = levelOrder.indexOf(state.userProgress.progress.currentLevel);
 
   if (currentIndex < levelOrder.length - 1) {

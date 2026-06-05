@@ -26,3 +26,4 @@ dist-ssr
 # Windows reserved filenames
 nul
 NUL
+.superpowers/

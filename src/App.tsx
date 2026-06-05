@@ -18,6 +18,7 @@ import {
   CapitalGainsTaxCalculator,
   PnLSimulator,
   CoveredCallSimulator,
+  OptionCheck,
   Settings,
   Journal,
   Todos,
@@ -25,6 +26,9 @@ import {
   Analytics,
   HelpPortal,
   MissionStatement,
+  Community,
+  QuantTrading,
+  Mentorship,
 } from './pages';
 import { AdminLayout } from './components/layout/AdminLayout';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
@@ -85,10 +89,14 @@ function AppContent() {
         <Route path="tools/capital-gains-tax" element={<CapitalGainsTaxCalculator />} />
         <Route path="tools/pnl-simulator" element={<FeatureGate feature="advanced_analytics"><PnLSimulator /></FeatureGate>} />
         <Route path="tools/covered-call-simulator" element={<FeatureGate feature="covered_calls"><CoveredCallSimulator /></FeatureGate>} />
+        <Route path="tools/option-check" element={<FeatureGate feature="options_basics"><OptionCheck /></FeatureGate>} />
         <Route path="settings" element={<Settings />} />
         <Route path="settings/portfolios" element={<PortfolioManagement />} />
         <Route path="help" element={<HelpPortal />} />
         <Route path="mission" element={<MissionStatement />} />
+        <Route path="community" element={<Community />} />
+        <Route path="quant" element={<FeatureGate feature="quant_trading"><QuantTrading /></FeatureGate>} />
+        <Route path="mentorship" element={<Mentorship />} />
         {/* TODO: Add more routes */}
         <Route path="*" element={<ComingSoon />} />
       </Route>
