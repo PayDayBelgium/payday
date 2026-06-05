@@ -27,6 +27,7 @@ import {
   MissionStatement,
   Community,
   QuantTrading,
+  Mentorship,
 } from './pages';
 import { AdminLayout } from './components/layout/AdminLayout';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
@@ -93,6 +94,7 @@ function AppContent() {
         <Route path="mission" element={<MissionStatement />} />
         <Route path="community" element={<Community />} />
         <Route path="quant" element={<FeatureGate feature="quant_trading"><QuantTrading /></FeatureGate>} />
+        <Route path="mentorship" element={<Mentorship />} />
         {/* TODO: Add more routes */}
         <Route path="*" element={<ComingSoon />} />
       </Route>

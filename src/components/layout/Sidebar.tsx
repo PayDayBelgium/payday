@@ -14,6 +14,7 @@ import {
   Activity,
   MessageSquare,
   Sigma,
+  GraduationCap,
 } from 'lucide-react';
 import type { FeatureId } from '../../types';
 import { useAppSelector } from '../../hooks/useAppSelector';
@@ -152,6 +153,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '', isCollapsed })
                   <FeatureLockIndicator feature="quant_trading" />
                 </span>
               )}
+            </>
+          )}
+        </NavLink>
+
+        <NavLink
+          to="/mentorship"
+          onClick={() => handleMenuClick('/mentorship', t('sidebar.mentorship'))}
+          className={({ isActive }) => navClass(isActive, isCollapsed)}
+          title={isCollapsed ? t('sidebar.mentorship') : ''}
+        >
+          {({ isActive }) => (
+            <>
+              <ActiveBar active={isActive} />
+              <GraduationCap className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={1.75} />
+              {!isCollapsed && <span>{t('sidebar.mentorship')}</span>}
             </>
           )}
         </NavLink>
