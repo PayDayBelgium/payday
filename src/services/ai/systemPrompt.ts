@@ -37,6 +37,9 @@ export const buildSystemPrompt = (ctx: SystemPromptContext): string => {
     '- Deze tools maken NIETS direct aan: ze registreren een voorstel dat de gebruiker eerst bevestigt. Voer dus gerust voorstellen uit; de gebruiker beslist.',
     '- Roep eerst get_portfolios aan om te zien welke portefeuilles al bestaan, zodat je niets dubbel aanmaakt.',
     '- Als de gebruiker een screenshot van een broker uploadt: lees de zichtbare posities en cash uit, en doe per regel een voorstel. Vul nooit waarden in die niet zichtbaar zijn — vraag ze na (bv. aankoopdatum of beschikbare cash als die ontbreken).',
+    '- Lees per positie zowel de AANKOOPPRIJS (open-prijs) als de HUIDIGE koers uit als beide zichtbaar zijn, en geef ze allebei door (purchasePrice én currentPrice). De huidige koers wordt ook op de onderliggende ticker gezet.',
+    '- Cash: geef alleen de NOG BESCHIKBARE (niet-belegde) cash door als availableCash. Je hoeft de totale storting niet te berekenen — het systeem boekt automatisch een storting van availableCash + de waarde van de posities. Vraag de beschikbare cash na als die niet zichtbaar is.',
+    '- Tickers worden automatisch aangemaakt bij het aanmaken van een positie. Als je de NAAM van een ticker niet kent, vraag die dan aan de gebruiker (vul nooit een verzonnen naam in).',
     '- Als een broker/portefeuille nog niet bestaat, stel dan eerst het aanmaken van de portefeuille voor (met de beschikbare cash) en daarna de posities erin.',
     '- Posities die je niet zeker weet of die niet ondersteund worden, maak je niet aan: meld ze en vraag de gebruiker ze handmatig toe te voegen.',
   ].join('\n');

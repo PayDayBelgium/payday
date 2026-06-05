@@ -32,15 +32,18 @@ export const TOOL_SCHEMAS: ToolSchema[] = [
   {
     name: 'propose_create_portfolio',
     description:
-      'Stelt voor een nieuwe portefeuille (broker-account) aan te maken. Voert niets uit — de gebruiker bevestigt eerst. Roep dit alleen aan als de juiste portefeuille nog niet bestaat.',
+      'Stelt voor een nieuwe portefeuille (broker-account) aan te maken. Voert niets uit — de gebruiker bevestigt eerst. Roep dit alleen aan als de juiste portefeuille nog niet bestaat. Geef de NOG BESCHIKBARE cash door (availableCash); het systeem berekent de totale storting automatisch als availableCash + de waarde van de posities die je in deze portefeuille aanmaakt.',
     input_schema: {
       type: 'object',
       properties: {
         name: { type: 'string', description: 'Naam van de portefeuille/broker' },
         currency: { type: 'string', enum: ['USD', 'EUR'], description: 'Valuta' },
-        initialCapital: { type: 'number', description: 'Beschikbare cash / startkapitaal bij de broker' },
+        availableCash: {
+          type: 'number',
+          description: 'De nog beschikbare (niet-belegde) cash bij de broker, zoals op het scherm getoond.',
+        },
       },
-      required: ['name', 'currency', 'initialCapital'],
+      required: ['name', 'currency', 'availableCash'],
     },
   },
   {
@@ -52,10 +55,14 @@ export const TOOL_SCHEMAS: ToolSchema[] = [
       properties: {
         portfolio: { type: 'string', description: 'Naam van de portefeuille waar de positie in komt' },
         ticker: { type: 'string', description: 'Ticker-symbool, bv. AAPL' },
-        name: { type: 'string', description: 'Naam van het bedrijf/de ETF' },
+        name: { type: 'string', description: 'Naam van het bedrijf/de ETF. Vraag dit aan de gebruiker als je het niet kent.' },
         assetType: { type: 'string', enum: ['stock', 'etf'] },
         shares: { type: 'number', description: 'Aantal aandelen' },
-        purchasePrice: { type: 'number', description: 'Aankoopprijs per aandeel' },
+        purchasePrice: { type: 'number', description: 'Aankoopprijs (open-prijs) per aandeel' },
+        currentPrice: {
+          type: 'number',
+          description: 'Huidige koers per aandeel, zoals op het scherm getoond. Laat weg als niet zichtbaar.',
+        },
         openDate: { type: 'string', description: 'Aankoopdatum (YYYY-MM-DD). Laat weg als onbekend.' },
       },
       required: ['portfolio', 'ticker', 'name', 'assetType', 'shares', 'purchasePrice'],
@@ -70,6 +77,10 @@ export const TOOL_SCHEMAS: ToolSchema[] = [
       properties: {
         portfolio: { type: 'string', description: 'Naam van de portefeuille' },
         ticker: { type: 'string', description: 'Ticker-symbool van de onderliggende waarde' },
+        tickerName: {
+          type: 'string',
+          description: 'Naam van de onderliggende waarde. Vraag dit aan de gebruiker als je het niet kent.',
+        },
         optionType: { type: 'string', enum: ['call', 'put'] },
         action: { type: 'string', enum: ['buy', 'sell'], description: 'Gekocht of verkocht' },
         strike: { type: 'number' },
@@ -93,7 +104,7 @@ export const DEFAULT_PORTFOLIO_LOGO = PaydayLogo;
 // Voorgestelde wijzigingen (verzameld tot de gebruiker bevestigt).
 // ---------------------------------------------------------------------------
 export type ProposedChange =
-  | { kind: 'portfolio'; toolUseId: string; name: string; currency: CurrencyType; initialCapital: number }
+  | { kind: 'portfolio'; toolUseId: string; name: string; currency: CurrencyType; availableCash: number }
   | {
       kind: 'stock';
       toolUseId: string;
@@ -103,6 +114,7 @@ export type ProposedChange =
       assetType: 'stock' | 'etf';
       shares: number;
       purchasePrice: number;
+      currentPrice?: number;
       openDate: string;
     }
   | {
@@ -110,6 +122,7 @@ export type ProposedChange =
       toolUseId: string;
       portfolio: string;
       ticker: string;
+      tickerName?: string;
       optionType: 'call' | 'put';
       action: 'buy' | 'sell';
       strike: number;
@@ -125,8 +138,15 @@ const asNumber = (v: unknown, fallback = 0): number => {
   const n = typeof v === 'string' ? parseFloat(v) : (v as number);
   return Number.isFinite(n) ? n : fallback;
 };
+const asOptionalNumber = (v: unknown): number | undefined => {
+  if (v === undefined || v === null || v === '') return undefined;
+  const n = typeof v === 'string' ? parseFloat(v) : (v as number);
+  return Number.isFinite(n) ? n : undefined;
+};
 const asString = (v: unknown, fallback = ''): string =>
   typeof v === 'string' && v.trim() !== '' ? v : fallback;
+const asOptionalString = (v: unknown): string | undefined =>
+  typeof v === 'string' && v.trim() !== '' ? v : undefined;
 
 // Vertaalt een propose-tool-call naar een ProposedChange (of null bij read-tool/onbekend).
 export const parseProposedChange = (
@@ -142,7 +162,7 @@ export const parseProposedChange = (
         toolUseId,
         name: asString(o.name),
         currency: o.currency === 'EUR' ? 'EUR' : 'USD',
-        initialCapital: asNumber(o.initialCapital),
+        availableCash: asNumber(o.availableCash),
       };
     case 'propose_create_stock':
       return {
@@ -154,6 +174,7 @@ export const parseProposedChange = (
         assetType: o.assetType === 'etf' ? 'etf' : 'stock',
         shares: asNumber(o.shares),
         purchasePrice: asNumber(o.purchasePrice),
+        currentPrice: asOptionalNumber(o.currentPrice),
         openDate: asString(o.openDate, today()),
       };
     case 'propose_create_option':
@@ -162,6 +183,7 @@ export const parseProposedChange = (
         toolUseId,
         portfolio: asString(o.portfolio),
         ticker: asString(o.ticker).toUpperCase(),
+        tickerName: asOptionalString(o.tickerName),
         optionType: o.optionType === 'put' ? 'put' : 'call',
         action: o.action === 'sell' ? 'sell' : 'buy',
         strike: asNumber(o.strike),
@@ -179,9 +201,11 @@ export const parseProposedChange = (
 export const describeChange = (c: ProposedChange): string => {
   switch (c.kind) {
     case 'portfolio':
-      return `Portefeuille "${c.name}" (${c.currency}, cash ${c.initialCapital})`;
-    case 'stock':
-      return `${c.assetType === 'etf' ? 'ETF' : 'Aandeel'} ${c.ticker}: ${c.shares} @ ${c.purchasePrice} → ${c.portfolio}`;
+      return `Portefeuille "${c.name}" (${c.currency}, beschikbare cash ${c.availableCash})`;
+    case 'stock': {
+      const cur = c.currentPrice !== undefined ? `, huidig ${c.currentPrice}` : '';
+      return `${c.assetType === 'etf' ? 'ETF' : 'Aandeel'} ${c.ticker}: ${c.shares} @ ${c.purchasePrice}${cur} → ${c.portfolio}`;
+    }
     case 'option':
       return `${c.action === 'buy' ? 'Long' : 'Short'} ${c.optionType.toUpperCase()} ${c.ticker} ${c.strike} exp ${c.expiration} ×${c.contracts} @ ${c.premium} → ${c.portfolio}`;
   }
@@ -217,7 +241,7 @@ const ensureTicker = (
   symbol: string,
   name: string,
   type: 'stock' | 'etf',
-  price: number,
+  price?: number,
 ): void => {
   const exists = selectAllTickers(getState()).some(
     (t) => t.symbol.toUpperCase() === symbol.toUpperCase(),
@@ -236,79 +260,100 @@ const ensureTicker = (
   dispatch(addTicker(ticker));
 };
 
-// Past één voorstel toe. Retourneert true bij succes.
-const applyChange = (c: ProposedChange, getState: () => RootState, dispatch: AppDispatch): void => {
-  if (c.kind === 'portfolio') {
-    const portfolio: Portfolio = {
-      id: uid('pf'),
-      name: c.name,
-      logo: DEFAULT_PORTFOLIO_LOGO,
-      pricePerContract: 100,
-      strategy: '',
-      hasOptions: true,
-      strategies: [],
-      currency: c.currency,
-      startDate: today(),
-      initialCapital: c.initialCapital,
-      currentValue: c.initialCapital,
-    };
-    dispatch(addPortfolio(portfolio));
-    // Initiële storting als deposit-transactie (startkapitaal bij de broker).
-    if (c.initialCapital > 0) {
-      const deposit: PortfolioTransaction = {
-        id: uid('txn'),
-        portfolio: c.name,
-        date: today(),
-        type: 'deposit',
-        amount: c.initialCapital,
-        description: 'Initiële storting',
-        previousValue: 0,
-        newValue: c.initialCapital,
-        createdAt: new Date().toISOString(),
-      };
-      dispatch(addTransaction(deposit));
-    }
-    return;
+// Waarde van een positie (voor de totale-storting-berekening).
+const positionValue = (c: ProposedChange): number => {
+  if (c.kind === 'stock') return c.shares * (c.currentPrice ?? c.purchasePrice);
+  if (c.kind === 'option') {
+    const total = c.premium * c.contracts * 100;
+    return c.action === 'buy' ? total : -total;
   }
+  return 0;
+};
 
-  if (c.kind === 'stock') {
-    ensureTicker(getState, dispatch, c.ticker, c.name, c.assetType, c.purchasePrice);
-    const costBasis = c.shares * c.purchasePrice;
-    const position: StockPosition = {
-      id: uid('pos'),
-      type: c.assetType,
-      ticker: c.ticker,
-      name: c.name,
-      portfolio: c.portfolio,
-      openDate: c.openDate,
-      status: 'open',
-      shares: c.shares,
-      costBasis,
-      purchasePrice: c.purchasePrice,
-      currentPrice: c.purchasePrice,
-      currentValue: costBasis,
-      optionsSupported: true,
-      miniContractsSupported: false,
-    };
-    dispatch(addPosition(position));
-    const prev = portfolioCurrentValue(getState, c.portfolio);
+const createPortfolio = (
+  c: Extract<ProposedChange, { kind: 'portfolio' }>,
+  deposit: number,
+  dispatch: AppDispatch,
+): void => {
+  const portfolio: Portfolio = {
+    id: uid('pf'),
+    name: c.name,
+    logo: DEFAULT_PORTFOLIO_LOGO,
+    pricePerContract: 100,
+    strategy: '',
+    hasOptions: true,
+    strategies: [],
+    currency: c.currency,
+    startDate: today(),
+    initialCapital: deposit,
+    currentValue: deposit,
+  };
+  dispatch(addPortfolio(portfolio));
+  // Totale storting over tijd = beschikbare cash + waarde van de posities.
+  if (deposit > 0) {
     const txn: PortfolioTransaction = {
       id: uid('txn'),
-      portfolio: c.portfolio,
-      date: c.openDate,
-      type: 'position_buy',
-      amount: -costBasis,
-      description: `Gekocht ${c.shares} ${c.ticker} @ ${c.purchasePrice}`,
-      relatedPositionId: position.id,
-      previousValue: prev,
-      newValue: prev,
+      portfolio: c.name,
+      date: today(),
+      type: 'deposit',
+      amount: deposit,
+      description: 'Initiële storting',
+      previousValue: 0,
+      newValue: deposit,
       createdAt: new Date().toISOString(),
     };
     dispatch(addTransaction(txn));
-    return;
   }
+};
 
-  // option
+const applyStock = (
+  c: Extract<ProposedChange, { kind: 'stock' }>,
+  getState: () => RootState,
+  dispatch: AppDispatch,
+): void => {
+  const price = c.currentPrice ?? c.purchasePrice;
+  ensureTicker(getState, dispatch, c.ticker, c.name, c.assetType, price);
+  const costBasis = c.shares * c.purchasePrice;
+  const position: StockPosition = {
+    id: uid('pos'),
+    type: c.assetType,
+    ticker: c.ticker,
+    name: c.name,
+    portfolio: c.portfolio,
+    openDate: c.openDate,
+    status: 'open',
+    shares: c.shares,
+    costBasis,
+    purchasePrice: c.purchasePrice,
+    currentPrice: price,
+    currentValue: c.shares * price,
+    optionsSupported: true,
+    miniContractsSupported: false,
+  };
+  dispatch(addPosition(position));
+  const prev = portfolioCurrentValue(getState, c.portfolio);
+  const txn: PortfolioTransaction = {
+    id: uid('txn'),
+    portfolio: c.portfolio,
+    date: c.openDate,
+    type: 'position_buy',
+    amount: -costBasis,
+    description: `Gekocht ${c.shares} ${c.ticker} @ ${c.purchasePrice}`,
+    relatedPositionId: position.id,
+    previousValue: prev,
+    newValue: prev,
+    createdAt: new Date().toISOString(),
+  };
+  dispatch(addTransaction(txn));
+};
+
+const applyOption = (
+  c: Extract<ProposedChange, { kind: 'option' }>,
+  getState: () => RootState,
+  dispatch: AppDispatch,
+): void => {
+  // Onderliggende ticker aanmaken indien nodig (naam vragen gebeurt door de agent).
+  ensureTicker(getState, dispatch, c.ticker, c.tickerName ?? c.ticker, 'stock');
   const total = c.premium * c.contracts * 100;
   const costBasis = c.action === 'buy' ? total : -total;
   const breakEven = c.optionType === 'call' ? c.strike + c.premium : c.strike - c.premium;
@@ -352,12 +397,29 @@ const applyChange = (c: ProposedChange, getState: () => RootState, dispatch: App
   dispatch(addTransaction(txn));
 };
 
-// Past alle voorstellen toe (portefeuilles eerst, zodat posities ernaar kunnen verwijzen).
+// Past alle voorstellen toe: eerst portefeuilles (met totale storting = cash +
+// waarde van de bijbehorende posities), daarna de posities zelf.
 export const applyChanges = (
   changes: ProposedChange[],
   getState: () => RootState,
   dispatch: AppDispatch,
 ): void => {
-  const ordered = [...changes].sort((a, b) => (a.kind === 'portfolio' ? -1 : 0) - (b.kind === 'portfolio' ? -1 : 0));
-  for (const c of ordered) applyChange(c, getState, dispatch);
+  // Totale storting per nieuw aangemaakte portefeuille bepalen.
+  const deposits = new Map<string, number>();
+  for (const c of changes) {
+    if (c.kind === 'portfolio') deposits.set(c.name, c.availableCash);
+  }
+  for (const c of changes) {
+    if (c.kind !== 'portfolio' && deposits.has(c.portfolio)) {
+      deposits.set(c.portfolio, (deposits.get(c.portfolio) ?? 0) + positionValue(c));
+    }
+  }
+
+  for (const c of changes) {
+    if (c.kind === 'portfolio') createPortfolio(c, deposits.get(c.name) ?? c.availableCash, dispatch);
+  }
+  for (const c of changes) {
+    if (c.kind === 'stock') applyStock(c, getState, dispatch);
+    else if (c.kind === 'option') applyOption(c, getState, dispatch);
+  }
 };
