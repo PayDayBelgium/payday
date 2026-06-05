@@ -27,3 +27,6 @@ dist-ssr
 nul
 NUL
 .superpowers/
+
+# Terminal Paste Image folder
+.cp-images/
