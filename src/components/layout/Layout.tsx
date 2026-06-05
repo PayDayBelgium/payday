@@ -8,6 +8,8 @@ import { OnboardingWizard, shouldShowWizard } from '../onboarding/OnboardingWiza
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { selectCurrentLevel } from '../../store/slices/userProgressSlice';
 import type { UserLevel } from '../../types';
+import { AIAssistantProvider } from '../../contexts/AIAssistantContext';
+import { AIAssistantFab } from '../ai/AIAssistantFab';
 
 const LayoutContent: React.FC = () => {
   const { pageTitle, pageDescription, showInfoIcon, isInfoActive, onInfoClick, showWarningIcon, isWarningActive, onWarningClick, titleIcon } = usePageTitle();
@@ -108,6 +110,7 @@ const LayoutContent: React.FC = () => {
         onClose={handleWizardClose}
         onComplete={handleWizardComplete}
       />
+      <AIAssistantFab />
     </div>
   );
 };
@@ -116,7 +119,9 @@ export const Layout: React.FC = () => {
   return (
     <PageTitleProvider>
       <NavigationProvider>
-        <LayoutContent />
+        <AIAssistantProvider>
+          <LayoutContent />
+        </AIAssistantProvider>
       </NavigationProvider>
     </PageTitleProvider>
   );

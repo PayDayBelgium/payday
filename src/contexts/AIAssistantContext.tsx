@@ -6,6 +6,7 @@ import { loadAIConfig } from '../services/ai/config';
 import { createProvider } from '../services/ai/providers';
 import { buildSystemPrompt } from '../services/ai/systemPrompt';
 import { textMessage, type AIMessage } from '../services/ai/types';
+import i18n from '../i18n/config';
 
 export interface ChatMessage extends AIMessage {
   id: string;
@@ -101,7 +102,13 @@ export const AIAssistantProvider: React.FC<{ children: React.ReactNode }> = ({ c
         }
       } catch (err) {
         const code = err instanceof Error ? err.message : 'ERROR';
-        setAssistant(() => ({ pending: false, error: code }));
+        const msg =
+          code === 'NO_API_KEY'
+            ? i18n.t('ai.noKeyError')
+            : code === 'PROVIDER_NOT_AVAILABLE'
+              ? i18n.t('ai.providerUnavailable')
+              : code;
+        setAssistant(() => ({ pending: false, error: msg }));
       } finally {
         setIsStreaming(false);
         abortRef.current = null;
