@@ -48,7 +48,7 @@ export const Mentorship: React.FC = () => {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    setPageTitle('Mentorship', 'Ski-school · opleiding & begeleiding');
+    setPageTitle('Mentorship', 'Opleiding & begeleiding op maat');
   }, [setPageTitle]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -59,8 +59,8 @@ export const Mentorship: React.FC = () => {
   return (
     <div className="space-y-6">
       <p className="text-sm text-ink-600 dark:text-ink-300 leading-relaxed max-w-3xl">
-        Een ski-leraar leert je de berg lezen. Onze ski-school koppelt je aan een mentor voor
-        opleiding en begeleiding. Dit staat los van credits en pistes — je vraagt het gewoon aan.
+        Vraag persoonlijke begeleiding aan. Een ervaren mentor helpt je groeien in de
+        strategieën en thema's die jij kiest — los van credits en niveaus.
       </p>
 
       {latest && latest.status === 'pending' ? (
