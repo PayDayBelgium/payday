@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '../index';
-import type { UserLevel, UserProgress, Achievement, CreditTransaction, LevelConfig, FeatureId } from '../../types';
+import type { UserLevel, UserProgress, Achievement, CreditTransaction, LevelConfig, FeatureId, ModuleId } from '../../types';
 
 // Level configurations with ski slope analogy
 // Note: priceEUR is set to 0 for all levels - unlock only via credits
@@ -59,7 +59,7 @@ export const LEVEL_CONFIGS: LevelConfig[] = [
     icon: '🟠',
     description: 'Verlaat de geprepareerde piste: kwantitatieve modellen, edge-detectie en data-gedreven trading. Ontgrendel via de community.',
     features: ['quant_trading'],
-    creditsRequired: 100,
+    creditsRequired: 0,
     priceEUR: 0,
   },
 ];
@@ -102,6 +102,7 @@ const initialState: UserProgressState = {
     unlockedLevels: ['beginner'],
     completedLessons: [],
     achievements: [],
+    activatedModules: [],
     paperTradingEnabled: true, // Start with paper trading by default
     joinedAt: new Date().toISOString(),
     lastActiveAt: new Date().toISOString(),
@@ -180,6 +181,18 @@ const userProgressSlice = createSlice({
       }
     },
 
+    // Activate a free module (community, mentorship) so it shows up in the sidebar
+    activateModule: (state, action: PayloadAction<ModuleId>) => {
+      const moduleId = action.payload;
+      if (!state.progress.activatedModules) {
+        state.progress.activatedModules = [];
+      }
+      if (!state.progress.activatedModules.includes(moduleId)) {
+        state.progress.activatedModules.push(moduleId);
+      }
+      state.progress.lastActiveAt = new Date().toISOString();
+    },
+
     // Set current active level (for users who want to practice at lower levels)
     setCurrentLevel: (state, action: PayloadAction<UserLevel>) => {
       const level = action.payload;
@@ -248,6 +261,7 @@ export const {
   spendCredits,
   purchaseCredits,
   unlockLevel,
+  activateModule,
   setCurrentLevel,
   completeLesson,
   addAchievement,
@@ -265,6 +279,10 @@ export const selectCreditHistory = (state: RootState) => state.userProgress.cred
 export const selectPaperTradingEnabled = (state: RootState) => state.userProgress.progress.paperTradingEnabled;
 export const selectCompletedLessons = (state: RootState) => state.userProgress.progress.completedLessons;
 export const selectAchievements = (state: RootState) => state.userProgress.progress.achievements;
+export const selectActivatedModules = (state: RootState): ModuleId[] =>
+  state.userProgress.progress.activatedModules ?? [];
+export const selectIsModuleActivated = (moduleId: ModuleId) => (state: RootState): boolean =>
+  (state.userProgress.progress.activatedModules ?? []).includes(moduleId);
 
 // Computed selectors
 export const selectCanAccessLevel = (level: UserLevel) => (state: RootState) =>

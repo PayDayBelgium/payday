@@ -19,8 +19,7 @@ import {
 import type { FeatureId } from '../../types';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useNavigation } from '../../contexts/NavigationContext';
-import { selectUnlockedLevels, isFeatureAvailable } from '../../store/slices/userProgressSlice';
-import { FeatureLockIndicator } from '../features/FeatureGate';
+import { selectUnlockedLevels, isFeatureAvailable, selectActivatedModules } from '../../store/slices/userProgressSlice';
 
 // Map routes to required features - only routes that need gating
 const ROUTE_FEATURE_MAP: Record<string, FeatureId> = {
@@ -55,6 +54,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '', isCollapsed })
   const { setMenuNavigation } = useNavigation();
   const portfolios = useAppSelector((state) => state.portfolios.portfolios);
   const unlockedLevels = useAppSelector(selectUnlockedLevels);
+  const activatedModules = useAppSelector(selectActivatedModules);
 
   const handleMenuClick = (path: string, title: string) => {
     setMenuNavigation(path, title);
@@ -122,55 +122,56 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '', isCollapsed })
           )}
         </NavLink>
 
-        <NavLink
-          to="/community"
-          onClick={() => handleMenuClick('/community', t('sidebar.community'))}
-          className={({ isActive }) => navClass(isActive, isCollapsed)}
-          title={isCollapsed ? t('sidebar.community') : ''}
-        >
-          {({ isActive }) => (
-            <>
-              <ActiveBar active={isActive} />
-              <MessageSquare className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={1.75} />
-              {!isCollapsed && <span>{t('sidebar.community')}</span>}
-            </>
-          )}
-        </NavLink>
+        {activatedModules.includes('community') && (
+          <NavLink
+            to="/community"
+            onClick={() => handleMenuClick('/community', t('sidebar.community'))}
+            className={({ isActive }) => navClass(isActive, isCollapsed)}
+            title={isCollapsed ? t('sidebar.community') : ''}
+          >
+            {({ isActive }) => (
+              <>
+                <ActiveBar active={isActive} />
+                <MessageSquare className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={1.75} />
+                {!isCollapsed && <span>{t('sidebar.community')}</span>}
+              </>
+            )}
+          </NavLink>
+        )}
 
-        <NavLink
-          to="/quant"
-          onClick={() => handleMenuClick('/quant', t('sidebar.quantTrading'))}
-          className={({ isActive }) => navClass(isActive, isCollapsed)}
-          title={isCollapsed ? t('sidebar.quantTrading') : ''}
-        >
-          {({ isActive }) => (
-            <>
-              <ActiveBar active={isActive} />
-              <Sigma className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={1.75} />
-              {!isCollapsed && (
-                <span className="flex items-center gap-1.5">
-                  {t('sidebar.quantTrading')}
-                  <FeatureLockIndicator feature="quant_trading" />
-                </span>
-              )}
-            </>
-          )}
-        </NavLink>
+        {hasAccess('/quant') && (
+          <NavLink
+            to="/quant"
+            onClick={() => handleMenuClick('/quant', t('sidebar.quantTrading'))}
+            className={({ isActive }) => navClass(isActive, isCollapsed)}
+            title={isCollapsed ? t('sidebar.quantTrading') : ''}
+          >
+            {({ isActive }) => (
+              <>
+                <ActiveBar active={isActive} />
+                <Sigma className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={1.75} />
+                {!isCollapsed && <span>{t('sidebar.quantTrading')}</span>}
+              </>
+            )}
+          </NavLink>
+        )}
 
-        <NavLink
-          to="/mentorship"
-          onClick={() => handleMenuClick('/mentorship', t('sidebar.mentorship'))}
-          className={({ isActive }) => navClass(isActive, isCollapsed)}
-          title={isCollapsed ? t('sidebar.mentorship') : ''}
-        >
-          {({ isActive }) => (
-            <>
-              <ActiveBar active={isActive} />
-              <GraduationCap className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={1.75} />
-              {!isCollapsed && <span>{t('sidebar.mentorship')}</span>}
-            </>
-          )}
-        </NavLink>
+        {activatedModules.includes('mentorship') && (
+          <NavLink
+            to="/mentorship"
+            onClick={() => handleMenuClick('/mentorship', t('sidebar.mentorship'))}
+            className={({ isActive }) => navClass(isActive, isCollapsed)}
+            title={isCollapsed ? t('sidebar.mentorship') : ''}
+          >
+            {({ isActive }) => (
+              <>
+                <ActiveBar active={isActive} />
+                <GraduationCap className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={1.75} />
+                {!isCollapsed && <span>{t('sidebar.mentorship')}</span>}
+              </>
+            )}
+          </NavLink>
+        )}
 
         {/* Portfolios */}
         {portfolios.length > 0 && (

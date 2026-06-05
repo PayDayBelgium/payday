@@ -5,6 +5,9 @@ import reducer, {
   isFeatureAvailable,
   selectNextLevel,
   unlockLevel,
+  activateModule,
+  selectActivatedModules,
+  selectIsModuleActivated,
 } from './userProgressSlice';
 
 describe('userProgressSlice levels', () => {
@@ -46,5 +49,35 @@ describe('userProgressSlice levels', () => {
     const next = reducer(state, unlockLevel('offpiste'));
     expect(next.progress.unlockedLevels).toContain('offpiste');
     expect(next.progress.currentLevel).toBe('offpiste');
+  });
+
+  it('offpiste level requires 0 credits (unlockable for testing)', () => {
+    const off = LEVEL_CONFIGS.find((c) => c.level === 'offpiste');
+    expect(off!.creditsRequired).toBe(0);
+  });
+});
+
+describe('userProgressSlice modules', () => {
+  it('activateModule adds the module once (idempotent)', () => {
+    const state: any = { progress: { activatedModules: [] }, creditHistory: [], isLoading: false };
+    const once = reducer(state, activateModule('community'));
+    expect(once.progress.activatedModules).toEqual(['community']);
+    const twice = reducer(once, activateModule('community'));
+    expect(twice.progress.activatedModules).toEqual(['community']);
+  });
+
+  it('activateModule initializes the array when missing (persisted older state)', () => {
+    const state: any = { progress: {}, creditHistory: [], isLoading: false };
+    const next = reducer(state, activateModule('mentorship'));
+    expect(next.progress.activatedModules).toEqual(['mentorship']);
+  });
+
+  it('selectActivatedModules / selectIsModuleActivated read defensively', () => {
+    const empty: any = { userProgress: { progress: {} } };
+    expect(selectActivatedModules(empty)).toEqual([]);
+    expect(selectIsModuleActivated('community')(empty)).toBe(false);
+    const root: any = { userProgress: { progress: { activatedModules: ['mentorship'] } } };
+    expect(selectIsModuleActivated('mentorship')(root)).toBe(true);
+    expect(selectIsModuleActivated('community')(root)).toBe(false);
   });
 });

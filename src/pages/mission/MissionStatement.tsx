@@ -14,6 +14,7 @@ import {
   Play,
   CreditCard,
   RefreshCw,
+  MessageSquare,
 } from 'lucide-react';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
@@ -23,16 +24,18 @@ import {
   selectUserProgress,
   selectCurrentLevelConfig,
   selectNextLevel,
+  selectActivatedModules,
   LEVEL_CONFIGS,
   unlockLevel,
   spendCredits,
+  activateModule,
 } from '../../store/slices/userProgressSlice';
 import { LearningResources } from '../../components/learning/LearningResources';
 import { EducationCurriculum } from '../../components/learning/EducationCurriculum';
 import { OnboardingWizard, resetWizardForLevel } from '../../components/onboarding/OnboardingWizard';
 import { PaydayMountain } from '../../components/mission/PaydayMountain';
 import { selectHasPendingRequest } from '../../store/slices/mentorshipSlice';
-import type { UserLevel, LevelConfig } from '../../types';
+import type { UserLevel, LevelConfig, ModuleId } from '../../types';
 
 // Level card component
 const LevelCard: React.FC<{
@@ -193,6 +196,79 @@ const LevelCard: React.FC<{
   );
 };
 
+// Vrije modules (geen level/credits) — activeren toont ze in de sidebar.
+const MODULE_CONFIGS: {
+  id: ModuleId;
+  name: string;
+  description: string;
+  path: string;
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+}[] = [
+  {
+    id: 'community',
+    name: 'Community',
+    description: 'Deel trading ideas en ga in gesprek met andere PayDay-traders in de après-ski bar.',
+    path: '/community',
+    icon: MessageSquare,
+  },
+  {
+    id: 'mentorship',
+    name: 'Mentorship',
+    description: 'Vraag persoonlijke begeleiding aan via de ski-school. Opleiding op maat, los van credits.',
+    path: '/mentorship',
+    icon: GraduationCap,
+  },
+];
+
+// Module card — gratis activeren (geen credits), daarna zichtbaar in de sidebar.
+const ModuleCard: React.FC<{
+  config: (typeof MODULE_CONFIGS)[number];
+  isActivated: boolean;
+  onActivate: () => void;
+  onOpen: () => void;
+}> = ({ config, isActivated, onActivate, onOpen }) => {
+  const Icon = config.icon;
+  return (
+    <div className={`
+      relative rounded-xl border-2 overflow-hidden transition-all duration-300
+      ${isActivated ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'}
+    `}>
+      <div className="p-4">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-10 h-10 rounded-md bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 flex items-center justify-center flex-shrink-0">
+            <Icon className="w-[18px] h-[18px]" strokeWidth={1.75} />
+          </div>
+          <div>
+            <h3 className="font-bold text-ink-900 dark:text-white tracking-tight">{config.name}</h3>
+            <p className="text-xs text-ink-500 dark:text-ink-400">Module</p>
+          </div>
+          {isActivated && (
+            <span className="ml-auto flex items-center gap-1 bg-primary-700 text-white px-2 py-1 rounded-full text-xs font-medium">
+              <Check className="w-3.5 h-3.5" /> Actief
+            </span>
+          )}
+        </div>
+        <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">{config.description}</p>
+        {isActivated ? (
+          <button
+            onClick={onOpen}
+            className="flex items-center gap-2 text-sm font-medium text-primary-700 dark:text-primary-300 hover:underline"
+          >
+            Openen <ChevronRight className="w-4 h-4" />
+          </button>
+        ) : (
+          <button
+            onClick={onActivate}
+            className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium text-sm transition-colors"
+          >
+            <Star className="w-4 h-4" /> Activeren
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export const MissionStatement: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -202,6 +278,7 @@ export const MissionStatement: React.FC = () => {
   const currentLevelConfig = useAppSelector(selectCurrentLevelConfig);
   const nextLevel = useAppSelector(selectNextLevel);
   const mentorshipRequested = useAppSelector(selectHasPendingRequest);
+  const activatedModules = useAppSelector(selectActivatedModules);
 
   useEffect(() => {
     setPageTitle('Jouw Reis', 'Curriculum, niveaus en leertraject');
@@ -381,7 +458,7 @@ export const MissionStatement: React.FC = () => {
       <div>
         <p className="eyebrow mb-2">Curriculum</p>
         <h2 className="text-lg font-semibold text-ink-900 dark:text-white tracking-tight mb-5">
-          De vier niveaus
+          De niveaus
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {LEVEL_CONFIGS.map((config) => (
@@ -393,6 +470,25 @@ export const MissionStatement: React.FC = () => {
               onUnlock={() => handleUnlockLevel(config.level)}
               onRestartWizard={() => handleRestartWizard(config.level)}
               userCredits={progress.credits}
+            />
+          ))}
+        </div>
+
+        {/* Extra modules — activeer om ze in de sidebar te tonen */}
+        <h3 className="text-base font-semibold text-ink-900 dark:text-white tracking-tight mt-8 mb-1">
+          Extra modules
+        </h3>
+        <p className="text-sm text-ink-500 dark:text-ink-400 mb-4">
+          Activeer een module om die in je zijbalk te tonen. Geen credits nodig.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {MODULE_CONFIGS.map((mod) => (
+            <ModuleCard
+              key={mod.id}
+              config={mod}
+              isActivated={activatedModules.includes(mod.id)}
+              onActivate={() => dispatch(activateModule(mod.id))}
+              onOpen={() => handleNavigate(mod.path, mod.name)}
             />
           ))}
         </div>

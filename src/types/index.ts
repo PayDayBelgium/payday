@@ -546,6 +546,9 @@ export type FeatureId =
   // Off-piste features
   | 'quant_trading';
 
+// Vrije modules (geen level/credits) die je activeert om in de sidebar te tonen.
+export type ModuleId = 'community' | 'mentorship';
+
 // User progress and credits
 export interface UserProgress {
   currentLevel: UserLevel;
@@ -553,6 +556,7 @@ export interface UserProgress {
   unlockedLevels: UserLevel[];
   completedLessons: string[];
   achievements: Achievement[];
+  activatedModules: ModuleId[];
   paperTradingEnabled: boolean;
   joinedAt: string;
   lastActiveAt: string;
