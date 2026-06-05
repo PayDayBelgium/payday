@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { GraduationCap, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { usePageTitle } from '../../contexts/PageTitleContext';
@@ -58,17 +58,6 @@ export const Mentorship: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Hero */}
-      <div className="flex items-center gap-3 rounded-xl border border-caution-500/40 bg-caution-50 dark:bg-caution-600/10 px-4 py-3">
-        <div className="w-9 h-9 rounded-lg bg-caution-500 text-white flex items-center justify-center">
-          <GraduationCap className="w-5 h-5" strokeWidth={1.75} />
-        </div>
-        <div>
-          <p className="eyebrow text-caution-600">Ski-school</p>
-          <h1 className="text-base font-semibold text-ink-900 dark:text-white tracking-tight">Mentorship</h1>
-        </div>
-      </div>
-
       <p className="text-sm text-ink-600 dark:text-ink-300 leading-relaxed max-w-3xl">
         Een ski-leraar leert je de berg lezen. Onze ski-school koppelt je aan een mentor voor
         opleiding en begeleiding. Dit staat los van credits en pistes — je vraagt het gewoon aan.
