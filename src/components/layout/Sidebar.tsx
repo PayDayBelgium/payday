@@ -363,7 +363,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '', isCollapsed })
       {!isCollapsed && (
         <div className="px-4 py-3 border-t border-[var(--line)] dark:border-trading-dark-700">
           <p className="text-[10px] tracking-[0.16em] uppercase text-ink-400">
-            PayDay&nbsp;v1.0
+            PayDay&nbsp;v2.0
           </p>
         </div>
       )}
