@@ -15,6 +15,7 @@ import {
   MessageSquare,
   Sigma,
   GraduationCap,
+  ScanSearch,
 } from 'lucide-react';
 import type { FeatureId } from '../../types';
 import { useAppSelector } from '../../hooks/useAppSelector';
@@ -28,6 +29,7 @@ const ROUTE_FEATURE_MAP: Record<string, FeatureId> = {
   '/tools/pnl-simulator': 'advanced_analytics',
   '/tools/income-calculator': 'covered_calls',
   '/tools/covered-call-simulator': 'covered_calls',
+  '/tools/option-check': 'options_basics',
   '/quant': 'quant_trading',
 };
 
@@ -333,6 +335,23 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '', isCollapsed })
                   <ActiveBar active={isActive} />
                   <LineChart className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={1.75} />
                   {!isCollapsed && <span>P&L simulator</span>}
+                </>
+              )}
+            </NavLink>
+          )}
+
+          {hasAccess('/tools/option-check') && (
+            <NavLink
+              to="/tools/option-check"
+              onClick={() => handleMenuClick('/tools/option-check', t('sidebar.optionCheck'))}
+              className={({ isActive }) => navClass(isActive, isCollapsed)}
+              title={isCollapsed ? t('sidebar.optionCheck') : ''}
+            >
+              {({ isActive }) => (
+                <>
+                  <ActiveBar active={isActive} />
+                  <ScanSearch className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={1.75} />
+                  {!isCollapsed && <span>{t('sidebar.optionCheck')}</span>}
                 </>
               )}
             </NavLink>

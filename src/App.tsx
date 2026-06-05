@@ -18,6 +18,7 @@ import {
   CapitalGainsTaxCalculator,
   PnLSimulator,
   CoveredCallSimulator,
+  OptionCheck,
   Settings,
   Journal,
   Todos,
@@ -88,6 +89,7 @@ function AppContent() {
         <Route path="tools/capital-gains-tax" element={<CapitalGainsTaxCalculator />} />
         <Route path="tools/pnl-simulator" element={<FeatureGate feature="advanced_analytics"><PnLSimulator /></FeatureGate>} />
         <Route path="tools/covered-call-simulator" element={<FeatureGate feature="covered_calls"><CoveredCallSimulator /></FeatureGate>} />
+        <Route path="tools/option-check" element={<FeatureGate feature="options_basics"><OptionCheck /></FeatureGate>} />
         <Route path="settings" element={<Settings />} />
         <Route path="settings/portfolios" element={<PortfolioManagement />} />
         <Route path="help" element={<HelpPortal />} />
