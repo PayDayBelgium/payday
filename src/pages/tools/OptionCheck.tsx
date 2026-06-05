@@ -47,15 +47,6 @@ export const OptionCheck: React.FC = () => {
 
   return (
     <div className="space-y-6 max-w-3xl">
-      {/* Header */}
-      <div className="border-b border-[var(--line)] pb-4">
-        <p className="eyebrow mb-1">Tools</p>
-        <h1 className="text-xl font-semibold text-ink-900 dark:text-white tracking-tight">Optie-Check</h1>
-        <p className="text-sm text-ink-500 dark:text-ink-400 mt-1">
-          Beoordeel of een ticker een goede kandidaat is voor optiestrategieën.
-        </p>
-      </div>
-
       {/* Disclaimer */}
       <div className="flex items-start gap-2 rounded-md border border-caution-500/40 bg-caution-50 dark:bg-caution-600/10 px-3 py-2 text-xs text-caution-700 dark:text-caution-300">
         <Info className="w-4 h-4 mt-0.5 flex-shrink-0" strokeWidth={1.75} />
@@ -64,21 +55,23 @@ export const OptionCheck: React.FC = () => {
 
       {/* Ticker select */}
       <div>
-        <label htmlFor="oc-ticker" className="block text-xs font-semibold text-ink-500 mb-1.5">Ticker</label>
         {tickers.length === 0 ? (
           <p className="text-sm text-ink-400">Nog geen tickers. Voeg er eerst een toe via Tickers.</p>
         ) : (
-          <select
-            id="oc-ticker"
-            className="w-full rounded-md border border-[var(--line)] bg-white dark:bg-trading-dark-800 px-3 py-2 text-sm text-ink-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-            value={symbol}
-            onChange={(e) => setSymbol(e.target.value)}
-          >
-            <option value="">Kies een ticker…</option>
-            {tickers.map((t) => (
-              <option key={t.symbol} value={t.symbol}>{t.symbol} — {t.name}</option>
-            ))}
-          </select>
+          <>
+            <label htmlFor="oc-ticker" className="block text-xs font-semibold text-ink-500 mb-1.5">Ticker</label>
+            <select
+              id="oc-ticker"
+              className="w-full rounded-md border border-[var(--line)] bg-white dark:bg-trading-dark-800 px-3 py-2 text-sm text-ink-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+              value={symbol}
+              onChange={(e) => setSymbol(e.target.value)}
+            >
+              <option value="">Kies een ticker…</option>
+              {tickers.map((t) => (
+                <option key={t.symbol} value={t.symbol}>{t.symbol} — {t.name}</option>
+              ))}
+            </select>
+          </>
         )}
       </div>
 
@@ -93,7 +86,14 @@ export const OptionCheck: React.FC = () => {
             <p className={`text-lg font-semibold tracking-tight ${VERDICT_META[assessment.result.verdict].cls}`}>
               {VERDICT_META[assessment.result.verdict].label}
             </p>
-            <div className="mt-3 h-2 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden">
+            <div
+              className="mt-3 h-2 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden"
+              role="progressbar"
+              aria-valuenow={assessment.result.totalScore}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label="Geschiktheidsscore"
+            >
               <div
                 className="h-full rounded-full bg-primary-600 transition-all"
                 style={{ width: `${assessment.result.totalScore}%` }}
