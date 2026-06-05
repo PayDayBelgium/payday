@@ -43,6 +43,9 @@ export const fr = {
     created: 'Créé :',
     cancelled: 'Annulé.',
     newChat: 'Nouvelle conversation',
+    errorOverloaded: 'Le service IA est momentanément surchargé. Réessayez dans un instant.',
+    errorRateLimit: 'Limite atteinte. Patientez un instant puis réessayez.',
+    errorAuth: 'Clé API invalide. Vérifiez Paramètres → Assistant IA.',
   },
 
   // Login

@@ -50,6 +50,24 @@ const AIAssistantContext = createContext<AIAssistantContextValue | null>(null);
 
 const MAX_TOOL_ROUNDS = 8;
 
+// Vertaalt foutcodes van de provider naar leesbare gebruikerstekst.
+const errorToMessage = (code: string): string => {
+  switch (code) {
+    case 'NO_API_KEY':
+      return i18n.t('ai.noKeyError');
+    case 'PROVIDER_NOT_AVAILABLE':
+      return i18n.t('ai.providerUnavailable');
+    case 'OVERLOADED':
+      return i18n.t('ai.errorOverloaded');
+    case 'RATE_LIMIT':
+      return i18n.t('ai.errorRateLimit');
+    case 'AUTH':
+      return i18n.t('ai.errorAuth');
+    default:
+      return code;
+  }
+};
+
 let idCounter = 0;
 const nextId = () => `m${++idCounter}`;
 
@@ -144,7 +162,7 @@ export const AIAssistantProvider: React.FC<{ children: React.ReactNode }> = ({ c
             } else if (event.type === 'tool_use') {
               toolUses.push({ id: event.id, name: event.name, input: event.input });
             } else if (event.type === 'error') {
-              updateBubble(bubbleId, () => ({ pending: false, error: event.message }));
+              updateBubble(bubbleId, () => ({ pending: false, error: errorToMessage(event.message) }));
               errored = true;
             }
           }
@@ -195,15 +213,9 @@ export const AIAssistantProvider: React.FC<{ children: React.ReactNode }> = ({ c
         }
       } catch (err) {
         const code = err instanceof Error ? err.message : 'ERROR';
-        const msg =
-          code === 'NO_API_KEY'
-            ? i18n.t('ai.noKeyError')
-            : code === 'PROVIDER_NOT_AVAILABLE'
-              ? i18n.t('ai.providerUnavailable')
-              : code;
         setMessages((prev) => [
           ...prev,
-          { id: nextId(), role: 'assistant', content: [{ kind: 'text', text: '' }], error: msg },
+          { id: nextId(), role: 'assistant', content: [{ kind: 'text', text: '' }], error: errorToMessage(code) },
         ]);
       } finally {
         if (collected.length > 0) setPendingChanges(collected);

@@ -29,6 +29,18 @@ const toAnthropicContent = (blocks: ContentBlock[]): Anthropic.ContentBlockParam
 const toAnthropicMessages = (messages: AIMessage[]): Anthropic.MessageParam[] =>
   messages.map((m) => ({ role: m.role, content: toAnthropicContent(m.content) }));
 
+// Normaliseert een fout naar een korte code (overbelast/limiet/auth) of een
+// leesbare boodschap. De context vertaalt de codes naar gebruikerstekst.
+const normalizeError = (err: unknown): string => {
+  const raw = err instanceof Error ? err.message : String(err);
+  const status = err instanceof Anthropic.APIError ? err.status : undefined;
+  if (status === 529 || /overloaded/i.test(raw)) return 'OVERLOADED';
+  if (status === 429 || /rate.?limit/i.test(raw)) return 'RATE_LIMIT';
+  if (status === 401 || /authentication/i.test(raw)) return 'AUTH';
+  if (err instanceof Anthropic.APIError) return `${status ?? ''} ${err.message}`.trim();
+  return raw || 'Onbekende fout';
+};
+
 export const createAnthropicProvider = (apiKey: string): AIProvider => {
   const client = new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
 
@@ -74,13 +86,7 @@ export const createAnthropicProvider = (apiKey: string): AIProvider => {
           yield { type: 'done', stopReason: 'aborted' };
           return;
         }
-        const message =
-          err instanceof Anthropic.APIError
-            ? `${err.status ?? ''} ${err.message}`.trim()
-            : err instanceof Error
-              ? err.message
-              : 'Onbekende fout';
-        yield { type: 'error', message };
+        yield { type: 'error', message: normalizeError(err) };
       }
     },
   };

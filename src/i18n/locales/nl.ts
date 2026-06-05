@@ -43,6 +43,9 @@ export const nl = {
     created: 'Aangemaakt:',
     cancelled: 'Geannuleerd.',
     newChat: 'Nieuw gesprek',
+    errorOverloaded: 'De AI-service is even overbelast. Probeer het zo meteen opnieuw.',
+    errorRateLimit: 'Limiet bereikt. Wacht even en probeer opnieuw.',
+    errorAuth: 'Ongeldige API-sleutel. Controleer Instellingen → AI-assistent.',
   },
 
   // Login
