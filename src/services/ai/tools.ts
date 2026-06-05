@@ -17,6 +17,7 @@ import { addTicker } from '../../store/slices/tickersSlice';
 import { selectPortfolios } from '../../store/slices/portfoliosSlice';
 import { selectAllTickers } from '../../store/slices/tickersSlice';
 import type { ToolSchema } from './types';
+import PaydayLogo from '../../assets/app/logo.png';
 
 // ---------------------------------------------------------------------------
 // Tooldefinities (JSON-schema's) die naar het model gaan.
@@ -84,18 +85,9 @@ export const TOOL_SCHEMAS: ToolSchema[] = [
 
 export const isReadTool = (name: string): boolean => name === 'get_portfolios';
 
-// Eigen fallback-logo (inline SVG, blauwe afgeronde tegel met aktekoffer)
-// voor automatisch aangemaakte portefeuilles, zodat het icoon nooit ontbreekt.
-export const DEFAULT_PORTFOLIO_LOGO =
-  'data:image/svg+xml,' +
-  encodeURIComponent(
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">' +
-      '<rect width="64" height="64" rx="12" fill="#0B4A8F"/>' +
-      '<rect x="17" y="26" width="30" height="20" rx="3" fill="#ffffff"/>' +
-      '<path d="M26 26v-3a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v3" fill="none" stroke="#ffffff" stroke-width="3"/>' +
-      '<rect x="29" y="33" width="6" height="5" rx="1" fill="#0B4A8F"/>' +
-      '</svg>',
-  );
+// Standaardlogo voor automatisch aangemaakte portefeuilles: het PayDay-logo,
+// zodat het portefeuille-icoon nooit ontbreekt.
+export const DEFAULT_PORTFOLIO_LOGO = PaydayLogo;
 
 // ---------------------------------------------------------------------------
 // Voorgestelde wijzigingen (verzameld tot de gebruiker bevestigt).
