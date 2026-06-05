@@ -101,6 +101,29 @@ export const OptionCheck: React.FC = () => {
             </div>
           </div>
 
+          {/* Cijferkaart — gesimuleerde optie-data */}
+          <div className="surface-card p-5">
+            <div className="flex items-center justify-between mb-3">
+              <p className="eyebrow">Optie-cijfers</p>
+              <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-caution-600 bg-caution-50 dark:bg-caution-600/15 px-2 py-0.5 rounded-full">Gesimuleerd</span>
+            </div>
+            <dl className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-3">
+              {[
+                { label: 'IV-rank', value: `${assessment.data.ivRank}/100` },
+                { label: 'Open interest', value: assessment.data.openInterest.toLocaleString('nl-NL') },
+                { label: 'Volume/dag', value: assessment.data.optionVolume.toLocaleString('nl-NL') },
+                { label: 'Bid-ask spread', value: `${assessment.data.bidAskSpreadPct}%` },
+                { label: 'Premie (gean.)', value: `${assessment.data.annualizedPremiumPct}%` },
+                { label: 'Earnings over', value: `${assessment.data.daysToEarnings} d` },
+              ].map((f) => (
+                <div key={f.label}>
+                  <dt className="text-xs text-ink-400">{f.label}</dt>
+                  <dd className="text-sm font-semibold tabular-nums text-ink-900 dark:text-white mt-0.5">{f.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+
           {/* Criteria */}
           <div className="surface-card divide-y divide-[var(--line)]">
             {assessment.result.criteria.map((c) => (
