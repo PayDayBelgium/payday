@@ -4,7 +4,7 @@ import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { usePageTitle } from '../../contexts/PageTitleContext';
 import { submitMentorshipRequest } from '../../store/actions/mentorshipActions';
-import { selectLatestRequest, selectHasPendingRequest } from '../../store/slices/mentorshipSlice';
+import { selectLatestRequest } from '../../store/slices/mentorshipSlice';
 import type { MentorshipFocus, MentorStyle, UserLevel } from '../../types';
 
 const FOCUS_OPTIONS: { value: MentorshipFocus; label: string }[] = [
@@ -39,7 +39,6 @@ const fieldClass =
 export const Mentorship: React.FC = () => {
   const dispatch = useAppDispatch();
   const { setPageTitle } = usePageTitle();
-  const hasPending = useAppSelector(selectHasPendingRequest);
   const latest = useAppSelector(selectLatestRequest);
 
   const [focus, setFocus] = useState<MentorshipFocus>('options');
@@ -75,7 +74,7 @@ export const Mentorship: React.FC = () => {
         opleiding en begeleiding. Dit staat los van credits en pistes — je vraagt het gewoon aan.
       </p>
 
-      {hasPending && latest ? (
+      {latest && latest.status === 'pending' ? (
         <div className="surface-card p-6">
           <div className="flex items-center gap-2 text-positive-600 mb-3">
             <Check className="w-5 h-5" strokeWidth={2} />
@@ -89,35 +88,39 @@ export const Mentorship: React.FC = () => {
             <div className="flex justify-between py-2"><dt className="text-ink-400">Niveau</dt><dd className="text-ink-900 dark:text-white">{LEVEL_LABEL(latest.level)}</dd></div>
             <div className="flex justify-between py-2"><dt className="text-ink-400">Stijl</dt><dd className="text-ink-900 dark:text-white">{STYLE_LABEL(latest.style)}</dd></div>
             <div className="flex justify-between py-2"><dt className="text-ink-400">Beschikbaarheid</dt><dd className="text-ink-900 dark:text-white">{latest.availability || '—'}</dd></div>
+            <div className="py-2">
+              <dt className="text-ink-400 mb-1">Bericht</dt>
+              <dd className="text-ink-900 dark:text-white whitespace-pre-wrap">{latest.message || '—'}</dd>
+            </div>
           </dl>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="surface-card p-6 space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-ink-500 mb-1.5">Focusgebied</label>
-            <select className={fieldClass} value={focus} onChange={(e) => setFocus(e.target.value as MentorshipFocus)}>
+            <label htmlFor="mentor-focus" className="block text-xs font-semibold text-ink-500 mb-1.5">Focusgebied</label>
+            <select id="mentor-focus" className={fieldClass} value={focus} onChange={(e) => setFocus(e.target.value as MentorshipFocus)}>
               {FOCUS_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-ink-500 mb-1.5">Huidig niveau</label>
-            <select className={fieldClass} value={level} onChange={(e) => setLevel(e.target.value as UserLevel)}>
+            <label htmlFor="mentor-level" className="block text-xs font-semibold text-ink-500 mb-1.5">Huidig niveau</label>
+            <select id="mentor-level" className={fieldClass} value={level} onChange={(e) => setLevel(e.target.value as UserLevel)}>
               {LEVEL_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-ink-500 mb-1.5">Voorkeur mentor-stijl</label>
-            <select className={fieldClass} value={style} onChange={(e) => setStyle(e.target.value as MentorStyle)}>
+            <label htmlFor="mentor-style" className="block text-xs font-semibold text-ink-500 mb-1.5">Voorkeur mentor-stijl</label>
+            <select id="mentor-style" className={fieldClass} value={style} onChange={(e) => setStyle(e.target.value as MentorStyle)}>
               {STYLE_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-ink-500 mb-1.5">Beschikbaarheid</label>
-            <input className={fieldClass} type="text" placeholder="bv. weekends, 2u per week" value={availability} onChange={(e) => setAvailability(e.target.value)} />
+            <label htmlFor="mentor-availability" className="block text-xs font-semibold text-ink-500 mb-1.5">Beschikbaarheid</label>
+            <input id="mentor-availability" className={fieldClass} type="text" placeholder="bv. weekends, 2u per week" value={availability} onChange={(e) => setAvailability(e.target.value)} />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-ink-500 mb-1.5">Bericht / motivatie</label>
-            <textarea className={`${fieldClass} min-h-[96px] resize-y`} placeholder="Waar wil je in groeien?" value={message} onChange={(e) => setMessage(e.target.value)} />
+            <label htmlFor="mentor-message" className="block text-xs font-semibold text-ink-500 mb-1.5">Bericht / motivatie</label>
+            <textarea id="mentor-message" className={`${fieldClass} min-h-[96px] resize-y`} placeholder="Waar wil je in groeien?" value={message} onChange={(e) => setMessage(e.target.value)} />
           </div>
           <button
             type="submit"
