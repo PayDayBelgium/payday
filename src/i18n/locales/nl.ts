@@ -14,6 +14,25 @@ export const nl = {
     reset: 'Resetten',
   },
 
+  // AI-assistent
+  ai: {
+    title: 'Assistent',
+    emptyState: 'Stel me een vraag over PayDay of je portefeuille.',
+    inputPlaceholder: 'Typ een bericht…',
+    send: 'Versturen',
+    stop: 'Stoppen',
+    settingsTab: 'AI-assistent',
+    settingsHeading: 'AI-assistent',
+    provider: 'Provider',
+    model: 'Model',
+    apiKey: 'API-sleutel',
+    apiKeySet: '✓ Ingesteld',
+    apiKeyHelp: 'Je sleutel wordt alleen in deze browser bewaard. Prima voor persoonlijk gebruik, niet voor publieke productie.',
+    saved: 'Opgeslagen',
+    noKeyError: 'Geen API-sleutel ingesteld. Ga naar Instellingen → AI-assistent om er een toe te voegen.',
+    providerUnavailable: 'Deze provider is nog niet beschikbaar.',
+  },
+
   // Login
   login: {
     title: 'Welkom terug',

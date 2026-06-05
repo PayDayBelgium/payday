@@ -14,6 +14,25 @@ export const fr = {
     reset: 'Réinitialiser',
   },
 
+  // Assistant IA
+  ai: {
+    title: 'Assistant',
+    emptyState: 'Posez-moi une question sur PayDay ou votre portefeuille.',
+    inputPlaceholder: 'Tapez un message…',
+    send: 'Envoyer',
+    stop: 'Arrêter',
+    settingsTab: 'Assistant IA',
+    settingsHeading: 'Assistant IA',
+    provider: 'Fournisseur',
+    model: 'Modèle',
+    apiKey: 'Clé API',
+    apiKeySet: '✓ Définie',
+    apiKeyHelp: 'Votre clé est stockée uniquement dans ce navigateur. Convient à un usage personnel, pas à une production publique.',
+    saved: 'Enregistré',
+    noKeyError: 'Aucune clé API définie. Ouvrez Paramètres → Assistant IA pour en ajouter une.',
+    providerUnavailable: "Ce fournisseur n'est pas encore disponible.",
+  },
+
   // Login
   login: {
     title: 'Bienvenue',

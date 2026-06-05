@@ -14,6 +14,25 @@ export const en = {
     reset: 'Reset',
   },
 
+  // AI Assistant
+  ai: {
+    title: 'Assistant',
+    emptyState: 'Ask me anything about PayDay or your portfolio.',
+    inputPlaceholder: 'Type a message…',
+    send: 'Send',
+    stop: 'Stop',
+    settingsTab: 'AI Assistant',
+    settingsHeading: 'AI Assistant',
+    provider: 'Provider',
+    model: 'Model',
+    apiKey: 'API key',
+    apiKeySet: '✓ Set',
+    apiKeyHelp: 'Your key is stored in this browser only. Fine for personal use, not for public production.',
+    saved: 'Saved',
+    noKeyError: 'No API key set. Open Settings → AI Assistant to add one.',
+    providerUnavailable: 'This provider is not available yet.',
+  },
+
   // Login
   login: {
     title: 'Welcome back',
