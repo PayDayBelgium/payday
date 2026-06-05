@@ -82,9 +82,10 @@ export const AIAssistantProvider: React.FC<{ children: React.ReactNode }> = ({ c
         );
 
       try {
-        const provider = createProvider(loadAIConfig());
+        const cfg = loadAIConfig();
+        const provider = createProvider(cfg);
         const system = buildSystemPrompt({ userLevel });
-        const model = loadAIConfig().model;
+        const model = cfg.model;
 
         for await (const event of provider.streamChat({
           system,
