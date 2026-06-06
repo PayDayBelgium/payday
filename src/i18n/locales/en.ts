@@ -42,6 +42,8 @@ export const en = {
     confirmCreate: 'Create',
     created: 'Created:',
     cancelled: 'Cancelled.',
+    skippedLocked:
+      "Skipped — you haven't unlocked the level required for this strategy yet:",
     newChat: 'New conversation',
     errorOverloaded: 'The AI service is busy right now. Please try again in a moment.',
     errorRateLimit: 'Rate limit reached. Please wait a moment and try again.',

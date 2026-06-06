@@ -7,6 +7,8 @@ import { addPosition } from '../../store/slices/positionsSlice';
 import { addTransaction } from '../../store/slices/portfoliosSlice';
 import { ensureTicker, selectAllTickers } from '../../store/slices/tickersSlice';
 import { selectActiveWheels, updateWheelPremium } from '../../store/slices/wheelsSlice';
+import { selectUnlockedLevels, isFeatureAvailable } from '../../store/slices/userProgressSlice';
+import { getOptionActionFeature } from '../../utils/optionFeatureAccess';
 import { WizardModal, type WizardStep } from './WizardModal';
 import { TickerSelector } from '../widgets/TickerSelector';
 import { PnLCurve } from '../widgets/PnLCurve';
@@ -58,6 +60,13 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
 
   // Get all tickers to find current price
   const allTickers = useSelector(selectAllTickers);
+  const unlockedLevels = useSelector(selectUnlockedLevels);
+
+  // Level-gating: an option action may only be created once the corresponding
+  // strategy is unlocked knowledge-wise. Locked actions are hidden in the
+  // wizard and defensively blocked on completion.
+  const canUseAction = (a: OptionAction): boolean =>
+    isFeatureAvailable(getOptionActionFeature('put', a), unlockedLevels);
 
   // Step 1: Action selection
   const [action, setAction] = useState<OptionAction>(initialAction || 'buy');
@@ -161,6 +170,8 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
 
   const handleComplete = () => {
     if (!selectedTicker) return;
+    // Safety net: block creation of a not-yet-unlocked option action.
+    if (!canUseAction(action)) return;
 
     const { costBasis, currentValue, cashReserved } = calculateValues();
     const dte = calculateDTE(isSpread ? longLeg.expiration : longLeg.expiration);
@@ -379,73 +390,81 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
         component: (
           <div className="space-y-3">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <button
-                onClick={() => setAction('buy')}
-                className={`p-3 rounded-lg border-2 transition-all ${
-                  action === 'buy'
-                    ? 'border-negative-600 bg-negative-50 dark:bg-negative-700/15'
-                    : 'border-surface-line dark:border-trading-dark-600 hover:border-negative-500/30'
-                }`}
-              >
-                <TrendingDown className="w-6 h-6 mx-auto mb-1.5 text-negative-600 dark:text-negative-500" />
-                <h3 className="text-sm font-semibold text-ink-900 dark:text-white mb-0.5">
-                  {t('putWizard.actionStep.buyPut')}
-                </h3>
-                <p className="text-xs text-ink-600 dark:text-ink-400">
-                  {t('putWizard.actionStep.buyPutDesc')}
-                </p>
-              </button>
+              {canUseAction('buy') && (
+                <button
+                  onClick={() => setAction('buy')}
+                  className={`p-3 rounded-lg border-2 transition-all ${
+                    action === 'buy'
+                      ? 'border-negative-600 bg-negative-50 dark:bg-negative-700/15'
+                      : 'border-surface-line dark:border-trading-dark-600 hover:border-negative-500/30'
+                  }`}
+                >
+                  <TrendingDown className="w-6 h-6 mx-auto mb-1.5 text-negative-600 dark:text-negative-500" />
+                  <h3 className="text-sm font-semibold text-ink-900 dark:text-white mb-0.5">
+                    {t('putWizard.actionStep.buyPut')}
+                  </h3>
+                  <p className="text-xs text-ink-600 dark:text-ink-400">
+                    {t('putWizard.actionStep.buyPutDesc')}
+                  </p>
+                </button>
+              )}
 
-              <button
-                onClick={() => setAction('sell')}
-                className={`p-3 rounded-lg border-2 transition-all ${
-                  action === 'sell'
-                    ? 'border-positive-600 bg-positive-50 dark:bg-positive-700/15'
-                    : 'border-surface-line dark:border-trading-dark-600 hover:border-positive-500/30'
-                }`}
-              >
-                <TrendingUp className="w-6 h-6 mx-auto mb-1.5 text-positive-600 dark:text-positive-500" />
-                <h3 className="text-sm font-semibold text-ink-900 dark:text-white mb-0.5">
-                  {t('putWizard.actionStep.sellPut')}
-                </h3>
-                <p className="text-xs text-ink-600 dark:text-ink-400">
-                  {t('putWizard.actionStep.sellPutDesc')}
-                </p>
-              </button>
+              {canUseAction('sell') && (
+                <button
+                  onClick={() => setAction('sell')}
+                  className={`p-3 rounded-lg border-2 transition-all ${
+                    action === 'sell'
+                      ? 'border-positive-600 bg-positive-50 dark:bg-positive-700/15'
+                      : 'border-surface-line dark:border-trading-dark-600 hover:border-positive-500/30'
+                  }`}
+                >
+                  <TrendingUp className="w-6 h-6 mx-auto mb-1.5 text-positive-600 dark:text-positive-500" />
+                  <h3 className="text-sm font-semibold text-ink-900 dark:text-white mb-0.5">
+                    {t('putWizard.actionStep.sellPut')}
+                  </h3>
+                  <p className="text-xs text-ink-600 dark:text-ink-400">
+                    {t('putWizard.actionStep.sellPutDesc')}
+                  </p>
+                </button>
+              )}
 
-              <button
-                onClick={() => setAction('credit-spread')}
-                className={`p-3 rounded-lg border-2 transition-all ${
-                  action === 'credit-spread'
-                    ? 'border-ink-700 bg-surface-subtle dark:bg-trading-dark-700'
-                    : 'border-surface-line dark:border-trading-dark-600 hover:border-ink-300'
-                }`}
-              >
-                <ArrowRightLeft className="w-6 h-6 mx-auto mb-1.5 text-ink-600 dark:text-ink-300" />
-                <h3 className="text-sm font-semibold text-ink-900 dark:text-white mb-0.5">
-                  {t('putWizard.actionStep.creditSpread')}
-                </h3>
-                <p className="text-xs text-ink-600 dark:text-ink-400">
-                  {t('putWizard.actionStep.creditSpreadDesc')}
-                </p>
-              </button>
+              {canUseAction('credit-spread') && (
+                <button
+                  onClick={() => setAction('credit-spread')}
+                  className={`p-3 rounded-lg border-2 transition-all ${
+                    action === 'credit-spread'
+                      ? 'border-ink-700 bg-surface-subtle dark:bg-trading-dark-700'
+                      : 'border-surface-line dark:border-trading-dark-600 hover:border-ink-300'
+                  }`}
+                >
+                  <ArrowRightLeft className="w-6 h-6 mx-auto mb-1.5 text-ink-600 dark:text-ink-300" />
+                  <h3 className="text-sm font-semibold text-ink-900 dark:text-white mb-0.5">
+                    {t('putWizard.actionStep.creditSpread')}
+                  </h3>
+                  <p className="text-xs text-ink-600 dark:text-ink-400">
+                    {t('putWizard.actionStep.creditSpreadDesc')}
+                  </p>
+                </button>
+              )}
 
-              <button
-                onClick={() => setAction('debit-spread')}
-                className={`p-3 rounded-lg border-2 transition-all ${
-                  action === 'debit-spread'
-                    ? 'border-primary-700 bg-primary-50 dark:bg-primary-900/20'
-                    : 'border-surface-line dark:border-trading-dark-600 hover:border-primary-300'
-                }`}
-              >
-                <ArrowRightLeft className="w-6 h-6 mx-auto mb-1.5 text-primary-700 dark:text-primary-300" />
-                <h3 className="text-sm font-semibold text-ink-900 dark:text-white mb-0.5">
-                  {t('putWizard.actionStep.debitSpread')}
-                </h3>
-                <p className="text-xs text-ink-600 dark:text-ink-400">
-                  {t('putWizard.actionStep.debitSpreadDesc')}
-                </p>
-              </button>
+              {canUseAction('debit-spread') && (
+                <button
+                  onClick={() => setAction('debit-spread')}
+                  className={`p-3 rounded-lg border-2 transition-all ${
+                    action === 'debit-spread'
+                      ? 'border-primary-700 bg-primary-50 dark:bg-primary-900/20'
+                      : 'border-surface-line dark:border-trading-dark-600 hover:border-primary-300'
+                  }`}
+                >
+                  <ArrowRightLeft className="w-6 h-6 mx-auto mb-1.5 text-primary-700 dark:text-primary-300" />
+                  <h3 className="text-sm font-semibold text-ink-900 dark:text-white mb-0.5">
+                    {t('putWizard.actionStep.debitSpread')}
+                  </h3>
+                  <p className="text-xs text-ink-600 dark:text-ink-400">
+                    {t('putWizard.actionStep.debitSpreadDesc')}
+                  </p>
+                </button>
+              )}
             </div>
 
             <div className="mt-4 p-3 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
@@ -1166,6 +1185,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
       notes,
       matchingWheels,
       selectedWheelId,
+      unlockedLevels,
     ]
   );
 

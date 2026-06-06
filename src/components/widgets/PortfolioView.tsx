@@ -1,6 +1,14 @@
 ﻿import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { TrendingUp, ChevronDown, ChevronUp, Target, AlertCircle, Lightbulb, Filter } from 'lucide-react';
+import {
+  TrendingUp,
+  ChevronDown,
+  ChevronUp,
+  Target,
+  AlertCircle,
+  Lightbulb,
+  Filter,
+} from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import {
@@ -33,6 +41,8 @@ import { getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency, formatNumber } from '../../utils/numberFormat';
 import { getSpreadId } from '../../utils/spreadHelpers';
 import { computeCoveredCallCapacity } from '../../utils/coveredCallEligibility';
+import { allocateCallCoverage } from '../../utils/coverageAllocation';
+import { isLEAPS as isLeapsForCoverage } from '../../utils/campaignDetector';
 import { StockRow } from './StockRow';
 import { GroupedStockList } from './GroupedStockList';
 import { OptionRow } from './OptionRow';
@@ -71,6 +81,61 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   const unlockedLevels = useAppSelector(selectUnlockedLevels);
   const hasOptionsAccess = isFeatureAvailable('covered_calls', unlockedLevels);
   const currencySymbol = getCurrencySymbol(currency);
+
+  // Per short-call coverage, derived from the shared deterministic allocator
+  // (stocks before LEAPS, honouring underlyingId). This makes the "collateral"
+  // column show the actual parent of each covered call, consistent with the
+  // campaign view and the opportunity logic.
+  const callCoverageByCallId = useMemo(() => {
+    type CoverageInfo =
+      | { kind: 'stock'; shares: number; costBasis: number }
+      | { kind: 'leaps'; leap: CallOption };
+    const map = new Map<string, CoverageInfo>();
+
+    const openByTicker = new Map<string, Position[]>();
+    for (const p of positions) {
+      if (p.status !== 'open') continue;
+      if ((p as { wheelId?: string }).wheelId) continue;
+      const key = p.ticker.toUpperCase();
+      const list = openByTicker.get(key) ?? [];
+      list.push(p);
+      openByTicker.set(key, list);
+    }
+
+    for (const [ticker, group] of openByTicker) {
+      const shortCalls = group.filter(
+        (p) => p.type === 'call' && (p as CallOption).action === 'sell'
+      ) as CallOption[];
+      if (shortCalls.length === 0) continue;
+      const stocks = group.filter((p) => p.type === 'stock' || p.type === 'etf') as StockPosition[];
+      const leaps = group.filter(
+        (p) =>
+          p.type === 'call' &&
+          (p as CallOption).action === 'buy' &&
+          isLeapsForCoverage(p as CallOption)
+      ) as CallOption[];
+      const price = tickers.find((t) => t.symbol.toUpperCase() === ticker)?.currentPrice;
+
+      const alloc = allocateCallCoverage({ stocks, leaps, shortCalls, currentPrice: price });
+
+      if (alloc.stock) {
+        const totalShares = stocks.reduce((s, l) => s + l.shares, 0);
+        const totalCost = stocks.reduce((s, l) => s + l.costBasis, 0);
+        for (const c of alloc.stock.assigned) {
+          map.set(c.id, { kind: 'stock', shares: totalShares, costBasis: totalCost });
+        }
+      }
+      for (const la of alloc.leaps) {
+        const leap = leaps.find((l) => l.id === la.parentId);
+        if (!leap) continue;
+        for (const c of la.assigned) {
+          map.set(c.id, { kind: 'leaps', leap });
+        }
+      }
+    }
+
+    return map;
+  }, [positions, tickers]);
 
   // Use central alerts hook for this portfolio
   const { getAlertsForPosition, getOpportunitiesForPosition } = useAlerts(portfolioName);
@@ -112,7 +177,9 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   } | null>(null);
   const [sortField, setSortField] = useState<SortField>('expiration');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
-  const [groupBy, setGroupBy] = useState<GroupBy>('none');
+  // Default to grouping by ticker so each stock/LEAPS sits next to the covered
+  // calls it backs (the parent is also shown in the collateral column).
+  const [groupBy, setGroupBy] = useState<GroupBy>('ticker');
   const [tickerSearch, setTickerSearch] = useState('');
   const [filterExpiration, setFilterExpiration] = useState<string>('all');
   const [filterOpportunities, setFilterOpportunities] = useState<boolean>(false);
@@ -1358,7 +1425,6 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
       {/* Position List - Scrollable */}
       <div className="divide-y divide-surface-line dark:divide-trading-dark-600 flex-1 overflow-y-auto">
-
         {/* Grouped Stock/ETF Tree */}
         {stockLots.length > 0 && (
           <div className="mb-4">
@@ -1378,7 +1444,9 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
           <div className="bg-surface dark:bg-trading-dark-800/50 overflow-x-auto">
             {/* Column Headers */}
             <div className="px-6 py-2 bg-surface-subtle dark:bg-trading-dark-900/50 border-b border-surface-line dark:border-trading-dark-600 border-l-4 border-l-transparent">
-              <div className={`grid ${POSITION_GRID_COLS} gap-2 text-xs font-semibold text-ink-600 dark:text-ink-400 items-center`}>
+              <div
+                className={`grid ${POSITION_GRID_COLS} gap-2 text-xs font-semibold text-ink-600 dark:text-ink-400 items-center`}
+              >
                 <div></div> {/* Icon */}
                 <button
                   onClick={() => handleSort('ticker')}
@@ -1747,7 +1815,9 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                     onViewSpread={(legs, price) =>
                                       setSpreadToView({ legs, currentStockPrice: price })
                                     }
-                                    onRollSpread={(longLeg, shortLeg) => setSpreadToRoll({ longLeg, shortLeg })}
+                                    onRollSpread={(longLeg, shortLeg) =>
+                                      setSpreadToRoll({ longLeg, shortLeg })
+                                    }
                                     onCloseSpread={(firstLeg) => setPositionToClose(firstLeg)}
                                   />
                                   {/* Expanded Legs */}
@@ -2009,65 +2079,33 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                               let collateralValue = 0;
                               let collateralDescription = '';
 
+                              // Resolve the actual parent of this short call via the
+                              // shared allocator (stocks before LEAPS, honouring underlyingId).
+                              const coverage = callCoverageByCallId.get(option.id);
+                              let leapsInfo: { ticker: string; expiration: string } | undefined;
+
                               if (!isBuy) {
                                 if (isCall) {
-                                  // Short call - check for stock or LEAPS as collateral
-                                  const stockPosition = positions.find(
-                                    (p) =>
-                                      (p.type === 'stock' || p.type === 'etf') &&
-                                      p.ticker.toUpperCase() === option.ticker.toUpperCase() &&
-                                      p.status === 'open'
-                                  );
-
-                                  if (stockPosition && 'shares' in stockPosition) {
+                                  if (coverage?.kind === 'stock') {
                                     collateralType = 'stock';
-                                    collateralValue = stockPosition.costBasis || 0;
-                                    collateralDescription = `Deze call is gedekt door ${stockPosition.shares} aandelen ${option.ticker}. Bij assignment lever je de aandelen, geen cash nodig.`;
-                                  } else {
-                                    // Check for LEAPS as collateral (PMCC)
-                                    const leapsPosition = positions.find(
-                                      (p) =>
-                                        p.type === 'call' &&
-                                        'action' in p &&
-                                        p.action === 'buy' &&
-                                        p.ticker.toUpperCase() === option.ticker.toUpperCase() &&
-                                        p.status === 'open' &&
-                                        isLEAPS(p as CallOption)
-                                    ) as CallOption | undefined;
-
-                                    if (leapsPosition) {
-                                      collateralType = 'leaps';
-                                      collateralValue = leapsPosition.costBasis;
-                                      collateralDescription =
-                                        'Deze call is gedekt door je LEAPS call optie. De LEAPS fungeert als onderpand in plaats van aandelen (PMCC strategie).';
-                                    }
+                                    collateralValue = coverage.costBasis || 0;
+                                    collateralDescription = `This call is covered by ${coverage.shares} shares of ${option.ticker}. On assignment you deliver the shares, no cash required.`;
+                                  } else if (coverage?.kind === 'leaps') {
+                                    collateralType = 'leaps';
+                                    collateralValue = coverage.leap.costBasis;
+                                    collateralDescription =
+                                      'This call is covered by your LEAPS call. The LEAPS acts as collateral instead of shares (PMCC strategy).';
+                                    leapsInfo = {
+                                      ticker: coverage.leap.ticker,
+                                      expiration: coverage.leap.expiration,
+                                    };
                                   }
+                                  // No coverage found → naked short call (collateralType stays 'none').
                                 } else {
                                   // Short put - cash secured
                                   collateralType = 'cash';
                                   collateralValue = option.strike * option.contracts * 100;
-                                  collateralDescription = `Deze put vereist ${formatCurrency(collateralValue, currencySymbol)} cash als onderpand voor mogelijke assignment.`;
-                                }
-                              }
-
-                              // Get LEAPS info if collateral is LEAPS
-                              let leapsInfo: { ticker: string; expiration: string } | undefined;
-                              if (collateralType === 'leaps') {
-                                const leapsPosition = positions.find(
-                                  (p) =>
-                                    p.type === 'call' &&
-                                    'action' in p &&
-                                    p.action === 'buy' &&
-                                    p.ticker.toUpperCase() === option.ticker.toUpperCase() &&
-                                    p.status === 'open' &&
-                                    isLEAPS(p as CallOption)
-                                ) as CallOption | undefined;
-
-                                if (leapsPosition) {
-                                  leapsInfo = {
-                                    ticker: leapsPosition.ticker,
-                                    expiration: leapsPosition.expiration,
-                                  };
+                                  collateralDescription = `This put requires ${formatCurrency(collateralValue, currencySymbol)} cash as collateral for a possible assignment.`;
                                 }
                               }
 

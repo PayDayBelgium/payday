@@ -42,6 +42,8 @@ export const fr = {
     confirmCreate: 'Créer',
     created: 'Créé :',
     cancelled: 'Annulé.',
+    skippedLocked:
+      "Ignoré — vous n'avez pas encore débloqué le niveau requis pour cette stratégie :",
     newChat: 'Nouvelle conversation',
     errorOverloaded: 'Le service IA est momentanément surchargé. Réessayez dans un instant.',
     errorRateLimit: 'Limite atteinte. Patientez un instant puis réessayez.',

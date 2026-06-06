@@ -1,7 +1,9 @@
 import { useMemo, useCallback, useState, useEffect } from 'react';
 import { useAppSelector } from './useAppSelector';
 import { selectAllTickers } from '../store/slices/tickersSlice';
+import { selectUnlockedLevels } from '../store/slices/userProgressSlice';
 import { evaluateAllAlerts, type AlertItem } from '../utils/alertEvaluator';
+import { filterOpportunitiesByAccess } from '../utils/opportunityGating';
 
 // Single storage key for all dismissed alerts
 const DISMISSED_ALERTS_KEY = 'dismissed-alerts';
@@ -62,6 +64,7 @@ export const useAlerts = (portfolioFilter?: string) => {
   const portfolios = useAppSelector((state) => state.portfolios.portfolios);
   const positions = useAppSelector((state) => state.positions.positions);
   const tickers = useAppSelector(selectAllTickers);
+  const unlockedLevels = useAppSelector(selectUnlockedLevels);
 
   // State to trigger re-renders when alerts are dismissed
   const [updateTrigger, setUpdateTrigger] = useState(0);
@@ -93,8 +96,21 @@ export const useAlerts = (portfolioFilter?: string) => {
 
   // Evaluate all alerts and opportunities using the central evaluator
   const { alerts, opportunities } = useMemo(() => {
-    return evaluateAllAlerts(portfolios, positions, dismissedAlerts, portfolioFilter, tickers);
-  }, [portfolios, positions, dismissedAlerts, portfolioFilter, tickers]);
+    const result = evaluateAllAlerts(
+      portfolios,
+      positions,
+      dismissedAlerts,
+      portfolioFilter,
+      tickers
+    );
+    // Level gating: opportunities for not-yet-unlocked strategies are
+    // hidden, so a user does not get advice beyond their knowledge level.
+    // Alerts (risk on existing positions) always remain visible.
+    return {
+      alerts: result.alerts,
+      opportunities: filterOpportunitiesByAccess(result.opportunities, unlockedLevels),
+    };
+  }, [portfolios, positions, dismissedAlerts, portfolioFilter, tickers, unlockedLevels]);
 
   // O(1) position lookup so per-position helpers don't scan the full array each call.
   const positionsById = useMemo(() => {

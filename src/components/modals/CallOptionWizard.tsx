@@ -8,6 +8,10 @@ import { selectPositions } from '../../store/slices/positionsSlice';
 import { addTransaction } from '../../store/slices/portfoliosSlice';
 import { ensureTicker, selectAllTickers } from '../../store/slices/tickersSlice';
 import { selectActiveWheels, updateWheelPremium } from '../../store/slices/wheelsSlice';
+import { selectUnlockedLevels, isFeatureAvailable } from '../../store/slices/userProgressSlice';
+import { getOptionActionFeature } from '../../utils/optionFeatureAccess';
+import { pickParentForNewShortCall } from '../../utils/coverageAllocation';
+import { isLEAPS } from '../../utils/campaignDetector';
 import { WizardModal, type WizardStep } from './WizardModal';
 import { TickerSelector } from '../widgets/TickerSelector';
 import { PnLCurve } from '../widgets/PnLCurve';
@@ -15,7 +19,14 @@ import { FridayDatePicker } from '../common/FridayDatePicker';
 import { LocalizedNumberInput } from '../common/LocalizedNumberInput';
 import { NewTickerForm } from './NewTickerForm';
 import { formatNumber, getDecimalSeparator } from '../../utils/numberFormat';
-import type { CallOption, Ticker, PortfolioName, CurrencyType, Position } from '../../types';
+import type {
+  CallOption,
+  Ticker,
+  PortfolioName,
+  CurrencyType,
+  Position,
+  StockPosition,
+} from '../../types';
 import { groupHoldings, type Holding } from '../../utils/holdings';
 import type { RootState } from '../../store';
 import {
@@ -57,6 +68,13 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
   const activeWheels = useAppSelector((state: RootState) => selectActiveWheels(state));
   const allWheels = useAppSelector((state: RootState) => state.wheels.wheels);
   const allTickers = useAppSelector(selectAllTickers);
+  const unlockedLevels = useAppSelector(selectUnlockedLevels);
+
+  // Level-gating: an option action may only be created once the corresponding
+  // strategy is unlocked knowledge-wise. Locked actions are hidden in the
+  // wizard and defensively blocked on completion.
+  const canUseAction = (a: OptionAction): boolean =>
+    isFeatureAvailable(getOptionActionFeature('call', a), unlockedLevels);
 
   // Get the initial wheel if provided
   const initialWheel = useMemo(() => {
@@ -214,6 +232,8 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
 
   const handleComplete = () => {
     if (!selectedTicker) return;
+    // Safety net: block creation of a not-yet-unlocked option action.
+    if (!canUseAction(action)) return;
 
     const { costBasis, currentValue, cashReserved } = calculateValues();
     const dte = calculateDTE(isSpread ? longLeg.expiration : longLeg.expiration);
@@ -300,8 +320,44 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
 
       dispatch(addTransaction(transaction));
     } else {
-      // Single option position
-      const shouldLinkToWheel = action === 'sell' && selectedWheelId;
+      // Single option position.
+      // A covered call is a short call: normalize the action to 'sell'.
+      const isShortCall = action === 'sell' || action === 'covered-call';
+      const normalizedAction: 'buy' | 'sell' = isShortCall ? 'sell' : 'buy';
+      const shouldLinkToWheel = isShortCall && !!selectedWheelId;
+
+      // Automatic parent linking (shares before LEAPS) for short calls that
+      // aren't tied to a wheel, so the coverage is explicit and visible.
+      let underlyingId: string | undefined;
+      if (isShortCall && !shouldLinkToWheel) {
+        const tickerSym = selectedTicker.symbol.toUpperCase();
+        const groupPositions = allPositions.filter(
+          (p) =>
+            p.status === 'open' &&
+            p.portfolio === portfolio.name &&
+            p.ticker.toUpperCase() === tickerSym &&
+            !(p as { wheelId?: string }).wheelId
+        );
+        const groupStocks = groupPositions.filter(
+          (p) => p.type === 'stock' || p.type === 'etf'
+        ) as StockPosition[];
+        const groupShortCalls = groupPositions.filter(
+          (p) => p.type === 'call' && (p as CallOption).action === 'sell'
+        ) as CallOption[];
+        const groupLeaps = groupPositions.filter(
+          (p) => p.type === 'call' && (p as CallOption).action === 'buy' && isLEAPS(p as CallOption)
+        ) as CallOption[];
+        const parent = pickParentForNewShortCall(
+          {
+            stocks: groupStocks,
+            leaps: groupLeaps,
+            shortCalls: groupShortCalls,
+            currentPrice: currentTickerPrice ?? undefined,
+          },
+          { strike: longLeg.strike, contracts: longLeg.contracts }
+        );
+        underlyingId = parent?.parentId;
+      }
 
       const newPosition: CallOption = {
         id: `call-${Date.now()}`,
@@ -309,7 +365,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
         ticker: selectedTicker.symbol,
         name: selectedTicker.name,
         type: 'call',
-        action: action as 'buy' | 'sell',
+        action: normalizedAction,
         status: 'open',
         openDate: purchaseDate,
         strike: longLeg.strike,
@@ -318,7 +374,8 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
         premium: longLeg.premium,
         costBasis,
         currentValue,
-        cashReserved: action === 'sell' ? cashReserved : undefined,
+        cashReserved: isShortCall ? cashReserved : undefined,
+        underlyingId,
         wheelId: shouldLinkToWheel ? selectedWheelId : undefined,
         dte,
         breakEven: calculateCallBreakEven(longLeg.strike, longLeg.premium),
@@ -434,73 +491,81 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
         component: (
           <div className="space-y-3">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <button
-                onClick={() => setAction('buy')}
-                className={`p-3 rounded-lg border-2 transition-all ${
-                  action === 'buy'
-                    ? 'border-primary-700 bg-primary-50 dark:bg-primary-900/20'
-                    : 'border-surface-line dark:border-trading-dark-600 hover:border-primary-300'
-                }`}
-              >
-                <TrendingUp className="w-6 h-6 mx-auto mb-1.5 text-primary-700 dark:text-primary-300" />
-                <h3 className="text-sm font-semibold text-ink-900 dark:text-white mb-0.5">
-                  {t('callWizard.actionStep.buyCall')}
-                </h3>
-                <p className="text-xs text-ink-600 dark:text-ink-400">
-                  {t('callWizard.actionStep.buyCallDesc')}
-                </p>
-              </button>
+              {canUseAction('buy') && (
+                <button
+                  onClick={() => setAction('buy')}
+                  className={`p-3 rounded-lg border-2 transition-all ${
+                    action === 'buy'
+                      ? 'border-primary-700 bg-primary-50 dark:bg-primary-900/20'
+                      : 'border-surface-line dark:border-trading-dark-600 hover:border-primary-300'
+                  }`}
+                >
+                  <TrendingUp className="w-6 h-6 mx-auto mb-1.5 text-primary-700 dark:text-primary-300" />
+                  <h3 className="text-sm font-semibold text-ink-900 dark:text-white mb-0.5">
+                    {t('callWizard.actionStep.buyCall')}
+                  </h3>
+                  <p className="text-xs text-ink-600 dark:text-ink-400">
+                    {t('callWizard.actionStep.buyCallDesc')}
+                  </p>
+                </button>
+              )}
 
-              <button
-                onClick={() => setAction('sell')}
-                className={`p-3 rounded-lg border-2 transition-all ${
-                  action === 'sell'
-                    ? 'border-caution-600 bg-caution-50 dark:bg-caution-600/15'
-                    : 'border-surface-line dark:border-trading-dark-600 hover:border-caution-500/40'
-                }`}
-              >
-                <TrendingDown className="w-6 h-6 mx-auto mb-1.5 text-caution-600 dark:text-caution-500" />
-                <h3 className="text-sm font-semibold text-ink-900 dark:text-white mb-0.5">
-                  {t('callWizard.actionStep.sellCall')}
-                </h3>
-                <p className="text-xs text-ink-600 dark:text-ink-400">
-                  {t('callWizard.actionStep.sellCallDesc')}
-                </p>
-              </button>
+              {canUseAction('sell') && (
+                <button
+                  onClick={() => setAction('sell')}
+                  className={`p-3 rounded-lg border-2 transition-all ${
+                    action === 'sell'
+                      ? 'border-caution-600 bg-caution-50 dark:bg-caution-600/15'
+                      : 'border-surface-line dark:border-trading-dark-600 hover:border-caution-500/40'
+                  }`}
+                >
+                  <TrendingDown className="w-6 h-6 mx-auto mb-1.5 text-caution-600 dark:text-caution-500" />
+                  <h3 className="text-sm font-semibold text-ink-900 dark:text-white mb-0.5">
+                    {t('callWizard.actionStep.sellCall')}
+                  </h3>
+                  <p className="text-xs text-ink-600 dark:text-ink-400">
+                    {t('callWizard.actionStep.sellCallDesc')}
+                  </p>
+                </button>
+              )}
 
-              <button
-                onClick={() => setAction('credit-spread')}
-                className={`p-3 rounded-lg border-2 transition-all ${
-                  action === 'credit-spread'
-                    ? 'border-ink-700 bg-surface-subtle dark:bg-trading-dark-700'
-                    : 'border-surface-line dark:border-trading-dark-600 hover:border-ink-300'
-                }`}
-              >
-                <ArrowRightLeft className="w-6 h-6 mx-auto mb-1.5 text-ink-600 dark:text-ink-300" />
-                <h3 className="text-sm font-semibold text-ink-900 dark:text-white mb-0.5">
-                  {t('callWizard.actionStep.creditSpread')}
-                </h3>
-                <p className="text-xs text-ink-600 dark:text-ink-400">
-                  {t('callWizard.actionStep.creditSpreadDesc')}
-                </p>
-              </button>
+              {canUseAction('credit-spread') && (
+                <button
+                  onClick={() => setAction('credit-spread')}
+                  className={`p-3 rounded-lg border-2 transition-all ${
+                    action === 'credit-spread'
+                      ? 'border-ink-700 bg-surface-subtle dark:bg-trading-dark-700'
+                      : 'border-surface-line dark:border-trading-dark-600 hover:border-ink-300'
+                  }`}
+                >
+                  <ArrowRightLeft className="w-6 h-6 mx-auto mb-1.5 text-ink-600 dark:text-ink-300" />
+                  <h3 className="text-sm font-semibold text-ink-900 dark:text-white mb-0.5">
+                    {t('callWizard.actionStep.creditSpread')}
+                  </h3>
+                  <p className="text-xs text-ink-600 dark:text-ink-400">
+                    {t('callWizard.actionStep.creditSpreadDesc')}
+                  </p>
+                </button>
+              )}
 
-              <button
-                onClick={() => setAction('debit-spread')}
-                className={`p-3 rounded-lg border-2 transition-all ${
-                  action === 'debit-spread'
-                    ? 'border-positive-600 bg-positive-50 dark:bg-positive-700/15'
-                    : 'border-surface-line dark:border-trading-dark-600 hover:border-positive-500/30'
-                }`}
-              >
-                <ArrowRightLeft className="w-6 h-6 mx-auto mb-1.5 text-positive-600 dark:text-positive-500" />
-                <h3 className="text-sm font-semibold text-ink-900 dark:text-white mb-0.5">
-                  {t('callWizard.actionStep.debitSpread')}
-                </h3>
-                <p className="text-xs text-ink-600 dark:text-ink-400">
-                  {t('callWizard.actionStep.debitSpreadDesc')}
-                </p>
-              </button>
+              {canUseAction('debit-spread') && (
+                <button
+                  onClick={() => setAction('debit-spread')}
+                  className={`p-3 rounded-lg border-2 transition-all ${
+                    action === 'debit-spread'
+                      ? 'border-positive-600 bg-positive-50 dark:bg-positive-700/15'
+                      : 'border-surface-line dark:border-trading-dark-600 hover:border-positive-500/30'
+                  }`}
+                >
+                  <ArrowRightLeft className="w-6 h-6 mx-auto mb-1.5 text-positive-600 dark:text-positive-500" />
+                  <h3 className="text-sm font-semibold text-ink-900 dark:text-white mb-0.5">
+                    {t('callWizard.actionStep.debitSpread')}
+                  </h3>
+                  <p className="text-xs text-ink-600 dark:text-ink-400">
+                    {t('callWizard.actionStep.debitSpreadDesc')}
+                  </p>
+                </button>
+              )}
             </div>
 
             <div className="mt-4 p-3 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
@@ -1268,6 +1333,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
       selectedWheelId,
       wheelLockedContracts,
       maxCoveredCallContracts,
+      unlockedLevels,
     ]
   );
 

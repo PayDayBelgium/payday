@@ -42,6 +42,8 @@ export const nl = {
     confirmCreate: 'Aanmaken',
     created: 'Aangemaakt:',
     cancelled: 'Geannuleerd.',
+    skippedLocked:
+      'Overgeslagen — je hebt het bijbehorende niveau voor deze strategie nog niet ontgrendeld:',
     newChat: 'Nieuw gesprek',
     errorOverloaded: 'De AI-service is even overbelast. Probeer het zo meteen opnieuw.',
     errorRateLimit: 'Limiet bereikt. Wacht even en probeer opnieuw.',

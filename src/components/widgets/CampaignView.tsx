@@ -109,9 +109,15 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
     return portfolioPositions.filter((p) => p.status === 'closed');
   }, [portfolioPositions]);
 
+  // Price lookup per ticker for the 15%-OTM weighting in coverage allocation.
+  const getPrice = useMemo(() => {
+    const map = new Map(tickers.map((t) => [t.symbol.toUpperCase(), t.currentPrice]));
+    return (ticker: string) => map.get(ticker.toUpperCase());
+  }, [tickers]);
+
   // Detect campaigns (including Wheels)
   const campaigns = useMemo(() => {
-    const detectedCampaigns = detectCampaigns(openPositions, closedPositions);
+    const detectedCampaigns = detectCampaigns(openPositions, closedPositions, getPrice);
 
     // Build Wheel campaigns from explicit Wheel records
     const wheelCampaigns = wheels
@@ -119,7 +125,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
       .filter((c): c is Campaign => c !== null);
 
     return [...detectedCampaigns, ...wheelCampaigns];
-  }, [openPositions, closedPositions, wheels]);
+  }, [openPositions, closedPositions, wheels, getPrice]);
 
   // Filter campaigns
   const filteredCampaigns = useMemo(() => {
@@ -503,7 +509,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
     setPositionToAssign(null);
   };
 
-  // Open de juiste wizard vanuit de opportunity-knop van een campagne
+  // Open the appropriate wizard from a campaign's opportunity button
   const handleOpportunityAction = (campaign: Campaign) => {
     // Set ticker for wizard
     setWizardTicker({
