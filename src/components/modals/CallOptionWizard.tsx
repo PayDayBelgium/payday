@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TrendingUp, TrendingDown, ArrowRightLeft, Info, BarChart3, RefreshCw } from 'lucide-react';
+import { TrendingUp, TrendingDown, ArrowRightLeft, BarChart3, RefreshCw } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { addPosition } from '../../store/slices/positionsSlice';
@@ -13,6 +13,7 @@ import { TickerSelector } from '../widgets/TickerSelector';
 import { PnLCurve } from '../widgets/PnLCurve';
 import { FridayDatePicker } from '../common/FridayDatePicker';
 import { LocalizedNumberInput } from '../common/LocalizedNumberInput';
+import { NewTickerForm } from './NewTickerForm';
 import { formatNumber, getDecimalSeparator } from '../../utils/numberFormat';
 import type { CallOption, Ticker, PortfolioName, CurrencyType, Position } from '../../types';
 import { groupHoldings, type Holding } from '../../utils/holdings';
@@ -20,6 +21,7 @@ import type { RootState } from '../../store';
 import {
   type OptionAction,
   type OptionLegData,
+  type NewTickerData,
   calculateDTE,
   calculateCallBreakEven,
   calculateCallValues,
@@ -77,10 +79,10 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
   // Step 2: Ticker selection
   const [selectedTicker, setSelectedTicker] = useState<Ticker | null>(null);
   const [isCreatingTicker, setIsCreatingTicker] = useState(false);
-  const [newTickerData, setNewTickerData] = useState({
+  const [newTickerData, setNewTickerData] = useState<NewTickerData>({
     symbol: '',
     name: '',
-    type: 'stock' as 'stock' | 'etf',
+    type: 'stock',
     optionsAvailable: true,
     miniContractsAvailable: false,
     hasDividend: false,
@@ -621,130 +623,36 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                 )}
               </>
             ) : (
-              <div className="space-y-4">
-                <div className="p-4 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
-                  <h4 className="font-semibold text-primary-900 dark:text-primary-300 mb-2">
-                    {t('callWizard.tickerStep.newTicker')} {newTickerData.symbol}
-                  </h4>
-                  <p className="text-sm text-primary-700 dark:text-primary-300">
-                    {t('callWizard.tickerStep.newTickerDesc')}
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t('callWizard.tickerStep.companyName')}
-                  </label>
-                  <input
-                    type="text"
-                    value={newTickerData.name}
-                    onChange={(e) => setNewTickerData({ ...newTickerData, name: e.target.value })}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                    placeholder={t('callWizard.tickerStep.companyPlaceholder')}
-                    autoFocus
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t('callWizard.tickerStep.type')}
-                  </label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      onClick={() => setNewTickerData({ ...newTickerData, type: 'stock' })}
-                      className={`p-3 rounded-lg border-2 transition-all ${
-                        newTickerData.type === 'stock'
-                          ? 'border-primary-700 bg-primary-50 dark:bg-primary-900/20'
-                          : 'border-gray-200 dark:border-gray-700'
-                      }`}
-                    >
-                      <p className="font-medium text-gray-900 dark:text-white">
-                        {t('callWizard.tickerStep.stock')}
-                      </p>
-                    </button>
-                    <button
-                      onClick={() => setNewTickerData({ ...newTickerData, type: 'etf' })}
-                      className={`p-3 rounded-lg border-2 transition-all ${
-                        newTickerData.type === 'etf'
-                          ? 'border-positive-600 bg-positive-50 dark:bg-positive-700/15'
-                          : 'border-gray-200 dark:border-gray-700'
-                      }`}
-                    >
-                      <p className="font-medium text-gray-900 dark:text-white">
-                        {t('callWizard.tickerStep.etf')}
-                      </p>
-                    </button>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={newTickerData.optionsAvailable}
-                      onChange={(e) =>
-                        setNewTickerData({
-                          ...newTickerData,
-                          optionsAvailable: e.target.checked,
-                        })
-                      }
-                      className="w-4 h-4 text-primary-700 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
-                    />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">
-                      {t('callWizard.tickerStep.optionsAvailableCheck')}
-                    </span>
-                  </label>
-
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={newTickerData.miniContractsAvailable}
-                      onChange={(e) =>
-                        setNewTickerData({
-                          ...newTickerData,
-                          miniContractsAvailable: e.target.checked,
-                        })
-                      }
-                      className="w-4 h-4 text-primary-700 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
-                    />
-                    <span className="text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                      {t('callWizard.tickerStep.miniContractsCheck')}
-                      <div className="group relative">
-                        <Info className="w-4 h-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-help" />
-                        <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 z-50">
-                          {t('callWizard.tickerStep.miniContractsTooltip')}
-                        </div>
-                      </div>
-                    </span>
-                  </label>
-                </div>
-
-                <div className="flex gap-3">
-                  <button
-                    onClick={handleCreateTicker}
-                    disabled={!newTickerData.name}
-                    className="flex-1 px-4 py-2 bg-primary-700 hover:bg-primary-800 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
-                  >
-                    {t('callWizard.tickerStep.addTicker')}
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsCreatingTicker(false);
-                      setNewTickerData({
-                        symbol: '',
-                        name: '',
-                        type: 'stock',
-                        optionsAvailable: true,
-                        miniContractsAvailable: false,
-                        hasDividend: false,
-                      });
-                    }}
-                    className="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg font-medium transition-colors"
-                  >
-                    {t('callWizard.tickerStep.cancel')}
-                  </button>
-                </div>
-              </div>
+              <NewTickerForm
+                data={newTickerData}
+                onChange={setNewTickerData}
+                onSave={handleCreateTicker}
+                onCancel={() => {
+                  setIsCreatingTicker(false);
+                  setNewTickerData({
+                    symbol: '',
+                    name: '',
+                    type: 'stock',
+                    optionsAvailable: true,
+                    miniContractsAvailable: false,
+                    hasDividend: false,
+                  });
+                }}
+                labels={{
+                  newTickerHeading: t('callWizard.tickerStep.newTicker'),
+                  newTickerDesc: t('callWizard.tickerStep.newTickerDesc'),
+                  companyName: t('callWizard.tickerStep.companyName'),
+                  companyPlaceholder: t('callWizard.tickerStep.companyPlaceholder'),
+                  type: t('callWizard.tickerStep.type'),
+                  stock: t('callWizard.tickerStep.stock'),
+                  etf: t('callWizard.tickerStep.etf'),
+                  optionsAvailableCheck: t('callWizard.tickerStep.optionsAvailableCheck'),
+                  miniContractsCheck: t('callWizard.tickerStep.miniContractsCheck'),
+                  miniContractsTooltip: t('callWizard.tickerStep.miniContractsTooltip'),
+                  addTicker: t('callWizard.tickerStep.addTicker'),
+                  cancel: t('callWizard.tickerStep.cancel'),
+                }}
+              />
             )}
           </div>
         ),
