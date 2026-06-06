@@ -42,9 +42,7 @@ export const AdminDashboard: React.FC = () => {
             </div>
             <div>
               <p className="text-ink-600 dark:text-ink-400 text-sm">Active Today</p>
-              <p className="text-3xl font-bold text-ink-900 dark:text-white">
-                {stats.activeToday}
-              </p>
+              <p className="text-3xl font-bold text-ink-900 dark:text-white">{stats.activeToday}</p>
             </div>
           </div>
         </div>

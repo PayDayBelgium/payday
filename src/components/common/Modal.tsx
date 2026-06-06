@@ -22,20 +22,20 @@ export interface ModalProps {
   /** Whether to show the backdrop blur effect */
   blur?: boolean;
   /**
-   * Overschrijft de standaard breedte-/grootteklasse (afgeleid van `size`).
-   * Handig voor modals met een vaste breedte/hoogte i.p.v. een max-width.
+   * Overrides the default width/size class (derived from `size`).
+   * Useful for modals with a fixed width/height instead of a max-width.
    */
   sizeClassName?: string;
   /**
-   * Overschrijft de standaard kaartstyling (rounding/shadow/border).
-   * Wordt gebruikt wanneer een afwijkende kaartvorm nodig is.
+   * Overrides the default card styling (rounding/shadow/border).
+   * Used when a different card shape is needed.
    */
   cardClassName?: string;
-  /** Overschrijft de standaard padding-wrapper rond de children (standaard `p-4`). */
+  /** Overrides the default padding wrapper around the children (defaults to `p-4`). */
   contentClassName?: string;
 }
 
-/** Standaard kaartstyling (rounding, shadow, border, achtergrond). */
+/** Default card styling (rounding, shadow, border, background). */
 const defaultCardClassName =
   'bg-white dark:bg-trading-dark-800 rounded-lg shadow-xl border border-surface-line dark:border-trading-dark-600';
 

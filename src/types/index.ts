@@ -63,8 +63,8 @@ export interface Portfolio {
   currency: CurrencyType;
   startDate?: string; // Optional: start date for data tracking (YYYY-MM-DD format)
   url?: string; // URL to portfolio portal/website
-  initialCapital: number; // Startkapitaal bij aanmaken portfolio
-  currentValue: number; // Huidige waarde van portfolio
+  initialCapital: number; // Starting capital when the portfolio is created
+  currentValue: number; // Current value of the portfolio
 }
 
 // Base position types
@@ -180,56 +180,56 @@ export interface KaChingStrategy extends BasePosition {
   currentValue: number; // Current total value
 }
 
-// Nieuwe generieke Call Position
+// New generic Call Position
 export interface CallOption extends BasePosition {
   type: 'call';
   name?: string; // Optional company/ticker name
-  action: 'buy' | 'sell'; // Gekocht of verkocht
+  action: 'buy' | 'sell'; // Bought or sold
   strike: number;
   expiration: string;
   contracts: number;
-  premium: number; // Prijs per contract
-  costBasis: number; // Totale kost (buy) of opbrengst (sell)
+  premium: number; // Price per contract
+  costBasis: number; // Total cost (buy) or proceeds (sell)
   currentValue: number;
-  cashReserved?: number; // Voor symmetrie met PutOption (zelden gebruikt op calls)
-  underlyingId?: string; // Optioneel: link naar underlying stock/leap
-  wheelId?: string; // Optioneel: link naar Wheel campaign
-  dte?: number; // Days to expiration (berekend)
-  breakEven?: number; // Break-even prijs (berekend)
-  currentPremium?: number; // Live premium voor live-tracking
+  cashReserved?: number; // For symmetry with PutOption (rarely used on calls)
+  underlyingId?: string; // Optional: link to underlying stock/leap
+  wheelId?: string; // Optional: link to Wheel campaign
+  dte?: number; // Days to expiration (calculated)
+  breakEven?: number; // Break-even price (calculated)
+  currentPremium?: number; // Live premium for live-tracking
   delta?: number; // Live greek (written by updateOptionPremium)
-  strategy?: string; // Strategie-label voor analytics
+  strategy?: string; // Strategy label for analytics
 }
 
-// Nieuwe generieke Put Position
+// New generic Put Position
 export interface PutOption extends BasePosition {
   type: 'put';
   name?: string; // Optional company/ticker name
-  action: 'buy' | 'sell'; // Gekocht of verkocht
+  action: 'buy' | 'sell'; // Bought or sold
   strike: number;
   expiration: string;
   contracts: number;
-  premium: number; // Prijs per contract
-  costBasis: number; // Totale kost (buy) of opbrengst (sell)
+  premium: number; // Price per contract
+  costBasis: number; // Total cost (buy) or proceeds (sell)
   currentValue: number;
-  cashReserved?: number; // Voor cash-secured puts
-  underlyingId?: string; // Optioneel: link naar underlying stock/protective put
-  wheelId?: string; // Optioneel: link naar Wheel campaign
-  dte?: number; // Days to expiration (berekend)
-  breakEven?: number; // Break-even prijs (berekend)
-  currentPremium?: number; // Live premium voor live-tracking
+  cashReserved?: number; // For cash-secured puts
+  underlyingId?: string; // Optional: link to underlying stock/protective put
+  wheelId?: string; // Optional: link to Wheel campaign
+  dte?: number; // Days to expiration (calculated)
+  breakEven?: number; // Break-even price (calculated)
+  currentPremium?: number; // Live premium for live-tracking
   delta?: number; // Live greek (written by updateOptionPremium)
-  strategy?: string; // Strategie-label voor analytics
+  strategy?: string; // Strategy label for analytics
 }
 
 // Spread Position (call of put spread)
 export interface SpreadPosition extends BasePosition {
   type: 'spread';
   spreadType: 'call' | 'put';
-  spreadStyle: 'credit' | 'debit'; // Credit spread (verkopen) of debit spread (kopen)
-  longLeg: OptionLeg; // Gekochte optie
-  shortLeg: OptionLeg; // Verkochte optie
-  netPremium: number; // Netto premie (credit) of cost (debit)
+  spreadStyle: 'credit' | 'debit'; // Credit spread (selling) or debit spread (buying)
+  longLeg: OptionLeg; // Bought option
+  shortLeg: OptionLeg; // Sold option
+  netPremium: number; // Net premium (credit) or cost (debit)
   currentValue: number;
   maxProfit: number;
   maxLoss: number;
@@ -287,7 +287,7 @@ export interface PortfolioSummary {
   cash: number;
   uncoveredValue: number;
   totalWeeklyReturn: number; // w/w %
-  yearlyReturn: number; // jaar w/w %
+  yearlyReturn: number; // yearly w/w %
   positionCount: number;
   activeStrategies: string[];
 }
@@ -441,71 +441,71 @@ export interface JournalEntry {
   updatedAt?: string;
 }
 
-// Portfolio Transaction Types (nieuwe structuur)
+// Portfolio Transaction Types (new structure)
 export type TransactionType =
-  | 'deposit' // Cash storting
-  | 'withdrawal' // Cash opname
-  | 'position_buy' // Positie gekocht (aandelen/opties)
-  | 'position_sell' // Positie verkocht
-  | 'premium_collected' // Premie ontvangen (verkochte optie)
-  | 'premium_paid' // Premie betaald (gekochte optie)
-  | 'dividend' // Dividend ontvangen
-  | 'fee' // Kosten (transactiekosten, etc.)
-  | 'adjustment' // Handmatige correctie portfolio waarde
-  | 'option_roll'; // Optie roll (sluiten + nieuwe openen)
+  | 'deposit' // Cash deposit
+  | 'withdrawal' // Cash withdrawal
+  | 'position_buy' // Position bought (shares/options)
+  | 'position_sell' // Position sold
+  | 'premium_collected' // Premium received (sold option)
+  | 'premium_paid' // Premium paid (bought option)
+  | 'dividend' // Dividend received
+  | 'fee' // Costs (transaction fees, etc.)
+  | 'adjustment' // Manual correction of portfolio value
+  | 'option_roll'; // Option roll (close + open new)
 
 export interface PortfolioTransaction {
   id: string;
   portfolio: PortfolioName;
   date: string; // ISO date string
   type: TransactionType;
-  amount: number; // Bedrag (positief voor inkomsten, negatief voor uitgaven)
+  amount: number; // Amount (positive for income, negative for expenses)
   description: string;
-  relatedPositionId?: string; // Optioneel: link naar positie
-  previousValue?: number; // Portfolio waarde voor transactie
-  newValue?: number; // Portfolio waarde na transactie
+  relatedPositionId?: string; // Optional: link to position
+  previousValue?: number; // Portfolio value before transaction
+  newValue?: number; // Portfolio value after transaction
   createdAt: string;
   notes?: string;
 }
 
-// Ticker definitie voor hergebruik
+// Ticker definition for reuse
 export interface Ticker {
-  symbol: string; // Ticker symbol (bijv. AAPL, SPY)
-  name: string; // Naam van aandeel/ETF
+  symbol: string; // Ticker symbol (e.g., AAPL, SPY)
+  name: string; // Name of stock/ETF
   type: 'stock' | 'etf';
-  optionsAvailable: boolean; // Zijn er opties beschikbaar?
-  miniContractsAvailable: boolean; // Zijn mini contracts beschikbaar?
-  hasDividend?: boolean; // Betaalt dit aandeel/ETF dividend?
-  lastUsed?: string; // Laatst gebruikt (voor autocomplete sortering)
-  currentPrice?: number; // Huidige prijs (wordt later via service opgehaald)
-  isWatchlist?: boolean; // Is dit een watchlist ticker (geen posities)
-  createdAt?: string; // Wanneer toegevoegd
+  optionsAvailable: boolean; // Are options available?
+  miniContractsAvailable: boolean; // Are mini contracts available?
+  hasDividend?: boolean; // Does this stock/ETF pay a dividend?
+  lastUsed?: string; // Last used (for autocomplete sorting)
+  currentPrice?: number; // Current price (fetched later via service)
+  isWatchlist?: boolean; // Is this a watchlist ticker (no positions)
+  createdAt?: string; // When added
 }
 
-// Option Leg voor spread constructie
+// Option Leg for spread construction
 export interface OptionLeg {
-  action: 'buy' | 'sell'; // Kopen of verkopen
+  action: 'buy' | 'sell'; // Buy or sell
   optionType: 'call' | 'put';
   strike: number;
   expiration: string; // ISO date
   contracts: number;
-  premium: number; // Prijs per contract
-  totalCost: number; // Totale kost/opbrengst (premium * contracts * 100)
+  premium: number; // Price per contract
+  totalCost: number; // Total cost/proceeds (premium * contracts * 100)
 }
 
-// Wheel Campaign - cyclische strategie van Cash Secured Put -> Stock -> Covered Call
+// Wheel Campaign - cyclical strategy of Cash Secured Put -> Stock -> Covered Call
 export interface WheelCampaign {
   id: string;
   ticker: string;
   portfolio: PortfolioName;
-  phase: 'csp' | 'stock' | 'completed'; // Huidige fase van de wheel
-  targetContracts: number; // Aantal contracten/lots (100 shares per contract)
+  phase: 'csp' | 'stock' | 'completed'; // Current phase of the wheel
+  targetContracts: number; // Number of contracts/lots (100 shares per contract)
   startDate: string;
-  endDate?: string; // Wanneer wheel voltooid is
+  endDate?: string; // When the wheel is completed
   status: 'active' | 'completed';
-  totalPremiumCollected: number; // Totaal ontvangen premie
-  totalRealizedPnL: number; // Totaal gerealiseerde winst/verlies
-  cycles: number; // Aantal voltooide cycli (Cash Secured Put -> Stock -> Covered Call -> verkoop)
+  totalPremiumCollected: number; // Total premium received
+  totalRealizedPnL: number; // Total realized profit/loss
+  cycles: number; // Number of completed cycles (Cash Secured Put -> Stock -> Covered Call -> sale)
   notes?: string;
   createdAt: string;
   updatedAt?: string;
@@ -568,7 +568,7 @@ export type FeatureId =
   // Off-piste features
   | 'quant_trading';
 
-// Vrije modules (geen level/credits) die je activeert om in de sidebar te tonen.
+// Free modules (no level/credits) that you activate to show in the sidebar.
 export type ModuleId = 'community' | 'mentorship';
 
 // User progress and credits
@@ -776,19 +776,19 @@ export type CommunityChannel = 'ideas' | 'general' | 'quant';
 export interface CommunityAuthor {
   name: string;
   initials: string;
-  color: string; // avatar-achtergrondkleur (hex)
-  level: UserLevel; // bepaalt de piste-badge
+  color: string; // avatar background color (hex)
+  level: UserLevel; // determines the slope badge
 }
 
 export interface TradeIdea {
   ticker: string;
-  strategy: FeatureId; // bv. 'cash_secured_puts' | 'covered_calls'
+  strategy: FeatureId; // e.g. 'cash_secured_puts' | 'covered_calls'
   expiry: string;
   strike?: number;
   premium?: number;
   returnPct?: number;
   delta?: number;
-  ivRank: number; // 0–100, de "juice"
+  ivRank: number; // 0–100, the "juice"
 }
 
 export interface CommunityReply {
@@ -810,28 +810,28 @@ export interface CommunityPost {
   tradeIdea?: TradeIdea;
 }
 
-// Mentorship (ski-school) — losgekoppeld van credits/levels.
+// Mentorship (ski-school) — decoupled from credits/levels.
 export type MentorshipFocus =
-  | 'options' // optiestrategieën
-  | 'risk' // risicobeheer
-  | 'psychology' // trading-psychologie
-  | 'portfolio' // portefeuille-opbouw
-  | 'quant'; // kwantitatief / off-piste
+  | 'options' // option strategies
+  | 'risk' // risk management
+  | 'psychology' // trading psychology
+  | 'portfolio' // portfolio building
+  | 'quant'; // quantitative / off-piste
 
 export type MentorStyle =
-  | 'hands_on' // intensief, samen traden
-  | 'coaching' // periodieke coaching/reviews
-  | 'async'; // asynchroon (berichten/feedback)
+  | 'hands_on' // intensive, trading together
+  | 'coaching' // periodic coaching/reviews
+  | 'async'; // asynchronous (messages/feedback)
 
 export type MentorshipStatus = 'pending';
 
 export interface MentorshipRequest {
   id: string;
   focus: MentorshipFocus;
-  level: UserLevel; // huidig niveau van de aanvrager
+  level: UserLevel; // current level of the requester
   style: MentorStyle;
-  availability: string; // vrije tekst, bv. "weekends, 2u/week"
-  message: string; // motivatie / context
+  availability: string; // free text, e.g. "weekends, 2h/week"
+  message: string; // motivation / context
   createdAt: string; // ISO
   status: MentorshipStatus;
 }

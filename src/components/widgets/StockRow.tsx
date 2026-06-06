@@ -169,12 +169,12 @@ export const StockRow: React.FC<StockRowProps> = ({
         <div>
           <p className="text-sm text-ink-400 dark:text-ink-600">-</p>
         </div>{' '}
-        {/* Expiratie */}
+        {/* Expiration */}
         <div>
           <p className="text-sm text-ink-400 dark:text-ink-600">-</p>
         </div>{' '}
         {/* Strike */}
-        {/* Stock prijs */}
+        {/* Stock price */}
         <div>
           {currentPrice ? (
             <p className="text-sm font-medium text-ink-900 dark:text-white">
@@ -184,7 +184,7 @@ export const StockRow: React.FC<StockRowProps> = ({
             <p className="text-sm text-ink-400 dark:text-ink-600">-</p>
           )}
         </div>
-        {/* Verschil */}
+        {/* Difference */}
         <div>
           {currentPrice ? (
             <p
@@ -201,7 +201,7 @@ export const StockRow: React.FC<StockRowProps> = ({
             <p className="text-sm text-ink-400 dark:text-ink-600">-</p>
           )}
         </div>
-        {/* Open (Kostprijs) */}
+        {/* Open (Cost basis) */}
         <div>
           <p className="text-sm font-medium text-ink-900 dark:text-white">
             {formatCurrency(purchasePricePerShare, currencySymbol)}
@@ -210,7 +210,7 @@ export const StockRow: React.FC<StockRowProps> = ({
             {formatCurrency(position.costBasis, currencySymbol)}
           </p>
         </div>
-        {/* Huidige */}
+        {/* Current */}
         <div>
           <p className="text-sm font-medium text-ink-900 dark:text-white">
             {currentPrice
@@ -221,7 +221,7 @@ export const StockRow: React.FC<StockRowProps> = ({
             {formatCurrency(liveCurrentValue, currencySymbol)}
           </p>
         </div>
-        {/* Winst/Verlies */}
+        {/* Profit/Loss */}
         <div>
           <p
             className={`text-sm font-medium ${
@@ -248,7 +248,7 @@ export const StockRow: React.FC<StockRowProps> = ({
             {formatNumber(profitLossPercentage)}%
           </p>
         </div>
-        {/* Onderpand - empty for stocks */}
+        {/* Collateral - empty for stocks */}
         <div>
           <p className="text-sm text-ink-400 dark:text-ink-600">-</p>
         </div>

@@ -802,9 +802,7 @@ export const PMCCCalculator: React.FC = () => {
             ) : (
               <div className="text-center py-12">
                 <Calculator className="w-16 h-16 text-primary-400 dark:text-primary-700 mx-auto mb-4" />
-                <p className="text-ink-600 dark:text-ink-400">
-                  Fill in all fields to see results
-                </p>
+                <p className="text-ink-600 dark:text-ink-400">Fill in all fields to see results</p>
               </div>
             )}
           </div>
@@ -840,9 +838,7 @@ export const PMCCCalculator: React.FC = () => {
 
             {portfolios.length === 0 ? (
               <div className="text-center py-6">
-                <p className="text-ink-600 dark:text-ink-400 mb-4">
-                  No portfolios configured yet.
-                </p>
+                <p className="text-ink-600 dark:text-ink-400 mb-4">No portfolios configured yet.</p>
                 <button
                   onClick={() => {
                     setShowPortfolioDialog(false);

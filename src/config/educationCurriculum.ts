@@ -1,8 +1,8 @@
 import type { EducationChapter, UserLevel } from '../types';
 
 // =====================================================
-// LEVEL 1: BEGINNER - Groene Piste
-// De basis: Brokers, Aandelen, ETFs, Dividenden
+// LEVEL 1: BEGINNER - Green Slope
+// The basics: Brokers, Stocks, ETFs, Dividends
 // =====================================================
 
 const beginnerChapters: EducationChapter[] = [
@@ -1113,8 +1113,8 @@ const beginnerChapters: EducationChapter[] = [
 ];
 
 // =====================================================
-// LEVEL 2: MEDIOR - Blauwe Piste
-// Opties basis: Put/Call, Buy/Sell, de 4 vakken
+// LEVEL 2: MEDIOR - Blue Slope
+// Options basics: Put/Call, Buy/Sell, the 4 quadrants
 // =====================================================
 
 const mediorChapters: EducationChapter[] = [
@@ -1499,8 +1499,8 @@ const mediorChapters: EducationChapter[] = [
 ];
 
 // =====================================================
-// LEVEL 3: SENIOR - Rode Piste
-// OTM/ATM/ITM, Intrinsieke/Extrinsieke waarde, Tijdsverval, IV
+// LEVEL 3: SENIOR - Red Slope
+// OTM/ATM/ITM, Intrinsic/Extrinsic value, Time decay, IV
 // =====================================================
 
 const seniorChapters: EducationChapter[] = [
@@ -1902,8 +1902,8 @@ const seniorChapters: EducationChapter[] = [
 ];
 
 // =====================================================
-// LEVEL 4: EXPERT - Zwarte Piste
-// Geavanceerde concepten: IV Crush, Greeks, complexe strategieën
+// LEVEL 4: EXPERT - Black Slope
+// Advanced concepts: IV Crush, Greeks, complex strategies
 // =====================================================
 
 const expertChapters: EducationChapter[] = [
@@ -2319,8 +2319,8 @@ const expertChapters: EducationChapter[] = [
 ];
 
 // =====================================================
-// LEVEL 5: OFF-PISTE (QUANT) - Oranje Route
-// Kwantitatieve, data-gedreven trading buiten de gebaande piste
+// LEVEL 5: OFF-PISTE (QUANT) - Orange Route
+// Quantitative, data-driven trading off the beaten slope
 // =====================================================
 
 const offpisteChapters: EducationChapter[] = [

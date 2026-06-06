@@ -16,10 +16,7 @@ import {
   selectCurrentLevel,
   LEVEL_CONFIGS,
 } from '../../store/slices/userProgressSlice';
-import {
-  LEVEL_RESOURCES,
-  getTipsUpToLevel,
-} from '../../config/learningResources';
+import { LEVEL_RESOURCES, getTipsUpToLevel } from '../../config/learningResources';
 import type {
   UserLevel,
   TradingTip,
@@ -214,9 +211,7 @@ const VideoCard: React.FC<{ video: VideoTutorial; isLocked?: boolean }> = ({ vid
           <PlayCircle className="w-5 h-5 text-negative-600 dark:text-negative-500" />
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="font-semibold text-ink-900 dark:text-white text-sm mb-1">
-            {video.title}
-          </h4>
+          <h4 className="font-semibold text-ink-900 dark:text-white text-sm mb-1">{video.title}</h4>
           <p
             className={`text-xs ${isLocked ? 'blur-sm select-none' : ''} text-ink-600 dark:text-ink-400 mb-2 line-clamp-2`}
           >

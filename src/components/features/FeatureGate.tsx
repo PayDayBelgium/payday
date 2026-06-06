@@ -73,9 +73,7 @@ export const FeatureGate: React.FC<FeatureGateProps> = ({ feature, children, fal
         </div>
 
         {/* Title */}
-        <h2 className="text-xl font-bold text-ink-900 dark:text-white mb-2">
-          Feature Vergrendeld
-        </h2>
+        <h2 className="text-xl font-bold text-ink-900 dark:text-white mb-2">Feature Vergrendeld</h2>
 
         {/* Description */}
         <p className="text-ink-600 dark:text-ink-400 mb-4">

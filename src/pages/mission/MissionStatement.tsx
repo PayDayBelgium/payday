@@ -188,9 +188,7 @@ const LevelCard: React.FC<{
             {config.priceEUR && config.priceEUR > 0 && (
               <div className="flex items-center justify-between text-sm">
                 <span className="text-ink-500 dark:text-ink-400">Of direct kopen:</span>
-                <span className="font-bold text-ink-600 dark:text-ink-300">
-                  €{config.priceEUR}
-                </span>
+                <span className="font-bold text-ink-600 dark:text-ink-300">€{config.priceEUR}</span>
               </div>
             )}
 
@@ -218,7 +216,7 @@ const LevelCard: React.FC<{
   );
 };
 
-// Vrije modules (geen level/credits) — activeren toont ze in de sidebar.
+// Free modules (no level/credits) — activating them shows them in the sidebar.
 const MODULE_CONFIGS: {
   id: ModuleId;
   name: string;
@@ -244,7 +242,7 @@ const MODULE_CONFIGS: {
   },
 ];
 
-// Module card — gratis activeren (geen credits), daarna zichtbaar in de sidebar.
+// Module card — activate for free (no credits), then visible in the sidebar.
 const ModuleCard: React.FC<{
   config: (typeof MODULE_CONFIGS)[number];
   isActivated: boolean;
@@ -591,7 +589,7 @@ export const MissionStatement: React.FC = () => {
           ))}
         </div>
 
-        {/* Extra modules — activeer om ze in de sidebar te tonen */}
+        {/* Extra modules — activate to show them in the sidebar */}
         <h3 className="text-base font-semibold text-ink-900 dark:text-white tracking-tight mt-8 mb-1">
           Extra modules
         </h3>

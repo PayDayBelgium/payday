@@ -1,13 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import {
-  X,
-  RefreshCw,
-  Info,
-  ArrowLeft,
-  TrendingUp,
-  Building2,
-  Plus,
-} from 'lucide-react';
+import { X, RefreshCw, Info, ArrowLeft, TrendingUp, Building2, Plus } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { addWheel } from '../../store/slices/wheelsSlice';

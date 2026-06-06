@@ -200,7 +200,7 @@ export const CSPStrategy: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Onderpand Explanation */}
+                  {/* Collateral Explanation */}
                   <div className="bg-caution-50 dark:bg-caution-600/15 border border-caution-500/30 dark:border-caution-500/30 rounded-lg p-5">
                     <div className="flex items-start gap-3">
                       <Wallet className="w-5 h-5 text-caution-600 dark:text-caution-500 mt-0.5 flex-shrink-0" />

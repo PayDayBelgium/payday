@@ -4,7 +4,7 @@ import type { ChatMessage } from '../../contexts/AIAssistantContext';
 
 export const MessageBubble: React.FC<{ message: ChatMessage }> = ({ message }) => {
   const isUser = message.role === 'user';
-  // Alleen tekst- en afbeeldingsblokken tonen (tool-blokken zijn intern).
+  // Only show text and image blocks (tool blocks are internal).
   const visible = message.content.filter((b) => b.kind === 'text' || b.kind === 'image');
   const hasText = visible.some((b) => b.kind === 'text');
 

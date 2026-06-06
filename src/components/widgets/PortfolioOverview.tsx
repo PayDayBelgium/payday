@@ -340,9 +340,7 @@ export const PortfolioOverview: React.FC = memo(() => {
                       {/* Stats - all aligned left */}
                       <div className="space-y-1.5 text-xs flex-1">
                         <div className="flex">
-                          <span className="text-ink-500 dark:text-ink-400 w-20">
-                            Long posities
-                          </span>
+                          <span className="text-ink-500 dark:text-ink-400 w-20">Long posities</span>
                           <span className="font-medium text-ink-900 dark:text-white">
                             {formatCurrency(longValue, currencySymbol)}
                           </span>

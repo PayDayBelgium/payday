@@ -1,11 +1,11 @@
 // src/services/ai/types.ts
-// Provider-onafhankelijk berichtmodel voor de AI-assistent.
+// Provider-independent message model for the AI assistant.
 
 export type AIProviderId = 'anthropic' | 'openai' | 'gemini';
 
 export type AIRole = 'user' | 'assistant';
 
-// Inhoudsblokken van een bericht.
+// Content blocks of a message.
 export type ContentBlock =
   | { kind: 'text'; text: string }
   | { kind: 'image'; mediaType: string; dataBase64: string }
@@ -17,21 +17,21 @@ export interface AIMessage {
   content: ContentBlock[];
 }
 
-// Tooldefinitie die naar de provider gaat (JSON-schema voor de argumenten).
+// Tool definition that is sent to the provider (JSON schema for the arguments).
 export interface ToolSchema {
   name: string;
   description: string;
   input_schema: Record<string, unknown>;
 }
 
-// Genormaliseerde stream-events die elke provider-adapter teruggeeft.
+// Normalized stream events that every provider adapter returns.
 export type AIStreamEvent =
   | { type: 'text_delta'; text: string }
   | { type: 'tool_use'; id: string; name: string; input: unknown }
   | { type: 'done'; stopReason: 'end' | 'tool_use' | 'max_tokens' | 'aborted' }
   | { type: 'error'; message: string };
 
-// Helper om snel een tekstbericht te maken.
+// Helper to quickly create a text message.
 export const textMessage = (role: AIRole, text: string): AIMessage => ({
   role,
   content: [{ kind: 'text', text }],

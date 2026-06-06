@@ -8,7 +8,7 @@ Richtlijnen voor Claude/agents die in deze repository werken. Houd dit bestand k
 
 Stack: **React 19** · TypeScript (strict) · Redux Toolkit + redux-persist · React Router 7 · Vite 7 · Tailwind 3 · i18next (nl/en/fr) · recharts · `@anthropic-ai/sdk` (in de browser, lazy) · Vitest + Testing Library.
 
-> **Taal:** code-commentaar en UI-teksten zijn **Nederlands**. Commits: conventional-commits mét scope, bv. `feat(ai):`, `fix(ai):`, `refactor(...)`.
+> **Taal:** code-commentaar en alle documentatie (JSDoc, README's, comments) zijn **Engels**. **UI-teksten** lopen via i18n in **nl/en/fr** (`t()` — nooit hardcoden). *(Uitzondering: de learning/mission-content in `config/` is bewust NL-only.)* Commits: conventional-commits mét scope, bv. `feat(ai):`, `fix(ai):`, `refactor(...)`.
 
 ## Commando's
 

@@ -4,7 +4,7 @@ import type { RootState } from '../index';
 import type { CommunityPost, CommunityReply, CommunityChannel } from '../../types';
 import { COMMUNITY_SEED } from '../../data/communitySeed';
 
-// Credits verdiend met community-deelname (brug naar Off-piste unlock).
+// Credits earned through community participation (bridge to the Off-piste unlock).
 export const COMMUNITY_POST_CREDITS = 10;
 export const COMMUNITY_REPLY_CREDITS = 3;
 

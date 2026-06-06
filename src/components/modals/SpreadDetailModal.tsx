@@ -275,9 +275,7 @@ export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
                 <div className="p-4 border-2 border-primary-200 dark:border-primary-800 rounded-lg bg-primary-50/50 dark:bg-primary-900/15">
                   <div className="flex items-center gap-2 mb-3">
                     <ArrowUpCircle className="w-5 h-5 text-primary-700 dark:text-primary-300" />
-                    <h3 className="font-semibold text-ink-900 dark:text-white">
-                      Long Leg (KOPEN)
-                    </h3>
+                    <h3 className="font-semibold text-ink-900 dark:text-white">Long Leg (KOPEN)</h3>
                   </div>
 
                   <div className="space-y-3 text-sm">

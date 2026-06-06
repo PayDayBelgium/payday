@@ -594,7 +594,7 @@ export const PortfolioDetail: React.FC = () => {
               {/* Cash Flow List */}
               <div className="flex-1 overflow-y-auto">
                 <div className="space-y-0">
-                  {/* Totale Beschikbare Cash */}
+                  {/* Total Available Cash */}
                   <div className="py-4 border-b border-surface-line dark:border-trading-dark-600">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
@@ -756,7 +756,7 @@ export const PortfolioDetail: React.FC = () => {
                         {/* Divider before total */}
                         <div className="border-b border-surface-line dark:border-trading-dark-600 my-4"></div>
 
-                        {/* Vrije cash - Bold en gekleurd */}
+                        {/* Free cash - bold and colored */}
                         <div className="py-6">
                           <div className="flex items-center justify-between">
                             <span className="text-base font-bold text-ink-900 dark:text-white">
@@ -1129,9 +1129,7 @@ export const PortfolioDetail: React.FC = () => {
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                       <AlertCircle className="w-5 h-5 text-caution-600 dark:text-caution-500" />
-                      <h4 className="text-lg font-semibold text-ink-900 dark:text-white">
-                        Alerts
-                      </h4>
+                      <h4 className="text-lg font-semibold text-ink-900 dark:text-white">Alerts</h4>
                     </div>
                     {alertsData.alerts.length > 0 && (
                       <span className="px-2 py-1 bg-caution-50 dark:bg-caution-600/25 rounded-full text-sm font-semibold text-caution-600 dark:text-caution-500">

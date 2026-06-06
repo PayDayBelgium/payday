@@ -519,9 +519,7 @@ export const KaChingCalculator: React.FC = () => {
             ) : (
               <div className="text-center py-12">
                 <DollarSign className="w-16 h-16 text-purple-300 dark:text-ink-600 mx-auto mb-4" />
-                <p className="text-ink-600 dark:text-ink-400">
-                  Fill in all fields to see results
-                </p>
+                <p className="text-ink-600 dark:text-ink-400">Fill in all fields to see results</p>
               </div>
             )}
           </div>

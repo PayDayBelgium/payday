@@ -5,13 +5,13 @@ import type { CampaignType } from '../../utils/campaignDetector';
 type FilterType = CampaignType;
 
 interface CampaignFilterTabsProps {
-  /** Actief geselecteerde filter */
+  /** Currently selected filter */
   filter: FilterType;
-  /** Wijzig de actieve filter */
+  /** Change the active filter */
   onFilterChange: (filter: FilterType) => void;
-  /** Aantal campagnes per type */
+  /** Number of campaigns per type */
   campaignCounts: Record<string, number>;
-  /** Start nieuw wheel (knop alleen zichtbaar in Wheel-tab) */
+  /** Start a new wheel (button only visible in the Wheel tab) */
   onNewWheel: () => void;
 }
 

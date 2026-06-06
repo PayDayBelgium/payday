@@ -21,10 +21,7 @@ import {
   completeLesson,
   LEVEL_CONFIGS,
 } from '../../store/slices/userProgressSlice';
-import {
-  getChaptersForLevel,
-  getLessonById,
-} from '../../config/educationCurriculum';
+import { getChaptersForLevel, getLessonById } from '../../config/educationCurriculum';
 import type {
   UserLevel,
   EducationChapter,

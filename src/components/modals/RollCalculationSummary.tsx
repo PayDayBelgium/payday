@@ -2,28 +2,28 @@ import React from 'react';
 import { formatCurrency } from '../../utils/numberFormat';
 
 interface RollCalculationSummaryProps {
-  /** Label voor de "sluiten"-regel (bijv. "Sluiten (terugkopen):" of "Sluiten spread:"). */
+  /** Label for the "close" line (e.g. "Sluiten (terugkopen):" or "Sluiten spread:"). */
   closeLabel: string;
-  /** Waarde van het sluiten (positief = credit, negatief = debit). */
+  /** Value of the close (positive = credit, negative = debit). */
   closeValue: number;
-  /** Label voor de "openen"-regel. */
+  /** Label for the "open" line. */
   openLabel: string;
-  /** Waarde van het openen (positief = credit, negatief = debit). */
+  /** Value of the open (positive = credit, negative = debit). */
   openValue: number;
-  /** Netto resultaat (credit > 0, debit < 0). */
+  /** Net result (credit > 0, debit < 0). */
   netCredit: number;
-  /** Of het netto resultaat een credit is. */
+  /** Whether the net result is a credit. */
   isCredit: boolean;
-  /** Of het netto resultaat een debit is. */
+  /** Whether the net result is a debit. */
   isDebit: boolean;
-  /** Valuta-symbool voor de bedragen. */
+  /** Currency symbol for the amounts. */
   currencySymbol: string;
 }
 
 /**
- * Herbruikbare credit/debit "Berekening"-summary voor de roll-modals.
- * Toont de sluit- en open-waarden plus het netto credit/debit met
- * bijhorende kleurlogica.
+ * Reusable credit/debit "Berekening" summary for the roll modals.
+ * Shows the close and open values plus the net credit/debit with
+ * matching color logic.
  */
 export const RollCalculationSummary: React.FC<RollCalculationSummaryProps> = ({
   closeLabel,

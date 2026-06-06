@@ -13,10 +13,7 @@ import { formatCurrency } from '../../utils/currencyHelpers';
 import { formatNumber } from '../../utils/numberFormat';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
-import {
-  updatePosition,
-  selectPositions,
-} from '../../store/slices/positionsSlice';
+import { updatePosition, selectPositions } from '../../store/slices/positionsSlice';
 import { updateTickerPrice } from '../../store/slices/tickersSlice';
 import { computeCoveredCallCapacity } from '../../utils/coveredCallEligibility';
 // import { SellStockModal } from '../modals/SellStockModal';
@@ -50,7 +47,7 @@ interface TickerGroup {
   type: 'stock' | 'etf';
   positions: StockPosition[];
   totalShares: number;
-  averageCost: number; // GAK - Gemiddelde aankoopkoers
+  averageCost: number; // GAK - average purchase price
   totalValue: number;
   totalCostBasis: number;
   profitLoss: number;

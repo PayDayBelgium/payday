@@ -1,7 +1,7 @@
 import type { TradingTip, RecommendedBook, VideoTutorial, ExternalResource, LevelResources, UserLevel } from '../types';
 
 // =====================================================
-// BEGINNER LEVEL - Groene Piste
+// BEGINNER LEVEL - Green Slope
 // =====================================================
 
 const beginnerTips: TradingTip[] = [
@@ -137,7 +137,7 @@ const beginnerResources: ExternalResource[] = [
 ];
 
 // =====================================================
-// MEDIOR LEVEL - Blauwe Piste
+// MEDIOR LEVEL - Blue Slope
 // =====================================================
 
 const mediorTips: TradingTip[] = [
@@ -302,7 +302,7 @@ const mediorResources: ExternalResource[] = [
 ];
 
 // =====================================================
-// SENIOR LEVEL - Rode Piste
+// SENIOR LEVEL - Red Slope
 // =====================================================
 
 const seniorTips: TradingTip[] = [
@@ -453,7 +453,7 @@ const seniorResources: ExternalResource[] = [
 ];
 
 // =====================================================
-// EXPERT LEVEL - Zwarte Piste
+// EXPERT LEVEL - Black Slope
 // =====================================================
 
 const expertTips: TradingTip[] = [
@@ -628,7 +628,7 @@ const expertResources: ExternalResource[] = [
 ];
 
 // =====================================================
-// OFF-PISTE LEVEL - Oranje Route (Quant)
+// OFF-PISTE LEVEL - Orange Route (Quant)
 // =====================================================
 
 const offpisteTips: TradingTip[] = [

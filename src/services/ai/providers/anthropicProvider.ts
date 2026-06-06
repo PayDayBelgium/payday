@@ -3,7 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import type { AIMessage, AIStreamEvent, ContentBlock } from '../types';
 import type { AIProvider, StreamChatInput } from './types';
 
-// Vertaalt onze genormaliseerde content naar het Anthropic-formaat.
+// Translates our normalized content into the Anthropic format.
 const toAnthropicContent = (blocks: ContentBlock[]): Anthropic.ContentBlockParam[] =>
   blocks.map((b): Anthropic.ContentBlockParam => {
     switch (b.kind) {
@@ -29,8 +29,8 @@ const toAnthropicContent = (blocks: ContentBlock[]): Anthropic.ContentBlockParam
 const toAnthropicMessages = (messages: AIMessage[]): Anthropic.MessageParam[] =>
   messages.map((m) => ({ role: m.role, content: toAnthropicContent(m.content) }));
 
-// Normaliseert een fout naar een korte code (overbelast/limiet/auth) of een
-// leesbare boodschap. De context vertaalt de codes naar gebruikerstekst.
+// Normalizes an error into a short code (overloaded/limit/auth) or a
+// readable message. The context translates the codes into user-facing text.
 const normalizeError = (err: unknown): string => {
   const raw = err instanceof Error ? err.message : String(err);
   const status = err instanceof Anthropic.APIError ? err.status : undefined;
@@ -41,7 +41,7 @@ const normalizeError = (err: unknown): string => {
   return raw || 'Onbekende fout';
 };
 
-// Wacht, maar breek meteen af als de gebruiker annuleert.
+// Waits, but aborts immediately if the user cancels.
 const sleep = (ms: number, signal: AbortSignal): Promise<void> =>
   new Promise((resolve) => {
     if (signal.aborted) return resolve();
@@ -56,7 +56,7 @@ const sleep = (ms: number, signal: AbortSignal): Promise<void> =>
     );
   });
 
-// Oplopende wachttijden vóór een nieuwe poging bij overbelasting/limiet.
+// Increasing wait times before a retry on overload/rate limit.
 const RETRY_DELAYS_MS = [1000, 2500];
 
 export const createAnthropicProvider = (apiKey: string): AIProvider => {
@@ -65,8 +65,8 @@ export const createAnthropicProvider = (apiKey: string): AIProvider => {
   return {
     id: 'anthropic',
     async *streamChat(input: StreamChatInput): AsyncIterable<AIStreamEvent> {
-      // Maximaal RETRY_DELAYS_MS.length nieuwe pogingen bij overbelasting/limiet,
-      // zolang er nog geen tekst/tool is gestreamd in deze poging.
+      // At most RETRY_DELAYS_MS.length retries on overload/rate limit,
+      // as long as no text/tool has been streamed yet in this attempt.
       for (let attempt = 0; ; attempt++) {
         let yieldedAnything = false;
         try {

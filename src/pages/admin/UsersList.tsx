@@ -107,10 +107,7 @@ export const UsersList: React.FC = () => {
             <tbody className="divide-y divide-surface-line dark:divide-trading-dark-600">
               {filteredUsers.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan={4}
-                    className="px-6 py-8 text-center text-ink-500 dark:text-ink-400"
-                  >
+                  <td colSpan={4} className="px-6 py-8 text-center text-ink-500 dark:text-ink-400">
                     {searchTerm ? 'No users found matching your search' : 'No users yet'}
                   </td>
                 </tr>

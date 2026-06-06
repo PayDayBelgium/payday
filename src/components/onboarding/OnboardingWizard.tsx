@@ -1208,7 +1208,10 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
               {showGlossary && (
                 <div className="mt-3 space-y-2">
                   {currentStepData.glossaryTerms.map((term, index) => (
-                    <div key={index} className="bg-surface dark:bg-trading-dark-700/50 rounded-lg p-3">
+                    <div
+                      key={index}
+                      className="bg-surface dark:bg-trading-dark-700/50 rounded-lg p-3"
+                    >
                       <h4 className="font-semibold text-ink-900 dark:text-white text-sm">
                         {term.term}
                       </h4>

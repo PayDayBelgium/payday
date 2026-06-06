@@ -31,7 +31,7 @@ export const TickerAutocomplete: React.FC<TickerAutocompleteProps> = ({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Stabiele ids voor de WAI-ARIA combobox-structuur
+  // Stable ids for the WAI-ARIA combobox structure
   const listboxId = useId();
   const optionId = (index: number) => `${listboxId}-option-${index}`;
 
@@ -165,9 +165,7 @@ export const TickerAutocomplete: React.FC<TickerAutocompleteProps> = ({
                     <div className="font-semibold text-ink-900 dark:text-white">
                       {suggestion.ticker}
                     </div>
-                    <div className="text-sm text-ink-600 dark:text-ink-400">
-                      {suggestion.name}
-                    </div>
+                    <div className="text-sm text-ink-600 dark:text-ink-400">{suggestion.name}</div>
                   </div>
                 </div>
               </button>

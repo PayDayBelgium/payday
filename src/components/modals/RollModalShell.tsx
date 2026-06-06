@@ -2,32 +2,32 @@ import React from 'react';
 import { X, Redo2, HelpCircle } from 'lucide-react';
 
 interface RollModalShellProps {
-  /** Sluit de modal (gebruikt door backdrop, X-knop). */
+  /** Closes the modal (used by backdrop, X button). */
   onClose: () => void;
-  /** Titel in de header (bijv. "Roll Optie"). */
+  /** Title in the header (e.g. "Roll Optie"). */
   title: string;
-  /** Subtitel onder de titel; mag JSX bevatten voor ticker/strike-opmaak. */
+  /** Subtitle below the title; may contain JSX for ticker/strike formatting. */
   subtitle: React.ReactNode;
-  /** Tailwind-classes voor de achtergrond van het icoon-vlak. */
+  /** Tailwind classes for the background of the icon area. */
   iconWrapperClassName: string;
-  /** Tailwind-classes voor de kleur van het Redo2-icoon. */
+  /** Tailwind classes for the color of the Redo2 icon. */
   iconClassName: string;
-  /** Max-width class van de card (bijv. "max-w-2xl"). */
+  /** Max-width class of the card (e.g. "max-w-2xl"). */
   maxWidthClassName: string;
-  /** Of de help-toggle getoond wordt. */
+  /** Whether the help toggle is shown. */
   showHelpToggle?: boolean;
-  /** Callback voor de help-toggle. */
+  /** Callback for the help toggle. */
   onToggleHelp?: () => void;
-  /** Title-attribuut (tooltip) voor de help-toggle. */
+  /** Title attribute (tooltip) for the help toggle. */
   helpToggleTitle?: string;
-  /** Inhoud van de modal (help-sectie + form). */
+  /** Content of the modal (help section + form). */
   children: React.ReactNode;
 }
 
 /**
- * Herbruikbare shell voor de roll-modals: backdrop + card + header.
- * De kleuren, teksten en max-width worden volledig via props geparametriseerd
- * zodat elke modal zijn eigen uiterlijk behoudt.
+ * Reusable shell for the roll modals: backdrop + card + header.
+ * The colors, texts and max-width are fully parameterized via props
+ * so each modal keeps its own appearance.
  */
 export const RollModalShell: React.FC<RollModalShellProps> = ({
   onClose,

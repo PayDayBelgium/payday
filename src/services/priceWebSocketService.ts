@@ -23,7 +23,7 @@ const getStore = () => {
   return storeInstance;
 };
 
-// Message types van de .NET backend
+// Message types from the .NET backend
 export interface TickerPriceMessage {
   type: 'ticker_price';
   symbol: string;
@@ -132,7 +132,7 @@ class PriceWebSocketService {
 
   updateConfig(newConfig: Partial<WebSocketConfig>): void {
     this.config = { ...this.config, ...newConfig };
-    // Sla op in localStorage
+    // Save to localStorage
     localStorage.setItem('priceWebSocketConfig', JSON.stringify(this.config));
   }
 
@@ -354,7 +354,7 @@ class PriceWebSocketService {
   private handleMessage(message: IncomingMessage, raw: string): void {
     this.addLog('incoming', message.type, this.formatMessageForLog(message), raw);
 
-    // Dispatch naar Redux gebaseerd op message type
+    // Dispatch to Redux based on message type
     switch (message.type) {
       case 'ticker_price':
         this.handleTickerPrice(message as TickerPriceMessage);
@@ -363,10 +363,10 @@ class PriceWebSocketService {
         this.handleOptionPrice(message as OptionPriceMessage);
         break;
       case 'connection_status':
-        // Alleen loggen, status is al afgehandeld
+        // Only log, status is already handled
         break;
       case 'error':
-        // Log is al toegevoegd
+        // Log has already been added
         break;
     }
 

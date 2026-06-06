@@ -8,7 +8,7 @@ import { isFeatureAvailable, selectUnlockedLevels } from '../../store/slices/use
 import { PostCard, Composer, useTradeIdeaWizard } from '../../components/community';
 import type { CommunityAuthor, CommunityChannel } from '../../types';
 
-// De ingelogde gebruiker als community-auteur (mock; geen echte profielen).
+// The logged-in user as the community author (mock; no real profiles).
 const ME: CommunityAuthor = { name: 'Jij', initials: 'JIJ', color: '#2F6CAE', level: 'beginner' };
 
 const CHANNELS: { id: CommunityChannel; label: string }[] = [

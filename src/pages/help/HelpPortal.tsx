@@ -417,9 +417,7 @@ export const HelpPortal: React.FC = () => {
 
       {/* Need More Help */}
       <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-5 text-center">
-        <h2 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
-          Need More Help?
-        </h2>
+        <h2 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">Need More Help?</h2>
         <p className="text-sm text-ink-600 dark:text-ink-400 mb-4">
           Have a question that isn't covered here? We're here to help!
         </p>

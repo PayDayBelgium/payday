@@ -119,9 +119,7 @@ export const LEAPSStrategy: React.FC = () => {
               <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
                 <p className="text-sm text-ink-600 dark:text-ink-400">Beschikbaar voor Calls</p>
                 <p className="text-2xl font-bold text-primary-700 dark:text-primary-300 mt-1">0</p>
-                <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
-                  Niet gedekt met calls
-                </p>
+                <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">Niet gedekt met calls</p>
               </div>
             </div>
 

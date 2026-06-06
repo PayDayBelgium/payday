@@ -51,9 +51,7 @@ export const StrategyRules: React.FC<StrategyRulesProps> = ({
             <div className="inline-flex p-3 rounded-full mb-3 bg-primary-50 dark:bg-primary-900/30">
               <AlertCircle className="w-5 h-5 text-primary-700 dark:text-primary-300" />
             </div>
-            <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
-              Geen regels
-            </h3>
+            <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">Geen regels</h3>
             <p className="text-ink-600 dark:text-ink-400 mb-4">
               Voeg regels toe om automatisch waarschuwingen en kansen te ontvangen
             </p>

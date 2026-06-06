@@ -34,9 +34,7 @@ export const AccountSettings: React.FC = () => {
     <div className="max-w-4xl">
       {/* Account Info */}
       <div className="bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 p-6 mb-6">
-        <h2 className="text-xl font-bold text-ink-900 dark:text-white mb-4">
-          Account information
-        </h2>
+        <h2 className="text-xl font-bold text-ink-900 dark:text-white mb-4">Account information</h2>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-sm text-ink-600 dark:text-ink-400">Username:</span>

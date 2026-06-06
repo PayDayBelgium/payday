@@ -46,7 +46,7 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
         const currentPremium = Math.abs(option.currentValue / (option.contracts * 100));
         setCurrentPrice(formatNumberInput(currentPremium, 2));
       } else if (position.type === 'stock' || position.type === 'etf') {
-        // Voor aandelen/ETF's: zet de huidige aandelenprijs
+        // For stocks/ETFs: set the current share price
         setCurrentPrice(formatNumberInput(position.currentPrice, 2));
       }
     }
@@ -75,7 +75,7 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
             : -(parsedPrice * option.contracts * 100);
       }
     } else if ((position.type === 'stock' || position.type === 'etf') && currentPrice) {
-      // Als het een aandeel/ETF is en de huidige prijs is bijgewerkt, werk currentPrice en currentValue bij
+      // If it's a stock/ETF and the current price was updated, update currentPrice and currentValue
       const parsedPrice = parseNumberInput(currentPrice);
       if (parsedPrice > 0) {
         const stock = updatedPosition as StockPosition;
@@ -426,9 +426,7 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
                           <p className="text-xl font-bold text-ink-900 dark:text-white">
                             {formatCurrency(stock.purchasePrice, currencySymbol)}
                           </p>
-                          <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
-                            per aandeel
-                          </p>
+                          <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">per aandeel</p>
                         </div>
 
                         <div className="bg-surface dark:bg-trading-dark-700/50 rounded-lg p-4">
@@ -506,9 +504,7 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
                       {/* Additional Info */}
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div className="bg-surface dark:bg-trading-dark-700/50 rounded-lg p-3">
-                          <p className="text-ink-600 dark:text-ink-400 mb-1">
-                            Opties Beschikbaar
-                          </p>
+                          <p className="text-ink-600 dark:text-ink-400 mb-1">Opties Beschikbaar</p>
                           <p className="font-semibold text-ink-900 dark:text-white">
                             {stock.optionsSupported ? 'Ja' : 'Nee'}
                           </p>

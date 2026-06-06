@@ -224,7 +224,10 @@ export const PortfolioValueChart: React.FC<PortfolioValueChartProps> = ({
             </thead>
             <tbody className="divide-y divide-surface-line dark:divide-trading-dark-600">
               {chartData.map((row) => (
-                <tr key={row.fullDate} className="hover:bg-surface dark:hover:bg-trading-dark-700/50">
+                <tr
+                  key={row.fullDate}
+                  className="hover:bg-surface dark:hover:bg-trading-dark-700/50"
+                >
                   <td className="px-6 py-3 whitespace-nowrap text-sm text-ink-900 dark:text-white">
                     {new Date(row.fullDate).toLocaleDateString('nl-NL', {
                       day: '2-digit',

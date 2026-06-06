@@ -760,9 +760,7 @@ export const RulesManagement: React.FC = () => {
                       Systeem
                     </span>
                   </div>
-                  <p className="text-sm text-ink-600 dark:text-ink-400 mb-2">
-                    {rule.description}
-                  </p>
+                  <p className="text-sm text-ink-600 dark:text-ink-400 mb-2">{rule.description}</p>
                   <div className="flex items-center gap-2 text-xs text-ink-500 dark:text-ink-400">
                     <span className="px-2 py-1 bg-surface-muted dark:bg-trading-dark-600 rounded">
                       {getStrategyTypeName(rule.strategyType)}

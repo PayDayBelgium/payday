@@ -5,26 +5,26 @@ export interface AIConfig {
   provider: AIProviderId;
   model: string;
   keys: Partial<Record<AIProviderId, string>>;
-  // Wanneer false bewaren we de API-key niet persistent in localStorage maar
-  // alleen voor de huidige sessie (sessionStorage). Optioneel voor
-  // backward-compat: ontbreekt de vlag, dan geldt het standaardgedrag (true).
+  // When false, we do not persist the API key in localStorage but
+  // only for the current session (sessionStorage). Optional for
+  // backward compat: if the flag is absent, the default behavior applies (true).
   persistKey?: boolean;
 }
 
-// Standaardmodel per provider. Anthropic: het meest capabele model.
+// Default model per provider. Anthropic: the most capable model.
 export const DEFAULT_MODELS: Record<AIProviderId, string> = {
   anthropic: 'claude-opus-4-8',
-  openai: 'gpt-4o', // gebruikt vanaf Fase F
-  gemini: 'gemini-2.5-pro', // gebruikt vanaf Fase F
+  openai: 'gpt-4o', // used from Phase F onward
+  gemini: 'gemini-2.5-pro', // used from Phase F onward
 };
 
 const STORAGE_KEY = 'payday-ai-config';
-// Aparte sessie-opslag voor de API-key wanneer de gebruiker kiest om die niet
-// persistent te bewaren. Wordt automatisch gewist zodra de tab sluit.
+// Separate session storage for the API key when the user chooses not to
+// persist it. Automatically cleared as soon as the tab closes.
 const SESSION_KEY_STORAGE = 'payday-ai-session-key';
 
-// PURE: backward-compat default. Een config zonder expliciete vlag bewaart
-// de key persistent (het bestaande standaardgedrag).
+// PURE: backward-compat default. A config without an explicit flag persists
+// the key (the existing default behavior).
 const isPersistKey = (cfg: AIConfig): boolean => cfg.persistKey !== false;
 
 const defaultConfig = (): AIConfig => ({
@@ -33,9 +33,9 @@ const defaultConfig = (): AIConfig => ({
   keys: {},
 });
 
-// PURE: tolerant parsen. Valt terug op de default bij null/ongeldige JSON.
-// persistKey wordt alleen overgenomen wanneer aanwezig, zodat de serialize/parse
-// round-trip identiek blijft voor configs zonder die vlag (backward-compat).
+// PURE: tolerant parsing. Falls back to the default on null/invalid JSON.
+// persistKey is only carried over when present, so the serialize/parse
+// round-trip stays identical for configs without that flag (backward compat).
 export const parseAIConfig = (raw: string | null): AIConfig => {
   if (!raw) return defaultConfig();
   try {
@@ -58,7 +58,7 @@ export const parseAIConfig = (raw: string | null): AIConfig => {
 // PURE
 export const serializeAIConfig = (cfg: AIConfig): string => JSON.stringify(cfg);
 
-// PURE: nieuwe config met (of zonder, bij lege string) key voor een provider.
+// PURE: new config with (or without, for an empty string) a key for a provider.
 export const withApiKey = (cfg: AIConfig, provider: AIProviderId, key: string): AIConfig => {
   const keys = { ...cfg.keys };
   if (key.trim() === '') {
@@ -73,13 +73,13 @@ export const withApiKey = (cfg: AIConfig, provider: AIProviderId, key: string): 
 export const isProviderConfigured = (cfg: AIConfig, provider: AIProviderId): boolean =>
   (cfg.keys[provider] ?? '').trim().length > 0;
 
-// Storage-wrappers (niet in unit-tests gebruikt).
-// Wanneer persistKey false is, staat de Anthropic-key in sessionStorage en de
-// overige config (provider, model, persistKey-vlag) in localStorage.
+// Storage wrappers (not used in unit tests).
+// When persistKey is false, the Anthropic key lives in sessionStorage and the
+// rest of the config (provider, model, persistKey flag) in localStorage.
 export const loadAIConfig = (): AIConfig => {
   const cfg = parseAIConfig(localStorage.getItem(STORAGE_KEY));
   if (!isPersistKey(cfg)) {
-    // Key uit de sessie-opslag bovenop de config leggen (kan ontbreken na sluiten tab).
+    // Overlay the key from session storage onto the config (may be absent after closing the tab).
     const sessionKey = sessionStorage.getItem(SESSION_KEY_STORAGE);
     const keys = { ...cfg.keys };
     if (sessionKey && sessionKey.trim() !== '') {
@@ -94,12 +94,12 @@ export const loadAIConfig = (): AIConfig => {
 
 export const saveAIConfig = (cfg: AIConfig): void => {
   if (isPersistKey(cfg)) {
-    // Standaardgedrag: alles persistent, geen sessie-key meer nodig.
+    // Default behavior: everything persisted, no session key needed anymore.
     sessionStorage.removeItem(SESSION_KEY_STORAGE);
     localStorage.setItem(STORAGE_KEY, serializeAIConfig(cfg));
     return;
   }
-  // Alleen-deze-sessie: Anthropic-key naar sessionStorage, rest naar localStorage.
+  // This-session-only: Anthropic key to sessionStorage, the rest to localStorage.
   const sessionKey = cfg.keys.anthropic ?? '';
   if (sessionKey.trim() !== '') {
     sessionStorage.setItem(SESSION_KEY_STORAGE, sessionKey);
