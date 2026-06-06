@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { usePageTitle } from '../../contexts/PageTitleContext';
 import { useNavigation } from '../../contexts/NavigationContext';
 import {
@@ -23,6 +24,7 @@ import type { CurrencyType } from '../../types';
 
 export const CoveredCallsStrategy: React.FC = () => {
   const { portfolio } = useParams<{ portfolio: string }>();
+  const { t } = useTranslation();
   const { setPageTitle } = usePageTitle();
   const navigate = useNavigate();
   const { pushNavigation } = useNavigation();
@@ -52,8 +54,8 @@ export const CoveredCallsStrategy: React.FC = () => {
   };
 
   useEffect(() => {
-    setPageTitle('Covered Calls', `Genereer extra inkomen voor ${portfolio}`);
-  }, [setPageTitle, portfolio]);
+    setPageTitle('Covered Calls', t('stratPages.ccSubtitle', { portfolio }));
+  }, [setPageTitle, portfolio, t]);
 
   return (
     <>
@@ -69,7 +71,7 @@ export const CoveredCallsStrategy: React.FC = () => {
                   : 'text-ink-600 dark:text-ink-400 hover:text-ink-900 dark:hover:text-white'
               }`}
             >
-              Posities
+              {t('stratPages.tabPositions')}
             </button>
             <button
               onClick={() => setActiveTab('rules')}
@@ -80,7 +82,7 @@ export const CoveredCallsStrategy: React.FC = () => {
               }`}
             >
               <ListTodo className="w-4 h-4" />
-              Regels
+              {t('stratPages.tabRules')}
               {strategyRules.length > 0 && (
                 <span className="px-2 py-0.5 rounded-full text-xs bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
                   {strategyRules.length}
@@ -96,7 +98,7 @@ export const CoveredCallsStrategy: React.FC = () => {
               }`}
             >
               <Info className="w-4 h-4" />
-              Informatie
+              {t('stratPages.tabInfo')}
             </button>
           </div>
           {activeTab === 'rules' && (
@@ -105,7 +107,7 @@ export const CoveredCallsStrategy: React.FC = () => {
               className="flex items-center gap-2 px-3 py-1.5 bg-primary-700 hover:bg-primary-800 text-white rounded-lg text-sm font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
-              Regel Toevoegen
+              {t('stratPages.addRule')}
             </button>
           )}
         </div>
@@ -124,33 +126,34 @@ export const CoveredCallsStrategy: React.FC = () => {
                   </div>
                   <div className="flex-1">
                     <h4 className="font-semibold text-ink-900 dark:text-white mb-1">
-                      Wat is een Covered Call?
+                      {t('stratPages.ccBannerTitle')}
                     </h4>
                     <p className="text-sm text-ink-700 dark:text-ink-300 mb-2">
-                      Met een covered call ga je een contract aan waarbij je{' '}
-                      <strong>bereid bent om je aandelen te verkopen</strong> tegen een bepaalde
-                      prijs (strike) vóór een bepaalde datum (expiratie). In ruil hiervoor ontvang
-                      je direct een <strong>premie</strong>.
+                      {t('stratPages.ccBannerDesc1')}
+                      <strong>{t('stratPages.ccBannerWilling')}</strong>
+                      {t('stratPages.ccBannerDesc2')}
+                      <strong>{t('stratPages.ccBannerPremium')}</strong>
+                      {t('stratPages.ccBannerDesc3')}
                     </p>
                     <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-ink-600 dark:text-ink-400">
                       <span className="flex items-center gap-1.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-positive-500"></span>
-                        Profiteer van prijsstijging tot de strike
+                        {t('stratPages.ccBannerBenefit1')}
                       </span>
                       <span className="flex items-center gap-1.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-positive-500"></span>
-                        Ontvang premie als extra inkomen
+                        {t('stratPages.ccBannerBenefit2')}
                       </span>
                       <span className="flex items-center gap-1.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-positive-500"></span>
-                        Herhaal wekelijks of maandelijks
+                        {t('stratPages.ccBannerBenefit3')}
                       </span>
                     </div>
                   </div>
                   <button
                     onClick={dismissInfoBanner}
                     className="flex-shrink-0 p-1 text-ink-400 hover:text-ink-600 dark:hover:text-ink-300 transition-colors"
-                    title="Niet meer tonen"
+                    title={t('stratPages.ccDontShowAgain')}
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -182,41 +185,42 @@ export const CoveredCallsStrategy: React.FC = () => {
                 <div className="flex-1 space-y-6">
                   <div>
                     <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
-                      Hoe werkt een Covered Call?
+                      {t('stratPages.ccHowTitle')}
                     </h3>
                     <p className="text-sm text-ink-700 dark:text-ink-300 mb-3">
-                      Een Covered Call is een strategie waarbij je een call optie{' '}
-                      <strong>schrijft (verkoopt)</strong> op aandelen, ETFs of LEAPS die je al
-                      bezit. Je ontvangt direct een <strong>premie</strong> in ruil voor het recht
-                      dat iemand anders je aandelen kan kopen tegen de strike price.
+                      {t('stratPages.ccHowIntro1')}
+                      <strong>{t('stratPages.ccHowIntroWrite')}</strong>
+                      {t('stratPages.ccHowIntro2')}
+                      <strong>{t('stratPages.ccHowIntroPremium')}</strong>
+                      {t('stratPages.ccHowIntro3')}
                     </p>
                     <div className="space-y-2">
                       <div className="flex items-start gap-2">
                         <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                         <p className="text-sm text-ink-700 dark:text-ink-300">
-                          <strong>Op Aandelen/ETFs:</strong> Schrijf calls op je bestaande posities
-                          voor extra inkomen
+                          <strong>{t('stratPages.ccOnStocksLabel')}</strong>
+                          {t('stratPages.ccOnStocks')}
                         </p>
                       </div>
                       <div className="flex items-start gap-2">
                         <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                         <p className="text-sm text-ink-700 dark:text-ink-300">
-                          <strong>Op LEAPS:</strong> Schrijf calls op je synthetische aandelen (ook
-                          wel "Poor Man's Covered Call" genoemd)
+                          <strong>{t('stratPages.ccOnLeapsLabel')}</strong>
+                          {t('stratPages.ccOnLeaps')}
                         </p>
                       </div>
                       <div className="flex items-start gap-2">
                         <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                         <p className="text-sm text-ink-700 dark:text-ink-300">
-                          <strong>Voordeel:</strong> Regelmatig premie-inkomen, typisch maandelijks
-                          of wekelijks
+                          <strong>{t('stratPages.ccAdvantageLabel')}</strong>
+                          {t('stratPages.ccAdvantage')}
                         </p>
                       </div>
                       <div className="flex items-start gap-2">
                         <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                         <p className="text-sm text-ink-700 dark:text-ink-300">
-                          <strong>Nadeel:</strong> Je winst is gelimiteerd tot de strike price (+
-                          premie)
+                          <strong>{t('stratPages.ccDisadvantageLabel')}</strong>
+                          {t('stratPages.ccDisadvantage')}
                         </p>
                       </div>
                     </div>
@@ -228,16 +232,16 @@ export const CoveredCallsStrategy: React.FC = () => {
                       <div className="flex items-center gap-3 mb-3">
                         <TrendingUp className="w-5 h-5 text-primary-700 dark:text-primary-300" />
                         <h4 className="font-semibold text-ink-900 dark:text-white">
-                          Covered Calls op Aandelen/ETFs
+                          {t('stratPages.ccOnStocksCardTitle')}
                         </h4>
                       </div>
                       <p className="text-sm text-ink-700 dark:text-ink-300 mb-2">
-                        De traditionele methode: je bezit 100 aandelen en schrijft 1 call contract.
+                        {t('stratPages.ccOnStocksCardDesc')}
                       </p>
                       <div className="text-xs text-ink-600 dark:text-ink-400 space-y-1">
-                        <p>✓ Geen leverage risico</p>
-                        <p>✓ Dividend inkomsten blijven</p>
-                        <p>✓ Volle ownership rechten</p>
+                        <p>{t('stratPages.ccOnStocksBullet1')}</p>
+                        <p>{t('stratPages.ccOnStocksBullet2')}</p>
+                        <p>{t('stratPages.ccOnStocksBullet3')}</p>
                       </div>
                     </div>
 
@@ -245,17 +249,16 @@ export const CoveredCallsStrategy: React.FC = () => {
                       <div className="flex items-center gap-3 mb-3">
                         <DollarSign className="w-5 h-5 text-primary-700 dark:text-primary-300" />
                         <h4 className="font-semibold text-ink-900 dark:text-white">
-                          Covered Calls op LEAPS
+                          {t('stratPages.ccOnLeapsCardTitle')}
                         </h4>
                       </div>
                       <p className="text-sm text-ink-700 dark:text-ink-300 mb-2">
-                        Ook wel Poor Man's Covered Call genoemd: je gebruikt een LEAP als onderpand
-                        in plaats van aandelen.
+                        {t('stratPages.ccOnLeapsCardDesc')}
                       </p>
                       <div className="text-xs text-ink-600 dark:text-ink-400 space-y-1">
-                        <p>✓ Minder kapitaal nodig</p>
-                        <p>✓ Leverage voordeel</p>
-                        <p>✗ Theta decay op LEAP</p>
+                        <p>{t('stratPages.ccOnLeapsBullet1')}</p>
+                        <p>{t('stratPages.ccOnLeapsBullet2')}</p>
+                        <p>{t('stratPages.ccOnLeapsBullet3')}</p>
                       </div>
                     </div>
                   </div>
@@ -263,16 +266,16 @@ export const CoveredCallsStrategy: React.FC = () => {
                   {/* Prerequisites */}
                   <div className="bg-caution-50 dark:bg-caution-600/15 border border-caution-500/30 dark:border-caution-500/30 rounded-lg p-4">
                     <h4 className="font-semibold text-ink-900 dark:text-white mb-3">
-                      Voordat je begint
+                      {t('stratPages.ccBeforeYouStart')}
                     </h4>
                     <div className="space-y-2 text-sm text-ink-700 dark:text-ink-300">
                       <div className="flex items-start gap-2">
                         <ArrowRight className="w-4 h-4 text-caution-600 dark:text-caution-500 mt-0.5 flex-shrink-0" />
-                        <p>Je hebt minstens 100 aandelen nodig voor 1 covered call op aandelen</p>
+                        <p>{t('stratPages.ccPrereq1')}</p>
                       </div>
                       <div className="flex items-start gap-2">
                         <ArrowRight className="w-4 h-4 text-caution-600 dark:text-caution-500 mt-0.5 flex-shrink-0" />
-                        <p>Of je hebt 1 LEAP nodig voor een Poor Man's Covered Call</p>
+                        <p>{t('stratPages.ccPrereq2')}</p>
                       </div>
                     </div>
                   </div>
@@ -285,22 +288,27 @@ export const CoveredCallsStrategy: React.FC = () => {
               <div className="flex items-start gap-3 mb-4">
                 <GraduationCap className="w-5 h-5 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                 <h3 className="text-lg font-semibold text-ink-900 dark:text-white">
-                  Volgende Stappen
+                  {t('stratPages.nextSteps')}
                 </h3>
               </div>
               <div className="space-y-3">
                 <button
                   onClick={() => {
-                    pushNavigation(`/portfolio/${portfolio}/stocks-etfs`, 'Aandelen & ETFs');
+                    pushNavigation(
+                      `/portfolio/${portfolio}/stocks-etfs`,
+                      t('stratPages.navStocksEtfs')
+                    );
                     navigate(`/portfolio/${portfolio}/stocks-etfs`);
                   }}
                   className="w-full text-left p-4 bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 hover:border-primary-300 dark:hover:border-primary-500 transition-colors"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1 text-left">
-                      <p className="font-medium text-ink-900 dark:text-white">Aandelen & ETFs</p>
+                      <p className="font-medium text-ink-900 dark:text-white">
+                        {t('stratPages.navStocksEtfs')}
+                      </p>
                       <p className="text-sm text-ink-600 dark:text-ink-400">
-                        Beheer je onderliggende posities voor covered calls
+                        {t('stratPages.ccLinkStocksDesc')}
                       </p>
                     </div>
                     <ArrowRight className="w-5 h-5 text-ink-400 flex-shrink-0 ml-3" />
@@ -308,16 +316,18 @@ export const CoveredCallsStrategy: React.FC = () => {
                 </button>
                 <button
                   onClick={() => {
-                    pushNavigation(`/portfolio/${portfolio}/leaps`, 'LEAPS');
+                    pushNavigation(`/portfolio/${portfolio}/leaps`, t('stratPages.navLeaps'));
                     navigate(`/portfolio/${portfolio}/leaps`);
                   }}
                   className="w-full text-left p-4 bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 hover:border-primary-300 dark:hover:border-primary-500 transition-colors"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1 text-left">
-                      <p className="font-medium text-ink-900 dark:text-white">LEAPS</p>
+                      <p className="font-medium text-ink-900 dark:text-white">
+                        {t('stratPages.navLeaps')}
+                      </p>
                       <p className="text-sm text-ink-600 dark:text-ink-400">
-                        Bekijk je LEAPS posities voor Poor Man's Covered Call strategie
+                        {t('stratPages.ccLinkLeapsDesc')}
                       </p>
                     </div>
                     <ArrowRight className="w-5 h-5 text-ink-400 flex-shrink-0 ml-3" />
@@ -325,16 +335,21 @@ export const CoveredCallsStrategy: React.FC = () => {
                 </button>
                 <button
                   onClick={() => {
-                    pushNavigation(`/portfolio/${portfolio}/csp`, 'Cash Secured Puts');
+                    pushNavigation(
+                      `/portfolio/${portfolio}/csp`,
+                      t('stratPages.navCashSecuredPuts')
+                    );
                     navigate(`/portfolio/${portfolio}/csp`);
                   }}
                   className="w-full text-left p-4 bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 hover:border-primary-300 dark:hover:border-primary-500 transition-colors"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1 text-left">
-                      <p className="font-medium text-ink-900 dark:text-white">Cash Secured Puts</p>
+                      <p className="font-medium text-ink-900 dark:text-white">
+                        {t('stratPages.navCashSecuredPuts')}
+                      </p>
                       <p className="text-sm text-ink-600 dark:text-ink-400">
-                        Krijg premies om aandelen te kopen aan jouw gewenste prijs
+                        {t('stratPages.ccLinkCspDesc')}
                       </p>
                     </div>
                     <ArrowRight className="w-5 h-5 text-ink-400 flex-shrink-0 ml-3" />

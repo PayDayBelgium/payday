@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AlertCircle, CheckCircle, Target, X } from 'lucide-react';
 import type { StockPosition, PriceAlert, Portfolio } from '../../types';
 import { formatCurrency } from '../../utils/currencyHelpers';
@@ -33,6 +34,7 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
   onDismissStrategyAlert,
   canWriteCoveredCallsOverride,
 }) => {
+  const { t } = useTranslation();
   const [confirmDismiss, setConfirmDismiss] = useState<{
     isOpen: boolean;
     alertId: string | null;
@@ -161,7 +163,7 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
           {unreadAlerts.length > 0 && (
             <div
               className="flex items-center gap-1 px-2 py-1 bg-negative-50 dark:bg-negative-700/25 text-negative-700 dark:text-negative-500 rounded-full text-xs font-medium"
-              title="Prijs waarschuwingen - De prijs is significant veranderd"
+              title={t('widgetsA.priceAlertsTitle')}
             >
               <AlertCircle className="w-3.5 h-3.5" />
               {unreadAlerts.length}
@@ -172,7 +174,7 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
           {ruleAlerts.length > 0 && (
             <div
               className="flex items-center gap-1 px-2 py-1 bg-caution-50 dark:bg-caution-600/25 text-caution-600 dark:text-caution-500 rounded-full text-xs font-medium"
-              title="Waarschuwingen - Regels die aandacht vereisen"
+              title={t('widgetsA.ruleAlertsTitle')}
             >
               <AlertCircle className="w-3.5 h-3.5" />
               {ruleAlerts.length}
@@ -183,7 +185,7 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
           {ruleOpportunities.length > 0 && (
             <div
               className="flex items-center gap-1 px-2 py-1 bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 rounded-full text-xs font-medium"
-              title="Kansen - Mogelijkheden om te handelen"
+              title={t('widgetsA.ruleOpportunitiesTitle')}
             >
               <Target className="w-3.5 h-3.5" />
               {ruleOpportunities.length}
@@ -194,7 +196,7 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
           {canWriteCoveredCalls && (
             <div
               className="flex items-center gap-1 px-2 py-1 bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 rounded-full text-xs font-medium"
-              title="Covered Calls mogelijk - Voldoende aandelen om covered calls te schrijven"
+              title={t('widgetsA.coveredCallPossibleTitle')}
             >
               <CheckCircle className="w-3.5 h-3.5" />
               Covered Call
@@ -245,7 +247,7 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
                   <button
                     onClick={(e) => handleDismissAlert(e, alert.id, alert.message)}
                     className="absolute top-1.5 right-1.5 p-0.5 hover:bg-surface-muted dark:hover:bg-trading-dark-600 rounded transition-colors"
-                    title="Sluiten"
+                    title={t('widgetsA.close')}
                   >
                     <X className="w-3 h-3 text-ink-400 hover:text-ink-600 dark:hover:text-ink-300" />
                   </button>
@@ -268,10 +270,10 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
           isOpen={confirmDismiss.isOpen}
           onClose={() => setConfirmDismiss({ isOpen: false, alertId: null, message: '' })}
           onConfirm={confirmDismissAlert}
-          title="Alert Verwijderen"
-          message={`Weet je zeker dat je deze alert wilt sluiten?\n\n"${confirmDismiss.message}"\n\nDeze komt niet meer terug.`}
-          confirmText="Verwijderen"
-          cancelText="Annuleren"
+          title={t('widgetsA.deleteAlertTitle')}
+          message={t('widgetsA.deleteAlertMessage', { message: confirmDismiss.message })}
+          confirmText={t('widgetsA.delete')}
+          cancelText={t('widgetsA.cancel')}
           variant="danger"
         />
       )}

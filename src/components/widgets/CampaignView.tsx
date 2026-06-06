@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TrendingUp, Layers, Zap, X as XIcon, RefreshCw, Trash2 } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
@@ -57,6 +58,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
   initialFilter = 'covered-call',
   lockFilter = false,
 }) => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const currencySymbol = getCurrencySymbol(currency);
   const positions = useAppSelector((state) => state.positions.positions);
@@ -556,20 +558,19 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                 <TrendingUp className="w-8 h-8 text-primary-700 dark:text-primary-300" />
               </div>
               <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
-                Geen Covered Calls
+                {t('widgetsA.noCoveredCalls')}
               </h3>
               <p className="text-sm text-ink-500 dark:text-ink-400 mb-4">
-                Schrijf calls op aandelen die je bezit en ontvang premie. Je aandelen dienen als
-                onderpand.
+                {t('widgetsA.noCoveredCallsDesc')}
               </p>
               <p className="text-xs text-ink-400 dark:text-ink-500 mb-4 italic">
-                Risico: Je loopt potentiële winst mis als het aandeel sterk stijgt boven je strike.
+                {t('widgetsA.noCoveredCallsRisk')}
               </p>
               <button
                 onClick={() => setShowStockWizard(true)}
                 className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-700 hover:bg-primary-800 dark:bg-primary-500 dark:hover:bg-primary-700 rounded-lg transition-colors"
               >
-                Koop Aandelen
+                {t('widgetsA.buyShares')}
               </button>
             </div>
           </div>
@@ -582,21 +583,19 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                 <Layers className="w-8 h-8 text-ink-600 dark:text-ink-300" />
               </div>
               <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
-                Geen Poor Man's Covered Calls
+                {t('widgetsA.noPmcc')}
               </h3>
               <p className="text-sm text-ink-500 dark:text-ink-400 mb-4">
-                Koop een LEAPS call en schrijf korte termijn calls. De LEAPS fungeert als goedkoper
-                onderpand i.p.v. aandelen.
+                {t('widgetsA.noPmccDesc')}
               </p>
               <p className="text-xs text-ink-400 dark:text-ink-500 mb-4 italic">
-                Risico: Je LEAPS kan waardeloos aflopen. Beperkt verlies = LEAPS kostprijs -
-                ontvangen premies.
+                {t('widgetsA.noPmccRisk')}
               </p>
               <button
                 onClick={() => setShowCallWizard(true)}
                 className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-ink-700 hover:bg-purple-700 dark:bg-ink-600 dark:hover:bg-ink-700 rounded-lg transition-colors"
               >
-                Koop LEAPS
+                {t('widgetsA.buyLeaps')}
               </button>
             </div>
           </div>
@@ -609,21 +608,19 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                 <Zap className="w-8 h-8 text-caution-600 dark:text-caution-500" />
               </div>
               <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
-                Geen KaChing Campagnes
+                {t('widgetsA.noKaching')}
               </h3>
               <p className="text-sm text-ink-500 dark:text-ink-400 mb-4">
-                Koop een protective put en schrijf wekelijks puts met hogere strikes. Je long put
-                beschermt tegen grote dalingen.
+                {t('widgetsA.noKachingDesc')}
               </p>
               <p className="text-xs text-ink-400 dark:text-ink-500 mb-4 italic">
-                Risico: De spread tussen je protective put en geschreven put × 100. Beperkt maar
-                gedefinieerd verlies.
+                {t('widgetsA.noKachingRisk')}
               </p>
               <button
                 onClick={() => setShowPutWizard(true)}
                 className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-caution-600 hover:bg-caution-600 dark:bg-caution-500 dark:hover:bg-caution-600 rounded-lg transition-colors"
               >
-                Koop Protective Put
+                {t('widgetsA.buyProtectivePut')}
               </button>
             </div>
           </div>
@@ -636,21 +633,19 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                 <RefreshCw className="w-8 h-8 text-teal-600 dark:text-teal-400" />
               </div>
               <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
-                Geen wheel campagnes
+                {t('widgetsA.noWheel')}
               </h3>
               <p className="text-sm text-ink-500 dark:text-ink-400 mb-4">
-                Verkoop Cash Secured Puts tot assignment, schrijf dan covered calls tot verkoop, en
-                herhaal. Continu premie ontvangen.
+                {t('widgetsA.noWheelDesc')}
               </p>
               <p className="text-xs text-ink-400 dark:text-ink-500 mb-4 italic">
-                Risico: Je koopt aandelen bij assignment. Bij grote daling zit je vast met
-                verliesgevende positie.
+                {t('widgetsA.noWheelRisk')}
               </p>
               <button
                 onClick={() => setShowNewWheelModal(true)}
                 className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 dark:bg-teal-500 dark:hover:bg-teal-600 rounded-lg transition-colors"
               >
-                Start wheel
+                {t('widgetsA.startWheel')}
               </button>
             </div>
           </div>
@@ -821,7 +816,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                     <Trash2 className="w-5 h-5 text-negative-600 dark:text-negative-500" />
                   </div>
                   <h2 className="text-lg font-semibold text-ink-900 dark:text-white">
-                    Wheel Verwijderen
+                    {t('widgetsA.deleteWheelTitle')}
                   </h2>
                 </div>
                 <button
@@ -835,13 +830,12 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               {/* Content */}
               <div className="p-4 space-y-4">
                 <p className="text-sm text-ink-600 dark:text-ink-400">
-                  Weet je zeker dat je deze Wheel wilt verwijderen?
+                  {t('widgetsA.deleteWheelConfirm')}
                 </p>
                 <div className="p-3 bg-caution-50 dark:bg-caution-600/15 rounded-lg border border-caution-500/30 dark:border-caution-600/40">
                   <p className="text-sm text-caution-600 dark:text-caution-500">
-                    <strong>Let op:</strong> Alleen de Wheel campagne wordt verwijderd. Je
-                    onderliggende posities (Cash Secured Puts, aandelen, covered calls) blijven
-                    behouden.
+                    <strong>{t('widgetsA.deleteWheelWarningLabel')}</strong>{' '}
+                    {t('widgetsA.deleteWheelWarning')}
                   </p>
                 </div>
               </div>
@@ -852,13 +846,13 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                   onClick={() => setWheelToDelete(null)}
                   className="px-4 py-2 text-sm font-medium text-ink-700 dark:text-ink-300 hover:bg-surface-subtle dark:hover:bg-trading-dark-700 rounded-lg transition-colors"
                 >
-                  Annuleren
+                  {t('widgetsA.cancel')}
                 </button>
                 <button
                   onClick={() => handleDeleteWheel(wheelToDelete)}
                   className="px-4 py-2 text-sm font-medium text-white bg-negative-600 hover:bg-negative-700 rounded-lg transition-colors"
                 >
-                  Verwijderen
+                  {t('widgetsA.delete')}
                 </button>
               </div>
             </div>

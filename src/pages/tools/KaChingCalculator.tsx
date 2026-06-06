@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DollarSign, TrendingUp, AlertTriangle, Calendar } from 'lucide-react';
 import { FridayDatePicker } from '../../components/common/FridayDatePicker';
 import { TickerSelector } from '../../components/widgets/TickerSelector';
@@ -37,6 +38,7 @@ interface KaChingResults {
 }
 
 export const KaChingCalculator: React.FC = () => {
+  const { t } = useTranslation();
   const { setPageTitle } = usePageTitle();
   useEffect(() => {
     setPageTitle(
@@ -214,7 +216,7 @@ export const KaChingCalculator: React.FC = () => {
                       handleInputChange('underlyingPrice', ticker.currentPrice);
                     }
                   }}
-                  placeholder="Zoek ticker..."
+                  placeholder={t('toolsPages.searchTicker')}
                 />
               </div>
               <div>

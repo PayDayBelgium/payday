@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Filter, Eye, Briefcase, ExternalLink, Plus, Trash2, Edit2, X, Check } from 'lucide-react';
 import { usePageTitle } from '../../contexts/PageTitleContext';
 import { useAppSelector } from '../../hooks/useAppSelector';
@@ -24,6 +25,7 @@ interface TickerWithPositions extends Ticker {
 }
 
 export const TickersOverview: React.FC = () => {
+  const { t } = useTranslation();
   const { setPageTitle } = usePageTitle();
   const dispatch = useAppDispatch();
   const portfolios = useAppSelector((state) => state.portfolios.portfolios);
@@ -50,8 +52,8 @@ export const TickersOverview: React.FC = () => {
   });
 
   useEffect(() => {
-    setPageTitle('Ticker Overview', 'Beheer je tickers en watchlist');
-  }, [setPageTitle]);
+    setPageTitle('Ticker Overview', t('pagesA.tickers.pageSubtitle'));
+  }, [setPageTitle, t]);
 
   // Helper function to generate Yahoo Finance URL
   const getYahooFinanceUrl = (ticker: string) => {
@@ -307,7 +309,7 @@ export const TickersOverview: React.FC = () => {
           >
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-ink-900 dark:text-white">
-                Ticker toevoegen aan Watchlist
+                {t('pagesA.tickers.addToWatchlistTitle')}
               </h3>
               <button
                 type="button"
@@ -339,7 +341,7 @@ export const TickersOverview: React.FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
-                  Naam
+                  {t('pagesA.tickers.colName')}
                 </label>
                 <input
                   type="text"
@@ -353,7 +355,7 @@ export const TickersOverview: React.FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
-                  Huidige Prijs
+                  {t('pagesA.tickers.currentPrice')}
                 </label>
                 <input
                   type="number"
@@ -374,14 +376,14 @@ export const TickersOverview: React.FC = () => {
                 onClick={() => setIsAddWatchlistOpen(false)}
                 className="px-4 py-2 text-ink-700 dark:text-ink-300 hover:bg-surface-subtle dark:hover:bg-trading-dark-700 rounded-lg transition-colors"
               >
-                Annuleren
+                {t('pagesA.common.cancel')}
               </button>
               <button
                 type="submit"
                 disabled={!newWatchlistTicker.symbol.trim()}
                 className="px-4 py-2 bg-primary-700 text-white rounded-lg hover:bg-primary-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Toevoegen
+                {t('pagesA.common.add')}
               </button>
             </div>
           </form>
@@ -394,11 +396,11 @@ export const TickersOverview: React.FC = () => {
         <div className="px-6 py-2 bg-surface-subtle dark:bg-trading-dark-900/50 border-b border-surface-line dark:border-trading-dark-600">
           <div className="grid grid-cols-[70px_minmax(150px,2fr)_80px_70px_70px_80px_90px_100px_80px_80px] gap-2 text-xs font-semibold text-ink-600 dark:text-ink-400 items-center">
             <div>Ticker</div>
-            <div>Naam</div>
+            <div>{t('pagesA.tickers.colName')}</div>
             <div>Portfolios</div>
             <div className="text-right">Shares</div>
             <div className="text-right">Avg Price</div>
-            <div className="text-right">Koers</div>
+            <div className="text-right">{t('pagesA.tickers.colPrice')}</div>
             <div className="text-right">Market Value</div>
             <div className="text-right">P&L</div>
             <div className="text-center">Status</div>
@@ -546,14 +548,14 @@ export const TickersOverview: React.FC = () => {
                       <button
                         onClick={() => saveEdit(ticker.symbol)}
                         className="p-1 hover:bg-positive-50 dark:hover:bg-positive-700/25 text-positive-600 dark:text-positive-500 rounded transition-colors"
-                        title="Opslaan"
+                        title={t('pagesA.common.save')}
                       >
                         <Check className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={cancelEdit}
                         className="p-1 hover:bg-surface-subtle dark:hover:bg-trading-dark-700 text-ink-600 dark:text-ink-400 rounded transition-colors"
-                        title="Annuleren"
+                        title={t('pagesA.common.cancel')}
                       >
                         <X className="w-3.5 h-3.5" />
                       </button>
@@ -563,7 +565,7 @@ export const TickersOverview: React.FC = () => {
                       <button
                         onClick={() => startEditing(ticker)}
                         className="p-1 hover:bg-primary-50 dark:hover:bg-primary-900/25 text-primary-700 dark:text-primary-300 rounded transition-colors"
-                        title="Bewerken"
+                        title={t('pagesA.common.edit')}
                       >
                         <Edit2 className="w-3.5 h-3.5" />
                       </button>
@@ -571,7 +573,7 @@ export const TickersOverview: React.FC = () => {
                         <button
                           onClick={() => handleDeleteTicker(ticker.symbol, ticker.name)}
                           className="p-1 hover:bg-negative-50 dark:hover:bg-negative-700/25 text-negative-600 dark:text-negative-500 rounded transition-colors"
-                          title="Verwijderen"
+                          title={t('pagesA.common.delete')}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -586,9 +588,9 @@ export const TickersOverview: React.FC = () => {
 
         {filteredTickers.length === 0 && (
           <div className="p-12 text-center">
-            <p className="text-ink-500 dark:text-ink-400">Geen tickers gevonden</p>
+            <p className="text-ink-500 dark:text-ink-400">{t('pagesA.tickers.emptyTitle')}</p>
             <p className="text-sm text-ink-400 dark:text-ink-500 mt-1">
-              Voeg posities toe aan je portfolios of voeg tickers toe aan je watchlist
+              {t('pagesA.tickers.emptyDesc')}
             </p>
           </div>
         )}
@@ -600,10 +602,13 @@ export const TickersOverview: React.FC = () => {
           isOpen={deleteConfirm.isOpen}
           onClose={() => setDeleteConfirm({ isOpen: false, symbol: '', name: '' })}
           onConfirm={confirmDeleteTicker}
-          title="Ticker Verwijderen"
-          message={`Weet je zeker dat je ${deleteConfirm.symbol} (${deleteConfirm.name}) wilt verwijderen van je watchlist?`}
-          confirmText="Verwijderen"
-          cancelText="Annuleren"
+          title={t('pagesA.tickers.deleteTitle')}
+          message={t('pagesA.tickers.deleteMessage', {
+            symbol: deleteConfirm.symbol,
+            name: deleteConfirm.name,
+          })}
+          confirmText={t('pagesA.common.delete')}
+          cancelText={t('pagesA.common.cancel')}
           variant="danger"
         />
       )}

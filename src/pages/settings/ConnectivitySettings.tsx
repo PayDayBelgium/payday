@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Wifi,
   WifiOff,
@@ -23,21 +24,22 @@ import { selectAllTickers } from '../../store/slices/tickersSlice';
 import { selectActivePositions } from '../../store/slices/positionsSlice';
 import type { Position } from '../../types';
 
-const DATA_MODE_OPTIONS: { value: DataMode; label: string; description: string }[] = [
+const DATA_MODE_OPTIONS: { value: DataMode; label: string; descriptionKey: string }[] = [
   {
     value: 'demo',
     label: 'Demo (Manual)',
-    description: 'Prijzen handmatig aanpassen via simulator control',
+    descriptionKey: 'pagesA.connectivity.dataModeDemoDesc',
   },
   {
     value: 'demo-feed',
     label: 'Demo (Feed)',
-    description: 'Gesimuleerde prijzen automatisch gegenereerd',
+    descriptionKey: 'pagesA.connectivity.dataModeDemoFeedDesc',
   },
-  { value: 'live', label: 'Live (IB)', description: 'Real-time data van Interactive Brokers' },
+  { value: 'live', label: 'Live (IB)', descriptionKey: 'pagesA.connectivity.dataModeLiveDesc' },
 ];
 
 export const ConnectivitySettings: React.FC = () => {
+  const { t } = useTranslation();
   const tickers = useSelector(selectAllTickers);
   const activePositions = useSelector(selectActivePositions);
   const [config, setConfig] = useState(priceWebSocketService.getConfig());
@@ -313,7 +315,7 @@ export const ConnectivitySettings: React.FC = () => {
                       {option.label}
                     </span>
                     <p className="text-xs text-ink-500 dark:text-ink-400 mt-0.5">
-                      {option.description}
+                      {t(option.descriptionKey)}
                     </p>
                   </div>
                 </label>
@@ -323,8 +325,8 @@ export const ConnectivitySettings: React.FC = () => {
             {dataMode === 'live' && (
               <div className="mt-3 p-3 bg-caution-50 dark:bg-caution-600/15 border border-caution-500/30 dark:border-caution-500/30 rounded-lg">
                 <p className="text-xs text-caution-600 dark:text-caution-500">
-                  <strong>Let op:</strong> Live mode vereist een actieve Interactive Brokers
-                  connectie via de backend service.
+                  <strong>{t('pagesA.connectivity.liveWarningLabel')}</strong>{' '}
+                  {t('pagesA.connectivity.liveWarningText')}
                 </p>
               </div>
             )}

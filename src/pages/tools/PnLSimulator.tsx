@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   LineChart,
   Line,
@@ -90,6 +91,7 @@ const LEG_COLORS = [
 ];
 
 export const PnLSimulator: React.FC = () => {
+  const { t } = useTranslation();
   const { setPageTitle } = usePageTitle();
 
   // State
@@ -352,7 +354,9 @@ export const PnLSimulator: React.FC = () => {
 
     return (
       <div className="bg-white dark:bg-trading-dark-800 border border-surface-line dark:border-trading-dark-600 rounded-lg shadow-lg p-3">
-        <p className="font-medium text-ink-900 dark:text-white">Prijs: ${formatNumber(label, 2)}</p>
+        <p className="font-medium text-ink-900 dark:text-white">
+          {t('toolsPages.pnl.tooltipPrice', { price: formatNumber(label, 2) })}
+        </p>
         <p
           className={`font-bold ${pnl >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
         >
@@ -383,24 +387,24 @@ export const PnLSimulator: React.FC = () => {
           {/* Ticker & Price */}
           <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
             <h2 className="text-lg font-semibold text-ink-900 dark:text-white mb-4 pb-2 border-b border-surface-line dark:border-trading-dark-600">
-              Underlying
+              {t('toolsPages.pnl.underlying')}
             </h2>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
-                  Ticker
+                  {t('toolsPages.oc.ticker')}
                 </label>
                 <TickerSelector
                   value={selectedTicker?.symbol || ''}
                   onChange={handleTickerSelect}
-                  placeholder="Zoek ticker..."
+                  placeholder={t('toolsPages.searchTicker')}
                 />
               </div>
               {/* Price and Range on same row */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
-                    Prijs ($)
+                    {t('toolsPages.pnl.price')}
                   </label>
                   <input
                     type="number"
@@ -413,7 +417,7 @@ export const PnLSimulator: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
-                    Bereik: ±{priceRangePercent}%
+                    {t('toolsPages.pnl.range', { percent: priceRangePercent })}
                   </label>
                   <input
                     type="range"
@@ -431,7 +435,7 @@ export const PnLSimulator: React.FC = () => {
           {/* Add Option Leg */}
           <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
             <h2 className="text-lg font-semibold text-ink-900 dark:text-white mb-4 pb-2 border-b border-surface-line dark:border-trading-dark-600">
-              Voeg Optie Toe
+              {t('toolsPages.pnl.addOption')}
             </h2>
             <div className="space-y-4">
               {/* Type Selection */}
@@ -470,7 +474,7 @@ export const PnLSimulator: React.FC = () => {
                       : 'bg-surface-subtle dark:bg-trading-dark-700 text-ink-600 dark:text-ink-400 border-2 border-transparent'
                   }`}
                 >
-                  Long (Kopen)
+                  {t('toolsPages.pnl.longBuy')}
                 </button>
                 <button
                   onClick={() => setNewLeg((prev) => ({ ...prev, action: 'sell' }))}
@@ -480,7 +484,7 @@ export const PnLSimulator: React.FC = () => {
                       : 'bg-surface-subtle dark:bg-trading-dark-700 text-ink-600 dark:text-ink-400 border-2 border-transparent'
                   }`}
                 >
-                  Short (Verkopen)
+                  {t('toolsPages.pnl.shortSell')}
                 </button>
               </div>
 
@@ -538,7 +542,7 @@ export const PnLSimulator: React.FC = () => {
               {/* Expiration Date */}
               <div>
                 <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
-                  Expiratie (optioneel)
+                  {t('toolsPages.pnl.expirationOptional')}
                 </label>
                 <input
                   type="date"
@@ -554,7 +558,7 @@ export const PnLSimulator: React.FC = () => {
                 className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-ink-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
               >
                 <Plus className="w-4 h-4" />
-                Voeg Toe
+                {t('toolsPages.pnl.addLeg')}
               </button>
             </div>
           </div>
@@ -564,7 +568,7 @@ export const PnLSimulator: React.FC = () => {
             <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
               <div className="flex items-center justify-between mb-4 pb-2 border-b border-surface-line dark:border-trading-dark-600">
                 <h2 className="text-lg font-semibold text-ink-900 dark:text-white">
-                  Actieve Posities ({legs.length})
+                  {t('toolsPages.pnl.activePositions', { count: legs.length })}
                 </h2>
                 <button
                   onClick={clearAllLegs}
@@ -624,7 +628,7 @@ export const PnLSimulator: React.FC = () => {
                     onChange={(e) => setShowIndividualLegs(e.target.checked)}
                     className="rounded border-ink-200 text-indigo-600 focus:ring-indigo-500"
                   />
-                  Toon individuele leg P&L
+                  {t('toolsPages.pnl.showIndividualLegPnL')}
                 </label>
               </div>
             </div>
@@ -639,14 +643,14 @@ export const PnLSimulator: React.FC = () => {
               <div className="flex items-center gap-1.5 mb-1">
                 <Target className="w-3.5 h-3.5 text-positive-600" />
                 <span className="text-xs font-medium text-ink-500 dark:text-ink-400">
-                  Max Winst
+                  {t('toolsPages.pnl.maxProfit')}
                 </span>
               </div>
               <p
                 className={`text-lg font-bold ${metrics.maxProfitUnlimited || metrics.maxProfit >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
               >
                 {metrics.maxProfitUnlimited
-                  ? '∞ Onbeperkt'
+                  ? t('toolsPages.pnl.unlimited')
                   : formatCurrency(metrics.maxProfit, '$')}
               </p>
             </div>
@@ -654,20 +658,22 @@ export const PnLSimulator: React.FC = () => {
               <div className="flex items-center gap-1.5 mb-1">
                 <Target className="w-3.5 h-3.5 text-negative-600" />
                 <span className="text-xs font-medium text-ink-500 dark:text-ink-400">
-                  Max Verlies
+                  {t('toolsPages.pnl.maxLoss')}
                 </span>
               </div>
               <p
                 className={`text-lg font-bold ${metrics.maxLossUnlimited ? 'text-negative-600 dark:text-negative-500' : metrics.maxLoss >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
               >
-                {metrics.maxLossUnlimited ? '∞ Onbeperkt' : formatCurrency(metrics.maxLoss, '$')}
+                {metrics.maxLossUnlimited
+                  ? t('toolsPages.pnl.unlimited')
+                  : formatCurrency(metrics.maxLoss, '$')}
               </p>
             </div>
             <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-3">
               <div className="flex items-center gap-1.5 mb-1">
                 <DollarSign className="w-3.5 h-3.5 text-indigo-500" />
                 <span className="text-xs font-medium text-ink-500 dark:text-ink-400">
-                  Netto Premium
+                  {t('toolsPages.pnl.netPremium')}
                 </span>
               </div>
               <p
@@ -698,7 +704,7 @@ export const PnLSimulator: React.FC = () => {
               <div className="flex items-center gap-1.5 mb-1">
                 <div className="w-3.5 h-3.5 rounded-full bg-caution-500" />
                 <span className="text-xs font-medium text-ink-500 dark:text-ink-400">
-                  Break-even
+                  {t('toolsPages.pnl.breakEven')}
                 </span>
               </div>
               {metrics.breakEvenPoints.length > 0 ? (
@@ -722,13 +728,13 @@ export const PnLSimulator: React.FC = () => {
           {/* P&L Chart */}
           <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
             <h2 className="text-lg font-semibold text-ink-900 dark:text-white mb-4">
-              P&L bij Expiratie
+              {t('toolsPages.pnl.pnlAtExpiration')}
             </h2>
             {legs.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-80 text-ink-500 dark:text-ink-400">
                 <TrendingUp className="w-16 h-16 mb-4 opacity-30" />
-                <p className="text-lg font-medium">Geen posities</p>
-                <p className="text-sm">Voeg opties toe om de P&L grafiek te zien</p>
+                <p className="text-lg font-medium">{t('toolsPages.pnl.noPositions')}</p>
+                <p className="text-sm">{t('toolsPages.pnl.addOptionsToSeeChart')}</p>
               </div>
             ) : (
               <div className="h-80">
@@ -810,7 +816,7 @@ export const PnLSimulator: React.FC = () => {
                       strokeWidth={3}
                       dot={false}
                       connectNulls={false}
-                      name="Winst"
+                      name={t('toolsPages.pnl.chartProfit')}
                       legendType="none"
                       activeDot={{ r: 6, strokeWidth: 2, fill: '#fff' }}
                     />
@@ -823,7 +829,7 @@ export const PnLSimulator: React.FC = () => {
                       strokeWidth={3}
                       dot={false}
                       connectNulls={false}
-                      name="Verlies"
+                      name={t('toolsPages.pnl.chartLoss')}
                       legendType="none"
                       activeDot={{ r: 6, strokeWidth: 2, fill: '#fff' }}
                     />
@@ -836,7 +842,7 @@ export const PnLSimulator: React.FC = () => {
           {/* Strategy Presets */}
           <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
             <h2 className="text-lg font-semibold text-ink-900 dark:text-white mb-4">
-              Populaire Strategieën
+              {t('toolsPages.pnl.popularStrategies')}
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <button

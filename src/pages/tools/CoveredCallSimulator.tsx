@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Calculator, TrendingUp, Info, DollarSign, Percent, Target } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { usePageTitle } from '../../contexts/PageTitleContext';
@@ -47,31 +48,24 @@ interface CCResults {
   costBasisReduction: number;
 }
 
-// Tooltip explanations for each calculation
-const TOOLTIPS = {
-  totalPremium:
-    'Totale premium = Premium per contract × Aantal contracten × 100\n\nDit is het bedrag dat je direct ontvangt bij het verkopen van de covered calls.',
-  premiumReturn:
-    'Premium Return = (Totale Premium / Totaal Geïnvesteerd) × 100%\n\nDit is het rendement dat je behaalt puur door de premium, ongeacht wat er met de koers gebeurt.',
-  annualizedPremiumReturn:
-    'Annualized Return = Premium Return × (365 / Dagen tot Expiratie)\n\nDit toont wat je zou verdienen als je dit rendement het hele jaar zou herhalen. Let op: dit is theoretisch.',
-  distanceToStrike:
-    'Verschil Strike - Huidige Koers\n\nDit is hoeveel het aandeel moet stijgen voordat je aandelen worden weggeroepen (assigned).',
-  breakEvenDown:
-    'Break-even = Huidige Koers - Premium per Aandeel\n\nTot dit punt ben je beschermd door de ontvangen premium. Onder dit punt begin je verlies te maken.',
-  returnIfCalled:
-    'Return If Called = (Totale Winst / Kostprijs) × 100%\n\nTotale winst = Premium + (Strike - Kostprijs) × Aandelen\n\nDit is je totale rendement als de optie wordt uitgeoefend en je aandelen verkoopt.',
-  newCostBasis:
-    'Nieuwe Kostprijs = Originele Kostprijs - Premium per Aandeel\n\nDoor de ontvangen premium daalt effectief je aankoopprijs.',
-  contracts:
-    'Aantal Contracten = Aantal Aandelen / 100\n\nElk optiecontract vertegenwoordigt 100 aandelen.',
-};
-
 const MULTIPLIER = 100;
 
 export const CoveredCallSimulator: React.FC = () => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { setPageTitle } = usePageTitle();
+
+  // Tooltip explanations for each calculation
+  const TOOLTIPS = {
+    totalPremium: t('toolsPages.cc.tooltipTotalPremium'),
+    premiumReturn: t('toolsPages.cc.tooltipPremiumReturn'),
+    annualizedPremiumReturn: t('toolsPages.cc.tooltipAnnualizedPremiumReturn'),
+    distanceToStrike: t('toolsPages.cc.tooltipDistanceToStrike'),
+    breakEvenDown: t('toolsPages.cc.tooltipBreakEven'),
+    returnIfCalled: t('toolsPages.cc.tooltipReturnIfCalled'),
+    newCostBasis: t('toolsPages.cc.tooltipNewCostBasis'),
+    contracts: t('toolsPages.cc.tooltipContracts'),
+  };
 
   const [inputs, setInputs] = useState<CCInputs>({
     ticker: '',
@@ -96,8 +90,8 @@ export const CoveredCallSimulator: React.FC = () => {
   });
 
   useEffect(() => {
-    setPageTitle('Covered Call Simulator', 'Bereken je potentiële rendement op covered calls');
-  }, [setPageTitle]);
+    setPageTitle(t('toolsPages.cc.pageTitle'), t('toolsPages.cc.pageSubtitle'));
+  }, [setPageTitle, t]);
 
   useEffect(() => {
     calculateResults();
@@ -250,25 +244,24 @@ export const CoveredCallSimulator: React.FC = () => {
     <div className="space-y-6">
       {/* Explanatory note — title is provided by the global header */}
       <div className="bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 rounded-lg p-4">
-        <p className="text-sm text-primary-700 dark:text-primary-200">
-          <strong>Wat is een Covered Call?</strong> Je verkoopt een call optie op aandelen die je
-          bezit. Je ontvangt premium als inkomen, maar als de koers boven de strike komt, worden je
-          aandelen mogelijk weggeroepen.
-        </p>
+        <p
+          className="text-sm text-primary-700 dark:text-primary-200"
+          dangerouslySetInnerHTML={{ __html: t('toolsPages.cc.whatIsCoveredCall') }}
+        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Input Section */}
         <div className="bg-white dark:bg-trading-dark-800 rounded-xl border border-surface-line dark:border-trading-dark-600 p-6">
           <h2 className="text-lg font-semibold text-ink-900 dark:text-white mb-4">
-            Input Parameters
+            {t('toolsPages.cc.inputParameters')}
           </h2>
 
           <div className="space-y-4">
             {/* Ticker Selection */}
             <div>
               <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
-                Aandeel
+                {t('toolsPages.cc.stock')}
               </label>
               {isCreatingTicker ? (
                 <div className="space-y-3 p-4 bg-surface dark:bg-trading-dark-700/50 rounded-lg">
@@ -281,7 +274,7 @@ export const CoveredCallSimulator: React.FC = () => {
                         symbol: e.target.value.toUpperCase(),
                       }))
                     }
-                    placeholder="Ticker symbol (bijv. AAPL)"
+                    placeholder={t('toolsPages.cc.tickerPlaceholder')}
                     className="w-full px-3 py-2 border border-ink-200 dark:border-trading-dark-500 rounded-lg bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white"
                   />
                   <input
@@ -290,7 +283,7 @@ export const CoveredCallSimulator: React.FC = () => {
                     onChange={(e) =>
                       setNewTickerData((prev) => ({ ...prev, name: e.target.value }))
                     }
-                    placeholder="Bedrijfsnaam"
+                    placeholder={t('toolsPages.company')}
                     className="w-full px-3 py-2 border border-ink-200 dark:border-trading-dark-500 rounded-lg bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white"
                   />
                   <div className="flex gap-2">
@@ -298,13 +291,13 @@ export const CoveredCallSimulator: React.FC = () => {
                       onClick={handleCreateTicker}
                       className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
                     >
-                      Toevoegen
+                      {t('toolsPages.add')}
                     </button>
                     <button
                       onClick={() => setIsCreatingTicker(false)}
                       className="px-4 py-2 bg-surface-muted dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300 rounded-lg"
                     >
-                      Annuleren
+                      {t('toolsPages.cancel')}
                     </button>
                   </div>
                 </div>
@@ -320,7 +313,7 @@ export const CoveredCallSimulator: React.FC = () => {
             {/* Stock Price */}
             <div>
               <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
-                Huidige Aandelenprijs ($)
+                {t('toolsPages.cc.currentStockPrice')}
               </label>
               <input
                 type="number"
@@ -335,7 +328,7 @@ export const CoveredCallSimulator: React.FC = () => {
             {/* Number of Shares */}
             <div>
               <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
-                Aantal Aandelen
+                {t('toolsPages.cc.numberOfShares')}
               </label>
               <input
                 type="number"
@@ -347,16 +340,16 @@ export const CoveredCallSimulator: React.FC = () => {
               />
               <p className="text-xs text-ink-500 mt-1">
                 {inputs.shares
-                  ? `${Math.floor(inputs.shares / 100)} contract(en)`
-                  : 'Minimaal 100 aandelen voor 1 contract'}
+                  ? t('toolsPages.cc.contractsCount', { count: Math.floor(inputs.shares / 100) })
+                  : t('toolsPages.cc.minSharesHint')}
               </p>
             </div>
 
             {/* Cost Basis */}
             <div>
               <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
-                Kostprijs per Aandeel ($)
-                <PortalTooltip content="De prijs die je betaald hebt voor de aandelen. Leeg = huidige prijs.">
+                {t('toolsPages.cc.costBasisPerShare')}
+                <PortalTooltip content={t('toolsPages.cc.costBasisTooltip')}>
                   <Info className="w-3.5 h-3.5 inline ml-1 text-ink-400" />
                 </PortalTooltip>
               </label>
@@ -365,7 +358,9 @@ export const CoveredCallSimulator: React.FC = () => {
                 step="0.01"
                 value={inputs.costBasis || ''}
                 onChange={(e) => handleInputChange('costBasis', parseFloat(e.target.value) || 0)}
-                placeholder={inputs.stockPrice ? inputs.stockPrice.toString() : 'Optioneel'}
+                placeholder={
+                  inputs.stockPrice ? inputs.stockPrice.toString() : t('toolsPages.cc.optional')
+                }
                 className="w-full px-3 py-2 border border-ink-200 dark:border-trading-dark-500 rounded-lg bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white"
               />
             </div>
@@ -375,7 +370,7 @@ export const CoveredCallSimulator: React.FC = () => {
             {/* Strike Price */}
             <div>
               <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
-                Strike Prijs ($)
+                {t('toolsPages.cc.strikePrice')}
               </label>
               <input
                 type="number"
@@ -390,8 +385,18 @@ export const CoveredCallSimulator: React.FC = () => {
                   className={`text-xs mt-1 ${inputs.strikePrice >= inputs.stockPrice ? 'text-positive-600' : 'text-caution-600'}`}
                 >
                   {inputs.strikePrice >= inputs.stockPrice
-                    ? `${(((inputs.strikePrice - inputs.stockPrice) / inputs.stockPrice) * 100).toFixed(1)}% boven huidige prijs (OTM)`
-                    : `${(((inputs.stockPrice - inputs.strikePrice) / inputs.stockPrice) * 100).toFixed(1)}% onder huidige prijs (ITM)`}
+                    ? t('toolsPages.cc.aboveCurrent', {
+                        percent: (
+                          ((inputs.strikePrice - inputs.stockPrice) / inputs.stockPrice) *
+                          100
+                        ).toFixed(1),
+                      })
+                    : t('toolsPages.cc.belowCurrent', {
+                        percent: (
+                          ((inputs.stockPrice - inputs.strikePrice) / inputs.stockPrice) *
+                          100
+                        ).toFixed(1),
+                      })}
                 </p>
               )}
             </div>
@@ -399,7 +404,7 @@ export const CoveredCallSimulator: React.FC = () => {
             {/* Premium */}
             <div>
               <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
-                Premium per Contract ($)
+                {t('toolsPages.cc.premiumPerContract')}
               </label>
               <input
                 type="number"
@@ -414,7 +419,7 @@ export const CoveredCallSimulator: React.FC = () => {
             {/* Expiration Date */}
             <div>
               <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
-                Expiratie Datum
+                {t('toolsPages.cc.expirationDate')}
               </label>
               <FridayDatePicker
                 value={inputs.expirationDate}
@@ -434,14 +439,14 @@ export const CoveredCallSimulator: React.FC = () => {
                   <div className="flex items-center gap-2 mb-2">
                     <DollarSign className="w-5 h-5 text-positive-600 dark:text-positive-500" />
                     <span className="text-sm text-positive-700 dark:text-positive-500">
-                      Premium Inkomen
+                      {t('toolsPages.cc.premiumIncome')}
                     </span>
                   </div>
                   <p className="text-2xl font-bold text-positive-700 dark:text-positive-500">
                     ${formatNumber(results.totalPremium)}
                   </p>
                   <p className="text-xs text-positive-600 dark:text-positive-500 mt-1">
-                    {results.contracts} contract(en)
+                    {t('toolsPages.cc.contractsCount', { count: results.contracts })}
                   </p>
                 </div>
 
@@ -449,14 +454,16 @@ export const CoveredCallSimulator: React.FC = () => {
                   <div className="flex items-center gap-2 mb-2">
                     <Percent className="w-5 h-5 text-primary-700 dark:text-primary-300" />
                     <span className="text-sm text-primary-700 dark:text-primary-300">
-                      Rendement
+                      {t('toolsPages.cc.return')}
                     </span>
                   </div>
                   <p className="text-2xl font-bold text-primary-700 dark:text-primary-300">
                     {results.premiumReturn.toFixed(2)}%
                   </p>
                   <p className="text-xs text-primary-700 dark:text-primary-300 mt-1">
-                    {results.annualizedPremiumReturn.toFixed(1)}% annualized
+                    {t('toolsPages.cc.annualized', {
+                      percent: results.annualizedPremiumReturn.toFixed(1),
+                    })}
                   </p>
                 </div>
               </div>
@@ -465,26 +472,26 @@ export const CoveredCallSimulator: React.FC = () => {
               <div className="bg-white dark:bg-trading-dark-800 rounded-xl border border-surface-line dark:border-trading-dark-600 p-4">
                 <h3 className="font-semibold text-ink-900 dark:text-white mb-3 flex items-center gap-2">
                   <DollarSign className="w-4 h-4 text-primary-500" />
-                  Premium Details
+                  {t('toolsPages.cc.premiumDetails')}
                 </h3>
                 <ResultRow
-                  label="Totale Premium"
+                  label={t('toolsPages.cc.totalPremium')}
                   value={`$${formatNumber(results.totalPremium)}`}
                   tooltip={TOOLTIPS.totalPremium}
                   highlight="green"
                 />
                 <ResultRow
-                  label="Premium per Aandeel"
+                  label={t('toolsPages.cc.premiumPerShare')}
                   value={`$${results.premiumPerShare.toFixed(2)}`}
                 />
                 <ResultRow
-                  label="Aantal Contracten"
+                  label={t('toolsPages.cc.numberOfContracts')}
                   value={results.contracts.toString()}
                   tooltip={TOOLTIPS.contracts}
                 />
                 <ResultRow
-                  label="Dagen tot Expiratie"
-                  value={`${results.daysToExpiration} dagen`}
+                  label={t('toolsPages.cc.daysToExpiration')}
+                  value={t('toolsPages.cc.daysValue', { count: results.daysToExpiration })}
                 />
               </div>
 
@@ -492,21 +499,21 @@ export const CoveredCallSimulator: React.FC = () => {
               <div className="bg-white dark:bg-trading-dark-800 rounded-xl border border-surface-line dark:border-trading-dark-600 p-4">
                 <h3 className="font-semibold text-ink-900 dark:text-white mb-3 flex items-center gap-2">
                   <Target className="w-4 h-4 text-primary-500" />
-                  Strike Analyse
+                  {t('toolsPages.cc.strikeAnalysis')}
                 </h3>
                 <ResultRow
-                  label="Koers moet stijgen"
+                  label={t('toolsPages.cc.priceMustRise')}
                   value={`$${results.distanceToStrike.toFixed(2)} (${results.distanceToStrikePercent.toFixed(1)}%)`}
                   tooltip={TOOLTIPS.distanceToStrike}
                   highlight={results.distanceToStrike >= 0 ? 'blue' : 'red'}
                 />
                 <ResultRow
-                  label="Break-even (neerwaarts)"
+                  label={t('toolsPages.cc.breakEvenDown')}
                   value={`$${results.breakEvenDown.toFixed(2)}`}
                   tooltip={TOOLTIPS.breakEvenDown}
                 />
                 <ResultRow
-                  label="Bescherming door premium"
+                  label={t('toolsPages.cc.protectionByPremium')}
                   value={`${results.breakEvenDownPercent.toFixed(2)}%`}
                   highlight="green"
                 />
@@ -516,26 +523,26 @@ export const CoveredCallSimulator: React.FC = () => {
               <div className="bg-white dark:bg-trading-dark-800 rounded-xl border border-surface-line dark:border-trading-dark-600 p-4">
                 <h3 className="font-semibold text-ink-900 dark:text-white mb-3 flex items-center gap-2">
                   <TrendingUp className="w-4 h-4 text-primary-500" />
-                  Als Aandelen Worden Weggeroepen
+                  {t('toolsPages.cc.ifCalledAway')}
                 </h3>
                 <ResultRow
-                  label="Koerswinst op Aandelen"
+                  label={t('toolsPages.cc.stockGain')}
                   value={`$${formatNumber(results.stockGainIfCalled)}`}
                   highlight={results.stockGainIfCalled >= 0 ? 'green' : 'red'}
                 />
                 <ResultRow
-                  label="Totale Winst (+ Premium)"
+                  label={t('toolsPages.cc.totalProfitPlusPremium')}
                   value={`$${formatNumber(results.totalProfitIfCalled)}`}
                   highlight={results.totalProfitIfCalled >= 0 ? 'green' : 'red'}
                 />
                 <ResultRow
-                  label="Return If Called"
+                  label={t('toolsPages.cc.returnIfCalled')}
                   value={`${results.returnIfCalled.toFixed(2)}%`}
                   tooltip={TOOLTIPS.returnIfCalled}
                   highlight={results.returnIfCalled >= 0 ? 'green' : 'red'}
                 />
                 <ResultRow
-                  label="Annualized Return"
+                  label={t('toolsPages.cc.annualizedReturn')}
                   value={`${results.annualizedReturnIfCalled.toFixed(1)}%`}
                   highlight="blue"
                 />
@@ -545,16 +552,16 @@ export const CoveredCallSimulator: React.FC = () => {
               <div className="bg-white dark:bg-trading-dark-800 rounded-xl border border-surface-line dark:border-trading-dark-600 p-4">
                 <h3 className="font-semibold text-ink-900 dark:text-white mb-3 flex items-center gap-2">
                   <Calculator className="w-4 h-4 text-primary-500" />
-                  Kostprijs Impact
+                  {t('toolsPages.cc.costBasisImpact')}
                 </h3>
                 <ResultRow
-                  label="Nieuwe Effectieve Kostprijs"
+                  label={t('toolsPages.cc.newEffectiveCostBasis')}
                   value={`$${results.newCostBasis.toFixed(2)}`}
                   tooltip={TOOLTIPS.newCostBasis}
                 />
                 <ResultRow
-                  label="Kostprijs Verlaging"
-                  value={`-$${results.costBasisReduction.toFixed(2)} per aandeel`}
+                  label={t('toolsPages.cc.costBasisReduction')}
+                  value={`-$${results.costBasisReduction.toFixed(2)} ${t('toolsPages.cc.perShare')}`}
                   highlight="green"
                 />
               </div>
@@ -562,9 +569,7 @@ export const CoveredCallSimulator: React.FC = () => {
           ) : (
             <div className="bg-white dark:bg-trading-dark-800 rounded-xl border border-surface-line dark:border-trading-dark-600 p-8 text-center">
               <Calculator className="w-12 h-12 text-ink-400 mx-auto mb-4" />
-              <p className="text-ink-500 dark:text-ink-400">
-                Vul alle velden in om de resultaten te berekenen
-              </p>
+              <p className="text-ink-500 dark:text-ink-400">{t('toolsPages.cc.fillAllFields')}</p>
             </div>
           )}
         </div>

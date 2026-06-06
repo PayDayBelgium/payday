@@ -1,4 +1,6 @@
-export const fr = {
+import { sweepFr } from '../sweep';
+
+const frBase = {
   // Common
   common: {
     save: 'Enregistrer',
@@ -858,3 +860,5 @@ export const fr = {
     community: 'APRÈS-SKI · COMMUNAUTÉ',
   },
 };
+
+export const fr = { ...frBase, ...sweepFr };

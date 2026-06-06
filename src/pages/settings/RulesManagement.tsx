@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Plus,
   Trash2,
@@ -76,6 +77,7 @@ const DEFAULT_RULES: Omit<StrategyRule, 'id' | 'portfolio' | 'createdAt'>[] = [
 ];
 
 export const RulesManagement: React.FC = () => {
+  const { t } = useTranslation();
   const [rules, setRules] = useState<StrategyRule[]>([]);
 
   // Wizard state
@@ -277,27 +279,27 @@ export const RulesManagement: React.FC = () => {
 
   const getStrategyTypeName = (strategyType: StrategyType): string => {
     const names: Record<StrategyType, string> = {
-      'stocks-etfs': 'Aandelen & ETFs',
+      'stocks-etfs': t('pagesA.rules.strategyStocksEtfs'),
       leaps: 'LEAPS',
       'covered-calls': 'Covered Calls',
       csp: 'Cash Secured Puts',
       pmcc: 'PMCC',
       spreads: 'Spreads',
       kaching: 'KaChing',
-      options: 'Opties',
-      general: 'Algemeen',
+      options: t('pagesA.rules.strategyOptions'),
+      general: t('pagesA.rules.strategyGeneral'),
     };
     return names[strategyType] || strategyType;
   };
 
   const getTriggerName = (trigger: StrategyRuleTrigger): string => {
     const names: Record<StrategyRuleTrigger, string> = {
-      price_increase: 'Prijs Stijging',
-      price_decrease: 'Prijs Daling',
-      profit_target: 'Winstdoel',
-      loss_limit: 'Stoploss',
-      time_based: 'Tijd Gebaseerd',
-      volatility: 'Volatiliteit',
+      price_increase: t('pagesA.rules.triggerPriceIncrease'),
+      price_decrease: t('pagesA.rules.triggerPriceDecrease'),
+      profit_target: t('pagesA.rules.triggerProfitTarget'),
+      loss_limit: t('pagesA.rules.triggerLossLimit'),
+      time_based: t('pagesA.rules.triggerTimeBased'),
+      volatility: t('pagesA.rules.triggerVolatility'),
     };
     return names[trigger] || trigger;
   };
@@ -315,9 +317,9 @@ export const RulesManagement: React.FC = () => {
 
   const getAssetTypeName = (assetType: AssetType): string => {
     const names: Record<AssetType, string> = {
-      'stocks-etfs': 'Aandelen & ETFs',
-      options: 'Opties',
-      general: 'Algemeen',
+      'stocks-etfs': t('pagesA.rules.strategyStocksEtfs'),
+      options: t('pagesA.rules.strategyOptions'),
+      general: t('pagesA.rules.strategyGeneral'),
     };
     return names[assetType];
   };
@@ -345,56 +347,56 @@ export const RulesManagement: React.FC = () => {
   // System rules that are automatically active
   const systemRules = [
     {
-      name: 'Expirerende Opties',
-      description: 'Alert wanneer een optie binnen 7 dagen verloopt',
+      name: t('pagesA.rules.sysExpiringOptionsName'),
+      description: t('pagesA.rules.sysExpiringOptionsDesc'),
       category: 'alert' as StrategyRuleCategory,
       strategyType: 'options' as StrategyType,
     },
     {
-      name: 'Expirerende Spreads',
-      description: 'Alert wanneer een spread binnen 7 dagen verloopt',
+      name: t('pagesA.rules.sysExpiringSpreadsName'),
+      description: t('pagesA.rules.sysExpiringSpreadsDesc'),
       category: 'alert' as StrategyRuleCategory,
       strategyType: 'options' as StrategyType,
     },
     {
-      name: 'Negatieve Vrije Cash',
-      description: 'Alert wanneer vrije cash in portfolio negatief is',
+      name: t('pagesA.rules.sysNegativeCashName'),
+      description: t('pagesA.rules.sysNegativeCashDesc'),
       category: 'alert' as StrategyRuleCategory,
       strategyType: 'general' as StrategyType,
     },
     {
-      name: 'Put Positie Alert',
-      description: 'Alert wanneer stock prijs onder strike van short put zakt',
+      name: t('pagesA.rules.sysPutPositionName'),
+      description: t('pagesA.rules.sysPutPositionDesc'),
       category: 'alert' as StrategyRuleCategory,
       strategyType: 'options' as StrategyType,
     },
     {
-      name: 'Put Spread Alert',
-      description: 'Alert wanneer stock prijs onder short strike van put spread zakt',
+      name: t('pagesA.rules.sysPutSpreadName'),
+      description: t('pagesA.rules.sysPutSpreadDesc'),
       category: 'alert' as StrategyRuleCategory,
       strategyType: 'options' as StrategyType,
     },
     {
-      name: 'Covered Call Opportunity',
-      description: 'Opportunity om covered calls te verkopen op aandelen positie',
+      name: t('pagesA.rules.sysCoveredCallName'),
+      description: t('pagesA.rules.sysCoveredCallDesc'),
       category: 'opportunity' as StrategyRuleCategory,
       strategyType: 'stocks-etfs' as StrategyType,
     },
     {
-      name: 'PMCC Opportunity',
-      description: 'Opportunity om covered calls te verkopen op LEAPS posities',
+      name: t('pagesA.rules.sysPmccName'),
+      description: t('pagesA.rules.sysPmccDesc'),
       category: 'opportunity' as StrategyRuleCategory,
       strategyType: 'options' as StrategyType,
     },
     {
-      name: 'KaChing Opportunity',
-      description: 'Opportunity om puts te verkopen op bestaande long puts',
+      name: t('pagesA.rules.sysKachingName'),
+      description: t('pagesA.rules.sysKachingDesc'),
       category: 'opportunity' as StrategyRuleCategory,
       strategyType: 'options' as StrategyType,
     },
     {
-      name: 'Profit Opportunity',
-      description: 'Opportunity wanneer optie positie 80% of meer winst heeft',
+      name: t('pagesA.rules.sysProfitName'),
+      description: t('pagesA.rules.sysProfitDesc'),
       category: 'opportunity' as StrategyRuleCategory,
       strategyType: 'options' as StrategyType,
     },
@@ -408,7 +410,7 @@ export const RulesManagement: React.FC = () => {
           <div>
             <h3 className="text-lg font-semibold text-ink-900 dark:text-white">Trading Rules</h3>
             <p className="text-sm text-ink-600 dark:text-ink-400 mt-1">
-              Deze regels worden toegepast op alle portfolios
+              {t('pagesA.rules.appliesToAll')}
             </p>
           </div>
           <button
@@ -416,7 +418,7 @@ export const RulesManagement: React.FC = () => {
             className="flex items-center gap-2 px-4 py-2 bg-primary-700 hover:bg-primary-800 text-white rounded-lg font-medium transition-colors"
           >
             <Plus className="w-4 h-4" />
-            Regel Toevoegen
+            {t('pagesA.rules.addRule')}
           </button>
         </div>
       </div>
@@ -429,7 +431,7 @@ export const RulesManagement: React.FC = () => {
             {wizardStep === 'asset-type' && (
               <div className="p-6 flex-1 flex flex-col overflow-y-auto">
                 <h3 className="text-xl font-semibold text-ink-900 dark:text-white mb-6">
-                  Kies Asset Type
+                  {t('pagesA.rules.chooseAssetType')}
                 </h3>
                 <div className="grid grid-cols-1 gap-4">
                   <button
@@ -442,10 +444,10 @@ export const RulesManagement: React.FC = () => {
                       </div>
                       <div>
                         <h4 className="text-lg font-semibold text-ink-900 dark:text-white mb-1">
-                          Aandelen & ETFs
+                          {t('pagesA.rules.strategyStocksEtfs')}
                         </h4>
                         <p className="text-sm text-ink-600 dark:text-ink-400">
-                          Regels voor aandelen en ETF posities
+                          {t('pagesA.rules.assetStocksEtfsDesc')}
                         </p>
                       </div>
                     </div>
@@ -461,10 +463,10 @@ export const RulesManagement: React.FC = () => {
                       </div>
                       <div>
                         <h4 className="text-lg font-semibold text-ink-900 dark:text-white mb-1">
-                          Opties
+                          {t('pagesA.rules.strategyOptions')}
                         </h4>
                         <p className="text-sm text-ink-600 dark:text-ink-400">
-                          Regels voor optie posities (Calls, Puts, LEAPS, etc.)
+                          {t('pagesA.rules.assetOptionsDesc')}
                         </p>
                       </div>
                     </div>
@@ -480,10 +482,10 @@ export const RulesManagement: React.FC = () => {
                       </div>
                       <div>
                         <h4 className="text-lg font-semibold text-ink-900 dark:text-white mb-1">
-                          Algemeen
+                          {t('pagesA.rules.strategyGeneral')}
                         </h4>
                         <p className="text-sm text-ink-600 dark:text-ink-400">
-                          Algemene regels voor portfolio monitoring (vrije cash, etc.)
+                          {t('pagesA.rules.assetGeneralDesc')}
                         </p>
                       </div>
                     </div>
@@ -496,7 +498,7 @@ export const RulesManagement: React.FC = () => {
                       onClick={() => setShowWizard(false)}
                       className="px-4 py-2 bg-surface-muted dark:bg-trading-dark-700 hover:bg-ink-200 dark:hover:bg-trading-dark-600 text-ink-700 dark:text-ink-200 rounded-lg font-medium transition-colors"
                     >
-                      Annuleren
+                      {t('pagesA.common.cancel')}
                     </button>
                   </div>
                 </div>
@@ -512,10 +514,10 @@ export const RulesManagement: React.FC = () => {
                   </div>
                   <div>
                     <h3 className="text-xl font-semibold text-ink-900 dark:text-white">
-                      Nieuwe Regel voor {getAssetTypeName(selectedAssetType)}
+                      {t('pagesA.rules.newRuleFor', { assetType: getAssetTypeName(selectedAssetType) })}
                     </h3>
                     <p className="text-sm text-ink-600 dark:text-ink-400">
-                      Configureer de regel instellingen
+                      {t('pagesA.rules.configureRuleSettings')}
                     </p>
                   </div>
                 </div>
@@ -523,7 +525,7 @@ export const RulesManagement: React.FC = () => {
                 <div className="space-y-4">
                   <div>
                     <label className="block mb-2 text-sm font-medium text-ink-900 dark:text-white">
-                      Regel Naam
+                      {t('pagesA.rules.ruleName')}
                     </label>
                     <input
                       type="text"
@@ -532,13 +534,13 @@ export const RulesManagement: React.FC = () => {
                         setWizardFormData({ ...wizardFormData, name: e.target.value })
                       }
                       className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:placeholder-ink-400 dark:text-white"
-                      placeholder="bv. Aandeel Gedaald 10%"
+                      placeholder={t('pagesA.rules.ruleNamePlaceholder')}
                     />
                   </div>
 
                   <div>
                     <label className="block mb-2 text-sm font-medium text-ink-900 dark:text-white">
-                      Beschrijving
+                      {t('pagesA.rules.description')}
                     </label>
                     <input
                       type="text"
@@ -547,13 +549,13 @@ export const RulesManagement: React.FC = () => {
                         setWizardFormData({ ...wizardFormData, description: e.target.value })
                       }
                       className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:placeholder-ink-400 dark:text-white"
-                      placeholder="bv. Alert wanneer een aandeel 10% gedaald is"
+                      placeholder={t('pagesA.rules.descriptionPlaceholder')}
                     />
                   </div>
 
                   <div>
                     <label className="block mb-2 text-sm font-medium text-ink-900 dark:text-white">
-                      Type
+                      {t('pagesA.rules.typeLabel')}
                     </label>
                     <select
                       value={wizardFormData.category}
@@ -565,9 +567,9 @@ export const RulesManagement: React.FC = () => {
                       }
                       className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                     >
-                      <option value="alert">Alert (waarschuwing)</option>
-                      <option value="opportunity">Opportunity (kans)</option>
-                      <option value="idea">Idea (advanced strategie)</option>
+                      <option value="alert">{t('pagesA.rules.categoryAlert')}</option>
+                      <option value="opportunity">{t('pagesA.rules.categoryOpportunity')}</option>
+                      <option value="idea">{t('pagesA.rules.categoryIdea')}</option>
                     </select>
                   </div>
 
@@ -575,7 +577,7 @@ export const RulesManagement: React.FC = () => {
                     <>
                       <div>
                         <label className="block mb-2 text-sm font-medium text-ink-900 dark:text-white">
-                          Trigger
+                          {t('pagesA.rules.triggerLabel')}
                         </label>
                         <select
                           value={wizardFormData.trigger}
@@ -587,14 +589,14 @@ export const RulesManagement: React.FC = () => {
                           }
                           className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                         >
-                          <option value="price_increase">Prijs Stijging</option>
-                          <option value="price_decrease">Prijs Daling</option>
+                          <option value="price_increase">{t('pagesA.rules.triggerPriceIncrease')}</option>
+                          <option value="price_decrease">{t('pagesA.rules.triggerPriceDecrease')}</option>
                         </select>
                       </div>
 
                       <div>
                         <label className="block mb-2 text-sm font-medium text-ink-900 dark:text-white">
-                          Percentage (%)
+                          {t('pagesA.rules.percentageLabel')}
                         </label>
                         <input
                           type="number"
@@ -619,7 +621,7 @@ export const RulesManagement: React.FC = () => {
                     <>
                       <div>
                         <label className="block mb-2 text-sm font-medium text-ink-900 dark:text-white">
-                          Trigger
+                          {t('pagesA.rules.triggerLabel')}
                         </label>
                         <select
                           value={wizardFormData.trigger}
@@ -631,18 +633,18 @@ export const RulesManagement: React.FC = () => {
                           }
                           className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                         >
-                          <option value="time_based">Tijd tot Expiratie</option>
+                          <option value="time_based">{t('pagesA.rules.triggerTimeToExpiry')}</option>
                           <option value="price_decrease">
-                            Waarde Daling (positief bij verkochte opties)
+                            {t('pagesA.rules.triggerValueDecrease')}
                           </option>
-                          <option value="price_increase">Waarde Stijging</option>
+                          <option value="price_increase">{t('pagesA.rules.triggerValueIncrease')}</option>
                         </select>
                       </div>
 
                       {wizardFormData.trigger === 'time_based' && (
                         <div>
                           <label className="block mb-2 text-sm font-medium text-ink-900 dark:text-white">
-                            Dagen tot Expiratie
+                            {t('pagesA.rules.daysToExpiry')}
                           </label>
                           <input
                             type="number"
@@ -684,7 +686,7 @@ export const RulesManagement: React.FC = () => {
                             step="1"
                           />
                           <p className="mt-1 text-xs text-ink-500 dark:text-ink-400">
-                            Voor verkochte opties: 80% daling = opportunity (sluiten voor winst)
+                            {t('pagesA.rules.percentageHelp')}
                           </p>
                         </div>
                       )}
@@ -694,8 +696,7 @@ export const RulesManagement: React.FC = () => {
                   {selectedAssetType === 'general' && (
                     <div className="p-4 bg-surface dark:bg-trading-dark-700/50 rounded-lg">
                       <p className="text-sm text-ink-600 dark:text-ink-400">
-                        Algemene regels worden automatisch gecontroleerd op portfolio niveau.
-                        Bijvoorbeeld: alert wanneer vrije cash negatief is.
+                        {t('pagesA.rules.generalInfo')}
                       </p>
                     </div>
                   )}
@@ -710,20 +711,20 @@ export const RulesManagement: React.FC = () => {
                       }}
                       className="px-4 py-2 bg-surface-muted dark:bg-trading-dark-700 hover:bg-ink-200 dark:hover:bg-trading-dark-600 text-ink-700 dark:text-ink-200 rounded-lg font-medium transition-colors"
                     >
-                      Terug
+                      {t('pagesA.common.back')}
                     </button>
                     <button
                       onClick={() => setShowWizard(false)}
                       className="px-4 py-2 bg-surface-muted dark:bg-trading-dark-700 hover:bg-ink-200 dark:hover:bg-trading-dark-600 text-ink-700 dark:text-ink-200 rounded-lg font-medium transition-colors"
                     >
-                      Annuleren
+                      {t('pagesA.common.cancel')}
                     </button>
                     <button
                       onClick={handleSaveRule}
                       disabled={!wizardFormData.name || !wizardFormData.description}
                       className="px-4 py-2 bg-primary-700 hover:bg-primary-800 disabled:bg-ink-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
                     >
-                      Opslaan
+                      {t('pagesA.common.save')}
                     </button>
                   </div>
                 </div>
@@ -736,9 +737,11 @@ export const RulesManagement: React.FC = () => {
       {/* System Rules - Always Active */}
       <div className="bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600">
         <div className="px-6 py-4 border-b border-surface-line dark:border-trading-dark-600">
-          <h3 className="text-lg font-semibold text-ink-900 dark:text-white">Systeem Regels</h3>
+          <h3 className="text-lg font-semibold text-ink-900 dark:text-white">
+            {t('pagesA.rules.systemRulesTitle')}
+          </h3>
           <p className="text-sm text-ink-600 dark:text-ink-400">
-            Deze regels zijn altijd actief en worden automatisch geëvalueerd
+            {t('pagesA.rules.systemRulesDesc')}
           </p>
         </div>
 
@@ -757,7 +760,7 @@ export const RulesManagement: React.FC = () => {
                     </h4>
                     {getRuleBadge(rule.category)}
                     <span className="px-2 py-1 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded text-xs font-medium">
-                      Systeem
+                      {t('pagesA.rules.systemBadge')}
                     </span>
                   </div>
                   <p className="text-sm text-ink-600 dark:text-ink-400 mb-2">{rule.description}</p>
@@ -769,7 +772,7 @@ export const RulesManagement: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-2 ml-4">
                   <span className="px-3 py-1 bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 rounded text-sm font-medium">
-                    Actief
+                    {t('pagesA.rules.statusActive')}
                   </span>
                 </div>
               </div>
@@ -793,7 +796,10 @@ export const RulesManagement: React.FC = () => {
                   {getStrategyTypeName(strategyType as StrategyType)}
                 </h3>
                 <p className="text-sm text-ink-600 dark:text-ink-400">
-                  {strategyRules.length} {strategyRules.length === 1 ? 'regel' : 'regels'}
+                  {strategyRules.length}{' '}
+                  {strategyRules.length === 1
+                    ? t('pagesA.rules.ruleSingular')
+                    : t('pagesA.rules.rulePlural')}
                 </p>
               </div>
 
@@ -830,7 +836,7 @@ export const RulesManagement: React.FC = () => {
                           )}
                           {rule.parameters.threshold && (
                             <span className="px-2 py-1 bg-surface-muted dark:bg-trading-dark-600 rounded">
-                              {rule.parameters.threshold} dagen
+                              {t('pagesA.rules.daysSuffix', { count: rule.parameters.threshold })}
                             </span>
                           )}
                         </div>
@@ -844,7 +850,7 @@ export const RulesManagement: React.FC = () => {
                               : 'bg-surface-subtle dark:bg-trading-dark-700 text-ink-700 dark:text-ink-300 hover:bg-surface-muted dark:hover:bg-trading-dark-600'
                           }`}
                         >
-                          {rule.enabled ? 'Actief' : 'Inactief'}
+                          {rule.enabled ? t('pagesA.rules.statusActive') : t('pagesA.rules.statusInactive')}
                         </button>
                         <button
                           onClick={() =>
@@ -867,15 +873,15 @@ export const RulesManagement: React.FC = () => {
       {rules.length === 0 && (
         <div className="bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 p-12 text-center">
           <AlertCircle className="w-16 h-16 text-ink-300 dark:text-ink-600 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">Geen Regels</h3>
-          <p className="text-ink-600 dark:text-ink-400 mb-4">
-            Begin door je eerste regel toe te voegen
-          </p>
+          <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
+            {t('pagesA.rules.emptyTitle')}
+          </h3>
+          <p className="text-ink-600 dark:text-ink-400 mb-4">{t('pagesA.rules.emptyDesc')}</p>
           <button
             onClick={handleStartWizard}
             className="px-6 py-3 bg-primary-700 hover:bg-primary-800 text-white rounded-lg font-medium transition-colors"
           >
-            Eerste regel toevoegen
+            {t('pagesA.rules.emptyAddFirst')}
           </button>
         </div>
       )}
@@ -886,10 +892,10 @@ export const RulesManagement: React.FC = () => {
           isOpen={deleteConfirm.isOpen}
           onClose={() => setDeleteConfirm({ isOpen: false, ruleId: null, ruleName: '' })}
           onConfirm={() => deleteConfirm.ruleId && handleDeleteRule(deleteConfirm.ruleId)}
-          title="Regel Verwijderen"
-          message={`Weet je zeker dat je de regel "${deleteConfirm.ruleName}" wilt verwijderen? Deze actie kan niet ongedaan gemaakt worden.`}
-          confirmText="Verwijderen"
-          cancelText="Annuleren"
+          title={t('pagesA.rules.deleteTitle')}
+          message={t('pagesA.rules.deleteMessage', { ruleName: deleteConfirm.ruleName })}
+          confirmText={t('pagesA.common.delete')}
+          cancelText={t('pagesA.common.cancel')}
           variant="danger"
         />
       )}

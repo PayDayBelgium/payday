@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { createPortal } from 'react-dom';
 import { TrendingUp, Building2, Target } from 'lucide-react';
 import { formatCurrency, formatNumber } from '../../utils/numberFormat';
@@ -41,6 +42,7 @@ export const StockRow: React.FC<StockRowProps> = ({
   opportunityMessage = '',
   canWriteCoveredCallsOverride,
 }) => {
+  const { t } = useTranslation();
   const currencySymbol = getCurrencySymbol(currency);
 
   // Get current price from ticker or position
@@ -65,7 +67,9 @@ export const StockRow: React.FC<StockRowProps> = ({
   const showOpportunity = hasOpportunity || (showOpportunityBadge && hasUncoveredShares);
   const tooltipMessage =
     opportunityMessage ||
-    `Opportunity: Verkoop ${contractsNeeded - coveredCallContracts} covered call(s) voor extra inkomen`;
+    t('widgetsA.writeCoveredCallsOpportunity', {
+      count: contractsNeeded - coveredCallContracts,
+    });
 
   // Tooltip state for portal-based rendering
   const [showTooltip, setShowTooltip] = useState(false);
@@ -124,7 +128,7 @@ export const StockRow: React.FC<StockRowProps> = ({
                   : 'bg-surface-muted dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300'
               }`}
             >
-              {position.type === 'stock' ? 'AANDEEL' : 'ETF'}
+              {position.type === 'stock' ? t('widgetsA.stockBadge') : 'ETF'}
             </span>
             {showOpportunity && (
               <>
@@ -148,7 +152,7 @@ export const StockRow: React.FC<StockRowProps> = ({
                         <Target className="w-4 h-4 text-positive-600 dark:text-positive-500 flex-shrink-0 mt-0.5" />
                         <div>
                           <p className="font-semibold text-sm text-ink-900 dark:text-white mb-1">
-                            Opportunity
+                            {t('widgetsA.opportunity')}
                           </p>
                           <p className="text-xs text-ink-600 dark:text-ink-300 whitespace-pre-line">
                             {tooltipMessage}

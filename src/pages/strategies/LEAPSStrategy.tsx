@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { usePageTitle } from '../../contexts/PageTitleContext';
 import { useNavigation } from '../../contexts/NavigationContext';
 import {
@@ -18,6 +19,7 @@ import { useStrategyRules } from '../../hooks/useStrategyRules';
 
 export const LEAPSStrategy: React.FC = () => {
   const { portfolio } = useParams<{ portfolio: string }>();
+  const { t } = useTranslation();
   const { setPageTitle } = usePageTitle();
   const navigate = useNavigate();
   const { pushNavigation } = useNavigation();
@@ -35,8 +37,8 @@ export const LEAPSStrategy: React.FC = () => {
   } = useStrategyRules('leaps', portfolio);
 
   useEffect(() => {
-    setPageTitle('LEAPS', `Synthetische aandelen met leverage voor ${portfolio}`);
-  }, [setPageTitle, portfolio]);
+    setPageTitle('LEAPS', t('stratPages.leapsSubtitle', { portfolio }));
+  }, [setPageTitle, portfolio, t]);
 
   return (
     <>
@@ -52,7 +54,7 @@ export const LEAPSStrategy: React.FC = () => {
                   : 'text-ink-600 dark:text-ink-400 hover:text-ink-900 dark:hover:text-white'
               }`}
             >
-              Posities
+              {t('stratPages.tabPositions')}
               <span className="px-2 py-0.5 rounded-full text-xs bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
                 0
               </span>
@@ -66,7 +68,7 @@ export const LEAPSStrategy: React.FC = () => {
               }`}
             >
               <ListTodo className="w-4 h-4" />
-              Regels
+              {t('stratPages.tabRules')}
               {strategyRules.length > 0 && (
                 <span className="px-2 py-0.5 rounded-full text-xs bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
                   {strategyRules.length}
@@ -82,7 +84,7 @@ export const LEAPSStrategy: React.FC = () => {
               }`}
             >
               <Info className="w-4 h-4" />
-              Informatie
+              {t('stratPages.tabInfo')}
             </button>
           </div>
           {activeTab === 'rules' && (
@@ -91,7 +93,7 @@ export const LEAPSStrategy: React.FC = () => {
               className="flex items-center gap-2 px-3 py-1.5 bg-primary-700 hover:bg-primary-800 text-white rounded-lg text-sm font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
-              Regel Toevoegen
+              {t('stratPages.addRule')}
             </button>
           )}
         </div>
@@ -102,24 +104,36 @@ export const LEAPSStrategy: React.FC = () => {
             {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
-                <p className="text-sm text-ink-600 dark:text-ink-400">Totale Waarde</p>
+                <p className="text-sm text-ink-600 dark:text-ink-400">
+                  {t('stratPages.leapsTotalValue')}
+                </p>
                 <p className="text-2xl font-bold text-primary-700 dark:text-primary-300 mt-1">
                   $0.00
                 </p>
               </div>
               <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
-                <p className="text-sm text-ink-600 dark:text-ink-400">Aantal LEAPS</p>
+                <p className="text-sm text-ink-600 dark:text-ink-400">
+                  {t('stratPages.leapsCount')}
+                </p>
                 <p className="text-2xl font-bold text-ink-900 dark:text-white mt-1">0</p>
               </div>
               <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
-                <p className="text-sm text-ink-600 dark:text-ink-400">Gemiddelde Delta</p>
+                <p className="text-sm text-ink-600 dark:text-ink-400">
+                  {t('stratPages.leapsAvgDelta')}
+                </p>
                 <p className="text-2xl font-bold text-ink-900 dark:text-white mt-1">-</p>
-                <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">Doel: 0.80 - 0.90</p>
+                <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
+                  {t('stratPages.leapsTarget')}
+                </p>
               </div>
               <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
-                <p className="text-sm text-ink-600 dark:text-ink-400">Beschikbaar voor Calls</p>
+                <p className="text-sm text-ink-600 dark:text-ink-400">
+                  {t('stratPages.leapsAvailableForCalls')}
+                </p>
                 <p className="text-2xl font-bold text-primary-700 dark:text-primary-300 mt-1">0</p>
-                <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">Niet gedekt met calls</p>
+                <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
+                  {t('stratPages.leapsNotCovered')}
+                </p>
               </div>
             </div>
 
@@ -127,13 +141,13 @@ export const LEAPSStrategy: React.FC = () => {
             <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-12 text-center">
               <Zap className="w-16 h-16 text-ink-300 dark:text-ink-600 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
-                Geen LEAPS posities
+                {t('stratPages.leapsNoPositionsTitle')}
               </h3>
               <p className="text-ink-600 dark:text-ink-400 mb-4">
-                Voeg LEAPS toe om exposure te krijgen met minder kapitaal
+                {t('stratPages.leapsNoPositionsDesc')}
               </p>
               <button className="px-6 py-3 bg-primary-700 hover:bg-primary-800 text-white rounded-lg font-medium transition-colors">
-                Voeg je eerste LEAP toe
+                {t('stratPages.leapsAddFirst')}
               </button>
             </div>
           </>
@@ -149,33 +163,33 @@ export const LEAPSStrategy: React.FC = () => {
                 <div className="flex-1 space-y-6">
                   <div>
                     <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
-                      Wat zijn LEAPS?
+                      {t('stratPages.leapsWhatTitle')}
                     </h3>
                     <p className="text-sm text-ink-700 dark:text-ink-300 mb-3">
-                      LEAPS (Long-term Equity AnticiPation Securities) zijn call opties met een
-                      lange looptijd (typisch 1-2 jaar). Ze fungeren als "synthetische aandelen"
-                      omdat ze zich bijna identiek gedragen aan het bezitten van aandelen, maar met{' '}
-                      <strong>leverage</strong> - je controleert 100 aandelen voor een fractie van
-                      de prijs.
+                      {t('stratPages.leapsWhatDesc1')}
+                      <strong>{t('stratPages.leapsWhatLeverage')}</strong>
+                      {t('stratPages.leapsWhatDesc2')}
                     </p>
                     <div className="space-y-2">
                       <div className="flex items-start gap-2">
                         <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                         <p className="text-sm text-ink-700 dark:text-ink-300">
-                          <strong>Voordeel:</strong> Minder kapitaal nodig dan 100 aandelen kopen
+                          <strong>{t('stratPages.leapsAdvantageLabel')}</strong>
+                          {t('stratPages.leapsAdvantage')}
                         </p>
                       </div>
                       <div className="flex items-start gap-2">
                         <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                         <p className="text-sm text-ink-700 dark:text-ink-300">
-                          <strong>Leverage:</strong> Grotere procentuele winsten bij koersstijgingen
+                          <strong>{t('stratPages.leapsLeverageLabel')}</strong>
+                          {t('stratPages.leapsLeverage')}
                         </p>
                       </div>
                       <div className="flex items-start gap-2">
                         <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                         <p className="text-sm text-ink-700 dark:text-ink-300">
-                          <strong>Covered Calls:</strong> Schrijf calls op je LEAPS om extra premies
-                          te verdienen (zoals bij aandelen)
+                          <strong>{t('stratPages.leapsCcLabel')}</strong>
+                          {t('stratPages.leapsCc')}
                         </p>
                       </div>
                     </div>
@@ -186,12 +200,10 @@ export const LEAPSStrategy: React.FC = () => {
                       <AlertCircle className="w-5 h-5 text-caution-600 dark:text-caution-500 mt-0.5 flex-shrink-0" />
                       <div className="flex-1">
                         <h4 className="font-medium text-ink-900 dark:text-white mb-1">
-                          Let op: Leverage werkt twee kanten op
+                          {t('stratPages.leapsWarningTitle')}
                         </h4>
                         <p className="text-sm text-ink-700 dark:text-ink-300">
-                          LEAPS hebben theta decay (tijdswaardeverval) en kunnen waardeloos aflopen.
-                          Gebruik alleen deep-in-the-money LEAPS (hoge delta ~0.80-0.90) voor een
-                          synthetisch aandeel effect.
+                          {t('stratPages.leapsWarningDesc')}
                         </p>
                       </div>
                     </div>
@@ -205,13 +217,16 @@ export const LEAPSStrategy: React.FC = () => {
               <div className="flex items-start gap-3 mb-4">
                 <GraduationCap className="w-5 h-5 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                 <h3 className="text-lg font-semibold text-ink-900 dark:text-white">
-                  Volgende Stappen
+                  {t('stratPages.nextSteps')}
                 </h3>
               </div>
               <div className="space-y-3">
                 <button
                   onClick={() => {
-                    pushNavigation(`/portfolio/${portfolio}/covered-calls`, 'Covered Calls');
+                    pushNavigation(
+                      `/portfolio/${portfolio}/covered-calls`,
+                      t('stratPages.navCoveredCalls')
+                    );
                     navigate(`/portfolio/${portfolio}/covered-calls`);
                   }}
                   className="w-full text-left p-4 bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 hover:border-primary-300 dark:hover:border-primary-500 transition-colors"
@@ -219,10 +234,10 @@ export const LEAPSStrategy: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex-1 text-left">
                       <p className="font-medium text-ink-900 dark:text-white">
-                        Covered Calls op LEAPS
+                        {t('stratPages.leapsLinkCcTitle')}
                       </p>
                       <p className="text-sm text-ink-600 dark:text-ink-400">
-                        Schrijf calls op je LEAPS voor extra premie-inkomen
+                        {t('stratPages.leapsLinkCcDesc')}
                       </p>
                     </div>
                     <ArrowRight className="w-5 h-5 text-ink-400 flex-shrink-0 ml-3" />
@@ -230,7 +245,10 @@ export const LEAPSStrategy: React.FC = () => {
                 </button>
                 <button
                   onClick={() => {
-                    pushNavigation(`/portfolio/${portfolio}/stocks-etfs`, 'Aandelen & ETFs');
+                    pushNavigation(
+                      `/portfolio/${portfolio}/stocks-etfs`,
+                      t('stratPages.navStocksEtfs')
+                    );
                     navigate(`/portfolio/${portfolio}/stocks-etfs`);
                   }}
                   className="w-full text-left p-4 bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 hover:border-primary-300 dark:hover:border-primary-500 transition-colors"
@@ -238,10 +256,10 @@ export const LEAPSStrategy: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex-1 text-left">
                       <p className="font-medium text-ink-900 dark:text-white">
-                        Terug naar Aandelen & ETFs
+                        {t('stratPages.leapsLinkStocksTitle')}
                       </p>
                       <p className="text-sm text-ink-600 dark:text-ink-400">
-                        Beheer je basis portfolio
+                        {t('stratPages.leapsLinkStocksDesc')}
                       </p>
                     </div>
                     <ArrowRight className="w-5 h-5 text-ink-400 flex-shrink-0 ml-3" />

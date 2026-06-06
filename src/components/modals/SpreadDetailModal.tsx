@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, Save, TrendingUp, TrendingDown, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
 import { getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency, formatNumber } from '../../utils/numberFormat';
@@ -23,6 +24,7 @@ export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
   currency,
   currentStockPrice: propCurrentStockPrice,
 }) => {
+  const { t } = useTranslation();
   const currencySymbol = getCurrencySymbol(currency);
   const [activeTab, setActiveTab] = useState<'overview' | 'pnl'>('overview');
 
@@ -135,7 +137,7 @@ export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
           <div>
             <h2 className="text-xl font-bold text-ink-900 dark:text-white flex items-center gap-2">
               <span className="px-2 py-1 text-xs font-semibold rounded bg-surface-muted dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300">
-                {longLeg.type.toUpperCase()} SPREAD
+                {longLeg.type.toUpperCase()} {t('modalsA.spreadSuffix')}
               </span>
               <span
                 className={`px-2 py-1 text-xs font-semibold rounded ${
@@ -144,7 +146,7 @@ export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
                     : 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
                 }`}
               >
-                {spreadType === 'credit' ? 'CREDIT' : 'DEBIT'}
+                {spreadType === 'credit' ? t('modalsA.creditUpper') : t('modalsA.debitUpper')}
               </span>
             </h2>
             <p className="text-sm text-ink-600 dark:text-ink-400 mt-1">
@@ -171,7 +173,7 @@ export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
                   : 'border-transparent text-ink-500 dark:text-ink-400 hover:text-ink-700 dark:hover:text-ink-300'
               }`}
             >
-              Overview
+              {t('modalsA.overview')}
             </button>
             <button
               onClick={() => setActiveTab('pnl')}
@@ -181,7 +183,7 @@ export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
                   : 'border-transparent text-ink-500 dark:text-ink-400 hover:text-ink-700 dark:hover:text-ink-300'
               }`}
             >
-              P&L Curve
+              {t('modalsA.pnlCurve')}
             </button>
           </div>
         </div>
@@ -206,7 +208,7 @@ export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
                   )}
                   <div className="flex-1">
                     <p className="text-sm font-medium text-ink-700 dark:text-ink-300">
-                      Totale Winst/Verlies
+                      {t('modalsA.totalProfitLoss')}
                     </p>
                     <p
                       className={`text-2xl font-bold ${
@@ -220,7 +222,9 @@ export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-ink-500 dark:text-ink-400">Return %</p>
+                    <p className="text-xs text-ink-500 dark:text-ink-400">
+                      {t('modalsA.returnPercent')}
+                    </p>
                     <p
                       className={`text-lg font-semibold ${
                         isProfitable
@@ -236,7 +240,7 @@ export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
 
                 <div className="grid grid-cols-4 gap-6 text-sm">
                   <div className="flex flex-col">
-                    <p className="text-ink-500 dark:text-ink-400 mb-1">Net Premium</p>
+                    <p className="text-ink-500 dark:text-ink-400 mb-1">{t('modalsA.netPremium')}</p>
                     <p
                       className={`font-semibold text-base ${
                         isCredit
@@ -249,19 +253,19 @@ export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
                     </p>
                   </div>
                   <div className="flex flex-col">
-                    <p className="text-ink-500 dark:text-ink-400 mb-1">Max Winst</p>
+                    <p className="text-ink-500 dark:text-ink-400 mb-1">{t('modalsA.maxProfit')}</p>
                     <p className="font-semibold text-base text-positive-600 dark:text-positive-500">
                       +{formatCurrency(maxProfit, currencySymbol)}
                     </p>
                   </div>
                   <div className="flex flex-col">
-                    <p className="text-ink-500 dark:text-ink-400 mb-1">Max Verlies</p>
+                    <p className="text-ink-500 dark:text-ink-400 mb-1">{t('modalsA.maxLoss')}</p>
                     <p className="font-semibold text-base text-negative-600 dark:text-negative-500">
                       -{formatCurrency(maxLoss, currencySymbol)}
                     </p>
                   </div>
                   <div className="flex flex-col">
-                    <p className="text-ink-500 dark:text-ink-400 mb-1">Spread Breedte</p>
+                    <p className="text-ink-500 dark:text-ink-400 mb-1">{t('modalsA.spreadWidth')}</p>
                     <p className="font-semibold text-base text-ink-900 dark:text-white">
                       ${formatNumber(spreadWidth, 2)}
                     </p>
@@ -275,25 +279,29 @@ export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
                 <div className="p-4 border-2 border-primary-200 dark:border-primary-800 rounded-lg bg-primary-50/50 dark:bg-primary-900/15">
                   <div className="flex items-center gap-2 mb-3">
                     <ArrowUpCircle className="w-5 h-5 text-primary-700 dark:text-primary-300" />
-                    <h3 className="font-semibold text-ink-900 dark:text-white">Long Leg (KOPEN)</h3>
+                    <h3 className="font-semibold text-ink-900 dark:text-white">
+                      {t('modalsA.longLegBuy')}
+                    </h3>
                   </div>
 
                   <div className="space-y-3 text-sm">
                     <div>
-                      <p className="text-ink-500 dark:text-ink-400">Strike</p>
+                      <p className="text-ink-500 dark:text-ink-400">{t('modalsA.strike')}</p>
                       <p className="font-semibold text-ink-900 dark:text-white">
                         {formatCurrency(longLeg.strike, currencySymbol)}
                       </p>
                     </div>
                     <div>
-                      <p className="text-ink-500 dark:text-ink-400">Fill Premium (per aandeel)</p>
+                      <p className="text-ink-500 dark:text-ink-400">
+                        {t('modalsA.fillPremiumPerShare')}
+                      </p>
                       <p className="font-semibold text-ink-900 dark:text-white">
                         {formatCurrency(longLeg.premium, currencySymbol)}
                       </p>
                     </div>
                     <div>
                       <p className="text-ink-500 dark:text-ink-400 mb-1">
-                        Huidige Premium (per aandeel)
+                        {t('modalsA.currentPremiumPerShare')}
                       </p>
                       <input
                         type="text"
@@ -304,7 +312,7 @@ export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
                       />
                     </div>
                     <div>
-                      <p className="text-ink-500 dark:text-ink-400">Totale kost</p>
+                      <p className="text-ink-500 dark:text-ink-400">{t('modalsA.totalCost')}</p>
                       <p className="font-semibold text-ink-900 dark:text-white">
                         {formatCurrency(longLeg.premium * contracts * 100, currencySymbol)}
                       </p>
@@ -317,26 +325,28 @@ export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
                   <div className="flex items-center gap-2 mb-3">
                     <ArrowDownCircle className="w-5 h-5 text-caution-600 dark:text-caution-500" />
                     <h3 className="font-semibold text-ink-900 dark:text-white">
-                      Short Leg (VERKOPEN)
+                      {t('modalsA.shortLegSell')}
                     </h3>
                   </div>
 
                   <div className="space-y-3 text-sm">
                     <div>
-                      <p className="text-ink-500 dark:text-ink-400">Strike</p>
+                      <p className="text-ink-500 dark:text-ink-400">{t('modalsA.strike')}</p>
                       <p className="font-semibold text-ink-900 dark:text-white">
                         {formatCurrency(shortLeg.strike, currencySymbol)}
                       </p>
                     </div>
                     <div>
-                      <p className="text-ink-500 dark:text-ink-400">Fill Premium (per aandeel)</p>
+                      <p className="text-ink-500 dark:text-ink-400">
+                        {t('modalsA.fillPremiumPerShare')}
+                      </p>
                       <p className="font-semibold text-ink-900 dark:text-white">
                         {formatCurrency(shortLeg.premium, currencySymbol)}
                       </p>
                     </div>
                     <div>
                       <p className="text-ink-500 dark:text-ink-400 mb-1">
-                        Huidige Premium (per aandeel)
+                        {t('modalsA.currentPremiumPerShare')}
                       </p>
                       <input
                         type="text"
@@ -347,7 +357,9 @@ export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
                       />
                     </div>
                     <div>
-                      <p className="text-ink-500 dark:text-ink-400">Totale Opbrengst</p>
+                      <p className="text-ink-500 dark:text-ink-400">
+                        {t('modalsA.totalProceedsLabel')}
+                      </p>
                       <p className="font-semibold text-ink-900 dark:text-white">
                         {formatCurrency(shortLeg.premium * contracts * 100, currencySymbol)}
                       </p>
@@ -359,30 +371,34 @@ export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
               {/* Additional Info */}
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div className="p-3 bg-surface dark:bg-trading-dark-700/50 rounded-lg">
-                  <p className="text-ink-500 dark:text-ink-400">Expiratie</p>
+                  <p className="text-ink-500 dark:text-ink-400">{t('modalsA.expirationPlain')}</p>
                   <p className="font-semibold text-ink-900 dark:text-white">
                     {longLeg.expiration
                       ? new Date(longLeg.expiration).toLocaleDateString('nl-NL')
-                      : 'N/A'}
+                      : t('modalsA.na')}
                   </p>
                   <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
-                    {daysToExpiration} dagen
+                    {t('modalsA.days', { days: daysToExpiration })}
                   </p>
                 </div>
                 <div className="p-3 bg-surface dark:bg-trading-dark-700/50 rounded-lg">
-                  <p className="text-ink-500 dark:text-ink-400">Contracten</p>
+                  <p className="text-ink-500 dark:text-ink-400">
+                    {t('modalsA.contractsLabelPlain')}
+                  </p>
                   <p className="font-semibold text-ink-900 dark:text-white">{contracts}</p>
                   <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
-                    {contracts * 100} aandelen
+                    {t('modalsA.sharesPlain', { shares: contracts * 100 })}
                   </p>
                 </div>
                 {collateral > 0 && (
                   <div className="p-3 bg-surface dark:bg-trading-dark-700/50 rounded-lg">
-                    <p className="text-ink-500 dark:text-ink-400">Onderpand</p>
+                    <p className="text-ink-500 dark:text-ink-400">{t('modalsA.collateral')}</p>
                     <p className="font-semibold text-caution-600 dark:text-caution-500">
                       {formatCurrency(collateral, currencySymbol)}
                     </p>
-                    <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">Vereist</p>
+                    <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
+                      {t('modalsA.required')}
+                    </p>
                   </div>
                 )}
               </div>
@@ -390,14 +406,14 @@ export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
               {/* Notes */}
               <div>
                 <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
-                  Notities
+                  {t('modalsA.notes')}
                 </label>
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={4}
                   className="w-full px-3 py-2 bg-surface dark:bg-trading-dark-700 border border-ink-200 dark:border-trading-dark-500 rounded text-sm"
-                  placeholder="Voeg notities toe over deze spread..."
+                  placeholder={t('modalsA.spreadNotesPlaceholder')}
                 />
               </div>
             </div>
@@ -423,14 +439,14 @@ export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
             onClick={onClose}
             className="px-4 py-2 bg-surface-muted dark:bg-trading-dark-700 hover:bg-ink-200 dark:hover:bg-trading-dark-600 text-ink-700 dark:text-ink-200 rounded-lg font-medium transition-colors"
           >
-            Annuleren
+            {t('modalsA.cancel')}
           </button>
           <button
             onClick={handleSave}
             className="px-4 py-2 bg-ink-700 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
           >
             <Save className="w-4 h-4" />
-            Opslaan
+            {t('modalsA.save')}
           </button>
         </div>
       </div>

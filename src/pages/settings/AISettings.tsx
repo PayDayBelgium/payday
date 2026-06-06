@@ -73,11 +73,11 @@ export const AISettings: React.FC = () => {
             className="mt-0.5 h-4 w-4 rounded border-ink-300 dark:border-trading-dark-600 text-primary-600 focus:ring-2 focus:ring-primary-500"
           />
           <span className="text-sm text-ink-700 dark:text-ink-200">
-            Sleutel alleen in deze sessie bewaren
+            {t('pagesA.aiSettings.sessionOnlyLabel')}
           </span>
         </label>
         <p className="text-xs text-ink-500 dark:text-ink-400">
-          De sleutel wordt dan niet permanent opgeslagen en gewist zodra je dit tabblad sluit.
+          {t('pagesA.aiSettings.sessionOnlyHelp')}
         </p>
       </div>
 

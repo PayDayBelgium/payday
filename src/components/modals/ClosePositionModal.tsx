@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, TrendingUp, TrendingDown } from 'lucide-react';
 import { getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency, formatNumber } from '../../utils/numberFormat';
@@ -39,6 +40,7 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
   allPositions = [],
   onConfirmSpread,
 }) => {
+  const { t } = useTranslation();
   const currencySymbol = getCurrencySymbol(currency);
 
   const [closePrice, setClosePrice] = useState<string>('');
@@ -213,11 +215,14 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
     if (isSpread && spreadLegs.length === 2) {
       const option = spreadLegs[0] as CallOption | PutOption;
       const type = option.type === 'call' ? 'Call' : 'Put';
-      return `${option.ticker} ${type} Spread Sluiten`;
+      return t('modalsA.spreadTitle', { ticker: option.ticker, type });
     } else if (position.type === 'stock' || position.type === 'etf') {
-      return `${position.ticker} - ${position.type === 'stock' ? 'Aandeel' : 'ETF'}`;
+      return `${position.ticker} - ${position.type === 'stock' ? t('modalsA.stockType') : t('modalsA.etfType')}`;
     } else if (position.type === 'call' || position.type === 'put') {
-      const action = (position as { action?: string }).action === 'buy' ? 'Koop' : 'Verkoop';
+      const action =
+        (position as { action?: string }).action === 'buy'
+          ? t('modalsA.buyAction')
+          : t('modalsA.sellAction');
       const type = position.type === 'call' ? 'Call' : 'Put';
       return `${position.ticker} ${action} ${type}`;
     }
@@ -230,7 +235,9 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
         {/* Header */}
         <div className="sticky top-0 bg-white dark:bg-trading-dark-800 border-b border-surface-line dark:border-trading-dark-600 px-6 py-4 flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-ink-900 dark:text-white">Positie sluiten</h2>
+            <h2 className="text-xl font-bold text-ink-900 dark:text-white">
+              {t('modalsA.title')}
+            </h2>
             <p className="text-sm text-ink-600 dark:text-ink-400 mt-1">{getPositionTitle()}</p>
           </div>
           <button
@@ -250,14 +257,14 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <label className="block text-sm font-medium text-ink-700 dark:text-ink-300">
-                      Aantal te Verkopen *
+                      {t('modalsA.amountToSell')}
                     </label>
                     <button
                       type="button"
                       onClick={() => setQuantity(totalShares.toString())}
                       className="text-xs px-2 py-1 bg-ink-400 hover:bg-trading-dark-600 text-white rounded transition-colors"
                     >
-                      Max
+                      {t('modalsA.max')}
                     </button>
                   </div>
                   <input
@@ -268,18 +275,18 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
                     value={quantity}
                     onChange={(e) => setQuantity(e.target.value)}
                     className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
-                    placeholder={`${totalShares} (alle)`}
+                    placeholder={t('modalsA.amountPlaceholderAll', { total: totalShares })}
                   />
                   <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
                     {quantity
-                      ? `${quantityToClose} van ${totalShares} aandelen`
-                      : `Laat leeg om alle ${totalShares} aandelen te verkopen`}
+                      ? t('modalsA.sharesOf', { closing: quantityToClose, total: totalShares })
+                      : t('modalsA.leaveEmptyShares', { total: totalShares })}
                   </p>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
-                    Verkoopprijs per Aandeel *
+                    {t('modalsA.salePricePerShare')}
                   </label>
                   <input
                     type="number"
@@ -302,14 +309,14 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <label className="block text-sm font-medium text-ink-700 dark:text-ink-300">
-                        Aantal contracten te Sluiten *
+                        {t('modalsA.contractsToClose')}
                       </label>
                       <button
                         type="button"
                         onClick={() => setContractsToClose(totalContracts.toString())}
                         className="text-xs px-2 py-1 bg-ink-400 hover:bg-trading-dark-600 text-white rounded transition-colors"
                       >
-                        Max
+                        {t('modalsA.max')}
                       </button>
                     </div>
                     <input
@@ -320,12 +327,19 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
                       value={contractsToClose}
                       onChange={(e) => setContractsToClose(e.target.value)}
                       className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
-                      placeholder={`${totalContracts} (alle)`}
+                      placeholder={t('modalsA.contractsPlaceholderAll', { total: totalContracts })}
                     />
                     <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
                       {contractsToClose
-                        ? `${contractsToCloseNum} van ${totalContracts} contracten (= ${contractsToCloseNum * 100} aandelen)`
-                        : `Laat leeg om alle ${totalContracts} contracten te sluiten (= ${totalContracts * 100} aandelen)`}
+                        ? t('modalsA.contractsOf', {
+                            closing: contractsToCloseNum,
+                            total: totalContracts,
+                            shares: contractsToCloseNum * 100,
+                          })
+                        : t('modalsA.leaveEmptyContracts', {
+                            total: totalContracts,
+                            shares: totalContracts * 100,
+                          })}
                     </p>
                   </div>
                 )}
@@ -334,17 +348,17 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
                   <div className="flex items-center justify-between mb-2">
                     <label className="block text-sm font-medium text-ink-700 dark:text-ink-300">
                       {isSpread
-                        ? 'Sluit Premuim per aandeel *'
+                        ? t('modalsA.closeSpreadPremium')
                         : (position as { action?: string }).action === 'buy'
-                          ? 'Verkoop Premuim per aandeel *'
-                          : 'Terugkoop Premuim per aandeel *'}
+                          ? t('modalsA.sellPremiumLabel')
+                          : t('modalsA.buybackPremiumLabel')}
                     </label>
                     <button
                       type="button"
                       onClick={handleExpiredWorthless}
                       className="text-xs px-2 py-1 bg-ink-400 hover:bg-trading-dark-600 text-white rounded transition-colors"
                     >
-                      Expired Worthless
+                      {t('modalsA.expiredWorthless')}
                     </button>
                   </div>
                   <input
@@ -359,10 +373,10 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
                   />
                   <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
                     {isSpread
-                      ? 'Premium voor sluiten van spread (beide legs)'
+                      ? t('modalsA.spreadPremiumHelp')
                       : (position as { action?: string }).action === 'buy'
-                        ? 'Premium ontvangen bij verkoop van de optie'
-                        : 'Premium betaald om de optie terug te kopen'}
+                        ? t('modalsA.sellPremiumHelp')
+                        : t('modalsA.buybackPremiumHelp')}
                   </p>
                 </div>
               </>
@@ -370,7 +384,7 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
 
             <div>
               <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
-                Sluit datum *
+                {t('modalsA.closeDate')}
               </label>
               <input
                 type="date"
@@ -384,14 +398,14 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
 
             <div>
               <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
-                Notities (optioneel)
+                {t('modalsA.notesOptional')}
               </label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={3}
                 className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
-                placeholder="Reden voor sluiten, marktomstandigheden, ..."
+                placeholder={t('modalsA.closeNotesPlaceholder')}
               />
             </div>
           </div>
@@ -413,7 +427,7 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
                 )}
                 <div className="flex-1">
                   <p className="text-sm font-medium text-ink-700 dark:text-ink-300">
-                    Gerealiseerde Winst/Verlies
+                    {t('modalsA.realizedPnL')}
                   </p>
                   <p
                     className={`text-2xl font-bold ${
@@ -428,7 +442,9 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
                 </div>
                 {isStockOrETF && 'shares' in position && 'purchasePrice' in position && (
                   <div className="text-right">
-                    <p className="text-xs text-ink-500 dark:text-ink-400">Per aandeel</p>
+                    <p className="text-xs text-ink-500 dark:text-ink-400">
+                      {t('modalsA.perShare')}
+                    </p>
                     <p
                       className={`text-lg font-semibold ${
                         isProfitable
@@ -446,7 +462,7 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
               <div className="mt-3 pt-3 border-t border-surface-line dark:border-trading-dark-600">
                 <div className="grid grid-cols-3 gap-2 text-xs">
                   <div>
-                    <p className="text-ink-500 dark:text-ink-400">Kostenbasis</p>
+                    <p className="text-ink-500 dark:text-ink-400">{t('modalsA.costBasis')}</p>
                     <p className="font-semibold text-ink-900 dark:text-white">
                       {formatCurrency(
                         isStockOrETF && 'costBasis' in position && 'shares' in position
@@ -461,7 +477,7 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
                     </p>
                   </div>
                   <div>
-                    <p className="text-ink-500 dark:text-ink-400">Sluitwaarde</p>
+                    <p className="text-ink-500 dark:text-ink-400">{t('modalsA.closeValue')}</p>
                     <p className="font-semibold text-ink-900 dark:text-white">
                       {formatCurrency(
                         isStockOrETF
@@ -474,7 +490,7 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
                     </p>
                   </div>
                   <div>
-                    <p className="text-ink-500 dark:text-ink-400">Return %</p>
+                    <p className="text-ink-500 dark:text-ink-400">{t('modalsA.returnPercent')}</p>
                     <p
                       className={`font-semibold ${
                         isProfitable
@@ -507,7 +523,7 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
               onClick={onClose}
               className="px-4 py-2 bg-surface-muted dark:bg-trading-dark-700 hover:bg-ink-200 dark:hover:bg-trading-dark-600 text-ink-700 dark:text-ink-200 rounded-lg font-medium transition-colors"
             >
-              Annuleren
+              {t('modalsA.cancel')}
             </button>
             <button
               type="submit"
@@ -517,7 +533,7 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
               }
               className="px-4 py-2 bg-primary-700 hover:bg-primary-800 disabled:bg-ink-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
             >
-              Positie sluiten
+              {t('modalsA.closeButton')}
             </button>
           </div>
         </form>

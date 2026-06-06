@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   X,
   Save,
@@ -32,6 +33,7 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
   position,
   currency,
 }) => {
+  const { t } = useTranslation();
   const currencySymbol = getCurrencySymbol(currency);
   const [notes, setNotes] = useState(position.notes || '');
   const [currentPrice, setCurrentPrice] = useState('');
@@ -115,11 +117,16 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
 
   const getPositionTitle = (): string => {
     if (option) {
-      const action = option.action === 'buy' ? 'Long' : 'Short';
+      const action = option.action === 'buy' ? t('modalsA.longType') : t('modalsA.shortType');
       const type = option.type === 'call' ? 'Call' : 'Put';
-      return `${option.contracts}x ${option.ticker} ${action} ${type}`;
+      return t('modalsA.optionTitle', {
+        contracts: option.contracts,
+        ticker: option.ticker,
+        action,
+        type,
+      });
     } else if (position.type === 'stock' || position.type === 'etf') {
-      return `${position.shares}x ${position.ticker}`;
+      return t('modalsA.sharesTitle', { shares: position.shares, ticker: position.ticker });
     }
     return position.ticker;
   };
@@ -184,7 +191,7 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
                       : 'bg-surface-muted dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300'
                   }`}
                 >
-                  {isCall ? 'CALL' : 'PUT'}
+                  {isCall ? t('modalsA.callUpper') : t('modalsA.putUpper')}
                 </span>
                 <span
                   className={`px-2 py-1 text-xs font-semibold rounded ${
@@ -193,7 +200,7 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
                       : 'bg-caution-50 dark:bg-caution-600/25 text-caution-600 dark:text-caution-500'
                   }`}
                 >
-                  {isBuy ? 'LONG' : 'SHORT'}
+                  {isBuy ? t('modalsA.longUpper') : t('modalsA.shortUpper')}
                 </span>
               </div>
             )}
@@ -205,7 +212,7 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
                     : 'bg-surface-muted dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300'
                 }`}
               >
-                {position.type === 'stock' ? 'AANDEEL' : 'ETF'}
+                {position.type === 'stock' ? t('modalsA.stockUpper') : t('modalsA.etfUpper')}
               </span>
             )}
           </div>
@@ -230,7 +237,7 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
               }`}
             >
               <FileText className="w-4 h-4" />
-              Overzicht
+              {t('modalsA.overviewTab')}
             </button>
             <button
               type="button"
@@ -242,7 +249,7 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
               }`}
             >
               <BarChart3 className="w-4 h-4" />
-              P&L Diagram
+              {t('modalsA.pnlDiagram')}
             </button>
           </div>
         )}
@@ -260,7 +267,7 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
                     <div className="bg-surface dark:bg-trading-dark-700/50 rounded-lg p-4">
                       <div className="flex items-center gap-2 text-ink-600 dark:text-ink-400 text-sm mb-2">
                         <DollarSign className="w-4 h-4" />
-                        Strike prijs
+                        {t('modalsA.strikePrice')}
                       </div>
                       <p className="text-xl font-bold text-ink-900 dark:text-white">
                         {formatCurrency(option.strike, currencySymbol)}
@@ -270,21 +277,23 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
                     <div className="bg-surface dark:bg-trading-dark-700/50 rounded-lg p-4">
                       <div className="flex items-center gap-2 text-ink-600 dark:text-ink-400 text-sm mb-2">
                         <Calendar className="w-4 h-4" />
-                        Expiratie
+                        {t('modalsA.expirationPlain')}
                       </div>
                       <p className="text-lg font-bold text-ink-900 dark:text-white">
                         {option.expiration
                           ? new Date(option.expiration).toLocaleDateString('nl-NL')
-                          : 'N/A'}
+                          : t('modalsA.na')}
                       </p>
                       <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
-                        {daysToExpiration > 0 ? `${daysToExpiration} dagen` : 'Verlopen'}
+                        {daysToExpiration > 0
+                          ? t('modalsA.days', { days: daysToExpiration })
+                          : t('modalsA.expired')}
                       </p>
                     </div>
 
                     <div className="bg-surface dark:bg-trading-dark-700/50 rounded-lg p-4">
                       <div className="text-ink-600 dark:text-ink-400 text-sm mb-2">
-                        Winst/Verlies
+                        {t('modalsA.profitLoss')}
                       </div>
                       <p
                         className={`text-xl font-bold ${
@@ -312,24 +321,26 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
                   {/* Premium Details */}
                   <div className="bg-primary-50 dark:bg-primary-900/20 rounded-lg p-2 border border-primary-200 dark:border-primary-800">
                     <h3 className="font-semibold text-primary-900 dark:text-primary-300 mb-2">
-                      Premium Details
+                      {t('modalsA.premiumDetails')}
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                       <div>
                         <p className="text-sm text-primary-700 dark:text-primary-300 mb-2">
-                          Fill Premie
+                          {t('modalsA.fillPremium')}
                         </p>
                         <p className="text-2xl font-bold text-primary-900 dark:text-primary-300">
                           {formatCurrency(fillPremium, currencySymbol)}
                         </p>
                         <p className="text-sm text-primary-700 dark:text-primary-300 mt-1">
-                          Totaal: {formatCurrency(totalFillValue, currencySymbol)}
+                          {t('modalsA.total', {
+                            value: formatCurrency(totalFillValue, currencySymbol),
+                          })}
                         </p>
                       </div>
 
                       <div>
                         <p className="text-sm text-primary-700 dark:text-primary-300 mb-2">
-                          Huidige Premie
+                          {t('modalsA.currentPremium')}
                         </p>
                         <input
                           type="text"
@@ -344,13 +355,15 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
                           placeholder="0,00"
                         />
                         <p className="text-sm text-primary-700 dark:text-primary-300 mt-1">
-                          Totaal: {formatCurrency(totalCurrentValue, currencySymbol)}
+                          {t('modalsA.total', {
+                            value: formatCurrency(totalCurrentValue, currencySymbol),
+                          })}
                         </p>
                       </div>
 
                       <div>
                         <p className="text-sm text-primary-700 dark:text-primary-300 mb-2">
-                          Verschil
+                          {t('modalsA.difference')}
                         </p>
                         <p
                           className={`text-2xl font-bold ${
@@ -371,7 +384,9 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
                               : 'text-negative-600 dark:text-negative-500'
                           }`}
                         >
-                          Totaal: {formatCurrency(Math.abs(totalDifference), currencySymbol)}
+                          {t('modalsA.total', {
+                            value: formatCurrency(Math.abs(totalDifference), currencySymbol),
+                          })}
                         </p>
                       </div>
                     </div>
@@ -381,13 +396,13 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
                   {option.cashReserved && option.cashReserved > 0 && (
                     <div className="bg-caution-50 dark:bg-caution-600/15 rounded-lg p-2 border border-caution-500/30 dark:border-caution-600/40">
                       <h4 className="font-semibold text-orange-900 dark:text-caution-500 mb-2">
-                        Onderpand (Cash Gereserveerd)
+                        {t('modalsA.collateralCashReserved')}
                       </h4>
                       <p className="text-xl font-bold text-ink-700 dark:text-ink-300">
                         {formatCurrency(option.cashReserved, currencySymbol)}
                       </p>
                       <p className="text-sm text-caution-600 dark:text-caution-500 mt-1">
-                        Deze cash moet beschikbaar zijn voor mogelijke assignment
+                        {t('modalsA.cashAvailableForAssignment')}
                       </p>
                     </div>
                   )}
@@ -412,7 +427,7 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                         <div className="bg-surface dark:bg-trading-dark-700/50 rounded-lg p-4">
                           <div className="text-ink-600 dark:text-ink-400 text-sm mb-2">
-                            Aantal Aandelen
+                            {t('modalsA.numberOfShares')}
                           </div>
                           <p className="text-xl font-bold text-ink-900 dark:text-white">
                             {stock.shares}
@@ -421,34 +436,38 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
 
                         <div className="bg-surface dark:bg-trading-dark-700/50 rounded-lg p-4">
                           <div className="text-ink-600 dark:text-ink-400 text-sm mb-2">
-                            Aankoopprijs
+                            {t('modalsA.purchasePrice')}
                           </div>
                           <p className="text-xl font-bold text-ink-900 dark:text-white">
                             {formatCurrency(stock.purchasePrice, currencySymbol)}
                           </p>
-                          <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">per aandeel</p>
+                          <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
+                            {t('modalsA.perShareSuffix')}
+                          </p>
                         </div>
 
                         <div className="bg-surface dark:bg-trading-dark-700/50 rounded-lg p-4">
                           <div className="text-ink-600 dark:text-ink-400 text-sm mb-2">
-                            Kostenbasis
+                            {t('modalsA.costBasisLabel')}
                           </div>
                           <p className="text-xl font-bold text-ink-900 dark:text-white">
                             {formatCurrency(stock.costBasis, currencySymbol)}
                           </p>
-                          <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">totaal</p>
+                          <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
+                            {t('modalsA.totalSuffix')}
+                          </p>
                         </div>
                       </div>
 
                       {/* Current Price Section */}
                       <div className="bg-primary-50 dark:bg-primary-900/20 rounded-lg p-4 border border-primary-200 dark:border-primary-800">
                         <h3 className="font-semibold text-primary-900 dark:text-primary-300 mb-3">
-                          Huidige Waarde
+                          {t('modalsA.currentValue')}
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div>
                             <p className="text-sm text-primary-700 dark:text-primary-300 mb-2">
-                              Prijs per Aandeel
+                              {t('modalsA.pricePerShare')}
                             </p>
                             <input
                               type="text"
@@ -466,7 +485,7 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
 
                           <div>
                             <p className="text-sm text-primary-700 dark:text-primary-300 mb-2">
-                              Totale Waarde
+                              {t('modalsA.totalValue')}
                             </p>
                             <p className="text-2xl font-bold text-primary-900 dark:text-primary-300">
                               {formatCurrency(totalValue, currencySymbol)}
@@ -475,7 +494,7 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
 
                           <div>
                             <p className="text-sm text-primary-700 dark:text-primary-300 mb-2">
-                              Winst/Verlies
+                              {t('modalsA.profitLoss')}
                             </p>
                             <p
                               className={`text-2xl font-bold ${
@@ -504,15 +523,19 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
                       {/* Additional Info */}
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div className="bg-surface dark:bg-trading-dark-700/50 rounded-lg p-3">
-                          <p className="text-ink-600 dark:text-ink-400 mb-1">Opties Beschikbaar</p>
+                          <p className="text-ink-600 dark:text-ink-400 mb-1">
+                            {t('modalsA.optionsAvailable')}
+                          </p>
                           <p className="font-semibold text-ink-900 dark:text-white">
-                            {stock.optionsSupported ? 'Ja' : 'Nee'}
+                            {stock.optionsSupported ? t('modalsA.yes') : t('modalsA.no')}
                           </p>
                         </div>
                         <div className="bg-surface dark:bg-trading-dark-700/50 rounded-lg p-3">
-                          <p className="text-ink-600 dark:text-ink-400 mb-1">Mini Contracts</p>
+                          <p className="text-ink-600 dark:text-ink-400 mb-1">
+                            {t('modalsA.miniContracts')}
+                          </p>
                           <p className="font-semibold text-ink-900 dark:text-white">
-                            {stock.miniContractsSupported ? 'Ja (10 shares)' : 'Nee'}
+                            {stock.miniContractsSupported ? t('modalsA.yesTenShares') : t('modalsA.no')}
                           </p>
                         </div>
                       </div>
@@ -523,14 +546,14 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
               {/* Notes Section */}
               <div>
                 <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
-                  Notities / Commentaar
+                  {t('modalsA.notesComment')}
                 </label>
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={3}
                   className="w-full px-3 py-2 text-sm bg-surface dark:bg-trading-dark-700 border border-ink-200 dark:border-trading-dark-500 text-ink-900 dark:text-white rounded-lg focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="Voeg notities toe over deze positie, strategie, doelen, etc..."
+                  placeholder={t('modalsA.positionNotesPlaceholder')}
                 />
               </div>
             </>
@@ -565,14 +588,14 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
             {/* Position Dates - Left side */}
             <div className="flex items-center gap-4 text-sm">
               <div className="flex items-center gap-2">
-                <p className="text-ink-600 dark:text-ink-400">Geopend op</p>
+                <p className="text-ink-600 dark:text-ink-400">{t('modalsA.openedOn')}</p>
                 <p className="font-semibold text-ink-900 dark:text-white">
                   {new Date(position.openDate).toLocaleDateString('nl-NL')}
                 </p>
               </div>
               {position.status === 'closed' && position.closeDate && (
                 <div className="flex items-center gap-2">
-                  <p className="text-ink-600 dark:text-ink-400">Gesloten op</p>
+                  <p className="text-ink-600 dark:text-ink-400">{t('modalsA.closedOn')}</p>
                   <p className="font-semibold text-ink-900 dark:text-white">
                     {new Date(position.closeDate).toLocaleDateString('nl-NL')}
                   </p>
@@ -586,14 +609,14 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
                 onClick={onClose}
                 className="px-4 py-2 bg-surface-muted dark:bg-trading-dark-700 hover:bg-ink-200 dark:hover:bg-trading-dark-600 text-ink-700 dark:text-ink-200 rounded-lg font-medium transition-colors"
               >
-                Annuleren
+                {t('modalsA.cancel')}
               </button>
               <button
                 onClick={handleSave}
                 className="flex items-center gap-2 px-4 py-2 bg-primary-700 hover:bg-primary-800 text-white rounded-lg font-medium transition-colors"
               >
                 <Save className="w-4 h-4" />
-                Opslaan
+                {t('modalsA.save')}
               </button>
             </div>
           </div>

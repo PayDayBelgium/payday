@@ -1,4 +1,6 @@
-export const nl = {
+import { sweepNl } from '../sweep';
+
+const nlBase = {
   // Common
   common: {
     save: 'Opslaan',
@@ -858,3 +860,5 @@ export const nl = {
     community: 'APRÈS-SKI · COMMUNITY',
   },
 };
+
+export const nl = { ...nlBase, ...sweepNl };
