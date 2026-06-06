@@ -5,7 +5,7 @@ import { useNavigation } from '../../contexts/NavigationContext';
 import { TrendingUp, Plus, Info, ArrowRight, X, ListTodo, DollarSign, GraduationCap, Lightbulb } from 'lucide-react';
 import { StrategyRules } from '../../components/strategy/StrategyRules';
 import { StrategyRuleModal } from '../../components/modals/StrategyRuleModal';
-import { getDefaultRulesForStrategy } from '../../utils/defaultStrategyRules';
+import { useStrategyRules } from '../../hooks/useStrategyRules';
 import type { StrategyRule } from '../../types';
 
 export const CoveredCallsStrategy: React.FC = () => {
@@ -14,8 +14,17 @@ export const CoveredCallsStrategy: React.FC = () => {
   const navigate = useNavigate();
   const { pushNavigation } = useNavigation();
   const [activeTab, setActiveTab] = useState<'positions' | 'rules' | 'info'>('positions');
-  const [isRuleModalOpen, setIsRuleModalOpen] = useState(false);
-  const [selectedRule, setSelectedRule] = useState<StrategyRule | null>(null);
+  const {
+    strategyRules,
+    isRuleModalOpen,
+    selectedRule,
+    openAddRule: handleAddRule,
+    openEditRule: handleEditRule,
+    closeRuleModal,
+    saveRule: handleSaveRule,
+    deleteRule: handleDeleteRule,
+    toggleRule: handleToggleRule,
+  } = useStrategyRules('covered-calls', portfolio);
   const [showInfoBanner, setShowInfoBanner] = useState(() => {
     const dismissed = localStorage.getItem('covered-calls-info-banner-dismissed');
     return dismissed !== 'true';
@@ -26,51 +35,9 @@ export const CoveredCallsStrategy: React.FC = () => {
     localStorage.setItem('covered-calls-info-banner-dismissed', 'true');
   };
 
-  // Initialize rules with defaults
-  const [strategyRules, setStrategyRules] = useState<StrategyRule[]>(() => {
-    const saved = localStorage.getItem(`strategy-rules-covered-calls-${portfolio}`);
-    if (saved) {
-      return JSON.parse(saved) as StrategyRule[];
-    }
-    return getDefaultRulesForStrategy('covered-calls', portfolio || '');
-  });
-
   useEffect(() => {
     setPageTitle('Covered Calls', `Genereer extra inkomen voor ${portfolio}`);
   }, [setPageTitle, portfolio]);
-
-  // Save rules to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem(`strategy-rules-covered-calls-${portfolio}`, JSON.stringify(strategyRules));
-  }, [strategyRules, portfolio]);
-
-  const handleAddRule = () => {
-    setSelectedRule(null);
-    setIsRuleModalOpen(true);
-  };
-
-  const handleEditRule = (rule: StrategyRule) => {
-    setSelectedRule(rule);
-    setIsRuleModalOpen(true);
-  };
-
-  const handleSaveRule = (rule: StrategyRule) => {
-    if (selectedRule) {
-      setStrategyRules(prev => prev.map(r => r.id === rule.id ? rule : r));
-    } else {
-      setStrategyRules(prev => [...prev, rule]);
-    }
-    setIsRuleModalOpen(false);
-    setSelectedRule(null);
-  };
-
-  const handleDeleteRule = (ruleId: string) => {
-    setStrategyRules(prev => prev.filter(r => r.id !== ruleId));
-  };
-
-  const handleToggleRule = (ruleId: string, enabled: boolean) => {
-    setStrategyRules(prev => prev.map(r => r.id === ruleId ? { ...r, enabled } : r));
-  };
 
   return (
     <>
@@ -396,10 +363,7 @@ export const CoveredCallsStrategy: React.FC = () => {
       {isRuleModalOpen && (
         <StrategyRuleModal
           isOpen={isRuleModalOpen}
-          onClose={() => {
-            setIsRuleModalOpen(false);
-            setSelectedRule(null);
-          }}
+          onClose={closeRuleModal}
           onSave={handleSaveRule}
           strategyType="covered-calls"
           portfolio={portfolio as any}

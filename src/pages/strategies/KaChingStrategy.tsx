@@ -5,7 +5,7 @@ import { useNavigation } from '../../contexts/NavigationContext';
 import { Zap, Plus, Shield, Info, X, ListTodo, GraduationCap, ArrowRight, Lightbulb } from 'lucide-react';
 import { StrategyRules } from '../../components/strategy/StrategyRules';
 import { StrategyRuleModal } from '../../components/modals/StrategyRuleModal';
-import { getDefaultRulesForStrategy } from '../../utils/defaultStrategyRules';
+import { useStrategyRules } from '../../hooks/useStrategyRules';
 import type { StrategyRule } from '../../types';
 
 export const KaChingStrategy: React.FC = () => {
@@ -14,54 +14,21 @@ export const KaChingStrategy: React.FC = () => {
   const navigate = useNavigate();
   const { pushNavigation } = useNavigation();
   const [activeTab, setActiveTab] = useState<'positions' | 'rules' | 'info'>('positions');
-  const [isRuleModalOpen, setIsRuleModalOpen] = useState(false);
-  const [selectedRule, setSelectedRule] = useState<StrategyRule | null>(null);
-
-  // Initialize rules with defaults
-  const [strategyRules, setStrategyRules] = useState<StrategyRule[]>(() => {
-    const saved = localStorage.getItem(`strategy-rules-kaching-${portfolio}`);
-    if (saved) {
-      return JSON.parse(saved) as StrategyRule[];
-    }
-    return getDefaultRulesForStrategy('kaching', portfolio || '');
-  });
+  const {
+    strategyRules,
+    isRuleModalOpen,
+    selectedRule,
+    openAddRule: handleAddRule,
+    openEditRule: handleEditRule,
+    closeRuleModal,
+    saveRule: handleSaveRule,
+    deleteRule: handleDeleteRule,
+    toggleRule: handleToggleRule,
+  } = useStrategyRules('kaching', portfolio);
 
   useEffect(() => {
     setPageTitle('KaChing Strategy', `Manage KaChing positions for ${portfolio}`);
   }, [setPageTitle, portfolio]);
-
-  // Save rules to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem(`strategy-rules-kaching-${portfolio}`, JSON.stringify(strategyRules));
-  }, [strategyRules, portfolio]);
-
-  const handleAddRule = () => {
-    setSelectedRule(null);
-    setIsRuleModalOpen(true);
-  };
-
-  const handleEditRule = (rule: StrategyRule) => {
-    setSelectedRule(rule);
-    setIsRuleModalOpen(true);
-  };
-
-  const handleSaveRule = (rule: StrategyRule) => {
-    if (selectedRule) {
-      setStrategyRules(prev => prev.map(r => r.id === rule.id ? rule : r));
-    } else {
-      setStrategyRules(prev => [...prev, rule]);
-    }
-    setIsRuleModalOpen(false);
-    setSelectedRule(null);
-  };
-
-  const handleDeleteRule = (ruleId: string) => {
-    setStrategyRules(prev => prev.filter(r => r.id !== ruleId));
-  };
-
-  const handleToggleRule = (ruleId: string, enabled: boolean) => {
-    setStrategyRules(prev => prev.map(r => r.id === ruleId ? { ...r, enabled } : r));
-  };
 
   return (
     <>
@@ -336,10 +303,7 @@ export const KaChingStrategy: React.FC = () => {
       {isRuleModalOpen && (
         <StrategyRuleModal
           isOpen={isRuleModalOpen}
-          onClose={() => {
-            setIsRuleModalOpen(false);
-            setSelectedRule(null);
-          }}
+          onClose={closeRuleModal}
           onSave={handleSaveRule}
           strategyType="kaching"
           portfolio={portfolio as any}
