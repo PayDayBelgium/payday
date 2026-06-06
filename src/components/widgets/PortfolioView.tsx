@@ -28,6 +28,7 @@ import {
 } from '../../store/slices/wheelsSlice';
 import type { StockPosition } from '../../types';
 import type { Position, CurrencyType, CallOption, PutOption } from '../../types';
+import { POSITION_GRID_COLS } from './positionGrid';
 import { getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency, formatNumber } from '../../utils/numberFormat';
 import { getSpreadId } from '../../utils/spreadHelpers';
@@ -1377,7 +1378,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
           <div className="bg-gray-50 dark:bg-gray-800/50 overflow-x-auto">
             {/* Column Headers */}
             <div className="px-6 py-2 bg-gray-100 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700 border-l-4 border-l-transparent">
-              <div className="grid grid-cols-[32px_minmax(140px,1fr)_80px_70px_70px_70px_85px_85px_90px_70px_16px_130px] gap-2 text-xs font-semibold text-gray-600 dark:text-gray-400 items-center">
+              <div className={`grid ${POSITION_GRID_COLS} gap-2 text-xs font-semibold text-gray-600 dark:text-gray-400 items-center`}>
                 <div></div> {/* Icon */}
                 <button
                   onClick={() => handleSort('ticker')}

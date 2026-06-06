@@ -23,6 +23,7 @@ import { getDaysToExpiration } from '../../utils/dateHelpers';
 import { calculateOptionUnrealizedPnL } from '../../utils/pnlCalculations';
 import { OptionRow } from './OptionRow';
 import type { CollateralType } from './OptionRow';
+import { POSITION_GRID_COLS, POSITION_GRID_COLS_COMPACT } from './positionGrid';
 
 interface CampaignCardProps {
   /** De campagne die gerenderd wordt */
@@ -318,7 +319,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                     <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-800/50">
                       {/* Column Headers */}
                       <div className="px-6 py-2 bg-gray-100 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
-                        <div className="grid grid-cols-[32px_minmax(140px,1fr)_80px_70px_70px_70px_85px_85px_90px_70px] gap-2 text-xs font-semibold text-gray-600 dark:text-gray-400 items-center">
+                        <div className={`grid ${POSITION_GRID_COLS_COMPACT} gap-2 text-xs font-semibold text-gray-600 dark:text-gray-400 items-center`}>
                           <div></div> {/* Icon */}
                           <div>Ticker</div>
                           <div>Expiratie</div>
@@ -333,7 +334,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                       </div>
                       {/* Root Position - Same grid structure as PortfolioView */}
                       <div className="px-6 py-3 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors border-l-4 border-l-gray-300 dark:border-l-gray-600">
-                        <div className="grid grid-cols-[32px_minmax(140px,1fr)_80px_70px_70px_70px_85px_85px_90px_70px] gap-2 items-start">
+                        <div className={`grid ${POSITION_GRID_COLS_COMPACT} gap-2 items-start`}>
                           {/* Icon */}
                           <div
                             className={`w-8 h-8 rounded flex items-center justify-center flex-shrink-0 ${
@@ -564,7 +565,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                     <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-800/50">
                       {/* Column Headers */}
                       <div className="px-6 py-2 bg-gray-100 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
-                        <div className="grid grid-cols-[32px_minmax(140px,1fr)_80px_70px_70px_70px_85px_85px_90px_70px_16px_130px] gap-2 text-xs font-semibold text-gray-600 dark:text-gray-400 items-center">
+                        <div className={`grid ${POSITION_GRID_COLS} gap-2 text-xs font-semibold text-gray-600 dark:text-gray-400 items-center`}>
                           <div></div> {/* Icon */}
                           <div>Ticker</div>
                           <div>Expiratie</div>

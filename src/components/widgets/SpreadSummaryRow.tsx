@@ -6,6 +6,7 @@ import { formatCurrency, formatNumber } from '../../utils/numberFormat';
 import { calculateSpreadSummary } from '../../utils/positionHelpers';
 import { AlertTooltipContent } from '../common/AlertTooltipContent';
 import { PortalTooltip } from '../common/PortalTooltip';
+import { POSITION_GRID_COLS } from './positionGrid';
 
 /** Resultaat van calculateSpreadSummary (niet-null). */
 type SpreadSummary = NonNullable<ReturnType<typeof calculateSpreadSummary>>;
@@ -68,7 +69,7 @@ export const SpreadSummaryRow: React.FC<SpreadSummaryRowProps> = React.memo(
       <div
         className={`px-6 py-3 hover:bg-white dark:hover:bg-gray-700/30 transition-colors border-b border-gray-200 dark:border-gray-700 bg-surface-subtle/30 dark:bg-trading-dark-700 border-l-4 ${spreadBorderColor}`}
       >
-        <div className="grid grid-cols-[32px_minmax(140px,1fr)_80px_70px_70px_70px_85px_85px_90px_70px_16px_130px] gap-2 items-start">
+        <div className={`grid ${POSITION_GRID_COLS} gap-2 items-start`}>
           {/* Icon with expand/collapse indicator - clickable for expand */}
           <div
             onClick={(e) => {

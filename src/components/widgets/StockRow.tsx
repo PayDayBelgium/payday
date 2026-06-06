@@ -5,6 +5,7 @@ import { formatCurrency, formatNumber } from '../../utils/numberFormat';
 import type { StockPosition, CurrencyType, Ticker } from '../../types';
 import { getCurrencySymbol } from '../../utils/currency';
 import { PositionActionButtons } from './PositionActionButtons';
+import { POSITION_GRID_COLS } from './positionGrid';
 
 interface StockRowProps {
   position: StockPosition;
@@ -92,7 +93,7 @@ export const StockRow: React.FC<StockRowProps> = ({
       onClick={handleClick}
       className={`px-6 py-3 hover:bg-white dark:hover:bg-gray-700/30 transition-colors border-b border-gray-200 dark:border-gray-700 cursor-pointer border-l-4 border-l-gray-300 dark:border-l-gray-600 ${className}`}
     >
-      <div className="grid grid-cols-[32px_minmax(140px,1fr)_80px_70px_70px_70px_85px_85px_90px_70px_16px_130px] gap-2 items-start">
+      <div className={`grid ${POSITION_GRID_COLS} gap-2 items-start`}>
         {/* Icon */}
         <div
           className={`w-8 h-8 rounded flex items-center justify-center flex-shrink-0 ${

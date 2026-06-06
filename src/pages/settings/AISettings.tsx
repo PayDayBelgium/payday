@@ -16,6 +16,8 @@ export const AISettings: React.FC = () => {
   const [justSaved, setJustSaved] = useState(false);
 
   const configured = isProviderConfigured(config, 'anthropic');
+  // persistKey ontbreekt => standaardgedrag (persistent). 'Alleen deze sessie' is de inverse.
+  const sessionOnly = config.persistKey === false;
 
   const save = () => {
     const next = withApiKey(config, 'anthropic', keyInput);
@@ -24,6 +26,14 @@ export const AISettings: React.FC = () => {
     setKeyInput('');
     setJustSaved(true);
     window.setTimeout(() => setJustSaved(false), 2000);
+  };
+
+  // Toggle wisselt de opslagkeuze. We hersaven de huidige config zodat een reeds
+  // ingestelde key zonder verlies tussen localStorage en sessionStorage migreert.
+  const toggleSessionOnly = (nextSessionOnly: boolean) => {
+    const next = { ...config, persistKey: !nextSessionOnly };
+    saveAIConfig(next);
+    setConfig(next);
   };
 
   return (
@@ -52,6 +62,23 @@ export const AISettings: React.FC = () => {
           className="w-full rounded-lg border border-ink-200 dark:border-trading-dark-600 bg-white dark:bg-trading-dark-800 px-3 py-2 text-sm text-ink-800 dark:text-ink-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
         />
         <p className="text-xs text-ink-500 dark:text-ink-400">{t('ai.apiKeyHelp')}</p>
+      </div>
+
+      <div className="space-y-2">
+        <label className="flex items-start gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={sessionOnly}
+            onChange={(e) => toggleSessionOnly(e.target.checked)}
+            className="mt-0.5 h-4 w-4 rounded border-ink-300 dark:border-trading-dark-600 text-primary-600 focus:ring-2 focus:ring-primary-500"
+          />
+          <span className="text-sm text-ink-700 dark:text-ink-200">
+            Sleutel alleen in deze sessie bewaren
+          </span>
+        </label>
+        <p className="text-xs text-ink-500 dark:text-ink-400">
+          De sleutel wordt dan niet permanent opgeslagen en gewist zodra je dit tabblad sluit.
+        </p>
       </div>
 
       <div className="flex items-center gap-3">

@@ -7,6 +7,7 @@ import { getDaysToExpiration } from '../../utils/dateHelpers';
 import { calculateOptionUnrealizedPnL, calculatePnLPercentage } from '../../utils/pnlCalculations';
 import { PositionActionButtons } from './PositionActionButtons';
 import { PortalTooltip } from '../common/PortalTooltip';
+import { POSITION_GRID_COLS, POSITION_GRID_COLS_SUBITEM } from './positionGrid';
 
 export type CollateralType = 'stock' | 'leaps' | 'cash' | 'put' | 'call' | 'none';
 
@@ -118,7 +119,7 @@ export const OptionRow: React.FC<OptionRowProps> = ({
       } ${getBorderColor()}`}
     >
       <div
-        className={`grid ${isSubItem ? 'grid-cols-[16px_32px_minmax(124px,1fr)_80px_70px_70px_70px_85px_85px_90px_70px_16px_130px]' : 'grid-cols-[32px_minmax(140px,1fr)_80px_70px_70px_70px_85px_85px_90px_70px_16px_130px]'} gap-2 items-start ${
+        className={`grid ${isSubItem ? POSITION_GRID_COLS_SUBITEM : POSITION_GRID_COLS} gap-2 items-start ${
           isExpired ? 'opacity-60' : ''
         }`}
       >

@@ -14,7 +14,7 @@ import {
 import { getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency, formatNumber } from '../../utils/numberFormat';
 import { formatNumberInput, parseNumberInput, validateNumberInput } from '../../utils/inputFormat';
-import type { Position, CallOption, PutOption, CurrencyType } from '../../types';
+import type { Position, StockPosition, CallOption, PutOption, CurrencyType } from '../../types';
 import { PnLCurve } from '../widgets/PnLCurve';
 
 interface PositionDetailModalProps {
@@ -45,13 +45,9 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
         const option = position as CallOption | PutOption;
         const currentPremium = Math.abs(option.currentValue / (option.contracts * 100));
         setCurrentPrice(formatNumberInput(currentPremium, 2));
-      } else if (
-        (position.type === 'stock' || position.type === 'etf') &&
-        'currentPrice' in position
-      ) {
-        // For stocks/ETFs, set the current stock price
-        const stock = position as any;
-        setCurrentPrice(formatNumberInput(stock.currentPrice, 2));
+      } else if (position.type === 'stock' || position.type === 'etf') {
+        // Voor aandelen/ETF's: zet de huidige aandelenprijs
+        setCurrentPrice(formatNumberInput(position.currentPrice, 2));
       }
     }
   }, [isOpen, position]);
@@ -79,10 +75,10 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
             : -(parsedPrice * option.contracts * 100);
       }
     } else if ((position.type === 'stock' || position.type === 'etf') && currentPrice) {
-      // If it's a stock/ETF and current price was updated, update currentPrice and currentValue
+      // Als het een aandeel/ETF is en de huidige prijs is bijgewerkt, werk currentPrice en currentValue bij
       const parsedPrice = parseNumberInput(currentPrice);
       if (parsedPrice > 0) {
-        const stock = updatedPosition as any;
+        const stock = updatedPosition as StockPosition;
         stock.currentPrice = parsedPrice;
         stock.currentValue = parsedPrice * stock.shares;
       }
@@ -123,8 +119,7 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
       const type = option.type === 'call' ? 'Call' : 'Put';
       return `${option.contracts}x ${option.ticker} ${action} ${type}`;
     } else if (position.type === 'stock' || position.type === 'etf') {
-      const stock = position as any;
-      return `${stock.shares}x ${position.ticker}`;
+      return `${position.shares}x ${position.ticker}`;
     }
     return position.ticker;
   };
@@ -177,9 +172,7 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
               {(position.type === 'stock' || position.type === 'etf') &&
                 'name' in position &&
                 position.name && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {(position as any).name}
-                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{position.name}</p>
                 )}
             </div>
             {option && (
@@ -405,7 +398,7 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
               {!isOption &&
                 (position.type === 'stock' || position.type === 'etf') &&
                 (() => {
-                  const stock = position as any;
+                  const stock = position;
                   const pricePerShare = currentPrice
                     ? parseNumberInput(currentPrice)
                     : stock.currentPrice;
