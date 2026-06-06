@@ -113,6 +113,14 @@ export const getLevelConfig = (level: UserLevel): LevelConfig => {
   return LEVEL_CONFIGS.find((config) => config.level === level) || LEVEL_CONFIGS[0];
 };
 
+// Credit price to unlock each optional module. 0 = free for now (so it can be
+// unlocked immediately); set real values here later. Purchasing spends the
+// credits and then activates the module.
+export const MODULE_CREDIT_PRICES: Record<ModuleId, number> = {
+  community: 0,
+  mentorship: 0,
+};
+
 interface UserProgressState {
   progress: UserProgress;
   creditHistory: CreditTransaction[];

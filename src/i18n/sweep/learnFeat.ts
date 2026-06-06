@@ -112,6 +112,14 @@ export const learnFeat = {
     moduleActive: 'Active',
     moduleOpen: 'Open',
     moduleActivate: 'Activate',
+    moduleUnlock: 'Unlock',
+    moduleUnlockPrice: 'Unlock ({{price}} credits)',
+    moduleInsufficient: 'Not enough credits',
+    moduleUnlockedReason: 'Module {{module}} unlocked',
+    tabBerg: 'The Mountain',
+    tabLevels: 'Levels',
+    tabLearn: 'Learn',
+    tabModules: 'Modules',
 
     // MissionStatement — module configs
     moduleCommunityName: 'Community',
@@ -153,7 +161,8 @@ export const learnFeat = {
     missionBody2:
       'Just as a ski school teaches you to ski step by step — from the first snowplough on the green slope to carving on the black — we guide you through the world of investing. Every strategy is explained, every tool helps you grow.',
     valueEducationTitle: 'Education first',
-    valueEducationDesc: 'Learn the theory before you trade. Understanding is the foundation of success.',
+    valueEducationDesc:
+      'Learn the theory before you trade. Understanding is the foundation of success.',
     valueSafeTitle: 'Grow safely',
     valueSafeDesc: 'Paper trading mode to practise risk-free.',
     valueStepTitle: 'Step by step',
@@ -195,7 +204,7 @@ export const learnFeat = {
     wizardStepOf: 'Step {{current}} of {{total}}',
     wizardGlossary: 'Glossary ({{count}})',
     wizardExample: 'Example: {{example}}',
-    wizardDontShow: 'Don\'t show again for this level',
+    wizardDontShow: "Don't show again for this level",
     wizardPrev: 'Previous',
     wizardNext: 'Next',
     wizardFinish: 'Finish',
@@ -313,6 +322,14 @@ export const learnFeat = {
     moduleActive: 'Actief',
     moduleOpen: 'Openen',
     moduleActivate: 'Activeren',
+    moduleUnlock: 'Ontgrendelen',
+    moduleUnlockPrice: 'Ontgrendelen ({{price}} credits)',
+    moduleInsufficient: 'Onvoldoende credits',
+    moduleUnlockedReason: 'Module {{module}} ontgrendeld',
+    tabBerg: 'De Berg',
+    tabLevels: 'Niveaus',
+    tabLearn: 'Leren',
+    tabModules: 'Modules',
 
     // MissionStatement — module configs
     moduleCommunityName: 'Community',
@@ -454,7 +471,7 @@ export const learnFeat = {
     quizViewResult: 'Voir le résultat',
 
     // EducationCurriculum — LessonViewer
-    lessonBackToOverview: 'Retour à l\'aperçu',
+    lessonBackToOverview: "Retour à l'aperçu",
     lessonLabel: 'Leçon {{order}}',
     lessonCredits: '+{{credits}} crédits',
     lessonCompleted: 'Terminé',
@@ -468,7 +485,7 @@ export const learnFeat = {
 
     // EducationCurriculum — level lock
     levelLocked:
-      'Ce niveau est encore verrouillé. Terminez d\'abord les niveaux précédents ou déverrouillez ce niveau dans votre profil.',
+      "Ce niveau est encore verrouillé. Terminez d'abord les niveaux précédents ou déverrouillez ce niveau dans votre profil.",
 
     // LearningResources
     resourcesAllLevels: 'Tous les niveaux',
@@ -503,7 +520,7 @@ export const learnFeat = {
     levelUnlocked: 'Déverrouillé',
     levelFeatures: 'Fonctionnalités',
     levelMore: '+{{count}} de plus',
-    levelRestartWizard: 'Relancer l\'assistant d\'introduction',
+    levelRestartWizard: "Relancer l'assistant d'introduction",
     levelCreditsNeeded: 'Crédits requis :',
     levelBuyDirectly: 'Ou acheter directement :',
     levelUnlockNow: 'Déverrouiller maintenant',
@@ -515,22 +532,30 @@ export const learnFeat = {
     moduleActive: 'Actif',
     moduleOpen: 'Ouvrir',
     moduleActivate: 'Activer',
+    moduleUnlock: 'Débloquer',
+    moduleUnlockPrice: 'Débloquer ({{price}} crédits)',
+    moduleInsufficient: 'Crédits insuffisants',
+    moduleUnlockedReason: 'Module {{module}} débloqué',
+    tabBerg: 'La Montagne',
+    tabLevels: 'Niveaux',
+    tabLearn: 'Apprendre',
+    tabModules: 'Modules',
 
     // MissionStatement — module configs
     moduleCommunityName: 'Communauté',
     moduleCommunityDesc:
-      'Partagez des idées de trading et échangez avec d\'autres traders PayDay au bar après-ski.',
+      "Partagez des idées de trading et échangez avec d'autres traders PayDay au bar après-ski.",
     moduleMentorshipName: 'Mentorat',
     moduleMentorshipDesc:
-      'Demandez un accompagnement personnel via l\'école de ski. Formation sur mesure, indépendante des crédits.',
+      "Demandez un accompagnement personnel via l'école de ski. Formation sur mesure, indépendante des crédits.",
 
     // MissionStatement — page
     pageTitle: 'Votre Parcours',
-    pageSubtitle: 'Curriculum, niveaux et parcours d\'apprentissage',
+    pageSubtitle: "Curriculum, niveaux et parcours d'apprentissage",
     heroEyebrow: 'Votre Parcours · Curriculum',
     heroTitle: 'De la piste verte au sommet noir',
     heroLead:
-      'Comme une école de ski, PayDay vous guide pas à pas. Maîtrisez d\'abord les bases, puis grimpez vers les revenus de primes, les spreads et finalement la maîtrise.',
+      "Comme une école de ski, PayDay vous guide pas à pas. Maîtrisez d'abord les bases, puis grimpez vers les revenus de primes, les spreads et finalement la maîtrise.",
     heroLevel: 'Niveau · ',
     heroCredits: 'crédits',
     routeEyebrow: 'Le parcours',
@@ -548,25 +573,25 @@ export const learnFeat = {
     routeHeading: 'Votre progression sur PayDay Mountain',
     routeLive: 'Live · Télésiège en service',
     missionEyebrow: 'Notre mission',
-    missionHeading: 'L\'accès aux options pour tous.',
+    missionHeading: "L'accès aux options pour tous.",
     missionBody1Prefix: 'PayDay a été fondé avec une mission claire : ',
-    missionBody1Bold: 'donner à chacun accès à la puissance du trading d\'options',
+    missionBody1Bold: "donner à chacun accès à la puissance du trading d'options",
     missionBody1Suffix:
-      ', quels que soient l\'expérience ou le parcours. Nous croyons que l\'éducation financière est la clé de la liberté financière.',
+      ", quels que soient l'expérience ou le parcours. Nous croyons que l'éducation financière est la clé de la liberté financière.",
     missionBody2:
-      'Tout comme une école de ski vous apprend à skier pas à pas — du premier chasse-neige sur la piste verte au carving sur la noire — nous vous guidons dans le monde de l\'investissement. Chaque stratégie est expliquée, chaque outil vous aide à progresser.',
-    valueEducationTitle: 'L\'éducation d\'abord',
+      "Tout comme une école de ski vous apprend à skier pas à pas — du premier chasse-neige sur la piste verte au carving sur la noire — nous vous guidons dans le monde de l'investissement. Chaque stratégie est expliquée, chaque outil vous aide à progresser.",
+    valueEducationTitle: "L'éducation d'abord",
     valueEducationDesc:
       'Apprenez la théorie avant de trader. La compréhension est la base du succès.',
     valueSafeTitle: 'Grandir en sécurité',
-    valueSafeDesc: 'Mode paper trading pour s\'exercer sans risque.',
+    valueSafeDesc: "Mode paper trading pour s'exercer sans risque.",
     valueStepTitle: 'Pas à pas',
     valueStepDesc: 'Déverrouillez de nouvelles stratégies au fur et à mesure de votre progression.',
     curriculumEyebrow: 'Curriculum',
     curriculumHeading: 'Les niveaux',
     extraModules: 'Modules supplémentaires',
     extraModulesDesc:
-      'Activez un module pour l\'afficher dans votre barre latérale. Aucun crédit requis.',
+      "Activez un module pour l'afficher dans votre barre latérale. Aucun crédit requis.",
     progressEyebrow: 'Progression',
     earnCreditsHeading: 'Comment gagner des crédits',
     earnLessonsTitle: 'Terminer des leçons',
@@ -577,16 +602,16 @@ export const learnFeat = {
     earnStreakDesc: '5 crédits par jour',
     earnBuyTitle: 'Acheter des crédits',
     earnBuyDesc: 'Ou déverrouiller directement avec €',
-    learningPathEyebrow: 'Parcours d\'apprentissage',
+    learningPathEyebrow: "Parcours d'apprentissage",
     learningPathHeading: 'Enseignement structuré',
-    learningPathDesc: 'Chaque leçon s\'appuie sur la précédente et est adaptée à votre niveau.',
+    learningPathDesc: "Chaque leçon s'appuie sur la précédente et est adaptée à votre niveau.",
     libraryEyebrow: 'Bibliothèque',
     libraryHeading: 'Conseils, livres & tutoriels',
     fiscalEyebrow: 'Fiscalité',
     fiscalHeading: 'Fiscalité belge',
     fiscalBody:
-      'En tant qu\'investisseur belge, vous êtes soumis à des règles fiscales spécifiques. PayDay vous aide à comprendre l\'impact fiscal de vos trades — y compris l\'impôt sur les plus-values, la TOB et le précompte mobilier.',
-    fiscalCta: 'Vers le calculateur d\'impôts',
+      "En tant qu'investisseur belge, vous êtes soumis à des règles fiscales spécifiques. PayDay vous aide à comprendre l'impact fiscal de vos trades — y compris l'impôt sur les plus-values, la TOB et le précompte mobilier.",
+    fiscalCta: "Vers le calculateur d'impôts",
     capitalGainsTaxTitle: 'Impôt sur les plus-values',
     ctaEyebrow: 'Étape suivante',
     ctaHeading: 'Prêt pour la prochaine piste ?',
