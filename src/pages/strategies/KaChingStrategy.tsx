@@ -42,14 +42,14 @@ export const KaChingStrategy: React.FC = () => {
     <>
       <div className="space-y-6">
         {/* Tabs with Action Button */}
-        <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between border-b border-surface-line dark:border-trading-dark-600">
           <div className="flex gap-2">
             <button
               onClick={() => setActiveTab('positions')}
               className={`px-4 py-2 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'positions'
                   ? 'text-primary-700 dark:text-primary-300 border-b-2 border-primary-700 dark:border-primary-400'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                  : 'text-ink-600 dark:text-ink-400 hover:text-ink-900 dark:hover:text-white'
               }`}
             >
               Posities
@@ -62,7 +62,7 @@ export const KaChingStrategy: React.FC = () => {
               className={`px-4 py-2 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'rules'
                   ? 'text-primary-700 dark:text-primary-300 border-b-2 border-primary-700 dark:border-primary-400'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                  : 'text-ink-600 dark:text-ink-400 hover:text-ink-900 dark:hover:text-white'
               }`}
             >
               <ListTodo className="w-4 h-4" />
@@ -78,7 +78,7 @@ export const KaChingStrategy: React.FC = () => {
               className={`px-4 py-2 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'info'
                   ? 'text-primary-700 dark:text-primary-300 border-b-2 border-primary-700 dark:border-primary-400'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                  : 'text-ink-600 dark:text-ink-400 hover:text-ink-900 dark:hover:text-white'
               }`}
             >
               <Info className="w-4 h-4" />
@@ -101,33 +101,33 @@ export const KaChingStrategy: React.FC = () => {
           <>
             {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                <p className="text-sm text-gray-600 dark:text-gray-400">Protective Puts</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">0</p>
+              <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
+                <p className="text-sm text-ink-600 dark:text-ink-400">Protective Puts</p>
+                <p className="text-2xl font-bold text-ink-900 dark:text-white mt-1">0</p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                <p className="text-sm text-gray-600 dark:text-gray-400">Total Cost</p>
+              <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
+                <p className="text-sm text-ink-600 dark:text-ink-400">Total Cost</p>
                 <p className="text-2xl font-bold text-primary-700 dark:text-primary-300 mt-1">
                   $0.00
                 </p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                <p className="text-sm text-gray-600 dark:text-gray-400">Premium Collected</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">$0.00</p>
+              <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
+                <p className="text-sm text-ink-600 dark:text-ink-400">Premium Collected</p>
+                <p className="text-2xl font-bold text-ink-900 dark:text-white mt-1">$0.00</p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                <p className="text-sm text-gray-600 dark:text-gray-400">Net Cost</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">$0.00</p>
+              <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
+                <p className="text-sm text-ink-600 dark:text-ink-400">Net Cost</p>
+                <p className="text-2xl font-bold text-ink-900 dark:text-white mt-1">$0.00</p>
               </div>
             </div>
 
             {/* Positions */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-12 text-center">
-              <Zap className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-12 text-center">
+              <Zap className="w-16 h-16 text-ink-300 dark:text-ink-600 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
                 Geen KaChing posities
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
+              <p className="text-ink-600 dark:text-ink-400 mb-4">
                 Start je eerste KaChing strategie om beschermde inkomsten te genereren
               </p>
               <button className="px-6 py-3 btn-primary text-white rounded-lg font-medium transition-colors">
@@ -146,38 +146,38 @@ export const KaChingStrategy: React.FC = () => {
                 <Lightbulb className="w-5 h-5 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                 <div className="flex-1 space-y-6">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
                       Hoe werkt KaChing?
                     </h3>
-                    <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
+                    <p className="text-sm text-ink-700 dark:text-ink-300 mb-3">
                       KaChing is een beschermende strategie die long-term protective puts combineert
                       met wekelijkse premie collectie om de kosten van bescherming te compenseren.
                     </p>
                     <div className="space-y-2">
                       <div className="flex items-start gap-2">
                         <Shield className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
-                        <p className="text-sm text-gray-700 dark:text-gray-300">
+                        <p className="text-sm text-ink-700 dark:text-ink-300">
                           <strong>Bescherming:</strong> Koop long-term protective puts voor downside
                           bescherming
                         </p>
                       </div>
                       <div className="flex items-start gap-2">
                         <Zap className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
-                        <p className="text-sm text-gray-700 dark:text-gray-300">
+                        <p className="text-sm text-ink-700 dark:text-ink-300">
                           <strong>Inkomen:</strong> Verkoop wekelijkse calls of puts om premie te
                           verzamelen
                         </p>
                       </div>
                       <div className="flex items-start gap-2">
                         <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
-                        <p className="text-sm text-gray-700 dark:text-gray-300">
+                        <p className="text-sm text-ink-700 dark:text-ink-300">
                           <strong>Doel:</strong> De wekelijkse premies betalen voor de kosten van de
                           bescherming
                         </p>
                       </div>
                       <div className="flex items-start gap-2">
                         <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
-                        <p className="text-sm text-gray-700 dark:text-gray-300">
+                        <p className="text-sm text-ink-700 dark:text-ink-300">
                           <strong>Voordeel:</strong> Beschermde positie die mogelijk zichzelf
                           terugbetaalt
                         </p>
@@ -186,8 +186,8 @@ export const KaChingStrategy: React.FC = () => {
                   </div>
 
                   {/* Strategy components */}
-                  <div className="bg-white dark:bg-gray-800 rounded-lg p-5 border border-primary-200 dark:border-primary-700/30">
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
+                  <div className="bg-white dark:bg-trading-dark-800 rounded-lg p-5 border border-primary-200 dark:border-primary-700/30">
+                    <h4 className="font-semibold text-ink-900 dark:text-white mb-3">
                       Componenten van de KaChing Strategie
                     </h4>
                     <div className="space-y-3">
@@ -196,10 +196,10 @@ export const KaChingStrategy: React.FC = () => {
                           1
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                          <p className="text-sm font-medium text-ink-900 dark:text-white">
                             Koop Protective Puts
                           </p>
-                          <p className="text-xs text-gray-600 dark:text-gray-400">
+                          <p className="text-xs text-ink-600 dark:text-ink-400">
                             Long-term puts (3-12 maanden) voor downside bescherming
                           </p>
                         </div>
@@ -209,10 +209,10 @@ export const KaChingStrategy: React.FC = () => {
                           2
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                          <p className="text-sm font-medium text-ink-900 dark:text-white">
                             Verkoop Wekelijkse Opties
                           </p>
-                          <p className="text-xs text-gray-600 dark:text-gray-400">
+                          <p className="text-xs text-ink-600 dark:text-ink-400">
                             Gebruik CSPs (Cash Secured Puts) en/of Covered Calls om wekelijks premie
                             te verzamelen
                           </p>
@@ -223,10 +223,10 @@ export const KaChingStrategy: React.FC = () => {
                           3
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                          <p className="text-sm font-medium text-ink-900 dark:text-white">
                             Herhaal Wekelijks
                           </p>
-                          <p className="text-xs text-gray-600 dark:text-gray-400">
+                          <p className="text-xs text-ink-600 dark:text-ink-400">
                             Continue proces - de wekelijkse premies betalen idealiter je bescherming
                           </p>
                         </div>
@@ -236,13 +236,13 @@ export const KaChingStrategy: React.FC = () => {
 
                   {/* Build on CSP */}
                   <div className="bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-700/30 rounded-lg p-5">
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
+                    <h4 className="font-semibold text-ink-900 dark:text-white mb-3">
                       Bouw op bestaande strategieën
                     </h4>
-                    <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
+                    <p className="text-sm text-ink-700 dark:text-ink-300 mb-3">
                       KaChing combineert strategieën die je al kent:
                     </p>
-                    <div className="space-y-2 text-xs text-gray-700 dark:text-gray-300">
+                    <div className="space-y-2 text-xs text-ink-700 dark:text-ink-300">
                       <p>
                         • <strong>Cash Secured Puts</strong> als basis voor wekelijkse premie
                       </p>
@@ -253,7 +253,7 @@ export const KaChingStrategy: React.FC = () => {
                         • <strong>Protective Puts</strong> voor downside bescherming
                       </p>
                     </div>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-3">
+                    <p className="text-xs text-ink-600 dark:text-ink-400 mt-3">
                       Net zoals een Covered Call op een LEAP een Poor Man's Covered Call wordt,
                       bouwt KaChing voort op je bestaande Cash Secured Put en Covered Call kennis.
                     </p>
@@ -266,7 +266,7 @@ export const KaChingStrategy: React.FC = () => {
             <div className="bg-gradient-to-r from-primary-50 to-surface-subtle dark:from-blue-900/10 dark:to-purple-900/10 border border-primary-200 dark:border-primary-700/30 rounded-lg p-6">
               <div className="flex items-start gap-3 mb-4">
                 <GraduationCap className="w-5 h-5 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                <h3 className="text-lg font-semibold text-ink-900 dark:text-white">
                   Volgende Stappen
                 </h3>
               </div>
@@ -276,45 +276,45 @@ export const KaChingStrategy: React.FC = () => {
                     pushNavigation(`/portfolio/${portfolio}/stocks-etfs`, 'Aandelen & ETFs');
                     navigate(`/portfolio/${portfolio}/stocks-etfs`);
                   }}
-                  className="w-full flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-500 transition-colors"
+                  className="w-full flex items-center justify-between p-4 bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 hover:border-primary-300 dark:hover:border-primary-500 transition-colors"
                 >
                   <div className="flex-1 text-left">
-                    <p className="font-medium text-gray-900 dark:text-white">Aandelen & ETFs</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="font-medium text-ink-900 dark:text-white">Aandelen & ETFs</p>
+                    <p className="text-sm text-ink-600 dark:text-ink-400">
                       Zorg eerst voor een sterke basis portfolio
                     </p>
                   </div>
-                  <ArrowRight className="w-5 h-5 text-gray-400 flex-shrink-0 ml-3" />
+                  <ArrowRight className="w-5 h-5 text-ink-400 flex-shrink-0 ml-3" />
                 </button>
                 <button
                   onClick={() => {
                     pushNavigation(`/portfolio/${portfolio}/covered-calls`, 'Covered Calls');
                     navigate(`/portfolio/${portfolio}/covered-calls`);
                   }}
-                  className="w-full flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-500 transition-colors"
+                  className="w-full flex items-center justify-between p-4 bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 hover:border-primary-300 dark:hover:border-primary-500 transition-colors"
                 >
                   <div className="flex-1 text-left">
-                    <p className="font-medium text-gray-900 dark:text-white">Covered Calls</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="font-medium text-ink-900 dark:text-white">Covered Calls</p>
+                    <p className="text-sm text-ink-600 dark:text-ink-400">
                       Leer eerst hoe je wekelijkse premies verzamelt
                     </p>
                   </div>
-                  <ArrowRight className="w-5 h-5 text-gray-400 flex-shrink-0 ml-3" />
+                  <ArrowRight className="w-5 h-5 text-ink-400 flex-shrink-0 ml-3" />
                 </button>
                 <button
                   onClick={() => {
                     pushNavigation(`/portfolio/${portfolio}/spreads`, 'Credit Spreads');
                     navigate(`/portfolio/${portfolio}/spreads`);
                   }}
-                  className="w-full flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-500 transition-colors"
+                  className="w-full flex items-center justify-between p-4 bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 hover:border-primary-300 dark:hover:border-primary-500 transition-colors"
                 >
                   <div className="flex-1 text-left">
-                    <p className="font-medium text-gray-900 dark:text-white">Credit Spreads</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="font-medium text-ink-900 dark:text-white">Credit Spreads</p>
+                    <p className="text-sm text-ink-600 dark:text-ink-400">
                       Geavanceerde strategie voor ervaren traders
                     </p>
                   </div>
-                  <ArrowRight className="w-5 h-5 text-gray-400 flex-shrink-0 ml-3" />
+                  <ArrowRight className="w-5 h-5 text-ink-400 flex-shrink-0 ml-3" />
                 </button>
               </div>
             </div>

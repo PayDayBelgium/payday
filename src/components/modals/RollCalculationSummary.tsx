@@ -42,13 +42,13 @@ export const RollCalculationSummary: React.FC<RollCalculationSummaryProps> = ({
           ? 'bg-positive-50 dark:bg-positive-700/15 border border-positive-500/20 dark:border-positive-700/30'
           : isDebit
             ? 'bg-negative-50 dark:bg-negative-700/15 border border-negative-500/20 dark:border-negative-700/30'
-            : 'bg-gray-50 dark:bg-gray-700/50'
+            : 'bg-surface dark:bg-trading-dark-700/50'
       }`}
     >
-      <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Berekening</h3>
+      <h3 className="text-sm font-semibold text-ink-700 dark:text-ink-300 mb-3">Berekening</h3>
       <div className="space-y-2 text-sm">
         <div className="flex justify-between">
-          <span className="text-gray-600 dark:text-gray-400">{closeLabel}</span>
+          <span className="text-ink-600 dark:text-ink-400">{closeLabel}</span>
           <span
             className={`font-medium ${closeValue >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
           >
@@ -57,7 +57,7 @@ export const RollCalculationSummary: React.FC<RollCalculationSummaryProps> = ({
           </span>
         </div>
         <div className="flex justify-between">
-          <span className="text-gray-600 dark:text-gray-400">{openLabel}</span>
+          <span className="text-ink-600 dark:text-ink-400">{openLabel}</span>
           <span
             className={`font-medium ${openValue >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
           >
@@ -65,9 +65,9 @@ export const RollCalculationSummary: React.FC<RollCalculationSummaryProps> = ({
             {formatCurrency(openValue, currencySymbol)}
           </span>
         </div>
-        <div className="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2">
+        <div className="border-t border-surface-line dark:border-trading-dark-500 pt-2 mt-2">
           <div className="flex justify-between items-center">
-            <span className="font-semibold text-gray-700 dark:text-gray-300">
+            <span className="font-semibold text-ink-700 dark:text-ink-300">
               Netto {isCredit ? 'Credit' : isDebit ? 'Debit' : 'Resultaat'}:
             </span>
             <span
@@ -76,7 +76,7 @@ export const RollCalculationSummary: React.FC<RollCalculationSummaryProps> = ({
                   ? 'text-positive-600 dark:text-positive-500'
                   : isDebit
                     ? 'text-negative-600 dark:text-negative-500'
-                    : 'text-gray-900 dark:text-white'
+                    : 'text-ink-900 dark:text-white'
               }`}
             >
               {netCredit >= 0 ? '+' : ''}

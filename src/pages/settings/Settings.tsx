@@ -34,7 +34,7 @@ export const Settings: React.FC = () => {
   return (
     <div className="space-y-4">
       {/* Tabs */}
-      <div className="border-b border-gray-200 dark:border-gray-700">
+      <div className="border-b border-surface-line dark:border-trading-dark-600">
         <nav className="-mb-px flex space-x-8" aria-label="Tabs">
           <button
             onClick={() => setActiveTab('account')}
@@ -43,7 +43,7 @@ export const Settings: React.FC = () => {
               ${
                 activeTab === 'account'
                   ? 'border-primary-500 text-primary-700 dark:text-primary-300'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                  : 'border-transparent text-ink-500 hover:text-ink-700 hover:border-ink-200 dark:text-ink-400 dark:hover:text-ink-300'
               }
             `}
           >
@@ -57,7 +57,7 @@ export const Settings: React.FC = () => {
               ${
                 activeTab === 'connectivity'
                   ? 'border-primary-500 text-primary-700 dark:text-primary-300'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                  : 'border-transparent text-ink-500 hover:text-ink-700 hover:border-ink-200 dark:text-ink-400 dark:hover:text-ink-300'
               }
             `}
           >
@@ -71,7 +71,7 @@ export const Settings: React.FC = () => {
               ${
                 activeTab === 'rules'
                   ? 'border-primary-500 text-primary-700 dark:text-primary-300'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                  : 'border-transparent text-ink-500 hover:text-ink-700 hover:border-ink-200 dark:text-ink-400 dark:hover:text-ink-300'
               }
             `}
           >
@@ -85,7 +85,7 @@ export const Settings: React.FC = () => {
               ${
                 activeTab === 'ai'
                   ? 'border-primary-500 text-primary-700 dark:text-primary-300'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                  : 'border-transparent text-ink-500 hover:text-ink-700 hover:border-ink-200 dark:text-ink-400 dark:hover:text-ink-300'
               }
             `}
           >

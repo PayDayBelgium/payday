@@ -278,7 +278,7 @@ const createIntroStep = (): WizardStep => ({
   icon: <Mountain className="w-6 h-6" />,
   content: (
     <div className="space-y-4">
-      <p className="text-gray-700 dark:text-gray-300">
+      <p className="text-ink-700 dark:text-ink-300">
         <strong>PayDay</strong> is gebouwd met één doel: jou stap voor stap leren beleggen, net
         zoals je leert skiën op de piste.
       </p>
@@ -294,19 +294,19 @@ const createIntroStep = (): WizardStep => ({
         <div className="grid grid-cols-2 gap-2 text-xs">
           <div className="flex items-center gap-2">
             <span className="text-lg">🟢</span>
-            <span className="text-gray-700 dark:text-gray-300">Groene Piste - Basis</span>
+            <span className="text-ink-700 dark:text-ink-300">Groene Piste - Basis</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-lg">🔵</span>
-            <span className="text-gray-700 dark:text-gray-300">Blauwe Piste - Opties</span>
+            <span className="text-ink-700 dark:text-ink-300">Blauwe Piste - Opties</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-lg">🔴</span>
-            <span className="text-gray-700 dark:text-gray-300">Rode Piste - LEAPS</span>
+            <span className="text-ink-700 dark:text-ink-300">Rode Piste - LEAPS</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-lg">⚫</span>
-            <span className="text-gray-700 dark:text-gray-300">Zwarte Piste - Expert</span>
+            <span className="text-ink-700 dark:text-ink-300">Zwarte Piste - Expert</span>
           </div>
         </div>
       </div>
@@ -338,7 +338,7 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
         icon: <TrendingUp className="w-6 h-6" />,
         content: (
           <div className="space-y-4">
-            <p className="text-gray-700 dark:text-gray-300">
+            <p className="text-ink-700 dark:text-ink-300">
               In PayDay kun je al je beleggingsrekeningen (portfolios) op één plek bijhouden. Elk
               portfolio vertegenwoordigt een account bij een broker.
             </p>
@@ -365,7 +365,7 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
         icon: <Target className="w-6 h-6" />,
         content: (
           <div className="space-y-4">
-            <p className="text-gray-700 dark:text-gray-300">
+            <p className="text-ink-700 dark:text-ink-300">
               Begin met het opbouwen van je portfolio door aandelen en ETFs toe te voegen. Dit vormt
               de basis van je beleggingsstrategie.
             </p>
@@ -397,15 +397,15 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
         icon: <GraduationCap className="w-6 h-6" />,
         content: (
           <div className="space-y-4">
-            <p className="text-gray-700 dark:text-gray-300">
+            <p className="text-ink-700 dark:text-ink-300">
               PayDay groeit met je mee. Je begint op de <strong>Groene Piste</strong> en kunt
               doorgroeien naar geavanceerdere strategieën.
             </p>
-            <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
-              <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">
+            <div className="bg-surface dark:bg-trading-dark-700/50 p-4 rounded-lg">
+              <h4 className="font-semibold text-ink-800 dark:text-ink-200 mb-2">
                 Hoe ontgrendel je nieuwe levels?
               </h4>
-              <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 space-y-1">
+              <ul className="list-disc list-inside text-sm text-ink-600 dark:text-ink-400 space-y-1">
                 <li>Voltooi lessen en verdien credits</li>
                 <li>Behaal achievements</li>
                 <li>Bouw een dagelijkse streak op</li>
@@ -433,7 +433,7 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
         icon: <Sparkles className="w-6 h-6" />,
         content: (
           <div className="space-y-4">
-            <p className="text-gray-700 dark:text-gray-300">
+            <p className="text-ink-700 dark:text-ink-300">
               Opties geven je het <strong>recht</strong> (geen verplichting) om aandelen te kopen of
               verkopen tegen een vooraf bepaalde prijs. Je kunt ze ook <strong>verkopen</strong> om
               inkomen te genereren.
@@ -473,7 +473,7 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
         icon: <TrendingUp className="w-6 h-6" />,
         content: (
           <div className="space-y-4">
-            <p className="text-gray-700 dark:text-gray-300">
+            <p className="text-ink-700 dark:text-ink-300">
               Als je 100+ aandelen bezit, kun je <strong>covered calls</strong> verkopen. Je
               ontvangt premium en geeft de koper het recht om je aandelen te kopen.
             </p>
@@ -500,7 +500,7 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
         icon: <Target className="w-6 h-6" />,
         content: (
           <div className="space-y-4">
-            <p className="text-gray-700 dark:text-gray-300">
+            <p className="text-ink-700 dark:text-ink-300">
               Met een <strong>Cash Secured Put</strong> verkoop je het recht aan iemand om jou
               aandelen te verkopen. Je ontvangt premium en koopt mogelijk de aandelen met korting.
             </p>
@@ -525,29 +525,29 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
         icon: <Zap className="w-6 h-6" />,
         content: (
           <div className="space-y-4">
-            <p className="text-gray-700 dark:text-gray-300">
+            <p className="text-ink-700 dark:text-ink-300">
               De <strong>Wheel</strong> is een eindeloze cyclus van premium ontvangen door CSPs en
               covered calls af te wisselen.
             </p>
-            <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+            <div className="bg-surface dark:bg-trading-dark-700/50 p-4 rounded-lg">
               <div className="flex flex-wrap justify-center gap-2 text-xs">
                 <span className="bg-surface-muted dark:bg-trading-dark-700 px-3 py-1 rounded-full">
                   1. Verkoop CSP
                 </span>
-                <span className="text-gray-400">→</span>
+                <span className="text-ink-400">→</span>
                 <span className="bg-primary-50 dark:bg-primary-900/30 px-3 py-1 rounded-full">
                   2. Assignment
                 </span>
-                <span className="text-gray-400">→</span>
+                <span className="text-ink-400">→</span>
                 <span className="bg-positive-50 dark:bg-positive-700/25 px-3 py-1 rounded-full">
                   3. Verkoop CC
                 </span>
-                <span className="text-gray-400">→</span>
+                <span className="text-ink-400">→</span>
                 <span className="bg-caution-50 dark:bg-caution-600/25 px-3 py-1 rounded-full">
                   4. Called away
                 </span>
-                <span className="text-gray-400">→</span>
-                <span className="text-gray-500">herhaal</span>
+                <span className="text-ink-400">→</span>
+                <span className="text-ink-500">herhaal</span>
               </div>
             </div>
           </div>
@@ -572,7 +572,7 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
         icon: <TrendingUp className="w-6 h-6" />,
         content: (
           <div className="space-y-4">
-            <p className="text-gray-700 dark:text-gray-300">
+            <p className="text-ink-700 dark:text-ink-300">
               <strong>LEAPS</strong> zijn opties met een looptijd van meer dan 1 jaar. Ze bieden
               leverage met minder tijdsrisico dan korte termijn opties.
             </p>
@@ -598,7 +598,7 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
         icon: <Target className="w-6 h-6" />,
         content: (
           <div className="space-y-4">
-            <p className="text-gray-700 dark:text-gray-300">
+            <p className="text-ink-700 dark:text-ink-300">
               De <strong>PMCC</strong> is een covered call strategie waarbij je een LEAP call
               gebruikt als onderpand in plaats van aandelen.
             </p>
@@ -624,7 +624,7 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
         icon: <BookOpen className="w-6 h-6" />,
         content: (
           <div className="space-y-4">
-            <p className="text-gray-700 dark:text-gray-300">
+            <p className="text-ink-700 dark:text-ink-300">
               De <strong>Greeks</strong> zijn meetwaarden die beschrijven hoe een optie reageert op
               verschillende factoren.
             </p>
@@ -652,7 +652,7 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
         icon: <Zap className="w-6 h-6" />,
         content: (
           <div className="space-y-4">
-            <p className="text-gray-700 dark:text-gray-300">
+            <p className="text-ink-700 dark:text-ink-300">
               <strong>Rollen</strong> betekent een bestaande optiepositie sluiten en tegelijk een
               nieuwe openen. Dit helpt bij het beheren van posities.
             </p>
@@ -694,7 +694,7 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
         icon: <Target className="w-6 h-6" />,
         content: (
           <div className="space-y-4">
-            <p className="text-gray-700 dark:text-gray-300">
+            <p className="text-ink-700 dark:text-ink-300">
               <strong>Spreads</strong> combineren meerdere opties om risico te beperken en
               specifieke marktvisies uit te drukken.
             </p>
@@ -728,12 +728,12 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
         icon: <Zap className="w-6 h-6" />,
         content: (
           <div className="space-y-4">
-            <p className="text-gray-700 dark:text-gray-300">
+            <p className="text-ink-700 dark:text-ink-300">
               De <strong>Iron Condor</strong> is een neutrale strategie die wint als de koers binnen
               een range blijft.
             </p>
-            <div className="bg-gray-100 dark:bg-gray-700/50 p-4 rounded-lg">
-              <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">4 Legs:</h4>
+            <div className="bg-surface-subtle dark:bg-trading-dark-700/50 p-4 rounded-lg">
+              <h4 className="font-semibold text-ink-800 dark:text-ink-200 mb-2">4 Legs:</h4>
               <div className="space-y-1 text-sm">
                 <p className="text-negative-600 dark:text-negative-500">
                   • Koop put (laagste strike)
@@ -761,7 +761,7 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
         icon: <Sparkles className="w-6 h-6" />,
         content: (
           <div className="space-y-4">
-            <p className="text-gray-700 dark:text-gray-300">
+            <p className="text-ink-700 dark:text-ink-300">
               De <strong>Ka-Ching</strong> strategie combineert meerdere technieken voor optimale
               premium generatie.
             </p>
@@ -790,7 +790,7 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
         icon: <BookOpen className="w-6 h-6" />,
         content: (
           <div className="space-y-4">
-            <p className="text-gray-700 dark:text-gray-300">
+            <p className="text-ink-700 dark:text-ink-300">
               Op expert niveau is begrip van <strong>Gamma</strong>, <strong>Vega</strong> en
               <strong> Implied Volatility</strong> essentieel.
             </p>
@@ -832,7 +832,7 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
         icon: <Zap className="w-6 h-6" />,
         content: (
           <div className="space-y-4">
-            <p className="text-gray-700 dark:text-gray-300">
+            <p className="text-ink-700 dark:text-ink-300">
               <strong>Quant trading</strong> (kwantitatief beleggen) vervangt onderbuikgevoel door
               <strong> data, statistiek en vaste regels</strong>. Je bouwt een hypothese, test die
               op historische data, en laat de cijfers — niet je emoties — beslissen.
@@ -876,7 +876,7 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
         icon: <Target className="w-6 h-6" />,
         content: (
           <div className="space-y-4">
-            <p className="text-gray-700 dark:text-gray-300">
+            <p className="text-ink-700 dark:text-ink-300">
               Een winstgevende strategie heeft een <strong>edge</strong>: een herhaalbare,
               statistische reden waarom ze werkt. Die toon je aan met een <strong>backtest</strong>{' '}
               op historische data.
@@ -913,7 +913,7 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
         icon: <BookOpen className="w-6 h-6" />,
         content: (
           <div className="space-y-4">
-            <p className="text-gray-700 dark:text-gray-300">
+            <p className="text-ink-700 dark:text-ink-300">
               Rendement zonder risicobesef is gevaarlijk. Beoordeel een strategie altijd op
               <strong> voor risico gecorrigeerde</strong> maatstaven, niet alleen op winst.
             </p>
@@ -953,15 +953,15 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
         icon: <Sparkles className="w-6 h-6" />,
         content: (
           <div className="space-y-4">
-            <p className="text-gray-700 dark:text-gray-300">
+            <p className="text-ink-700 dark:text-ink-300">
               Een edge op papier is niets waard zonder <strong>gedisciplineerde uitvoering</strong>.
               De echte wereld voegt kosten en wrijving toe die je backtest vaak onderschat.
             </p>
-            <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
-              <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">
+            <div className="bg-surface dark:bg-trading-dark-700/50 p-4 rounded-lg">
+              <h4 className="font-semibold text-ink-800 dark:text-ink-200 mb-2">
                 Houd rekening met
               </h4>
-              <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 space-y-1">
+              <ul className="list-disc list-inside text-sm text-ink-600 dark:text-ink-400 space-y-1">
                 <li>
                   <strong>Slippage & kosten:</strong> elke trade kost iets; te vaak handelen vreet
                   je edge op.
@@ -1193,10 +1193,10 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
 
           {/* Glossary Section */}
           {currentStepData.glossaryTerms && currentStepData.glossaryTerms.length > 0 && (
-            <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+            <div className="border-t border-surface-line dark:border-trading-dark-600 pt-4">
               <button
                 onClick={() => setShowGlossary(!showGlossary)}
-                className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors w-full"
+                className="flex items-center gap-2 text-sm font-medium text-ink-700 dark:text-ink-300 hover:text-ink-900 dark:hover:text-white transition-colors w-full"
               >
                 <BookOpen className="w-4 h-4" />
                 <span>Begrippen ({currentStepData.glossaryTerms.length})</span>
@@ -1208,15 +1208,15 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
               {showGlossary && (
                 <div className="mt-3 space-y-2">
                   {currentStepData.glossaryTerms.map((term, index) => (
-                    <div key={index} className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
-                      <h4 className="font-semibold text-gray-900 dark:text-white text-sm">
+                    <div key={index} className="bg-surface dark:bg-trading-dark-700/50 rounded-lg p-3">
+                      <h4 className="font-semibold text-ink-900 dark:text-white text-sm">
                         {term.term}
                       </h4>
-                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                      <p className="text-xs text-ink-600 dark:text-ink-400 mt-1">
                         {term.definition}
                       </p>
                       {term.example && (
-                        <p className="text-xs text-gray-500 dark:text-gray-500 mt-1 italic">
+                        <p className="text-xs text-ink-500 dark:text-ink-500 mt-1 italic">
                           Voorbeeld: {term.example}
                         </p>
                       )}

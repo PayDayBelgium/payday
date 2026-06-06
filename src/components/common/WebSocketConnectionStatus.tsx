@@ -70,8 +70,8 @@ export const WebSocketConnectionStatus: React.FC<WebSocketConnectionStatusProps>
       default:
         return {
           icon: WifiOff,
-          color: 'text-gray-600 dark:text-gray-400',
-          bgColor: 'bg-gray-100 dark:bg-gray-900/30',
+          color: 'text-ink-600 dark:text-ink-400',
+          bgColor: 'bg-surface-subtle dark:bg-trading-dark-900/30',
           label: 'Disconnected',
           pulse: false,
         };
@@ -118,8 +118,8 @@ export const WebSocketConnectionStatus: React.FC<WebSocketConnectionStatusProps>
 
         {/* Tooltip with invisible bridge to prevent gap */}
         <div className="absolute right-0 top-full hidden group-hover:block w-64 pt-1 z-50">
-          <div className="bg-gray-50 dark:bg-gray-50 text-gray-900 text-xs rounded-lg shadow-lg border-2 border-primary-900 overflow-hidden p-3">
-            <p className="font-bold mb-1 text-gray-900">Price WebSocket</p>
+          <div className="bg-surface dark:bg-surface text-ink-900 text-xs rounded-lg shadow-lg border-2 border-primary-900 overflow-hidden p-3">
+            <p className="font-bold mb-1 text-ink-900">Price WebSocket</p>
             <p
               className={`${
                 status === 'connected'
@@ -128,7 +128,7 @@ export const WebSocketConnectionStatus: React.FC<WebSocketConnectionStatusProps>
                     ? 'text-primary-700'
                     : status === 'error'
                       ? 'text-negative-600'
-                      : 'text-gray-600'
+                      : 'text-ink-600'
               } font-semibold`}
             >
               {config.label}
@@ -139,19 +139,19 @@ export const WebSocketConnectionStatus: React.FC<WebSocketConnectionStatusProps>
               </div>
             )}
             {lastConnected && status === 'connected' && (
-              <p className="text-gray-600 mt-2">
+              <p className="text-ink-600 mt-2">
                 Connected: {new Date(lastConnected).toLocaleTimeString()}
               </p>
             )}
             {subscribedTickers.length > 0 && status === 'connected' && (
               <div className="mt-2">
-                <p className="text-gray-600 text-xs">
+                <p className="text-ink-600 text-xs">
                   Subscribed: {subscribedTickers.slice(0, 5).join(', ')}
                   {subscribedTickers.length > 5 && ` +${subscribedTickers.length - 5} more`}
                 </p>
               </div>
             )}
-            <p className="text-gray-400 text-xs mt-2 italic">
+            <p className="text-ink-400 text-xs mt-2 italic">
               {status === 'connected' ? 'Click to disconnect' : 'Click to connect'}
             </p>
           </div>
@@ -173,12 +173,12 @@ export const WebSocketConnectionStatus: React.FC<WebSocketConnectionStatusProps>
             <p className="text-xs text-negative-600 dark:text-negative-500 mt-0.5">{lastError}</p>
           )}
           {lastConnected && status === 'connected' && (
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
+            <p className="text-xs text-ink-600 dark:text-ink-400 mt-0.5">
               Last: {new Date(lastConnected).toLocaleTimeString()}
             </p>
           )}
           {subscribedTickers.length > 0 && status === 'connected' && (
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
+            <p className="text-xs text-ink-600 dark:text-ink-400 mt-0.5">
               {subscribedTickers.length} ticker(s) subscribed
             </p>
           )}

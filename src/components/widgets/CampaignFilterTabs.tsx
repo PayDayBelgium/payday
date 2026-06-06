@@ -22,14 +22,14 @@ export const CampaignFilterTabs: React.FC<CampaignFilterTabsProps> = ({
   onNewWheel,
 }) => {
   return (
-    <div className="border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+    <div className="border-b border-surface-line dark:border-trading-dark-600 flex-shrink-0">
       <nav className="flex -mb-px overflow-x-auto">
         <button
           onClick={() => onFilterChange('covered-call')}
           className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
             filter === 'covered-call'
               ? 'border-primary-500 text-primary-700 dark:text-primary-300'
-              : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
+              : 'border-transparent text-ink-500 dark:text-ink-400 hover:text-ink-700 dark:hover:text-ink-300 hover:border-ink-200'
           }`}
         >
           <TrendingUp className="w-4 h-4" />
@@ -39,7 +39,7 @@ export const CampaignFilterTabs: React.FC<CampaignFilterTabsProps> = ({
               className={`px-1.5 py-0.5 rounded text-xs ${
                 filter === 'covered-call'
                   ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                  : 'bg-surface-subtle dark:bg-trading-dark-700 text-ink-600 dark:text-ink-400'
               }`}
             >
               {campaignCounts['covered-call']}
@@ -51,7 +51,7 @@ export const CampaignFilterTabs: React.FC<CampaignFilterTabsProps> = ({
           className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
             filter === 'pmcc'
               ? 'border-primary-500 text-primary-700 dark:text-primary-300'
-              : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
+              : 'border-transparent text-ink-500 dark:text-ink-400 hover:text-ink-700 dark:hover:text-ink-300 hover:border-ink-200'
           }`}
         >
           <Layers className="w-4 h-4" />
@@ -61,7 +61,7 @@ export const CampaignFilterTabs: React.FC<CampaignFilterTabsProps> = ({
               className={`px-1.5 py-0.5 rounded text-xs ${
                 filter === 'pmcc'
                   ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                  : 'bg-surface-subtle dark:bg-trading-dark-700 text-ink-600 dark:text-ink-400'
               }`}
             >
               {campaignCounts['pmcc']}
@@ -73,7 +73,7 @@ export const CampaignFilterTabs: React.FC<CampaignFilterTabsProps> = ({
           className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
             filter === 'kaching'
               ? 'border-primary-500 text-primary-700 dark:text-primary-300'
-              : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
+              : 'border-transparent text-ink-500 dark:text-ink-400 hover:text-ink-700 dark:hover:text-ink-300 hover:border-ink-200'
           }`}
         >
           <Zap className="w-4 h-4" />
@@ -83,7 +83,7 @@ export const CampaignFilterTabs: React.FC<CampaignFilterTabsProps> = ({
               className={`px-1.5 py-0.5 rounded text-xs ${
                 filter === 'kaching'
                   ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                  : 'bg-surface-subtle dark:bg-trading-dark-700 text-ink-600 dark:text-ink-400'
               }`}
             >
               {campaignCounts['kaching']}
@@ -95,7 +95,7 @@ export const CampaignFilterTabs: React.FC<CampaignFilterTabsProps> = ({
           className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
             filter === 'wheel'
               ? 'border-primary-500 text-primary-700 dark:text-primary-300'
-              : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
+              : 'border-transparent text-ink-500 dark:text-ink-400 hover:text-ink-700 dark:hover:text-ink-300 hover:border-ink-200'
           }`}
         >
           <RefreshCw className="w-4 h-4" />
@@ -105,7 +105,7 @@ export const CampaignFilterTabs: React.FC<CampaignFilterTabsProps> = ({
               className={`px-1.5 py-0.5 rounded text-xs ${
                 filter === 'wheel'
                   ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                  : 'bg-surface-subtle dark:bg-trading-dark-700 text-ink-600 dark:text-ink-400'
               }`}
             >
               {campaignCounts['wheel']}

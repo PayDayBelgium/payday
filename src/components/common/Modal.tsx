@@ -37,7 +37,7 @@ export interface ModalProps {
 
 /** Standaard kaartstyling (rounding, shadow, border, achtergrond). */
 const defaultCardClassName =
-  'bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700';
+  'bg-white dark:bg-trading-dark-800 rounded-lg shadow-xl border border-surface-line dark:border-trading-dark-600';
 
 const sizeClasses: Record<ModalSize, string> = {
   sm: 'max-w-sm',
@@ -114,16 +114,16 @@ export const Modal: React.FC<ModalProps> = ({
       >
         {/* Header */}
         {(title || showCloseButton) && (
-          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between p-4 border-b border-surface-line dark:border-trading-dark-600">
             {title && (
-              <h3 id="modal-title" className="text-lg font-semibold text-gray-900 dark:text-white">
+              <h3 id="modal-title" className="text-lg font-semibold text-ink-900 dark:text-white">
                 {title}
               </h3>
             )}
             {showCloseButton && (
               <button
                 onClick={onClose}
-                className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                className="p-2 text-ink-500 hover:text-ink-700 dark:text-ink-400 dark:hover:text-ink-200 hover:bg-surface-subtle dark:hover:bg-trading-dark-700 rounded-lg transition-colors"
                 aria-label="Close modal"
               >
                 <X className="w-5 h-5" />
@@ -137,7 +137,7 @@ export const Modal: React.FC<ModalProps> = ({
 
         {/* Footer */}
         {footer && (
-          <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-end gap-3 p-4 border-t border-surface-line dark:border-trading-dark-600">
             {footer}
           </div>
         )}

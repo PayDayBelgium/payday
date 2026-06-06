@@ -43,7 +43,7 @@ const TipCard: React.FC<{ tip: TradingTip; isLocked?: boolean }> = ({ tip, isLoc
       case 'tool':
         return 'bg-positive-50 text-positive-700 dark:bg-positive-700/25 dark:text-positive-500';
       default:
-        return 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300';
+        return 'bg-surface-subtle text-ink-700 dark:bg-trading-dark-700 dark:text-ink-300';
     }
   };
 
@@ -67,26 +67,26 @@ const TipCard: React.FC<{ tip: TradingTip; isLocked?: boolean }> = ({ tip, isLoc
   return (
     <div
       className={`
-      relative p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700
+      relative p-4 bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600
       ${isLocked ? 'opacity-60' : 'hover:shadow-md'} transition-shadow
     `}
     >
       {isLocked && (
         <div className="absolute top-2 right-2">
-          <Lock className="w-4 h-4 text-gray-400" />
+          <Lock className="w-4 h-4 text-ink-400" />
         </div>
       )}
       <div className="flex items-start gap-3">
         <span className="text-2xl flex-shrink-0">{tip.icon || '💡'}</span>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <h4 className="font-semibold text-gray-900 dark:text-white text-sm">{tip.title}</h4>
+            <h4 className="font-semibold text-ink-900 dark:text-white text-sm">{tip.title}</h4>
             <span className={`text-xs px-2 py-0.5 rounded-full ${getCategoryColor(tip.category)}`}>
               {getCategoryLabel(tip.category)}
             </span>
           </div>
           <p
-            className={`text-sm ${isLocked ? 'blur-sm select-none' : ''} text-gray-600 dark:text-gray-400`}
+            className={`text-sm ${isLocked ? 'blur-sm select-none' : ''} text-ink-600 dark:text-ink-400`}
           >
             {tip.content}
           </p>
@@ -107,7 +107,7 @@ const BookCard: React.FC<{ book: RecommendedBook; isLocked?: boolean }> = ({ boo
       case 'advanced':
         return 'text-negative-600 dark:text-negative-500';
       default:
-        return 'text-gray-600';
+        return 'text-ink-600';
     }
   };
 
@@ -127,24 +127,24 @@ const BookCard: React.FC<{ book: RecommendedBook; isLocked?: boolean }> = ({ boo
   return (
     <div
       className={`
-      relative p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700
+      relative p-4 bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600
       ${isLocked ? 'opacity-60' : 'hover:shadow-md'} transition-shadow
     `}
     >
       {isLocked && (
         <div className="absolute top-2 right-2">
-          <Lock className="w-4 h-4 text-gray-400" />
+          <Lock className="w-4 h-4 text-ink-400" />
         </div>
       )}
       <div className="flex items-start gap-4">
-        <div className="w-12 h-16 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded flex items-center justify-center flex-shrink-0">
-          <BookOpen className="w-6 h-6 text-gray-400" />
+        <div className="w-12 h-16 bg-gradient-to-br from-surface-subtle to-surface-muted dark:from-trading-dark-600 dark:to-trading-dark-600 rounded flex items-center justify-center flex-shrink-0">
+          <BookOpen className="w-6 h-6 text-ink-400" />
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="font-semibold text-gray-900 dark:text-white text-sm mb-1">{book.title}</h4>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">door {book.author}</p>
+          <h4 className="font-semibold text-ink-900 dark:text-white text-sm mb-1">{book.title}</h4>
+          <p className="text-xs text-ink-500 dark:text-ink-400 mb-2">door {book.author}</p>
           <p
-            className={`text-sm ${isLocked ? 'blur-sm select-none' : ''} text-gray-600 dark:text-gray-400 mb-3 line-clamp-2`}
+            className={`text-sm ${isLocked ? 'blur-sm select-none' : ''} text-ink-600 dark:text-ink-400 mb-3 line-clamp-2`}
           >
             {book.description}
           </p>
@@ -155,7 +155,7 @@ const BookCard: React.FC<{ book: RecommendedBook; isLocked?: boolean }> = ({ boo
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`w-3 h-3 ${i < book.rating! ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
+                      className={`w-3 h-3 ${i < book.rating! ? 'text-yellow-400 fill-yellow-400' : 'text-ink-300'}`}
                     />
                   ))}
                 </div>
@@ -200,13 +200,13 @@ const VideoCard: React.FC<{ video: VideoTutorial; isLocked?: boolean }> = ({ vid
   return (
     <div
       className={`
-      relative p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700
+      relative p-4 bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600
       ${isLocked ? 'opacity-60' : 'hover:shadow-md cursor-pointer'} transition-shadow
     `}
     >
       {isLocked && (
         <div className="absolute top-2 right-2">
-          <Lock className="w-4 h-4 text-gray-400" />
+          <Lock className="w-4 h-4 text-ink-400" />
         </div>
       )}
       <div className="flex items-start gap-3">
@@ -214,16 +214,16 @@ const VideoCard: React.FC<{ video: VideoTutorial; isLocked?: boolean }> = ({ vid
           <PlayCircle className="w-5 h-5 text-negative-600 dark:text-negative-500" />
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="font-semibold text-gray-900 dark:text-white text-sm mb-1">
+          <h4 className="font-semibold text-ink-900 dark:text-white text-sm mb-1">
             {video.title}
           </h4>
           <p
-            className={`text-xs ${isLocked ? 'blur-sm select-none' : ''} text-gray-600 dark:text-gray-400 mb-2 line-clamp-2`}
+            className={`text-xs ${isLocked ? 'blur-sm select-none' : ''} text-ink-600 dark:text-ink-400 mb-2 line-clamp-2`}
           >
             {video.description}
           </p>
           <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-500 dark:text-gray-400">{video.duration}</span>
+            <span className="text-xs text-ink-500 dark:text-ink-400">{video.duration}</span>
             {video.creditsAwarded && (
               <span className="text-xs text-positive-600 dark:text-positive-500 flex items-center gap-1">
                 <Gift className="w-3 h-3" />+{video.creditsAwarded} credits
@@ -262,7 +262,7 @@ const ResourceLink: React.FC<{ resource: ExternalResource; isLocked?: boolean }>
       target="_blank"
       rel="noopener noreferrer"
       className={`
-        flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700
+        flex items-center gap-3 p-3 bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600
         ${isLocked ? 'opacity-60 cursor-not-allowed' : 'hover:shadow-md hover:border-primary-300 dark:hover:border-primary-600'}
         transition-all
       `}
@@ -270,19 +270,19 @@ const ResourceLink: React.FC<{ resource: ExternalResource; isLocked?: boolean }>
       <span className="text-xl">{getTypeIcon(resource.type)}</span>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <h4 className="font-medium text-gray-900 dark:text-white text-sm">{resource.title}</h4>
+          <h4 className="font-medium text-ink-900 dark:text-white text-sm">{resource.title}</h4>
           {resource.isFree && (
             <span className="text-xs px-1.5 py-0.5 bg-positive-50 text-positive-700 dark:bg-positive-700/25 dark:text-positive-500 rounded">
               Gratis
             </span>
           )}
         </div>
-        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{resource.description}</p>
+        <p className="text-xs text-ink-500 dark:text-ink-400 truncate">{resource.description}</p>
       </div>
       {isLocked ? (
-        <Lock className="w-4 h-4 text-gray-400 flex-shrink-0" />
+        <Lock className="w-4 h-4 text-ink-400 flex-shrink-0" />
       ) : (
-        <ExternalLink className="w-4 h-4 text-gray-400 flex-shrink-0" />
+        <ExternalLink className="w-4 h-4 text-ink-400 flex-shrink-0" />
       )}
     </a>
   );
@@ -301,24 +301,24 @@ const Section: React.FC<SectionProps> = ({ title, icon, children, defaultOpen = 
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl overflow-hidden">
+    <div className="bg-surface dark:bg-trading-dark-900/50 rounded-xl overflow-hidden">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-4 hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors"
+        className="w-full flex items-center justify-between p-4 hover:bg-surface-subtle dark:hover:bg-trading-dark-800/50 transition-colors"
       >
         <div className="flex items-center gap-3">
           {icon}
-          <span className="font-semibold text-gray-900 dark:text-white">{title}</span>
+          <span className="font-semibold text-ink-900 dark:text-white">{title}</span>
           {count !== undefined && (
-            <span className="text-xs px-2 py-0.5 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full">
+            <span className="text-xs px-2 py-0.5 bg-surface-muted dark:bg-trading-dark-700 text-ink-600 dark:text-ink-400 rounded-full">
               {count}
             </span>
           )}
         </div>
         {isOpen ? (
-          <ChevronDown className="w-5 h-5 text-gray-400" />
+          <ChevronDown className="w-5 h-5 text-ink-400" />
         ) : (
-          <ChevronRight className="w-5 h-5 text-gray-400" />
+          <ChevronRight className="w-5 h-5 text-ink-400" />
         )}
       </button>
       {isOpen && <div className="p-4 pt-0">{children}</div>}
@@ -370,7 +370,7 @@ export const LearningResources: React.FC<LearningResourcesProps> = () => {
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             activeLevel === 'all'
               ? 'bg-primary-600 text-white'
-              : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+              : 'bg-surface-subtle dark:bg-trading-dark-700 text-ink-700 dark:text-ink-300 hover:bg-surface-muted dark:hover:bg-trading-dark-600'
           }`}
         >
           Alle Niveaus
@@ -387,8 +387,8 @@ export const LearningResources: React.FC<LearningResourcesProps> = () => {
                 activeLevel === level
                   ? 'bg-primary-600 text-white'
                   : isLocked
-                    ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    ? 'bg-surface-subtle dark:bg-trading-dark-700 text-ink-400 dark:text-ink-500'
+                    : 'bg-surface-subtle dark:bg-trading-dark-700 text-ink-700 dark:text-ink-300 hover:bg-surface-muted dark:hover:bg-trading-dark-600'
               }`}
             >
               <span>{config?.icon}</span>
@@ -406,14 +406,14 @@ export const LearningResources: React.FC<LearningResourcesProps> = () => {
         return (
           <div key={level} className="space-y-4">
             {activeLevel === 'all' && (
-              <div className="flex items-center gap-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center gap-3 pb-2 border-b border-surface-line dark:border-trading-dark-600">
                 <span className="text-2xl">{config?.icon}</span>
                 <div>
-                  <h3 className="font-bold text-gray-900 dark:text-white">{config?.slopeName}</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{config?.name} niveau</p>
+                  <h3 className="font-bold text-ink-900 dark:text-white">{config?.slopeName}</h3>
+                  <p className="text-sm text-ink-500 dark:text-ink-400">{config?.name} niveau</p>
                 </div>
                 {isLocked && (
-                  <span className="ml-auto flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+                  <span className="ml-auto flex items-center gap-1 text-xs text-ink-500 dark:text-ink-400 bg-surface-subtle dark:bg-trading-dark-700 px-2 py-1 rounded">
                     <Lock className="w-3 h-3" />
                     Vergrendeld
                   </span>
@@ -510,11 +510,11 @@ export const RandomTipWidget: React.FC = () => {
           <Lightbulb className="w-5 h-5 text-caution-600 dark:text-caution-500" />
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="font-semibold text-gray-900 dark:text-white text-sm mb-1">
+          <h4 className="font-semibold text-ink-900 dark:text-white text-sm mb-1">
             Tip van de Dag
           </h4>
-          <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 font-medium">{tip.title}</p>
-          <p className="text-sm text-gray-700 dark:text-gray-300">{tip.content}</p>
+          <p className="text-xs text-ink-600 dark:text-ink-400 mb-2 font-medium">{tip.title}</p>
+          <p className="text-sm text-ink-700 dark:text-ink-300">{tip.content}</p>
         </div>
       </div>
     </div>

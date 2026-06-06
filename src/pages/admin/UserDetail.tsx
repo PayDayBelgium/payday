@@ -58,8 +58,8 @@ export const UserDetail: React.FC = () => {
   if (!user) {
     return (
       <div className="space-y-6">
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-6">
-          <p className="text-gray-600 dark:text-gray-400">User not found</p>
+        <div className="bg-white dark:bg-trading-dark-800 border border-surface-line dark:border-trading-dark-600 rounded-lg shadow-sm p-6">
+          <p className="text-ink-600 dark:text-ink-400">User not found</p>
         </div>
       </div>
     );
@@ -68,61 +68,61 @@ export const UserDetail: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* User Information */}
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-6">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Information</h2>
+      <div className="bg-white dark:bg-trading-dark-800 border border-surface-line dark:border-trading-dark-600 rounded-lg shadow-sm p-6">
+        <h2 className="text-xl font-semibold text-ink-900 dark:text-white mb-4">Information</h2>
         <div className="space-y-4">
-          <div className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-            <User className="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5" />
+          <div className="flex items-start gap-3 p-4 bg-surface dark:bg-trading-dark-700/50 rounded-lg">
+            <User className="w-5 h-5 text-ink-600 dark:text-ink-400 mt-0.5" />
             <div>
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Username</p>
-              <p className="text-gray-900 dark:text-white">{user.username}</p>
+              <p className="text-sm font-medium text-ink-700 dark:text-ink-300">Username</p>
+              <p className="text-ink-900 dark:text-white">{user.username}</p>
             </div>
           </div>
 
-          <div className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-            <Calendar className="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5" />
+          <div className="flex items-start gap-3 p-4 bg-surface dark:bg-trading-dark-700/50 rounded-lg">
+            <Calendar className="w-5 h-5 text-ink-600 dark:text-ink-400 mt-0.5" />
             <div>
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Created</p>
-              <p className="text-gray-900 dark:text-white">{formatDate(user.createdAt)}</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm font-medium text-ink-700 dark:text-ink-300">Created</p>
+              <p className="text-ink-900 dark:text-white">{formatDate(user.createdAt)}</p>
+              <p className="text-sm text-ink-600 dark:text-ink-400">
                 {new Date(user.createdAt).toLocaleString()}
               </p>
             </div>
           </div>
 
-          <div className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-            <Clock className="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5" />
+          <div className="flex items-start gap-3 p-4 bg-surface dark:bg-trading-dark-700/50 rounded-lg">
+            <Clock className="w-5 h-5 text-ink-600 dark:text-ink-400 mt-0.5" />
             <div>
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Last Login</p>
-              <p className="text-gray-900 dark:text-white">{formatDate(user.lastLogin)}</p>
+              <p className="text-sm font-medium text-ink-700 dark:text-ink-300">Last Login</p>
+              <p className="text-ink-900 dark:text-white">{formatDate(user.lastLogin)}</p>
               {user.lastLogin && (
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-ink-600 dark:text-ink-400">
                   {new Date(user.lastLogin).toLocaleString()}
                 </p>
               )}
             </div>
           </div>
 
-          <div className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-            <Database className="w-5 h-5 text-gray-600 dark:text-gray-400 mt-0.5" />
+          <div className="flex items-start gap-3 p-4 bg-surface dark:bg-trading-dark-700/50 rounded-lg">
+            <Database className="w-5 h-5 text-ink-600 dark:text-ink-400 mt-0.5" />
             <div>
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Data Size</p>
-              <p className="text-gray-900 dark:text-white">{userDataSize} KB</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">LocalStorage usage</p>
+              <p className="text-sm font-medium text-ink-700 dark:text-ink-300">Data Size</p>
+              <p className="text-ink-900 dark:text-white">{userDataSize} KB</p>
+              <p className="text-sm text-ink-600 dark:text-ink-400">LocalStorage usage</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Danger zone */}
-      <div className="bg-white dark:bg-gray-800 border border-negative-500/20 dark:border-negative-700/30 rounded-lg shadow-sm p-6">
+      <div className="bg-white dark:bg-trading-dark-800 border border-negative-500/20 dark:border-negative-700/30 rounded-lg shadow-sm p-6">
         <h2 className="text-xl font-semibold text-negative-600 dark:text-negative-500 mb-4">
           Danger zone
         </h2>
         <div className="flex items-center justify-between p-4 bg-negative-50 dark:bg-negative-700/15 rounded-lg border border-negative-500/20 dark:border-negative-700/30">
           <div>
-            <p className="font-medium text-gray-900 dark:text-white">Delete User</p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="font-medium text-ink-900 dark:text-white">Delete User</p>
+            <p className="text-sm text-ink-600 dark:text-ink-400">
               Permanently delete this user and all their data
             </p>
           </div>
@@ -136,7 +136,7 @@ export const UserDetail: React.FC = () => {
               </button>
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors"
+                className="px-4 py-2 bg-ink-200 dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300 rounded-lg hover:bg-ink-300 dark:hover:bg-ink-400 transition-colors"
               >
                 Cancel
               </button>

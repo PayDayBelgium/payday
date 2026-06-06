@@ -279,10 +279,10 @@ export const PortfolioDetail: React.FC = () => {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          <h2 className="text-2xl font-bold text-ink-900 dark:text-white mb-2">
             Portfolio niet gevonden
           </h2>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-ink-600 dark:text-ink-400">
             De portfolio "{portfolioName}" kon niet worden gevonden.
           </p>
         </div>
@@ -393,9 +393,9 @@ export const PortfolioDetail: React.FC = () => {
       </div>
 
       {/* Tabs */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 flex flex-col flex-1 min-h-0">
+      <div className="bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 flex flex-col flex-1 min-h-0">
         {/* Tab Navigation */}
-        <div className="border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+        <div className="border-b border-surface-line dark:border-trading-dark-600 flex-shrink-0">
           <nav className="flex -mb-px justify-between">
             <div className="flex">
               <button
@@ -403,7 +403,7 @@ export const PortfolioDetail: React.FC = () => {
                 className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === 'portfolio'
                     ? 'border-primary-500 text-primary-700 dark:text-primary-300'
-                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
+                    : 'border-transparent text-ink-500 dark:text-ink-400 hover:text-ink-700 dark:hover:text-ink-300 hover:border-ink-200'
                 }`}
               >
                 <Briefcase className="w-4 h-4" />
@@ -415,7 +415,7 @@ export const PortfolioDetail: React.FC = () => {
                   className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                     activeTab === 'campaigns'
                       ? 'border-primary-500 text-primary-700 dark:text-primary-300'
-                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
+                      : 'border-transparent text-ink-500 dark:text-ink-400 hover:text-ink-700 dark:hover:text-ink-300 hover:border-ink-200'
                   }`}
                 >
                   <Layers className="w-4 h-4" />
@@ -428,7 +428,7 @@ export const PortfolioDetail: React.FC = () => {
                   className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                     activeTab === 'freecash'
                       ? 'border-primary-500 text-primary-700 dark:text-primary-300'
-                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
+                      : 'border-transparent text-ink-500 dark:text-ink-400 hover:text-ink-700 dark:hover:text-ink-300 hover:border-ink-200'
                   }`}
                 >
                   <Banknote className="w-4 h-4" />
@@ -440,7 +440,7 @@ export const PortfolioDetail: React.FC = () => {
                 className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === 'chart'
                     ? 'border-primary-500 text-primary-700 dark:text-primary-300'
-                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
+                    : 'border-transparent text-ink-500 dark:text-ink-400 hover:text-ink-700 dark:hover:text-ink-300 hover:border-ink-200'
                 }`}
               >
                 <TrendingUp className="w-4 h-4" />
@@ -451,7 +451,7 @@ export const PortfolioDetail: React.FC = () => {
                 className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === 'transactions'
                     ? 'border-primary-500 text-primary-700 dark:text-primary-300'
-                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
+                    : 'border-transparent text-ink-500 dark:text-ink-400 hover:text-ink-700 dark:hover:text-ink-300 hover:border-ink-200'
                 }`}
               >
                 <History className="w-4 h-4" />
@@ -463,7 +463,7 @@ export const PortfolioDetail: React.FC = () => {
                   className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                     activeTab === 'information'
                       ? 'border-primary-500 text-primary-700 dark:text-primary-300'
-                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
+                      : 'border-transparent text-ink-500 dark:text-ink-400 hover:text-ink-700 dark:hover:text-ink-300 hover:border-ink-200'
                   }`}
                 >
                   <Info className="w-4 h-4" />
@@ -476,7 +476,7 @@ export const PortfolioDetail: React.FC = () => {
                   className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                     activeTab === 'insights'
                       ? 'border-primary-500 text-primary-700 dark:text-primary-300'
-                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
+                      : 'border-transparent text-ink-500 dark:text-ink-400 hover:text-ink-700 dark:hover:text-ink-300 hover:border-ink-200'
                   }`}
                 >
                   <BarChart3 className="w-4 h-4" />
@@ -489,7 +489,7 @@ export const PortfolioDetail: React.FC = () => {
                   className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                     activeTab === 'alerts'
                       ? 'border-primary-500 text-primary-700 dark:text-primary-300'
-                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
+                      : 'border-transparent text-ink-500 dark:text-ink-400 hover:text-ink-700 dark:hover:text-ink-300 hover:border-ink-200'
                   }`}
                 >
                   <AlertCircle className="w-4 h-4" />
@@ -595,15 +595,15 @@ export const PortfolioDetail: React.FC = () => {
               <div className="flex-1 overflow-y-auto">
                 <div className="space-y-0">
                   {/* Totale Beschikbare Cash */}
-                  <div className="py-4 border-b border-gray-200 dark:border-gray-700">
+                  <div className="py-4 border-b border-surface-line dark:border-trading-dark-600">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <Banknote className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                        <Banknote className="w-5 h-5 text-ink-600 dark:text-ink-400" />
+                        <span className="text-sm font-medium text-ink-900 dark:text-white">
                           Totale Beschikbare Cash
                         </span>
                       </div>
-                      <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                      <span className="text-sm font-semibold text-ink-900 dark:text-white">
                         {formatCurrency(
                           portfolioStats.cashValue,
                           getCurrencySymbol(portfolio?.currency ?? 'USD')
@@ -613,7 +613,7 @@ export const PortfolioDetail: React.FC = () => {
                   </div>
 
                   {/* Divider */}
-                  <div className="border-b border-gray-200 dark:border-gray-700 my-4"></div>
+                  <div className="border-b border-surface-line dark:border-trading-dark-600 my-4"></div>
 
                   {/* Collateral Requirements List */}
                   {(() => {
@@ -725,12 +725,12 @@ export const PortfolioDetail: React.FC = () => {
                           collateralItems.map((item) => (
                             <div
                               key={item.id}
-                              className="py-3 border-b border-gray-200 dark:border-gray-700"
+                              className="py-3 border-b border-surface-line dark:border-trading-dark-600"
                             >
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                   <ShieldAlert className="w-4 h-4 text-caution-600 dark:text-caution-500" />
-                                  <span className="text-sm text-gray-700 dark:text-gray-300">
+                                  <span className="text-sm text-ink-700 dark:text-ink-300">
                                     {item.ticker} {item.strike ? `$${item.strike}` : ''}{' '}
                                     {item.label} {item.expiration}
                                   </span>
@@ -747,19 +747,19 @@ export const PortfolioDetail: React.FC = () => {
                           ))
                         ) : (
                           <div className="py-4 text-center">
-                            <p className="text-sm text-gray-500 dark:text-gray-400 italic">
+                            <p className="text-sm text-ink-500 dark:text-ink-400 italic">
                               Geen posities met collateral vereisten
                             </p>
                           </div>
                         )}
 
                         {/* Divider before total */}
-                        <div className="border-b border-gray-200 dark:border-gray-700 my-4"></div>
+                        <div className="border-b border-surface-line dark:border-trading-dark-600 my-4"></div>
 
                         {/* Vrije cash - Bold en gekleurd */}
                         <div className="py-6">
                           <div className="flex items-center justify-between">
-                            <span className="text-base font-bold text-gray-900 dark:text-white">
+                            <span className="text-base font-bold text-ink-900 dark:text-white">
                               Vrije cash
                             </span>
                             <span
@@ -792,7 +792,7 @@ export const PortfolioDetail: React.FC = () => {
                   <TrendingUp className="w-5 h-5" />
                   Poor Man's Covered Call (PMCC)
                 </h4>
-                <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+                <div className="space-y-2 text-sm text-ink-700 dark:text-ink-300">
                   <p>
                     <strong>Wat:</strong> Koop een deep ITM call (LEAP) en verkoop korte termijn OTM
                     calls ertegen.
@@ -816,7 +816,7 @@ export const PortfolioDetail: React.FC = () => {
                   <Banknote className="w-5 h-5" />
                   KaChing Strategy
                 </h4>
-                <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+                <div className="space-y-2 text-sm text-ink-700 dark:text-ink-300">
                   <p>
                     <strong>Wat:</strong> Koop protective put (bescherming) en verkoop weekly puts
                     voor inkomen.
@@ -839,7 +839,7 @@ export const PortfolioDetail: React.FC = () => {
                   <ShieldAlert className="w-5 h-5" />
                   Cash Secured Puts (CSP)
                 </h4>
-                <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+                <div className="space-y-2 text-sm text-ink-700 dark:text-ink-300">
                   <p>
                     <strong>Wat:</strong> Verkoop put op aandeel dat je wilt bezitten, met cash
                     backup.
@@ -857,11 +857,11 @@ export const PortfolioDetail: React.FC = () => {
               </div>
 
               {/* General Guidelines */}
-              <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-5 border border-gray-200 dark:border-gray-700">
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+              <div className="bg-surface dark:bg-trading-dark-900 rounded-lg p-5 border border-surface-line dark:border-trading-dark-600">
+                <h4 className="text-lg font-semibold text-ink-900 dark:text-white mb-3">
                   Algemene Richtlijnen
                 </h4>
-                <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300 list-disc list-inside">
+                <ul className="space-y-2 text-sm text-ink-700 dark:text-ink-300 list-disc list-inside">
                   <li>Sluit posities bij 50% winst (kort lopend) of 21 DTE</li>
                   <li>Roll posities wanneer ze ITM gaan met 21+ DTE</li>
                   <li>Diversificeer over meerdere underlyings</li>
@@ -876,7 +876,7 @@ export const PortfolioDetail: React.FC = () => {
                 <h4 className="text-lg font-semibold text-orange-900 dark:text-caution-500 mb-3">
                   ⚠️ Risicobeheer
                 </h4>
-                <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300 list-disc list-inside">
+                <ul className="space-y-2 text-sm text-ink-700 dark:text-ink-300 list-disc list-inside">
                   <li>Gebruik altijd stop losses of protective puts</li>
                   <li>Nooit meer dan 5% van portfolio in één trade</li>
                   <li>Begrijp de Greeks: Delta, Gamma, Theta, Vega</li>
@@ -886,8 +886,8 @@ export const PortfolioDetail: React.FC = () => {
               </div>
 
               {portfolio?.url && (
-                <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-                  <h4 className="text-base font-medium text-gray-900 dark:text-white mb-3">
+                <div className="mt-6 pt-6 border-t border-surface-line dark:border-trading-dark-600">
+                  <h4 className="text-base font-medium text-ink-900 dark:text-white mb-3">
                     Portfolio Portal
                   </h4>
                   <a
@@ -916,12 +916,12 @@ export const PortfolioDetail: React.FC = () => {
 
                 if (callOptions.length === 0) {
                   return (
-                    <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-8 text-center">
-                      <TrendingUp className="w-12 h-12 mx-auto mb-3 text-gray-400 dark:text-gray-500" />
-                      <p className="text-gray-600 dark:text-gray-400">
+                    <div className="bg-surface dark:bg-trading-dark-900 rounded-lg p-8 text-center">
+                      <TrendingUp className="w-12 h-12 mx-auto mb-3 text-ink-400 dark:text-ink-500" />
+                      <p className="text-ink-600 dark:text-ink-400">
                         Geen call opties in portfolio
                       </p>
-                      <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
+                      <p className="text-sm text-ink-500 dark:text-ink-500 mt-1">
                         Voeg call opties toe om virtueel aandelen te beheren
                       </p>
                     </div>
@@ -997,24 +997,24 @@ export const PortfolioDetail: React.FC = () => {
                         return (
                           <div
                             key={item.ticker}
-                            className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
+                            className="bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 overflow-hidden"
                           >
                             {/* Ticker Header - Clickable */}
                             <button
                               onClick={() => toggleTicker(item.ticker)}
-                              className="w-full p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                              className="w-full p-4 flex items-center justify-between hover:bg-surface dark:hover:bg-trading-dark-700/50 transition-colors"
                             >
                               <div className="flex items-center gap-3">
                                 {isExpanded ? (
-                                  <ChevronDown className="w-5 h-5 text-gray-400" />
+                                  <ChevronDown className="w-5 h-5 text-ink-400" />
                                 ) : (
-                                  <ChevronRight className="w-5 h-5 text-gray-400" />
+                                  <ChevronRight className="w-5 h-5 text-ink-400" />
                                 )}
                                 <div className="text-left">
-                                  <h4 className="text-lg font-bold text-gray-900 dark:text-white">
+                                  <h4 className="text-lg font-bold text-ink-900 dark:text-white">
                                     {item.ticker}
                                   </h4>
-                                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                                  <p className="text-sm text-ink-600 dark:text-ink-400">
                                     {formatNumber(item.shares)} aandelen @{' '}
                                     {formatCurrency(
                                       item.currentPrice,
@@ -1035,9 +1035,9 @@ export const PortfolioDetail: React.FC = () => {
 
                             {/* Expanded Positions */}
                             {isExpanded && (
-                              <div className="border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+                              <div className="border-t border-surface-line dark:border-trading-dark-600 bg-surface dark:bg-trading-dark-900/50">
                                 <div className="p-4 space-y-3">
-                                  <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+                                  <div className="text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider mb-2">
                                     Posities ({item.positions.length})
                                   </div>
                                   {item.positions.map((pos: any) => {
@@ -1051,11 +1051,11 @@ export const PortfolioDetail: React.FC = () => {
                                     return (
                                       <div
                                         key={pos.id}
-                                        className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg"
+                                        className="flex items-center justify-between p-3 bg-white dark:bg-trading-dark-800 rounded-lg"
                                       >
                                         <div className="flex-1">
                                           <div className="flex items-center gap-2">
-                                            <span className="text-sm font-medium text-gray-900 dark:text-white">
+                                            <span className="text-sm font-medium text-ink-900 dark:text-white">
                                               {pos.contracts} contract{pos.contracts > 1 ? 's' : ''}{' '}
                                               @ ${pos.strike}
                                             </span>
@@ -1071,7 +1071,7 @@ export const PortfolioDetail: React.FC = () => {
                                               {daysToExp} DTE
                                             </span>
                                           </div>
-                                          <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                          <div className="text-xs text-ink-500 dark:text-ink-400 mt-1">
                                             Expiry:{' '}
                                             {expDate.toLocaleDateString('nl-NL', {
                                               day: 'numeric',
@@ -1083,7 +1083,7 @@ export const PortfolioDetail: React.FC = () => {
                                           </div>
                                         </div>
                                         <div className="text-right">
-                                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                          <p className="text-sm font-medium text-ink-900 dark:text-white">
                                             {formatCurrency(
                                               posShares * item.currentPrice,
                                               getCurrencySymbol(portfolio?.currency ?? 'USD')
@@ -1103,7 +1103,7 @@ export const PortfolioDetail: React.FC = () => {
                       {/* Total */}
                       <div className="bg-primary-50 dark:bg-primary-900/20 rounded-lg p-4 border-2 border-primary-200 dark:border-primary-800">
                         <div className="flex items-center justify-between">
-                          <h4 className="text-base font-bold text-gray-900 dark:text-white">
+                          <h4 className="text-base font-bold text-ink-900 dark:text-white">
                             Totaal Virtueel portfolio
                           </h4>
                           <p className="text-xl font-bold text-primary-700 dark:text-primary-300">
@@ -1125,11 +1125,11 @@ export const PortfolioDetail: React.FC = () => {
             <div className="p-6 h-full overflow-y-auto">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
                 {/* Alerts Section */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-caution-500/30 dark:border-caution-500/30 p-6 flex flex-col">
+                <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-caution-500/30 dark:border-caution-500/30 p-6 flex flex-col">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                       <AlertCircle className="w-5 h-5 text-caution-600 dark:text-caution-500" />
-                      <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      <h4 className="text-lg font-semibold text-ink-900 dark:text-white">
                         Alerts
                       </h4>
                     </div>
@@ -1146,7 +1146,7 @@ export const PortfolioDetail: React.FC = () => {
                         <div className="inline-flex p-3 rounded-full mb-3 bg-caution-50 dark:bg-caution-600/25">
                           <AlertCircle className="w-6 h-6 text-caution-600 dark:text-caution-500" />
                         </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                        <p className="text-sm text-ink-600 dark:text-ink-400">
                           Geen actieve alerts
                         </p>
                       </div>
@@ -1156,7 +1156,7 @@ export const PortfolioDetail: React.FC = () => {
                         return (
                           <div
                             key={item.id}
-                            className="w-full text-left p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg"
+                            className="w-full text-left p-3 bg-surface dark:bg-trading-dark-700/50 rounded-lg"
                           >
                             <div className="flex items-start gap-2">
                               <div className="flex-1 min-w-0">
@@ -1164,11 +1164,11 @@ export const PortfolioDetail: React.FC = () => {
                                   <div className="p-1 rounded bg-caution-50 dark:bg-caution-600/25">
                                     <AlertIcon className="w-3 h-3 text-caution-600 dark:text-caution-500" />
                                   </div>
-                                  <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                                  <p className="text-sm font-semibold text-ink-900 dark:text-white truncate">
                                     {item.ticker}
                                   </p>
                                 </div>
-                                <p className="text-xs text-gray-600 dark:text-gray-400 ml-6 whitespace-pre-line">
+                                <p className="text-xs text-ink-600 dark:text-ink-400 ml-6 whitespace-pre-line">
                                   {item.message}
                                 </p>
                               </div>
@@ -1181,11 +1181,11 @@ export const PortfolioDetail: React.FC = () => {
                 </div>
 
                 {/* Opportunities Section */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-positive-500/20 dark:border-positive-700/30 p-6 flex flex-col">
+                <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-positive-500/20 dark:border-positive-700/30 p-6 flex flex-col">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                       <Target className="w-5 h-5 text-positive-600 dark:text-positive-500" />
-                      <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      <h4 className="text-lg font-semibold text-ink-900 dark:text-white">
                         Opportunities
                       </h4>
                     </div>
@@ -1202,7 +1202,7 @@ export const PortfolioDetail: React.FC = () => {
                         <div className="inline-flex p-3 rounded-full mb-3 bg-positive-50 dark:bg-positive-700/25">
                           <Target className="w-6 h-6 text-positive-600 dark:text-positive-500" />
                         </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                        <p className="text-sm text-ink-600 dark:text-ink-400">
                           Geen actieve opportunities
                         </p>
                       </div>
@@ -1212,7 +1212,7 @@ export const PortfolioDetail: React.FC = () => {
                         return (
                           <div
                             key={item.id}
-                            className="w-full text-left p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg"
+                            className="w-full text-left p-3 bg-surface dark:bg-trading-dark-700/50 rounded-lg"
                           >
                             <div className="flex items-start gap-2">
                               <div className="flex-1 min-w-0">
@@ -1220,11 +1220,11 @@ export const PortfolioDetail: React.FC = () => {
                                   <div className="p-1 rounded bg-positive-50 dark:bg-positive-700/25">
                                     <OppIcon className="w-3 h-3 text-positive-600 dark:text-positive-500" />
                                   </div>
-                                  <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                                  <p className="text-sm font-semibold text-ink-900 dark:text-white truncate">
                                     {item.ticker}
                                   </p>
                                 </div>
-                                <p className="text-xs text-gray-600 dark:text-gray-400 ml-6 whitespace-pre-line">
+                                <p className="text-xs text-ink-600 dark:text-ink-400 ml-6 whitespace-pre-line">
                                   {item.message}
                                 </p>
                               </div>

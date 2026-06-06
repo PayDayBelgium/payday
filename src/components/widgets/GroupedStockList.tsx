@@ -223,13 +223,13 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
     <div className="space-y-4">
       {/* Search Bar */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-ink-400" />
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Zoek ticker..."
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          className="w-full pl-10 pr-4 py-2 border border-ink-200 dark:border-trading-dark-500 rounded-lg bg-white dark:bg-trading-dark-800 text-ink-900 dark:text-white placeholder-ink-500 dark:placeholder-ink-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
         />
       </div>
 
@@ -270,18 +270,18 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
             return (
               <div
                 key={group.ticker}
-                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden"
+                className="bg-white dark:bg-trading-dark-800 border border-surface-line dark:border-trading-dark-600 rounded-lg overflow-hidden"
               >
                 {/* Group Header */}
                 <div
-                  className="p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors"
+                  className="p-4 cursor-pointer hover:bg-surface dark:hover:bg-trading-dark-700/30 transition-colors"
                   onClick={() => toggleExpanded(group.ticker)}
                 >
                   <div className="flex items-center gap-4">
                     {/* Left: Chevron + All data fields */}
                     <div className="flex items-center gap-3 flex-1 min-w-0">
                       {/* Chevron */}
-                      <div className="text-gray-500 dark:text-gray-400 flex-shrink-0">
+                      <div className="text-ink-500 dark:text-ink-400 flex-shrink-0">
                         {isExpanded ? (
                           <ChevronDown className="w-5 h-5" />
                         ) : (
@@ -293,7 +293,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                       <div className="flex-1 min-w-0">
                         {/* Ticker row */}
                         <div className="flex items-center gap-2 mb-2">
-                          <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                          <h3 className="text-xl font-bold text-ink-900 dark:text-white">
                             {group.ticker}
                           </h3>
                           <span
@@ -359,10 +359,10 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                         {/* Data fields in a flex layout */}
                         <div className="flex items-end gap-6 text-sm">
                           <div className="w-24 flex-shrink-0">
-                            <p className="text-gray-500 dark:text-gray-400 text-xs mb-1">
+                            <p className="text-ink-500 dark:text-ink-400 text-xs mb-1">
                               Eerste positie op
                             </p>
-                            <p className="text-gray-900 dark:text-white font-medium text-xs">
+                            <p className="text-ink-900 dark:text-white font-medium text-xs">
                               {new Date(group.positions[0].openDate).toLocaleDateString('nl-NL', {
                                 day: '2-digit',
                                 month: '2-digit',
@@ -371,27 +371,27 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                             </p>
                           </div>
                           <div className="w-16 flex-shrink-0">
-                            <p className="text-gray-500 dark:text-gray-400 text-xs mb-1">Aantal</p>
-                            <p className="text-gray-900 dark:text-white font-medium">
+                            <p className="text-ink-500 dark:text-ink-400 text-xs mb-1">Aantal</p>
+                            <p className="text-ink-900 dark:text-white font-medium">
                               {group.totalShares}
                             </p>
                           </div>
                           <div className="w-20 flex-shrink-0">
-                            <p className="text-gray-500 dark:text-gray-400 text-xs mb-1">GAK</p>
-                            <p className="text-gray-900 dark:text-white font-medium">
+                            <p className="text-ink-500 dark:text-ink-400 text-xs mb-1">GAK</p>
+                            <p className="text-ink-900 dark:text-white font-medium">
                               {formatCurrency(group.averageCost, allPortfolios)}
                             </p>
                           </div>
                           <div className="w-28 flex-shrink-0">
-                            <p className="text-gray-500 dark:text-gray-400 text-xs mb-1">
+                            <p className="text-ink-500 dark:text-ink-400 text-xs mb-1">
                               Aankoopwaarde
                             </p>
-                            <p className="text-gray-900 dark:text-white font-medium">
+                            <p className="text-ink-900 dark:text-white font-medium">
                               {formatCurrency(group.totalCostBasis, allPortfolios)}
                             </p>
                           </div>
                           <div className="w-24 flex-shrink-0">
-                            <p className="text-gray-500 dark:text-gray-400 text-xs mb-1">
+                            <p className="text-ink-500 dark:text-ink-400 text-xs mb-1">
                               Huidige Prijs
                             </p>
                             {editingTicker === group.ticker ? (
@@ -406,7 +406,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                                   onChange={(e) => setEditPrice(e.target.value)}
                                   onKeyDown={(e) => handlePriceKeyDown(group.ticker, e)}
                                   onBlur={(e) => savePrice(group.ticker, e as any)}
-                                  className="w-full px-2 py-1 text-sm font-bold border-2 border-primary-500 dark:border-primary-400 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                  className="w-full px-2 py-1 text-sm font-bold border-2 border-primary-500 dark:border-primary-400 rounded bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
                                   autoFocus
                                 />
                               </div>
@@ -419,17 +419,17 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                                     e
                                   )
                                 }
-                                className="text-gray-900 dark:text-white font-bold text-base cursor-pointer hover:text-primary-700 dark:hover:text-primary-500 transition-colors"
+                                className="text-ink-900 dark:text-white font-bold text-base cursor-pointer hover:text-primary-700 dark:hover:text-primary-500 transition-colors"
                               >
                                 {formatCurrency(group.positions[0].currentPrice, allPortfolios)}
                               </p>
                             )}
                           </div>
                           <div className="w-28 flex-shrink-0">
-                            <p className="text-gray-500 dark:text-gray-400 text-xs mb-1">
+                            <p className="text-ink-500 dark:text-ink-400 text-xs mb-1">
                               Huidige Waarde
                             </p>
-                            <p className="text-gray-900 dark:text-white font-medium">
+                            <p className="text-ink-900 dark:text-white font-medium">
                               {formatCurrency(group.totalValue, allPortfolios)}
                             </p>
                           </div>
@@ -466,7 +466,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
 
                     {/* Sell button in gray zone */}
                     {onSellPosition && (
-                      <div className="flex-shrink-0 bg-gray-100 dark:bg-gray-700/50 rounded-lg px-3 py-3">
+                      <div className="flex-shrink-0 bg-surface-subtle dark:bg-trading-dark-700/50 rounded-lg px-3 py-3">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -477,7 +477,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                               setExpandedTickers((prev) => new Set(prev).add(group.ticker));
                             }
                           }}
-                          className="w-8 h-8 flex items-center justify-center bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-200 rounded font-semibold text-sm transition-colors"
+                          className="w-8 h-8 flex items-center justify-center bg-ink-200 dark:bg-trading-dark-600 hover:bg-ink-300 dark:hover:bg-ink-400 text-ink-700 dark:text-ink-200 rounded font-semibold text-sm transition-colors"
                           title={
                             group.positions.length === 1 ? 'Verkoop' : 'Verkoop een lot (klap uit)'
                           }
@@ -491,8 +491,8 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
 
                 {/* Expanded Content - Individual Positions */}
                 {isExpanded && (
-                  <div className="border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
-                    <div className="divide-y divide-gray-200 dark:divide-gray-700">
+                  <div className="border-t border-surface-line dark:border-trading-dark-600 bg-surface dark:bg-trading-dark-900/50">
+                    <div className="divide-y divide-surface-line dark:divide-trading-dark-600">
                       {group.positions.map((position) => {
                         const posProfit = position.currentValue - position.costBasis;
                         const posProfitPct =
@@ -509,7 +509,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                           <div key={position.id}>
                             <div
                               onClick={() => onEditPosition(position)}
-                              className="p-4 hover:bg-white dark:hover:bg-gray-800 cursor-pointer transition-colors"
+                              className="p-4 hover:bg-white dark:hover:bg-trading-dark-800 cursor-pointer transition-colors"
                             >
                               <div className="flex items-center gap-4">
                                 {/* Left: Chevron spacer + Data fields matching header */}
@@ -545,32 +545,32 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                                   {/* Data fields matching header layout */}
                                   <div className="flex items-center gap-6 text-sm">
                                     <div className="w-24 flex-shrink-0">
-                                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                      <p className="text-sm font-medium text-ink-900 dark:text-white">
                                         {new Date(position.openDate).toLocaleDateString('nl-NL')}
                                       </p>
                                     </div>
                                     <div className="w-16 flex-shrink-0">
-                                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                      <p className="text-sm font-medium text-ink-900 dark:text-white">
                                         {position.shares}
                                       </p>
                                     </div>
                                     <div className="w-20 flex-shrink-0">
-                                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                      <p className="text-sm font-medium text-ink-900 dark:text-white">
                                         {formatCurrency(position.purchasePrice, allPortfolios)}
                                       </p>
                                     </div>
                                     <div className="w-28 flex-shrink-0">
-                                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                      <p className="text-sm font-medium text-ink-900 dark:text-white">
                                         {formatCurrency(position.costBasis, allPortfolios)}
                                       </p>
                                     </div>
                                     <div className="w-24 flex-shrink-0">
-                                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                      <p className="text-sm font-medium text-ink-900 dark:text-white">
                                         {formatCurrency(position.currentPrice, allPortfolios)}
                                       </p>
                                     </div>
                                     <div className="w-28 flex-shrink-0">
-                                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                      <p className="text-sm font-medium text-ink-900 dark:text-white">
                                         {formatCurrency(position.currentValue, allPortfolios)}
                                       </p>
                                     </div>
@@ -610,7 +610,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                                       e.stopPropagation();
                                       onSellPosition(position);
                                     }}
-                                    className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-200 rounded font-semibold text-sm transition-colors"
+                                    className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-surface-muted dark:bg-trading-dark-600 hover:bg-ink-200 dark:hover:bg-ink-400 text-ink-700 dark:text-ink-200 rounded font-semibold text-sm transition-colors"
                                     title="Verkoop dit lot"
                                   >
                                     S
@@ -655,7 +655,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                                           e.stopPropagation();
                                           setDismissConfirm({ isOpen: true, alert });
                                         }}
-                                        className={`p-0.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors flex-shrink-0`}
+                                        className={`p-0.5 hover:bg-surface-muted dark:hover:bg-trading-dark-700 rounded transition-colors flex-shrink-0`}
                                         title="Alert sluiten"
                                       >
                                         <X className="w-3.5 h-3.5" />
@@ -692,7 +692,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                                           onClick={(e) =>
                                             handleDismissStrategyAlert(e, alert.id, alert.message)
                                           }
-                                          className={`p-0.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors flex-shrink-0`}
+                                          className={`p-0.5 hover:bg-surface-muted dark:hover:bg-trading-dark-700 rounded transition-colors flex-shrink-0`}
                                           title="Alert sluiten"
                                         >
                                           <X className="w-3.5 h-3.5" />
@@ -712,7 +712,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
 
                 {/* Alerts Display */}
                 {hasUnreadAlerts && !isExpanded && (
-                  <div className="border-t border-gray-200 dark:border-gray-700 p-3 bg-negative-50 dark:bg-negative-700/15">
+                  <div className="border-t border-surface-line dark:border-trading-dark-600 p-3 bg-negative-50 dark:bg-negative-700/15">
                     <div className="space-y-2">
                       {group.alerts.slice(0, 2).map((alert) => {
                         // Fallback to 'alert' if category is not set (for backwards compatibility)
@@ -745,7 +745,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                                 e.stopPropagation();
                                 setDismissConfirm({ isOpen: true, alert });
                               }}
-                              className={`p-0.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors flex-shrink-0`}
+                              className={`p-0.5 hover:bg-surface-muted dark:hover:bg-trading-dark-700 rounded transition-colors flex-shrink-0`}
                               title="Alert sluiten"
                             >
                               <X className="w-3.5 h-3.5" />
@@ -754,7 +754,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                         );
                       })}
                       {group.alerts.length > 2 && (
-                        <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                        <p className="text-xs text-ink-500 dark:text-ink-400 text-center">
                           +{group.alerts.length - 2} meer
                         </p>
                       )}
@@ -766,7 +766,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
           })}
         </div>
       ) : (
-        <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+        <div className="text-center py-12 text-ink-500 dark:text-ink-400">
           {searchQuery ? (
             <>
               <p className="text-lg font-medium">Geen resultaten gevonden</p>

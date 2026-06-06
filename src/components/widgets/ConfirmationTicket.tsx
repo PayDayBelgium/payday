@@ -120,7 +120,7 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
 
   return (
     <div
-      className={`bg-white dark:bg-gray-800 rounded-lg border-2 border-${color}-200 dark:border-${color}-800 shadow-lg ${className}`}
+      className={`bg-white dark:bg-trading-dark-800 rounded-lg border-2 border-${color}-200 dark:border-${color}-800 shadow-lg ${className}`}
     >
       {/* Header */}
       <div
@@ -156,14 +156,14 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
         {(type === 'stock' || type === 'etf') && (
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Aantal Aandelen</p>
-              <p className="text-lg font-semibold text-gray-900 dark:text-white">
+              <p className="text-sm text-ink-500 dark:text-ink-400 mb-1">Aantal Aandelen</p>
+              <p className="text-lg font-semibold text-ink-900 dark:text-white">
                 {shares?.toLocaleString()}
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Koopprijs per Aandeel</p>
-              <p className="text-lg font-semibold text-gray-900 dark:text-white">
+              <p className="text-sm text-ink-500 dark:text-ink-400 mb-1">Koopprijs per Aandeel</p>
+              <p className="text-lg font-semibold text-ink-900 dark:text-white">
                 {currencySymbol}
                 {purchasePrice !== undefined ? formatNumber(purchasePrice, 2) : ''}
               </p>
@@ -175,34 +175,34 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
         {(type === 'call' || type === 'put') && !longStrike && !shortStrike && (
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Strike prijs</p>
-              <p className="text-lg font-semibold text-gray-900 dark:text-white">
+              <p className="text-sm text-ink-500 dark:text-ink-400 mb-1">Strike prijs</p>
+              <p className="text-lg font-semibold text-ink-900 dark:text-white">
                 {currencySymbol}
                 {strike !== undefined ? formatNumber(strike, 2) : ''}
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Premium</p>
-              <p className="text-lg font-semibold text-gray-900 dark:text-white">
+              <p className="text-sm text-ink-500 dark:text-ink-400 mb-1">Premium</p>
+              <p className="text-lg font-semibold text-ink-900 dark:text-white">
                 {currencySymbol}
                 {premium !== undefined ? formatNumber(premium, 2) : ''}
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Expiratie</p>
-              <p className="text-lg font-semibold text-gray-900 dark:text-white">
+              <p className="text-sm text-ink-500 dark:text-ink-400 mb-1">Expiratie</p>
+              <p className="text-lg font-semibold text-ink-900 dark:text-white">
                 {expiration ? new Date(expiration).toLocaleDateString('nl-NL') : '-'}
               </p>
               {dte !== undefined && (
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
                   {dte} dagen tot expiratie
                 </p>
               )}
             </div>
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Contracten</p>
-              <p className="text-lg font-semibold text-gray-900 dark:text-white">{contracts}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <p className="text-sm text-ink-500 dark:text-ink-400 mb-1">Contracten</p>
+              <p className="text-lg font-semibold text-ink-900 dark:text-white">{contracts}</p>
+              <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
                 = {(contracts || 0) * 100} aandelen
               </p>
             </div>
@@ -219,15 +219,15 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-600 dark:text-gray-400">Strike</p>
-                <p className="text-base font-semibold text-gray-900 dark:text-white">
+                <p className="text-xs text-ink-600 dark:text-ink-400">Strike</p>
+                <p className="text-base font-semibold text-ink-900 dark:text-white">
                   {currencySymbol}
                   {formatNumber(longStrike, 2)}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-600 dark:text-gray-400">Premium</p>
-                <p className="text-base font-semibold text-gray-900 dark:text-white">
+                <p className="text-xs text-ink-600 dark:text-ink-400">Premium</p>
+                <p className="text-base font-semibold text-ink-900 dark:text-white">
                   {currencySymbol}
                   {longPremium !== undefined ? formatNumber(longPremium, 2) : ''}
                 </p>
@@ -241,15 +241,15 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-600 dark:text-gray-400">Strike</p>
-                <p className="text-base font-semibold text-gray-900 dark:text-white">
+                <p className="text-xs text-ink-600 dark:text-ink-400">Strike</p>
+                <p className="text-base font-semibold text-ink-900 dark:text-white">
                   {currencySymbol}
                   {formatNumber(shortStrike, 2)}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-600 dark:text-gray-400">Premium</p>
-                <p className="text-base font-semibold text-gray-900 dark:text-white">
+                <p className="text-xs text-ink-600 dark:text-ink-400">Premium</p>
+                <p className="text-base font-semibold text-ink-900 dark:text-white">
                   {currencySymbol}
                   {shortPremium !== undefined ? formatNumber(shortPremium, 2) : ''}
                 </p>
@@ -258,20 +258,20 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Expiratie</p>
-                <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                <p className="text-sm text-ink-500 dark:text-ink-400 mb-1">Expiratie</p>
+                <p className="text-lg font-semibold text-ink-900 dark:text-white">
                   {expiration ? new Date(expiration).toLocaleDateString('nl-NL') : '-'}
                 </p>
                 {dte !== undefined && (
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
                     {dte} dagen tot expiratie
                   </p>
                 )}
               </div>
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Contracten</p>
-                <p className="text-lg font-semibold text-gray-900 dark:text-white">{contracts}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-sm text-ink-500 dark:text-ink-400 mb-1">Contracten</p>
+                <p className="text-lg font-semibold text-ink-900 dark:text-white">{contracts}</p>
+                <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
                   = {(contracts || 0) * 100} aandelen per leg
                 </p>
               </div>
@@ -280,17 +280,17 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
         )}
 
         {/* Financial Summary */}
-        <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-          <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+        <div className="border-t border-surface-line dark:border-trading-dark-600 pt-4">
+          <h4 className="text-sm font-semibold text-ink-700 dark:text-ink-300 mb-3">
             Financiële Samenvatting
           </h4>
 
           <div className="space-y-3">
             {/* Cost Basis / Net Credit/Debit */}
-            <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-surface dark:bg-trading-dark-900 rounded-lg">
               <div className="flex items-center gap-2">
-                <DollarSign className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                <DollarSign className="w-5 h-5 text-ink-600 dark:text-ink-400" />
+                <span className="text-sm font-medium text-ink-700 dark:text-ink-300">
                   {isDebit ? 'Netto Debit' : isCredit ? 'Netto Credit' : 'Totale kost'}
                 </span>
               </div>
@@ -300,7 +300,7 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
                     ? 'text-negative-600 dark:text-negative-500'
                     : isCredit
                       ? 'text-positive-600 dark:text-positive-500'
-                      : 'text-gray-900 dark:text-white'
+                      : 'text-ink-900 dark:text-white'
                 }`}
               >
                 {isCredit ? '+' : ''}
@@ -311,11 +311,11 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
 
             {/* Break-even */}
             {breakEven !== undefined && (
-              <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <div className="flex items-center justify-between p-3 bg-surface dark:bg-trading-dark-900 rounded-lg">
+                <span className="text-sm font-medium text-ink-700 dark:text-ink-300">
                   Break-even prijs
                 </span>
-                <span className="text-lg font-bold text-gray-900 dark:text-white">
+                <span className="text-lg font-bold text-ink-900 dark:text-white">
                   {currencySymbol}
                   {formatNumber(breakEven, 2)}
                 </span>
@@ -371,25 +371,25 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
         </div>
 
         {/* Date */}
-        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+        <div className="flex items-center gap-2 text-sm text-ink-600 dark:text-ink-400">
           <Calendar className="w-4 h-4" />
           <span>Datum: {new Date(date).toLocaleDateString('nl-NL')}</span>
         </div>
 
         {/* Notes */}
         {notes && (
-          <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
-            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notities</p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">{notes}</p>
+          <div className="p-3 bg-surface dark:bg-trading-dark-900 rounded-lg">
+            <p className="text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">Notities</p>
+            <p className="text-sm text-ink-600 dark:text-ink-400">{notes}</p>
           </div>
         )}
       </div>
 
       {/* Footer Warning */}
-      <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+      <div className="px-6 py-4 bg-surface dark:bg-trading-dark-900 border-t border-surface-line dark:border-trading-dark-600">
         <div className="flex items-start gap-2">
           <AlertCircle className="w-5 h-5 text-caution-600 dark:text-caution-500 flex-shrink-0 mt-0.5" />
-          <p className="text-xs text-gray-600 dark:text-gray-400">
+          <p className="text-xs text-ink-600 dark:text-ink-400">
             Controleer alle details voordat je deze positie opent. Deze actie kan niet ongedaan
             worden gemaakt.
           </p>

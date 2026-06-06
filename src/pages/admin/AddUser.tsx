@@ -106,26 +106,26 @@ export const AddUser: React.FC = () => {
     <div className="max-w-2xl">
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Form Card */}
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-6">
+        <div className="bg-white dark:bg-trading-dark-800 border border-surface-line dark:border-trading-dark-600 rounded-lg shadow-sm p-6">
           <div className="space-y-6">
             {/* Username */}
             <div>
               <label
                 htmlFor="username"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2"
               >
                 Username *
               </label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-ink-400" />
                 <input
                   id="username"
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className={`w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-700 border ${
-                    errors.username ? 'border-negative-500' : 'border-gray-300 dark:border-gray-600'
-                  } rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500`}
+                  className={`w-full pl-10 pr-4 py-2 bg-white dark:bg-trading-dark-700 border ${
+                    errors.username ? 'border-negative-500' : 'border-ink-200 dark:border-trading-dark-500'
+                  } rounded-lg text-ink-900 dark:text-white placeholder-ink-500 dark:placeholder-ink-400 focus:outline-none focus:ring-2 focus:ring-primary-500`}
                   placeholder="Enter username"
                   autoFocus
                 />
@@ -141,20 +141,20 @@ export const AddUser: React.FC = () => {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2"
               >
                 Email *
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-ink-400" />
                 <input
                   id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className={`w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-700 border ${
-                    errors.email ? 'border-negative-500' : 'border-gray-300 dark:border-gray-600'
-                  } rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500`}
+                  className={`w-full pl-10 pr-4 py-2 bg-white dark:bg-trading-dark-700 border ${
+                    errors.email ? 'border-negative-500' : 'border-ink-200 dark:border-trading-dark-500'
+                  } rounded-lg text-ink-900 dark:text-white placeholder-ink-500 dark:placeholder-ink-400 focus:outline-none focus:ring-2 focus:ring-primary-500`}
                   placeholder="Enter email address"
                 />
               </div>
@@ -169,20 +169,20 @@ export const AddUser: React.FC = () => {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2"
               >
                 Password *
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-ink-400" />
                 <input
                   id="password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={`w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-700 border ${
-                    errors.password ? 'border-negative-500' : 'border-gray-300 dark:border-gray-600'
-                  } rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500`}
+                  className={`w-full pl-10 pr-4 py-2 bg-white dark:bg-trading-dark-700 border ${
+                    errors.password ? 'border-negative-500' : 'border-ink-200 dark:border-trading-dark-500'
+                  } rounded-lg text-ink-900 dark:text-white placeholder-ink-500 dark:placeholder-ink-400 focus:outline-none focus:ring-2 focus:ring-primary-500`}
                   placeholder="Enter password (min. 6 characters)"
                 />
               </div>
@@ -197,22 +197,22 @@ export const AddUser: React.FC = () => {
             <div>
               <label
                 htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2"
               >
                 Confirm Password *
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-ink-400" />
                 <input
                   id="confirmPassword"
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className={`w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-700 border ${
+                  className={`w-full pl-10 pr-4 py-2 bg-white dark:bg-trading-dark-700 border ${
                     errors.confirmPassword
                       ? 'border-negative-500'
-                      : 'border-gray-300 dark:border-gray-600'
-                  } rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500`}
+                      : 'border-ink-200 dark:border-trading-dark-500'
+                  } rounded-lg text-ink-900 dark:text-white placeholder-ink-500 dark:placeholder-ink-400 focus:outline-none focus:ring-2 focus:ring-primary-500`}
                   placeholder="Confirm password"
                 />
               </div>
@@ -237,7 +237,7 @@ export const AddUser: React.FC = () => {
           <button
             type="button"
             onClick={handleCancel}
-            className="flex items-center gap-2 px-6 py-3 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-lg transition-colors"
+            className="flex items-center gap-2 px-6 py-3 bg-surface-muted dark:bg-trading-dark-700 hover:bg-ink-200 dark:hover:bg-trading-dark-600 text-ink-700 dark:text-ink-300 font-medium rounded-lg transition-colors"
           >
             <X className="w-5 h-5" />
             Cancel

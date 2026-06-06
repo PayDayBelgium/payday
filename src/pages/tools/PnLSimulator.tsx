@@ -351,8 +351,8 @@ export const PnLSimulator: React.FC = () => {
     const pnl = calculateTotalPnL(legs, price);
 
     return (
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-3">
-        <p className="font-medium text-gray-900 dark:text-white">
+      <div className="bg-white dark:bg-trading-dark-800 border border-surface-line dark:border-trading-dark-600 rounded-lg shadow-lg p-3">
+        <p className="font-medium text-ink-900 dark:text-white">
           Prijs: ${formatNumber(label, 2)}
         </p>
         <p
@@ -383,13 +383,13 @@ export const PnLSimulator: React.FC = () => {
         {/* Left Column: Configuration */}
         <div className="space-y-6">
           {/* Ticker & Price */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
+          <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
+            <h2 className="text-lg font-semibold text-ink-900 dark:text-white mb-4 pb-2 border-b border-surface-line dark:border-trading-dark-600">
               Underlying
             </h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
                   Ticker
                 </label>
                 <TickerSelector
@@ -401,7 +401,7 @@ export const PnLSimulator: React.FC = () => {
               {/* Price and Range on same row */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
                     Prijs ($)
                   </label>
                   <input
@@ -410,11 +410,11 @@ export const PnLSimulator: React.FC = () => {
                     onChange={(e) => setCurrentPrice(parseFloat(e.target.value) || 0)}
                     placeholder="100.00"
                     step="0.01"
-                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2"
+                    className="w-full rounded-md border-ink-200 dark:border-trading-dark-500 dark:bg-trading-dark-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
                     Bereik: ±{priceRangePercent}%
                   </label>
                   <input
@@ -423,7 +423,7 @@ export const PnLSimulator: React.FC = () => {
                     max="50"
                     value={priceRangePercent}
                     onChange={(e) => setPriceRangePercent(parseInt(e.target.value))}
-                    className="w-full h-2 mt-3 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+                    className="w-full h-2 mt-3 bg-surface-muted dark:bg-trading-dark-700 rounded-lg appearance-none cursor-pointer accent-indigo-500"
                   />
                 </div>
               </div>
@@ -431,8 +431,8 @@ export const PnLSimulator: React.FC = () => {
           </div>
 
           {/* Add Option Leg */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
+          <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
+            <h2 className="text-lg font-semibold text-ink-900 dark:text-white mb-4 pb-2 border-b border-surface-line dark:border-trading-dark-600">
               Voeg Optie Toe
             </h2>
             <div className="space-y-4">
@@ -443,7 +443,7 @@ export const PnLSimulator: React.FC = () => {
                   className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
                     newLeg.type === 'call'
                       ? 'bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 border-2 border-positive-500'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-2 border-transparent'
+                      : 'bg-surface-subtle dark:bg-trading-dark-700 text-ink-600 dark:text-ink-400 border-2 border-transparent'
                   }`}
                 >
                   <ArrowUpCircle className="w-4 h-4" />
@@ -454,7 +454,7 @@ export const PnLSimulator: React.FC = () => {
                   className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
                     newLeg.type === 'put'
                       ? 'bg-surface-muted dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300 border-2 border-ink-600'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-2 border-transparent'
+                      : 'bg-surface-subtle dark:bg-trading-dark-700 text-ink-600 dark:text-ink-400 border-2 border-transparent'
                   }`}
                 >
                   <ArrowDownCircle className="w-4 h-4" />
@@ -469,7 +469,7 @@ export const PnLSimulator: React.FC = () => {
                   className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                     newLeg.action === 'buy'
                       ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 border-2 border-primary-500'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-2 border-transparent'
+                      : 'bg-surface-subtle dark:bg-trading-dark-700 text-ink-600 dark:text-ink-400 border-2 border-transparent'
                   }`}
                 >
                   Long (Kopen)
@@ -479,7 +479,7 @@ export const PnLSimulator: React.FC = () => {
                   className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                     newLeg.action === 'sell'
                       ? 'bg-caution-50 dark:bg-caution-600/25 text-caution-600 dark:text-caution-500 border-2 border-caution-500'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-2 border-transparent'
+                      : 'bg-surface-subtle dark:bg-trading-dark-700 text-ink-600 dark:text-ink-400 border-2 border-transparent'
                   }`}
                 >
                   Short (Verkopen)
@@ -489,7 +489,7 @@ export const PnLSimulator: React.FC = () => {
               {/* Strike, Premium, Contracts */}
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
                     Strike ($)
                   </label>
                   <input
@@ -500,11 +500,11 @@ export const PnLSimulator: React.FC = () => {
                     }
                     placeholder="100"
                     step="0.5"
-                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 text-sm"
+                    className="w-full rounded-md border-ink-200 dark:border-trading-dark-500 dark:bg-trading-dark-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
                     Premium ($)
                   </label>
                   <input
@@ -515,11 +515,11 @@ export const PnLSimulator: React.FC = () => {
                     }
                     placeholder="2.50"
                     step="0.01"
-                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 text-sm"
+                    className="w-full rounded-md border-ink-200 dark:border-trading-dark-500 dark:bg-trading-dark-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
                     Contracts
                   </label>
                   <input
@@ -532,28 +532,28 @@ export const PnLSimulator: React.FC = () => {
                       }))
                     }
                     min="1"
-                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 text-sm"
+                    className="w-full rounded-md border-ink-200 dark:border-trading-dark-500 dark:bg-trading-dark-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 text-sm"
                   />
                 </div>
               </div>
 
               {/* Expiration Date */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
                   Expiratie (optioneel)
                 </label>
                 <input
                   type="date"
                   value={newLeg.expiration || ''}
                   onChange={(e) => setNewLeg((prev) => ({ ...prev, expiration: e.target.value }))}
-                  className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 text-sm"
+                  className="w-full rounded-md border-ink-200 dark:border-trading-dark-500 dark:bg-trading-dark-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 text-sm"
                 />
               </div>
 
               <button
                 onClick={addLeg}
                 disabled={newLeg.strike <= 0 || newLeg.premium <= 0}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-ink-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
               >
                 <Plus className="w-4 h-4" />
                 Voeg Toe
@@ -563,9 +563,9 @@ export const PnLSimulator: React.FC = () => {
 
           {/* Active Legs */}
           {legs.length > 0 && (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-              <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
+              <div className="flex items-center justify-between mb-4 pb-2 border-b border-surface-line dark:border-trading-dark-600">
+                <h2 className="text-lg font-semibold text-ink-900 dark:text-white">
                   Actieve Posities ({legs.length})
                 </h2>
                 <button
@@ -580,7 +580,7 @@ export const PnLSimulator: React.FC = () => {
                 {legs.map((leg, index) => (
                   <div
                     key={leg.id}
-                    className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg"
+                    className="flex items-center justify-between p-3 bg-surface dark:bg-trading-dark-700/50 rounded-lg"
                   >
                     <div className="flex items-center gap-3">
                       <div
@@ -588,11 +588,11 @@ export const PnLSimulator: React.FC = () => {
                         style={{ backgroundColor: LEG_COLORS[index % LEG_COLORS.length] }}
                       />
                       <div>
-                        <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        <p className="text-sm font-medium text-ink-900 dark:text-white">
                           {leg.contracts}x {leg.action === 'buy' ? 'Long' : 'Short'}{' '}
                           {leg.type.toUpperCase()} ${leg.strike}
                           {leg.expiration && (
-                            <span className="ml-2 text-xs font-normal text-gray-500 dark:text-gray-400">
+                            <span className="ml-2 text-xs font-normal text-ink-500 dark:text-ink-400">
                               (
                               {new Date(leg.expiration).toLocaleDateString('nl-NL', {
                                 day: 'numeric',
@@ -602,7 +602,7 @@ export const PnLSimulator: React.FC = () => {
                             </span>
                           )}
                         </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                        <p className="text-xs text-ink-500 dark:text-ink-400">
                           Premium: ${formatNumber(leg.premium, 2)} (
                           {leg.action === 'buy' ? '-' : '+'}
                           {formatCurrency(leg.premium * leg.contracts * MULTIPLIER, '$')})
@@ -611,20 +611,20 @@ export const PnLSimulator: React.FC = () => {
                     </div>
                     <button
                       onClick={() => removeLeg(leg.id)}
-                      className="p-1 text-gray-400 hover:text-negative-600 transition-colors"
+                      className="p-1 text-ink-400 hover:text-negative-600 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 ))}
               </div>
-              <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
-                <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+              <div className="mt-4 pt-3 border-t border-surface-line dark:border-trading-dark-600">
+                <label className="flex items-center gap-2 text-sm text-ink-700 dark:text-ink-300 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={showIndividualLegs}
                     onChange={(e) => setShowIndividualLegs(e.target.checked)}
-                    className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    className="rounded border-ink-200 text-indigo-600 focus:ring-indigo-500"
                   />
                   Toon individuele leg P&L
                 </label>
@@ -637,10 +637,10 @@ export const PnLSimulator: React.FC = () => {
         <div className="lg:col-span-2 space-y-6">
           {/* Metrics Cards - 5 columns including break-even */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3">
+            <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-3">
               <div className="flex items-center gap-1.5 mb-1">
                 <Target className="w-3.5 h-3.5 text-positive-600" />
-                <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                <span className="text-xs font-medium text-ink-500 dark:text-ink-400">
                   Max Winst
                 </span>
               </div>
@@ -652,10 +652,10 @@ export const PnLSimulator: React.FC = () => {
                   : formatCurrency(metrics.maxProfit, '$')}
               </p>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3">
+            <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-3">
               <div className="flex items-center gap-1.5 mb-1">
                 <Target className="w-3.5 h-3.5 text-negative-600" />
-                <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                <span className="text-xs font-medium text-ink-500 dark:text-ink-400">
                   Max Verlies
                 </span>
               </div>
@@ -665,10 +665,10 @@ export const PnLSimulator: React.FC = () => {
                 {metrics.maxLossUnlimited ? '∞ Onbeperkt' : formatCurrency(metrics.maxLoss, '$')}
               </p>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3">
+            <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-3">
               <div className="flex items-center gap-1.5 mb-1">
                 <DollarSign className="w-3.5 h-3.5 text-indigo-500" />
-                <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                <span className="text-xs font-medium text-ink-500 dark:text-ink-400">
                   Netto Premium
                 </span>
               </div>
@@ -678,14 +678,14 @@ export const PnLSimulator: React.FC = () => {
                 {metrics.totalPremium >= 0 ? '+' : ''}
                 {formatCurrency(metrics.totalPremium, '$')}
               </p>
-              <p className="text-[10px] text-gray-500 dark:text-gray-400">
+              <p className="text-[10px] text-ink-500 dark:text-ink-400">
                 {metrics.totalPremium >= 0 ? 'Credit' : 'Debit'}
               </p>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3">
+            <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-3">
               <div className="flex items-center gap-1.5 mb-1">
                 <TrendingUp className="w-3.5 h-3.5 text-primary-600" />
-                <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                <span className="text-xs font-medium text-ink-500 dark:text-ink-400">
                   P&L @ ${formatNumber(currentPrice, 0)}
                 </span>
               </div>
@@ -696,10 +696,10 @@ export const PnLSimulator: React.FC = () => {
                 {formatCurrency(metrics.pnlAtCurrentPrice, '$')}
               </p>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3">
+            <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-3">
               <div className="flex items-center gap-1.5 mb-1">
                 <div className="w-3.5 h-3.5 rounded-full bg-caution-500" />
-                <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                <span className="text-xs font-medium text-ink-500 dark:text-ink-400">
                   Break-even
                 </span>
               </div>
@@ -716,18 +716,18 @@ export const PnLSimulator: React.FC = () => {
                   ))}
                 </div>
               ) : (
-                <p className="text-lg font-bold text-gray-400 dark:text-gray-500">-</p>
+                <p className="text-lg font-bold text-ink-400 dark:text-ink-500">-</p>
               )}
             </div>
           </div>
 
           {/* P&L Chart */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
+            <h2 className="text-lg font-semibold text-ink-900 dark:text-white mb-4">
               P&L bij Expiratie
             </h2>
             {legs.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-80 text-gray-500 dark:text-gray-400">
+              <div className="flex flex-col items-center justify-center h-80 text-ink-500 dark:text-ink-400">
                 <TrendingUp className="w-16 h-16 mb-4 opacity-30" />
                 <p className="text-lg font-medium">Geen posities</p>
                 <p className="text-sm">Voeg opties toe om de P&L grafiek te zien</p>
@@ -836,8 +836,8 @@ export const PnLSimulator: React.FC = () => {
           </div>
 
           {/* Strategy Presets */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
+            <h2 className="text-lg font-semibold text-ink-900 dark:text-white mb-4">
               Populaire Strategieën
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -856,10 +856,10 @@ export const PnLSimulator: React.FC = () => {
                     },
                   ]);
                 }}
-                className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left"
+                className="p-3 bg-surface dark:bg-trading-dark-700/50 rounded-lg hover:bg-surface-subtle dark:hover:bg-trading-dark-700 transition-colors text-left"
               >
-                <p className="font-medium text-gray-900 dark:text-white">Covered Call</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Short Call @ 105%</p>
+                <p className="font-medium text-ink-900 dark:text-white">Covered Call</p>
+                <p className="text-xs text-ink-500 dark:text-ink-400">Short Call @ 105%</p>
               </button>
               <button
                 onClick={() => {
@@ -884,10 +884,10 @@ export const PnLSimulator: React.FC = () => {
                     },
                   ]);
                 }}
-                className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left"
+                className="p-3 bg-surface dark:bg-trading-dark-700/50 rounded-lg hover:bg-surface-subtle dark:hover:bg-trading-dark-700 transition-colors text-left"
               >
-                <p className="font-medium text-gray-900 dark:text-white">Bull Call Spread</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">95/105 Call Spread</p>
+                <p className="font-medium text-ink-900 dark:text-white">Bull Call Spread</p>
+                <p className="text-xs text-ink-500 dark:text-ink-400">95/105 Call Spread</p>
               </button>
               <button
                 onClick={() => {
@@ -929,10 +929,10 @@ export const PnLSimulator: React.FC = () => {
                     },
                   ]);
                 }}
-                className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left"
+                className="p-3 bg-surface dark:bg-trading-dark-700/50 rounded-lg hover:bg-surface-subtle dark:hover:bg-trading-dark-700 transition-colors text-left"
               >
-                <p className="font-medium text-gray-900 dark:text-white">Iron Condor</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">±5/±10 Spread</p>
+                <p className="font-medium text-ink-900 dark:text-white">Iron Condor</p>
+                <p className="text-xs text-ink-500 dark:text-ink-400">±5/±10 Spread</p>
               </button>
               <button
                 onClick={() => {
@@ -958,10 +958,10 @@ export const PnLSimulator: React.FC = () => {
                     },
                   ]);
                 }}
-                className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left"
+                className="p-3 bg-surface dark:bg-trading-dark-700/50 rounded-lg hover:bg-surface-subtle dark:hover:bg-trading-dark-700 transition-colors text-left"
               >
-                <p className="font-medium text-gray-900 dark:text-white">Long Straddle</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">ATM Call + Put</p>
+                <p className="font-medium text-ink-900 dark:text-white">Long Straddle</p>
+                <p className="text-xs text-ink-500 dark:text-ink-400">ATM Call + Put</p>
               </button>
             </div>
           </div>

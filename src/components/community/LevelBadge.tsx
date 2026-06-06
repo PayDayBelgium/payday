@@ -15,7 +15,7 @@ export const LevelBadge: React.FC<{ level: UserLevel; className?: string }> = ({
   className = '',
 }) => {
   const config = getLevelConfig(level);
-  const tone = TONE[config.slopeColor] ?? 'bg-gray-100 text-gray-600';
+  const tone = TONE[config.slopeColor] ?? 'bg-surface-subtle text-ink-600';
   return (
     <span
       className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${tone} ${className}`}

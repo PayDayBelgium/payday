@@ -268,8 +268,8 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
 
   if (points.length === 0) {
     return (
-      <div className={`p-8 text-center bg-gray-50 dark:bg-gray-900 rounded-lg ${className}`}>
-        <p className="text-gray-500 dark:text-gray-400">
+      <div className={`p-8 text-center bg-surface dark:bg-trading-dark-900 rounded-lg ${className}`}>
+        <p className="text-ink-500 dark:text-ink-400">
           Vul alle velden in om de P&L curve te zien
         </p>
       </div>
@@ -349,18 +349,18 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
 
   return (
     <div
-      className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 ${className}`}
+      className={`bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 p-4 ${className}`}
     >
       {/* Header */}
       <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+        <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
           Profit & Loss curve
         </h3>
         <div className="flex items-center gap-4 text-sm">
           {breakEven !== null && !Array.isArray(breakEven) && (
             <div className="flex items-center gap-1">
-              <span className="text-gray-600 dark:text-gray-400">Break-even:</span>
-              <span className="font-semibold text-gray-900 dark:text-white">
+              <span className="text-ink-600 dark:text-ink-400">Break-even:</span>
+              <span className="font-semibold text-ink-900 dark:text-white">
                 {currencySymbol}
                 {formatNumber(breakEven, 2)}
               </span>
@@ -369,7 +369,7 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
           {maxProfit !== null && maxProfit !== Infinity && (
             <div className="flex items-center gap-1">
               <TrendingUp className="w-4 h-4 text-positive-600 dark:text-positive-500" />
-              <span className="text-gray-600 dark:text-gray-400">Max:</span>
+              <span className="text-ink-600 dark:text-ink-400">Max:</span>
               <span className="font-semibold text-positive-600 dark:text-positive-500">
                 +{currencySymbol}
                 {formatNumber(maxProfit, 2)}
@@ -379,7 +379,7 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
           {maxLoss !== null && maxLoss !== -Infinity && (
             <div className="flex items-center gap-1">
               <TrendingDown className="w-4 h-4 text-negative-600 dark:text-negative-500" />
-              <span className="text-gray-600 dark:text-gray-400">Max:</span>
+              <span className="text-ink-600 dark:text-ink-400">Max:</span>
               <span className="font-semibold text-negative-600 dark:text-negative-500">
                 -{currencySymbol}
                 {formatNumber(Math.abs(maxLoss), 2)}
@@ -408,7 +408,7 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="0.5"
-                className="text-gray-200 dark:text-gray-700"
+                className="text-ink-200 dark:text-ink-700"
                 opacity="0.3"
               />
             </pattern>
@@ -424,7 +424,7 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
             stroke="currentColor"
             strokeWidth="2"
             strokeDasharray="5,5"
-            className="text-gray-400 dark:text-gray-600"
+            className="text-ink-400 dark:text-ink-600"
           />
 
           {/* Profit area fill */}
@@ -628,7 +628,7 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
                   height="30"
                   rx="4"
                   fill="currentColor"
-                  className="text-gray-900 dark:text-gray-100"
+                  className="text-ink-900 dark:text-ink-100"
                   opacity="0.95"
                 />
                 <text
@@ -666,7 +666,7 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
               className="w-8 h-0.5 bg-ink-600 dark:bg-purple-400"
               style={{ borderTop: '2px dashed' }}
             />
-            <span className="text-gray-600 dark:text-gray-400">Huidige Prijs</span>
+            <span className="text-ink-600 dark:text-ink-400">Huidige Prijs</span>
           </div>
         )}
         <div className="flex items-center gap-2">
@@ -674,14 +674,14 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
             className="w-8 h-0.5 bg-caution-500 dark:bg-caution-500"
             style={{ borderTop: '2px dashed' }}
           />
-          <span className="text-gray-600 dark:text-gray-400">Break-even</span>
+          <span className="text-ink-600 dark:text-ink-400">Break-even</span>
         </div>
         <div className="flex items-center gap-2">
           <div
-            className="w-8 h-0.5 bg-gray-400 dark:bg-gray-600"
+            className="w-8 h-0.5 bg-ink-300 dark:bg-trading-dark-600"
             style={{ borderTop: '2px dashed' }}
           />
-          <span className="text-gray-600 dark:text-gray-400">Zero Line</span>
+          <span className="text-ink-600 dark:text-ink-400">Zero Line</span>
         </div>
       </div>
     </div>

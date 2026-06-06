@@ -76,11 +76,11 @@ export const AlertsOpportunitiesWidget: React.FC<AlertsOpportunitiesWidgetProps>
       const Icon = type === 'alerts' ? AlertCircle : Target;
 
       return (
-        <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border ${borderColor} p-6`}>
+        <div className={`bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border ${borderColor} p-6`}>
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Icon className={`w-5 h-5 ${iconColor}`} />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>
+              <h3 className="text-lg font-semibold text-ink-900 dark:text-white">{title}</h3>
             </div>
             {items.length > 0 && (
               <span
@@ -97,7 +97,7 @@ export const AlertsOpportunitiesWidget: React.FC<AlertsOpportunitiesWidgetProps>
                 <div className={`inline-flex p-3 rounded-full mb-3 ${bgColor}`}>
                   <Icon className={`w-6 h-6 ${iconColor}`} />
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-ink-600 dark:text-ink-400">
                   {type === 'alerts' ? 'Geen actieve alerts' : 'Geen actieve opportunities'}
                 </p>
               </div>
@@ -106,7 +106,7 @@ export const AlertsOpportunitiesWidget: React.FC<AlertsOpportunitiesWidgetProps>
                 <div key={item.id} className="relative">
                   <button
                     onClick={() => handleItemClick(item.portfolio, item.ticker, item.id)}
-                    className="w-full text-left p-3 pr-10 bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors group"
+                    className="w-full text-left p-3 pr-10 bg-surface dark:bg-trading-dark-700/50 hover:bg-surface-subtle dark:hover:bg-trading-dark-700 rounded-lg transition-colors group"
                   >
                     <div className="flex items-start gap-2">
                       <div className="flex-1 min-w-0">
@@ -114,11 +114,11 @@ export const AlertsOpportunitiesWidget: React.FC<AlertsOpportunitiesWidgetProps>
                           <div className={`p-1 rounded ${bgColor}`}>
                             <Icon className={`w-3 h-3 ${iconColor}`} />
                           </div>
-                          <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                          <p className="text-sm font-semibold text-ink-900 dark:text-white truncate">
                             {item.ticker} • {item.portfolio}
                           </p>
                         </div>
-                        <p className="text-xs text-gray-600 dark:text-gray-400 ml-6">
+                        <p className="text-xs text-ink-600 dark:text-ink-400 ml-6">
                           {item.message}
                         </p>
                       </div>
@@ -127,10 +127,10 @@ export const AlertsOpportunitiesWidget: React.FC<AlertsOpportunitiesWidgetProps>
                   {/* Close button */}
                   <button
                     onClick={(e) => handleDismissAlert(e, item.id, item.message)}
-                    className="absolute top-2 right-2 p-1.5 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+                    className="absolute top-2 right-2 p-1.5 hover:bg-surface-muted dark:hover:bg-trading-dark-600 rounded transition-colors"
                     title="Sluiten"
                   >
-                    <X className="w-3.5 h-3.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" />
+                    <X className="w-3.5 h-3.5 text-ink-400 hover:text-ink-600 dark:hover:text-ink-300" />
                   </button>
                 </div>
               ))

@@ -60,11 +60,11 @@ const LevelCard: React.FC<{
       case 'red':
         return 'border-negative-500 bg-negative-50 dark:bg-negative-700/15';
       case 'black':
-        return 'border-gray-900 dark:border-gray-100 bg-gray-50 dark:bg-gray-800';
+        return 'border-trading-dark-900 dark:border-surface-subtle bg-surface dark:bg-trading-dark-800';
       case 'orange':
         return 'border-caution-500 bg-caution-50 dark:bg-caution-600/15';
       default:
-        return 'border-gray-300 bg-gray-50';
+        return 'border-ink-200 bg-surface';
     }
   };
 
@@ -89,7 +89,7 @@ const LevelCard: React.FC<{
     <div
       className={`
       relative rounded-xl border-2 overflow-hidden transition-all duration-300
-      ${isUnlocked ? getSlopeColorClasses() : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'}
+      ${isUnlocked ? getSlopeColorClasses() : 'border-surface-line dark:border-trading-dark-600 bg-white dark:bg-trading-dark-800'}
       ${isCurrent ? 'ring-2 ring-offset-2 ring-primary-500' : ''}
     `}
     >
@@ -97,19 +97,19 @@ const LevelCard: React.FC<{
       <div
         className={`
         px-4 py-3 flex items-center justify-between
-        ${isUnlocked ? getHeaderColorClasses() : 'bg-gray-100 dark:bg-gray-700'}
+        ${isUnlocked ? getHeaderColorClasses() : 'bg-surface-subtle dark:bg-trading-dark-700'}
       `}
       >
         <div className="flex items-center gap-3">
           <span className="text-2xl">{config.icon}</span>
           <div>
             <h3
-              className={`font-bold ${isUnlocked ? 'text-white dark:text-gray-900' : 'text-gray-600 dark:text-gray-300'}`}
+              className={`font-bold ${isUnlocked ? 'text-white dark:text-ink-900' : 'text-ink-600 dark:text-ink-300'}`}
             >
               {config.name}
             </h3>
             <p
-              className={`text-xs ${isUnlocked ? 'text-white/80 dark:text-gray-900/70' : 'text-gray-500 dark:text-gray-400'}`}
+              className={`text-xs ${isUnlocked ? 'text-white/80 dark:text-ink-900/70' : 'text-ink-500 dark:text-ink-400'}`}
             >
               {config.slopeName}
             </p>
@@ -117,21 +117,21 @@ const LevelCard: React.FC<{
         </div>
         {isUnlocked ? (
           <div className="flex items-center gap-1 bg-white/20 dark:bg-black/20 px-2 py-1 rounded-full">
-            <Check className="w-4 h-4 text-white dark:text-gray-900" />
-            <span className="text-xs font-medium text-white dark:text-gray-900">Ontgrendeld</span>
+            <Check className="w-4 h-4 text-white dark:text-ink-900" />
+            <span className="text-xs font-medium text-white dark:text-ink-900">Ontgrendeld</span>
           </div>
         ) : (
-          <Lock className="w-5 h-5 text-gray-400" />
+          <Lock className="w-5 h-5 text-ink-400" />
         )}
       </div>
 
       {/* Content */}
       <div className="p-4">
-        <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">{config.description}</p>
+        <p className="text-sm text-ink-600 dark:text-ink-300 mb-4">{config.description}</p>
 
         {/* Features */}
         <div className="space-y-2 mb-4">
-          <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+          <h4 className="text-xs font-semibold text-ink-500 dark:text-ink-400 uppercase tracking-wide">
             Features
           </h4>
           <div className="flex flex-wrap gap-1">
@@ -142,8 +142,8 @@ const LevelCard: React.FC<{
                   text-xs px-2 py-0.5 rounded-full
                   ${
                     isUnlocked
-                      ? 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500'
+                      ? 'bg-surface-subtle dark:bg-trading-dark-700 text-ink-700 dark:text-ink-300'
+                      : 'bg-surface-subtle dark:bg-trading-dark-700 text-ink-400 dark:text-ink-500'
                   }
                 `}
               >
@@ -151,7 +151,7 @@ const LevelCard: React.FC<{
               </span>
             ))}
             {config.features.length > 4 && (
-              <span className="text-xs text-gray-400 dark:text-gray-500">
+              <span className="text-xs text-ink-400 dark:text-ink-500">
                 +{config.features.length - 4} meer
               </span>
             )}
@@ -160,10 +160,10 @@ const LevelCard: React.FC<{
 
         {/* Restart wizard button for unlocked levels */}
         {isUnlocked && (
-          <div className="border-t border-gray-200 dark:border-gray-600 pt-4">
+          <div className="border-t border-surface-line dark:border-trading-dark-500 pt-4">
             <button
               onClick={onRestartWizard}
-              className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+              className="flex items-center gap-2 text-sm text-ink-600 dark:text-ink-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
             >
               <RefreshCw className="w-4 h-4" />
               Herstart introductie wizard
@@ -173,12 +173,12 @@ const LevelCard: React.FC<{
 
         {/* Unlock section */}
         {!isUnlocked && (
-          <div className="border-t border-gray-200 dark:border-gray-600 pt-4 space-y-3">
+          <div className="border-t border-surface-line dark:border-trading-dark-500 pt-4 space-y-3">
             {config.creditsRequired > 0 && (
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-500 dark:text-gray-400">Credits nodig:</span>
+                <span className="text-ink-500 dark:text-ink-400">Credits nodig:</span>
                 <span
-                  className={`font-bold ${canAfford ? 'text-positive-600' : 'text-gray-600 dark:text-gray-300'}`}
+                  className={`font-bold ${canAfford ? 'text-positive-600' : 'text-ink-600 dark:text-ink-300'}`}
                 >
                   {config.creditsRequired}
                 </span>
@@ -187,8 +187,8 @@ const LevelCard: React.FC<{
 
             {config.priceEUR && config.priceEUR > 0 && (
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-500 dark:text-gray-400">Of direct kopen:</span>
-                <span className="font-bold text-gray-600 dark:text-gray-300">
+                <span className="text-ink-500 dark:text-ink-400">Of direct kopen:</span>
+                <span className="font-bold text-ink-600 dark:text-ink-300">
                   €{config.priceEUR}
                 </span>
               </div>
@@ -205,7 +205,7 @@ const LevelCard: React.FC<{
                 </button>
               )}
               {config.priceEUR && config.priceEUR > 0 && (
-                <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg font-medium text-sm transition-colors text-gray-700 dark:text-gray-300">
+                <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border border-ink-200 dark:border-trading-dark-500 hover:bg-surface dark:hover:bg-trading-dark-700 rounded-lg font-medium text-sm transition-colors text-ink-700 dark:text-ink-300">
                   <CreditCard className="w-4 h-4" />
                   Kopen €{config.priceEUR}
                 </button>
@@ -256,7 +256,7 @@ const ModuleCard: React.FC<{
     <div
       className={`
       relative rounded-xl border-2 overflow-hidden transition-all duration-300
-      ${isActivated ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'}
+      ${isActivated ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20' : 'border-surface-line dark:border-trading-dark-600 bg-white dark:bg-trading-dark-800'}
     `}
     >
       <div className="p-4">
@@ -274,7 +274,7 @@ const ModuleCard: React.FC<{
             </span>
           )}
         </div>
-        <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">{config.description}</p>
+        <p className="text-sm text-ink-600 dark:text-ink-300 mb-4">{config.description}</p>
         {isActivated ? (
           <button
             onClick={onOpen}

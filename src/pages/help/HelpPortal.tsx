@@ -330,40 +330,40 @@ export const HelpPortal: React.FC = () => {
         {helpSections.map((section) => (
           <div
             key={section.id}
-            className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
+            className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 overflow-hidden"
           >
             {/* Section Header */}
             <button
               onClick={() => toggleSection(section.id)}
-              className="w-full flex items-center justify-between p-5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors text-left"
+              className="w-full flex items-center justify-between p-5 hover:bg-surface dark:hover:bg-trading-dark-700/50 transition-colors text-left"
             >
               <div className="flex items-center gap-4">
                 <div className="icon-bg-primary p-2 rounded-lg">
                   <div className="icon-text-primary">{section.icon}</div>
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  <h2 className="text-lg font-semibold text-ink-900 dark:text-white">
                     {section.title}
                   </h2>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{section.description}</p>
+                  <p className="text-sm text-ink-600 dark:text-ink-400">{section.description}</p>
                 </div>
               </div>
               {expandedSections.includes(section.id) ? (
-                <ChevronDown className="w-5 h-5 text-gray-400" />
+                <ChevronDown className="w-5 h-5 text-ink-400" />
               ) : (
-                <ChevronRight className="w-5 h-5 text-gray-400" />
+                <ChevronRight className="w-5 h-5 text-ink-400" />
               )}
             </button>
 
             {/* Section Content */}
             {expandedSections.includes(section.id) && (
-              <div className="px-5 pb-5 space-y-4 border-t border-gray-200 dark:border-gray-700 pt-4">
+              <div className="px-5 pb-5 space-y-4 border-t border-surface-line dark:border-trading-dark-600 pt-4">
                 {section.content.map((item, index) => (
                   <div key={index}>
-                    <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2">
+                    <h3 className="text-base font-semibold text-ink-900 dark:text-white mb-2">
                       {item.subtitle}
                     </h3>
-                    <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                    <p className="text-sm text-ink-700 dark:text-ink-300 leading-relaxed">
                       {item.text}
                     </p>
                   </div>
@@ -375,9 +375,9 @@ export const HelpPortal: React.FC = () => {
       </div>
 
       {/* Quick Tips */}
-      <div className="bg-primary-50 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-5">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Quick Tips</h2>
-        <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+      <div className="bg-primary-50 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-5">
+        <h2 className="text-lg font-semibold text-ink-900 dark:text-white mb-3">Quick Tips</h2>
+        <ul className="space-y-2 text-sm text-ink-700 dark:text-ink-300">
           <li className="flex items-start gap-2">
             <span className="icon-text-primary mt-0.5">•</span>
             <span>
@@ -416,14 +416,14 @@ export const HelpPortal: React.FC = () => {
       </div>
 
       {/* Need More Help */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-5 text-center">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+      <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-5 text-center">
+        <h2 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
           Need More Help?
         </h2>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+        <p className="text-sm text-ink-600 dark:text-ink-400 mb-4">
           Have a question that isn't covered here? We're here to help!
         </p>
-        <p className="text-xs text-gray-500 dark:text-gray-400">
+        <p className="text-xs text-ink-500 dark:text-ink-400">
           PayDay is constantly being improved based on user feedback.
         </p>
       </div>

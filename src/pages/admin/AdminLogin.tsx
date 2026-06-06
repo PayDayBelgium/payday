@@ -37,7 +37,7 @@ export const AdminLogin: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-trading-dark-900 via-gray-800 to-trading-dark-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
@@ -48,25 +48,25 @@ export const AdminLogin: React.FC = () => {
             <Shield className="w-6 h-6 text-primary-600" />
             <h1 className="text-2xl font-bold text-white">Admin Portal</h1>
           </div>
-          <p className="text-gray-400 text-sm">Sign in to manage users</p>
+          <p className="text-ink-400 text-sm">Sign in to manage users</p>
         </div>
 
         {/* Login Card */}
-        <div className="bg-gray-800 rounded-lg shadow-xl p-8 border border-gray-700">
+        <div className="bg-trading-dark-800 rounded-lg shadow-xl p-8 border border-trading-dark-600">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Username */}
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
+              <label htmlFor="username" className="block text-sm font-medium text-ink-300 mb-2">
                 Username
               </label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-ink-500" />
                 <input
                   id="username"
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 bg-trading-dark-700 border border-trading-dark-500 rounded-lg text-white placeholder-ink-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   placeholder="Enter admin username"
                   required
                   autoFocus
@@ -76,17 +76,17 @@ export const AdminLogin: React.FC = () => {
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-ink-300 mb-2">
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-ink-500" />
                 <input
                   id="password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 bg-trading-dark-700 border border-trading-dark-500 rounded-lg text-white placeholder-ink-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   placeholder="Enter admin password"
                   required
                 />
@@ -115,7 +115,7 @@ export const AdminLogin: React.FC = () => {
         <div className="mt-6 text-center">
           <button
             onClick={() => navigate('/login')}
-            className="text-gray-400 hover:text-white text-sm transition-colors"
+            className="text-ink-400 hover:text-white text-sm transition-colors"
           >
             Back to User Login
           </button>

@@ -91,7 +91,7 @@ export const StockRow: React.FC<StockRowProps> = ({
   return (
     <div
       onClick={handleClick}
-      className={`px-6 py-3 hover:bg-white dark:hover:bg-gray-700/30 transition-colors border-b border-gray-200 dark:border-gray-700 cursor-pointer border-l-4 border-l-gray-300 dark:border-l-gray-600 ${className}`}
+      className={`px-6 py-3 hover:bg-white dark:hover:bg-trading-dark-700/30 transition-colors border-b border-surface-line dark:border-trading-dark-600 cursor-pointer border-l-4 border-l-gray-300 dark:border-l-gray-600 ${className}`}
     >
       <div className={`grid ${POSITION_GRID_COLS} gap-2 items-start`}>
         {/* Icon */}
@@ -111,7 +111,7 @@ export const StockRow: React.FC<StockRowProps> = ({
         {/* Ticker with badges */}
         <div>
           <div className="flex items-center gap-1.5 flex-wrap">
-            <h4 className="text-sm font-bold text-gray-900 dark:text-white">
+            <h4 className="text-sm font-bold text-ink-900 dark:text-white">
               {position.shares}x {position.ticker}
             </h4>
             <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
@@ -138,19 +138,19 @@ export const StockRow: React.FC<StockRowProps> = ({
                 {showTooltip &&
                   createPortal(
                     <div
-                      className="fixed w-64 p-3 bg-white dark:bg-gray-800 border-2 border-positive-500/20 dark:border-positive-700/30 rounded-lg shadow-xl z-[9999]"
+                      className="fixed w-64 p-3 bg-white dark:bg-trading-dark-800 border-2 border-positive-500/20 dark:border-positive-700/30 rounded-lg shadow-xl z-[9999]"
                       style={{ top: tooltipPosition.top, left: tooltipPosition.left }}
                       onMouseEnter={() => setShowTooltip(true)}
                       onMouseLeave={() => setShowTooltip(false)}
                     >
-                      <div className="absolute -top-1.5 left-3 w-3 h-3 bg-white dark:bg-gray-800 border-l border-t border-positive-500/20 dark:border-positive-700/30 transform rotate-45"></div>
+                      <div className="absolute -top-1.5 left-3 w-3 h-3 bg-white dark:bg-trading-dark-800 border-l border-t border-positive-500/20 dark:border-positive-700/30 transform rotate-45"></div>
                       <div className="flex items-start gap-2">
                         <Target className="w-4 h-4 text-positive-600 dark:text-positive-500 flex-shrink-0 mt-0.5" />
                         <div>
-                          <p className="font-semibold text-sm text-gray-900 dark:text-white mb-1">
+                          <p className="font-semibold text-sm text-ink-900 dark:text-white mb-1">
                             Opportunity
                           </p>
-                          <p className="text-xs text-gray-600 dark:text-gray-300 whitespace-pre-line">
+                          <p className="text-xs text-ink-600 dark:text-ink-300 whitespace-pre-line">
                             {tooltipMessage}
                           </p>
                         </div>
@@ -162,26 +162,26 @@ export const StockRow: React.FC<StockRowProps> = ({
             )}
           </div>
           {position.name && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{position.name}</p>
+            <p className="text-xs text-ink-500 dark:text-ink-400 truncate">{position.name}</p>
           )}
         </div>
         {/* Empty cells for columns that don't apply to stocks */}
         <div>
-          <p className="text-sm text-gray-400 dark:text-gray-600">-</p>
+          <p className="text-sm text-ink-400 dark:text-ink-600">-</p>
         </div>{' '}
         {/* Expiratie */}
         <div>
-          <p className="text-sm text-gray-400 dark:text-gray-600">-</p>
+          <p className="text-sm text-ink-400 dark:text-ink-600">-</p>
         </div>{' '}
         {/* Strike */}
         {/* Stock prijs */}
         <div>
           {currentPrice ? (
-            <p className="text-sm font-medium text-gray-900 dark:text-white">
+            <p className="text-sm font-medium text-ink-900 dark:text-white">
               {formatCurrency(currentPrice, currencySymbol)}
             </p>
           ) : (
-            <p className="text-sm text-gray-400 dark:text-gray-600">-</p>
+            <p className="text-sm text-ink-400 dark:text-ink-600">-</p>
           )}
         </div>
         {/* Verschil */}
@@ -191,33 +191,33 @@ export const StockRow: React.FC<StockRowProps> = ({
               className={`text-sm font-medium ${
                 currentPrice < purchasePricePerShare
                   ? 'text-negative-600 dark:text-negative-500'
-                  : 'text-gray-900 dark:text-white'
+                  : 'text-ink-900 dark:text-white'
               }`}
             >
               {currentPrice > purchasePricePerShare ? '+' : ''}
               {formatCurrency(currentPrice - purchasePricePerShare, currencySymbol)}
             </p>
           ) : (
-            <p className="text-sm text-gray-400 dark:text-gray-600">-</p>
+            <p className="text-sm text-ink-400 dark:text-ink-600">-</p>
           )}
         </div>
         {/* Open (Kostprijs) */}
         <div>
-          <p className="text-sm font-medium text-gray-900 dark:text-white">
+          <p className="text-sm font-medium text-ink-900 dark:text-white">
             {formatCurrency(purchasePricePerShare, currencySymbol)}
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p className="text-xs text-ink-500 dark:text-ink-400">
             {formatCurrency(position.costBasis, currencySymbol)}
           </p>
         </div>
         {/* Huidige */}
         <div>
-          <p className="text-sm font-medium text-gray-900 dark:text-white">
+          <p className="text-sm font-medium text-ink-900 dark:text-white">
             {currentPrice
               ? formatCurrency(currentPrice, currencySymbol)
               : formatCurrency(purchasePricePerShare, currencySymbol)}
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p className="text-xs text-ink-500 dark:text-ink-400">
             {formatCurrency(liveCurrentValue, currencySymbol)}
           </p>
         </div>
@@ -229,7 +229,7 @@ export const StockRow: React.FC<StockRowProps> = ({
                 ? 'text-positive-600 dark:text-positive-500'
                 : profitLoss < 0
                   ? 'text-negative-600 dark:text-negative-500'
-                  : 'text-gray-900 dark:text-white'
+                  : 'text-ink-900 dark:text-white'
             }`}
           >
             {profitLoss > 0 ? '+' : ''}
@@ -241,7 +241,7 @@ export const StockRow: React.FC<StockRowProps> = ({
                 ? 'text-positive-600 dark:text-positive-500'
                 : profitLossPercentage < 0
                   ? 'text-negative-600 dark:text-negative-500'
-                  : 'text-gray-500 dark:text-gray-400'
+                  : 'text-ink-500 dark:text-ink-400'
             }`}
           >
             {profitLossPercentage > 0 ? '+' : ''}
@@ -250,7 +250,7 @@ export const StockRow: React.FC<StockRowProps> = ({
         </div>
         {/* Onderpand - empty for stocks */}
         <div>
-          <p className="text-sm text-gray-400 dark:text-gray-600">-</p>
+          <p className="text-sm text-ink-400 dark:text-ink-600">-</p>
         </div>
         {/* Spacer */}
         <div></div>

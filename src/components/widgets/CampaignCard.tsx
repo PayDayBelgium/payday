@@ -120,7 +120,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
       {/* Campaign Header */}
       <div
         onClick={() => onToggleCampaign(campaign.id)}
-        className="flex items-center justify-between cursor-pointer p-3 -m-3 rounded-lg bg-gray-100 dark:bg-gray-700/50 hover:bg-gray-200 dark:hover:bg-gray-700/70 transition-colors"
+        className="flex items-center justify-between cursor-pointer p-3 -m-3 rounded-lg bg-surface-subtle dark:bg-trading-dark-700/50 hover:bg-surface-muted dark:hover:bg-trading-dark-700/70 transition-colors"
       >
         <div className="flex items-center gap-3">
           <div
@@ -130,7 +130,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-gray-900 dark:text-white">{campaign.ticker}</h3>
+              <h3 className="font-semibold text-ink-900 dark:text-white">{campaign.ticker}</h3>
               <span
                 className={`px-2 py-0.5 text-xs font-semibold rounded bg-${color}-100 dark:bg-${color}-900/30 text-${color}-700 dark:text-${color}-400`}
               >
@@ -143,7 +143,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                 />
               )}
             </div>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-ink-500 dark:text-ink-400">
               {campaign.type === 'wheel' ? campaign.coverage : `Coverage: ${campaign.coverage}`}
             </p>
           </div>
@@ -155,34 +155,34 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
             <>
               {/* Current Collateral */}
               <div className="text-right">
-                <p className="text-xs text-gray-500 dark:text-gray-400">Onderpand</p>
+                <p className="text-xs text-ink-500 dark:text-ink-400">Onderpand</p>
                 {campaign.activeOptions.length > 0 ? (
                   <>
                     {campaign.activeOptions[0].position.type === 'put' ? (
-                      <p className="font-semibold text-gray-900 dark:text-white">
+                      <p className="font-semibold text-ink-900 dark:text-white">
                         {formatCurrency(
                           (campaign.activeOptions[0].position as PutOption).strike *
                             (campaign.activeOptions[0].position as PutOption).contracts *
                             100,
                           currencySymbol
                         )}
-                        <span className="text-xs text-gray-500 ml-1">cash</span>
+                        <span className="text-xs text-ink-500 ml-1">cash</span>
                       </p>
                     ) : (
-                      <p className="font-semibold text-gray-900 dark:text-white">
+                      <p className="font-semibold text-ink-900 dark:text-white">
                         {campaign.root.quantity}
-                        <span className="text-xs text-gray-500 ml-1">aandelen</span>
+                        <span className="text-xs text-ink-500 ml-1">aandelen</span>
                       </p>
                     )}
                   </>
                 ) : (
-                  <p className="font-semibold text-gray-500 dark:text-gray-400">-</p>
+                  <p className="font-semibold text-ink-500 dark:text-ink-400">-</p>
                 )}
               </div>
 
               {/* Total P&L (realized + unrealized) */}
               <div className="text-right">
-                <p className="text-xs text-gray-500 dark:text-gray-400">Totale Winst</p>
+                <p className="text-xs text-ink-500 dark:text-ink-400">Totale Winst</p>
                 {(() => {
                   // Calculate total P&L: realized from closed positions + unrealized from active option
                   let totalPnL = campaign.totalRealizedPnL;
@@ -205,7 +205,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                           ? 'text-positive-600 dark:text-positive-500'
                           : totalPnL < 0
                             ? 'text-negative-600 dark:text-negative-500'
-                            : 'text-gray-900 dark:text-white'
+                            : 'text-ink-900 dark:text-white'
                       }`}
                     >
                       {totalPnL > 0 ? '+' : ''}
@@ -219,15 +219,15 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
             <>
               {/* Aankoopkost - for non-Wheel campaigns */}
               <div className="text-right">
-                <p className="text-xs text-gray-500 dark:text-gray-400">Aankoopkost</p>
-                <p className="font-semibold text-gray-900 dark:text-white">
+                <p className="text-xs text-ink-500 dark:text-ink-400">Aankoopkost</p>
+                <p className="font-semibold text-ink-900 dark:text-white">
                   {formatCurrency(campaign.root.originalCostBasis, currencySymbol)}
                 </p>
               </div>
 
               {/* Ontvangen premies - for non-Wheel campaigns */}
               <div className="text-right">
-                <p className="text-xs text-gray-500 dark:text-gray-400">Ontvangen premies</p>
+                <p className="text-xs text-ink-500 dark:text-ink-400">Ontvangen premies</p>
                 <p className="font-semibold text-positive-600 dark:text-positive-500">
                   +
                   {formatCurrency(
@@ -248,7 +248,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                 const wheelId = campaign.id.replace('wheel-', '');
                 onDeleteWheel(wheelId);
               }}
-              className="p-1.5 text-gray-400 hover:text-negative-600 dark:hover:text-negative-500 transition-colors rounded hover:bg-negative-50 dark:hover:bg-negative-700/20"
+              className="p-1.5 text-ink-400 hover:text-negative-600 dark:hover:text-negative-500 transition-colors rounded hover:bg-negative-50 dark:hover:bg-negative-700/20"
               title="Verwijder Wheel"
             >
               <Trash2 className="w-4 h-4" />
@@ -256,7 +256,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
           )}
 
           {/* Expand Icon */}
-          <div className="text-gray-400">
+          <div className="text-ink-400">
             {isExpanded ? (
               <ChevronDown className="w-5 h-5" />
             ) : (
@@ -270,7 +270,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
       {isExpanded && (
         <div className="mt-4 space-y-4">
           {/* Description */}
-          <p className="text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg">
+          <p className="text-sm text-ink-600 dark:text-ink-400 bg-surface dark:bg-trading-dark-700/50 p-3 rounded-lg">
             {getCampaignTypeDescription(campaign.type)}
           </p>
 
@@ -305,7 +305,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                       e.stopPropagation();
                       onToggleBasisPosition(campaign.id);
                     }}
-                    className="w-full text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2 hover:text-gray-900 dark:hover:text-white transition-colors"
+                    className="w-full text-sm font-semibold text-ink-700 dark:text-ink-300 mb-2 flex items-center gap-2 hover:text-ink-900 dark:hover:text-white transition-colors"
                   >
                     {isBasisExpanded ? (
                       <ChevronDown className="w-4 h-4" />
@@ -316,10 +316,10 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                     Basis positie
                   </button>
                   {isBasisExpanded && (
-                    <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-800/50">
+                    <div className="border border-surface-line dark:border-trading-dark-600 rounded-lg overflow-hidden bg-surface dark:bg-trading-dark-800/50">
                       {/* Column Headers */}
-                      <div className="px-6 py-2 bg-gray-100 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
-                        <div className={`grid ${POSITION_GRID_COLS_COMPACT} gap-2 text-xs font-semibold text-gray-600 dark:text-gray-400 items-center`}>
+                      <div className="px-6 py-2 bg-surface-subtle dark:bg-trading-dark-900/50 border-b border-surface-line dark:border-trading-dark-600">
+                        <div className={`grid ${POSITION_GRID_COLS_COMPACT} gap-2 text-xs font-semibold text-ink-600 dark:text-ink-400 items-center`}>
                           <div></div> {/* Icon */}
                           <div>Ticker</div>
                           <div>Expiratie</div>
@@ -333,7 +333,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                         </div>
                       </div>
                       {/* Root Position - Same grid structure as PortfolioView */}
-                      <div className="px-6 py-3 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors border-l-4 border-l-gray-300 dark:border-l-gray-600">
+                      <div className="px-6 py-3 hover:bg-surface-subtle dark:hover:bg-trading-dark-700/50 transition-colors border-l-4 border-l-gray-300 dark:border-l-gray-600">
                         <div className={`grid ${POSITION_GRID_COLS_COMPACT} gap-2 items-start`}>
                           {/* Icon */}
                           <div
@@ -353,7 +353,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                           {/* Ticker with badges */}
                           <div>
                             <div className="flex items-center gap-1.5 flex-wrap">
-                              <h4 className="text-sm font-bold text-gray-900 dark:text-white">
+                              <h4 className="text-sm font-bold text-ink-900 dark:text-white">
                                 {campaign.root.type === 'leaps-call'
                                   ? `${campaign.root.quantity}x ${campaign.ticker}`
                                   : `${campaign.root.quantity}x ${campaign.ticker}`}
@@ -369,7 +369,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                               </span>
                             </div>
                             {tickerData?.name && (
-                              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                              <p className="text-xs text-ink-500 dark:text-ink-400 truncate">
                                 {tickerData.name}
                               </p>
                             )}
@@ -379,7 +379,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                           <div>
                             {campaign.root.type === 'leaps-call' ? (
                               <>
-                                <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                <p className="text-sm font-medium text-ink-900 dark:text-white">
                                   {(campaign.root.position as CallOption).expiration
                                     ? new Date(
                                         (campaign.root.position as CallOption).expiration
@@ -397,7 +397,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                                               (campaign.root.position as CallOption).expiration
                                             ) <= 90
                                           ? 'text-caution-600 dark:text-caution-500'
-                                          : 'text-gray-500 dark:text-gray-400'
+                                          : 'text-ink-500 dark:text-ink-400'
                                     }`}
                                   >
                                     {getDaysToExpiration(
@@ -408,32 +408,32 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                                 )}
                               </>
                             ) : (
-                              <p className="text-sm text-gray-400 dark:text-gray-600">-</p>
+                              <p className="text-sm text-ink-400 dark:text-ink-600">-</p>
                             )}
                           </div>
 
                           {/* Strike - only for LEAPS */}
                           <div>
                             {campaign.root.type === 'leaps-call' ? (
-                              <p className="text-sm font-medium text-gray-900 dark:text-white">
+                              <p className="text-sm font-medium text-ink-900 dark:text-white">
                                 {formatCurrency(
                                   (campaign.root.position as CallOption).strike,
                                   currencySymbol
                                 )}
                               </p>
                             ) : (
-                              <p className="text-sm text-gray-400 dark:text-gray-600">-</p>
+                              <p className="text-sm text-ink-400 dark:text-ink-600">-</p>
                             )}
                           </div>
 
                           {/* Stock prijs */}
                           <div>
                             {currentPrice ? (
-                              <p className="text-sm font-medium text-gray-900 dark:text-white">
+                              <p className="text-sm font-medium text-ink-900 dark:text-white">
                                 {formatCurrency(currentPrice, currencySymbol)}
                               </p>
                             ) : (
-                              <p className="text-sm text-gray-400 dark:text-gray-600">-</p>
+                              <p className="text-sm text-ink-400 dark:text-ink-600">-</p>
                             )}
                           </div>
 
@@ -444,35 +444,35 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                                 className={`text-sm font-medium ${
                                   currentPrice < purchasePricePerShare
                                     ? 'text-negative-600 dark:text-negative-500'
-                                    : 'text-gray-900 dark:text-white'
+                                    : 'text-ink-900 dark:text-white'
                                 }`}
                               >
                                 {currentPrice > purchasePricePerShare ? '+' : ''}
                                 {formatCurrency(currentPrice - purchasePricePerShare, currencySymbol)}
                               </p>
                             ) : (
-                              <p className="text-sm text-gray-400 dark:text-gray-600">-</p>
+                              <p className="text-sm text-ink-400 dark:text-ink-600">-</p>
                             )}
                           </div>
 
                           {/* Open (Kostprijs) */}
                           <div>
-                            <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            <p className="text-sm font-medium text-ink-900 dark:text-white">
                               {formatCurrency(purchasePricePerShare, currencySymbol)}
                             </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                            <p className="text-xs text-ink-500 dark:text-ink-400">
                               {formatCurrency(campaign.root.originalCostBasis, currencySymbol)}
                             </p>
                           </div>
 
                           {/* Huidige */}
                           <div>
-                            <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            <p className="text-sm font-medium text-ink-900 dark:text-white">
                               {currentPrice
                                 ? formatCurrency(currentPrice, currencySymbol)
                                 : formatCurrency(purchasePricePerShare, currencySymbol)}
                             </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                            <p className="text-xs text-ink-500 dark:text-ink-400">
                               {formatCurrency(liveCurrentValue, currencySymbol)}
                             </p>
                           </div>
@@ -485,7 +485,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                                   ? 'text-positive-600 dark:text-positive-500'
                                   : profitLoss < 0
                                     ? 'text-negative-600 dark:text-negative-500'
-                                    : 'text-gray-900 dark:text-white'
+                                    : 'text-ink-900 dark:text-white'
                               }`}
                             >
                               {profitLoss > 0 ? '+' : ''}
@@ -497,7 +497,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                                   ? 'text-positive-600 dark:text-positive-500'
                                   : profitLossPercentage < 0
                                     ? 'text-negative-600 dark:text-negative-500'
-                                    : 'text-gray-500 dark:text-gray-400'
+                                    : 'text-ink-500 dark:text-ink-400'
                               }`}
                             >
                               {profitLossPercentage > 0 ? '+' : ''}
@@ -511,7 +511,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                               className={`text-sm font-medium ${
                                 campaign.root.adjustedCostBasis < campaign.root.originalCostBasis
                                   ? 'text-positive-600 dark:text-positive-500'
-                                  : 'text-gray-900 dark:text-white'
+                                  : 'text-ink-900 dark:text-white'
                               }`}
                             >
                               {formatCurrency(campaign.root.adjustedCostBasis, currencySymbol)}
@@ -545,7 +545,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                       e.stopPropagation();
                       onToggleActiveOptions(campaign.id);
                     }}
-                    className="w-full text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2 hover:text-gray-900 dark:hover:text-white transition-colors"
+                    className="w-full text-sm font-semibold text-ink-700 dark:text-ink-300 mb-2 flex items-center gap-2 hover:text-ink-900 dark:hover:text-white transition-colors"
                   >
                     {isActiveExpanded ? (
                       <ChevronDown className="w-4 h-4" />
@@ -562,10 +562,10 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                     {campaign.type !== 'wheel' && ` (${campaign.activeOptions.length})`}
                   </button>
                   {isActiveExpanded && (
-                    <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-800/50">
+                    <div className="border border-surface-line dark:border-trading-dark-600 rounded-lg overflow-hidden bg-surface dark:bg-trading-dark-800/50">
                       {/* Column Headers */}
-                      <div className="px-6 py-2 bg-gray-100 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
-                        <div className={`grid ${POSITION_GRID_COLS} gap-2 text-xs font-semibold text-gray-600 dark:text-gray-400 items-center`}>
+                      <div className="px-6 py-2 bg-surface-subtle dark:bg-trading-dark-900/50 border-b border-surface-line dark:border-trading-dark-600">
+                        <div className={`grid ${POSITION_GRID_COLS} gap-2 text-xs font-semibold text-ink-600 dark:text-ink-400 items-center`}>
                           <div></div> {/* Icon */}
                           <div>Ticker</div>
                           <div>Expiratie</div>
@@ -685,7 +685,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                   e.stopPropagation();
                   onToggleHistory(campaign.id);
                 }}
-                className="w-full flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                className="w-full flex items-center gap-2 text-sm font-semibold text-ink-700 dark:text-ink-300 hover:text-ink-900 dark:hover:text-white transition-colors"
               >
                 {showingHistory ? (
                   <ChevronDown className="w-4 h-4" />
@@ -709,13 +709,13 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                     return (
                       <div
                         key={`${option.id}-${index}`}
-                        className="flex items-center p-3 bg-gray-100 dark:bg-gray-700/50 rounded-lg"
+                        className="flex items-center p-3 bg-surface-subtle dark:bg-trading-dark-700/50 rounded-lg"
                       >
                         <div className="min-w-[140px] mr-4">
-                          <p className="font-medium text-gray-900 dark:text-white">
+                          <p className="font-medium text-ink-900 dark:text-white">
                             {option.contracts}x ${option.strike} {optionType}
                           </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                          <p className="text-xs text-ink-500 dark:text-ink-400">
                             {option.openDate
                               ? new Date(option.openDate).toLocaleDateString('nl-NL')
                               : 'N/A'}{' '}
@@ -726,26 +726,26 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                           </p>
                         </div>
                         <div className="min-w-[80px]">
-                          <p className="text-xs text-gray-500 dark:text-gray-400">Verkocht</p>
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                          <p className="text-xs text-ink-500 dark:text-ink-400">Verkocht</p>
+                          <p className="text-sm font-medium text-ink-900 dark:text-white">
                             {formatCurrency(openPremium, currencySymbol)}
                           </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                          <p className="text-xs text-ink-500 dark:text-ink-400">
                             {formatCurrency(openValue, currencySymbol)}
                           </p>
                         </div>
                         <div className="min-w-[80px]">
-                          <p className="text-xs text-gray-500 dark:text-gray-400">Teruggekocht</p>
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                          <p className="text-xs text-ink-500 dark:text-ink-400">Teruggekocht</p>
+                          <p className="text-sm font-medium text-ink-900 dark:text-white">
                             {formatCurrency(closePremium, currencySymbol)}
                           </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                          <p className="text-xs text-ink-500 dark:text-ink-400">
                             {formatCurrency(closeValue, currencySymbol)}
                           </p>
                         </div>
                         <div className="flex-1"></div>
                         <div className="min-w-[80px] text-right">
-                          <p className="text-xs text-gray-500 dark:text-gray-400">Winst</p>
+                          <p className="text-xs text-ink-500 dark:text-ink-400">Winst</p>
                           <p
                             className={`text-sm font-semibold ${
                               (opt.realizedPnL || 0) >= 0

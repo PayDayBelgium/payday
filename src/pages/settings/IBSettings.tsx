@@ -59,23 +59,23 @@ export const IBSettings: React.FC = () => {
         {/* Settings Form */}
         <div className="lg:col-span-2 space-y-6">
           {/* Connection Status */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
+            <h2 className="text-lg font-semibold text-ink-900 dark:text-white mb-4">
               Connection Status
             </h2>
             <IBConnectionStatus showLabel={true} compact={false} />
           </div>
 
           {/* Configuration */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
+            <h2 className="text-lg font-semibold text-ink-900 dark:text-white mb-4">
               Connection Settings
             </h2>
 
             <div className="space-y-4">
               {/* Host */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
                   Host
                 </label>
                 <input
@@ -83,16 +83,16 @@ export const IBSettings: React.FC = () => {
                   value={config.host}
                   onChange={(e) => setConfig({ ...config, host: e.target.value })}
                   placeholder="localhost"
-                  className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
+                  className="w-full rounded-md border-ink-200 dark:border-trading-dark-500 dark:bg-trading-dark-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
                 />
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                <p className="mt-1 text-xs text-ink-500 dark:text-ink-400">
                   Usually 'localhost' or '127.0.0.1'
                 </p>
               </div>
 
               {/* Port */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
                   Port
                 </label>
                 <input
@@ -100,16 +100,16 @@ export const IBSettings: React.FC = () => {
                   value={config.port}
                   onChange={(e) => setConfig({ ...config, port: Number(e.target.value) })}
                   placeholder="7497"
-                  className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
+                  className="w-full rounded-md border-ink-200 dark:border-trading-dark-500 dark:bg-trading-dark-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
                 />
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                <p className="mt-1 text-xs text-ink-500 dark:text-ink-400">
                   Default: 7497 (Paper Trading), 7496 (Live Trading), 4002 (IB Gateway)
                 </p>
               </div>
 
               {/* Client ID */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
                   Client ID
                 </label>
                 <input
@@ -119,9 +119,9 @@ export const IBSettings: React.FC = () => {
                   placeholder="1"
                   min="0"
                   max="32"
-                  className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
+                  className="w-full rounded-md border-ink-200 dark:border-trading-dark-500 dark:bg-trading-dark-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
                 />
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                <p className="mt-1 text-xs text-ink-500 dark:text-ink-400">
                   Unique ID for this connection (0-32)
                 </p>
               </div>
@@ -140,7 +140,7 @@ export const IBSettings: React.FC = () => {
 
               <button
                 onClick={handleReset}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg font-medium transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-surface-muted dark:bg-trading-dark-700 hover:bg-ink-200 dark:hover:bg-trading-dark-600 text-ink-700 dark:text-ink-200 rounded-lg font-medium transition-colors"
               >
                 <RotateCcw className="w-4 h-4" />
                 Reset to Defaults
@@ -165,13 +165,13 @@ export const IBSettings: React.FC = () => {
         {/* Help Sidebar */}
         <div className="space-y-6">
           {/* Setup Instructions */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
+            <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-4">
               Setup Instructions
             </h3>
-            <div className="space-y-3 text-sm text-gray-600 dark:text-gray-400">
+            <div className="space-y-3 text-sm text-ink-600 dark:text-ink-400">
               <div>
-                <p className="font-semibold text-gray-900 dark:text-white mb-1">
+                <p className="font-semibold text-ink-900 dark:text-white mb-1">
                   1. Enable API in TWS
                 </p>
                 <p>File → Global Configuration → API → Settings</p>
@@ -179,21 +179,21 @@ export const IBSettings: React.FC = () => {
               </div>
 
               <div>
-                <p className="font-semibold text-gray-900 dark:text-white mb-1">
+                <p className="font-semibold text-ink-900 dark:text-white mb-1">
                   2. Configure Port
                 </p>
                 <p>Set Socket Port to 7497 (paper) or 7496 (live)</p>
               </div>
 
               <div>
-                <p className="font-semibold text-gray-900 dark:text-white mb-1">
+                <p className="font-semibold text-ink-900 dark:text-white mb-1">
                   3. Allow Connections
                 </p>
                 <p>Add 127.0.0.1 to "Trusted IP Addresses"</p>
               </div>
 
               <div>
-                <p className="font-semibold text-gray-900 dark:text-white mb-1">
+                <p className="font-semibold text-ink-900 dark:text-white mb-1">
                   4. WebSocket Setup
                 </p>
                 <p className="text-caution-600 dark:text-caution-500">
@@ -204,26 +204,26 @@ export const IBSettings: React.FC = () => {
           </div>
 
           {/* Connection Ports Reference */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
+            <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-4">
               Port Reference
             </h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">TWS Paper:</span>
-                <span className="font-mono font-semibold text-gray-900 dark:text-white">7497</span>
+                <span className="text-ink-600 dark:text-ink-400">TWS Paper:</span>
+                <span className="font-mono font-semibold text-ink-900 dark:text-white">7497</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">TWS Live:</span>
-                <span className="font-mono font-semibold text-gray-900 dark:text-white">7496</span>
+                <span className="text-ink-600 dark:text-ink-400">TWS Live:</span>
+                <span className="font-mono font-semibold text-ink-900 dark:text-white">7496</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Gateway Paper:</span>
-                <span className="font-mono font-semibold text-gray-900 dark:text-white">4002</span>
+                <span className="text-ink-600 dark:text-ink-400">Gateway Paper:</span>
+                <span className="font-mono font-semibold text-ink-900 dark:text-white">4002</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Gateway Live:</span>
-                <span className="font-mono font-semibold text-gray-900 dark:text-white">4001</span>
+                <span className="text-ink-600 dark:text-ink-400">Gateway Live:</span>
+                <span className="font-mono font-semibold text-ink-900 dark:text-white">4001</span>
               </div>
             </div>
           </div>

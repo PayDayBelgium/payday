@@ -131,7 +131,7 @@ export const TickerSelector: React.FC<TickerSelectorProps> = ({
       {/* Input */}
       <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Search className="w-5 h-5 text-gray-400" />
+          <Search className="w-5 h-5 text-ink-400" />
         </div>
         <input
           ref={inputRef}
@@ -150,7 +150,7 @@ export const TickerSelector: React.FC<TickerSelectorProps> = ({
             }
           }}
           onKeyDown={handleKeyDown}
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
           placeholder={placeholder}
         />
       </div>
@@ -159,10 +159,10 @@ export const TickerSelector: React.FC<TickerSelectorProps> = ({
       {isOpen && (
         <div
           ref={dropdownRef}
-          className="absolute z-50 w-full mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 max-h-64 overflow-y-auto"
+          className="absolute z-50 w-full mt-2 bg-white dark:bg-trading-dark-800 rounded-lg shadow-lg border border-surface-line dark:border-trading-dark-600 max-h-64 overflow-y-auto"
         >
           {filteredTickers.length === 0 && !showCreateNew ? (
-            <div className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+            <div className="px-4 py-8 text-center text-ink-500 dark:text-ink-400">
               <p className="text-sm">Geen tickers gevonden</p>
               <p className="text-xs mt-1">Typ een ticker symbool om een nieuwe toe te voegen</p>
             </div>
@@ -174,8 +174,8 @@ export const TickerSelector: React.FC<TickerSelectorProps> = ({
                   <button
                     key={ticker.symbol}
                     onClick={() => handleSelect(ticker)}
-                    className={`w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
-                      isHighlighted ? 'bg-gray-50 dark:bg-gray-700' : ''
+                    className={`w-full px-4 py-3 flex items-center gap-3 hover:bg-surface dark:hover:bg-trading-dark-700 transition-colors ${
+                      isHighlighted ? 'bg-surface dark:bg-trading-dark-700' : ''
                     }`}
                   >
                     <div
@@ -193,7 +193,7 @@ export const TickerSelector: React.FC<TickerSelectorProps> = ({
                     </div>
                     <div className="flex-1 text-left">
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold text-gray-900 dark:text-white">
+                        <span className="font-semibold text-ink-900 dark:text-white">
                           {ticker.symbol}
                         </span>
                         <span
@@ -206,11 +206,11 @@ export const TickerSelector: React.FC<TickerSelectorProps> = ({
                           {ticker.type === 'stock' ? 'Aandeel' : 'ETF'}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                      <p className="text-sm text-ink-600 dark:text-ink-400 truncate">
                         {ticker.name}
                       </p>
                       {ticker.optionsAvailable && (
-                        <p className="text-xs text-gray-500 dark:text-gray-500 mt-0.5">
+                        <p className="text-xs text-ink-500 dark:text-ink-500 mt-0.5">
                           Opties beschikbaar
                           {ticker.miniContractsAvailable && ' • Mini contracts'}
                         </p>
@@ -224,7 +224,7 @@ export const TickerSelector: React.FC<TickerSelectorProps> = ({
               {showCreateNew && onCreateNew && (
                 <button
                   onClick={handleCreateNew}
-                  className={`w-full px-4 py-3 flex items-center gap-3 border-t border-gray-200 dark:border-gray-700 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors ${
+                  className={`w-full px-4 py-3 flex items-center gap-3 border-t border-surface-line dark:border-trading-dark-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors ${
                     highlightedIndex === filteredTickers.length
                       ? 'bg-primary-50 dark:bg-primary-900/20'
                       : ''
@@ -237,7 +237,7 @@ export const TickerSelector: React.FC<TickerSelectorProps> = ({
                     <span className="font-semibold text-primary-700 dark:text-primary-300">
                       Nieuwe ticker toevoegen: {searchTerm.toUpperCase()}
                     </span>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-ink-600 dark:text-ink-400">
                       Klik om details in te vullen
                     </p>
                   </div>

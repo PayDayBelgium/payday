@@ -121,7 +121,7 @@ export const PMCCStrategy: React.FC = () => {
               pushNavigation('/tools/pmcc-calculator', "Poor Man's Covered Call Calculator");
               navigate('/tools/pmcc-calculator');
             }}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 bg-trading-dark-600 hover:bg-trading-dark-700 text-white rounded-lg font-medium transition-colors shadow-sm"
           >
             <Calculator className="w-5 h-5" />
             Calculator
@@ -138,24 +138,24 @@ export const PMCCStrategy: React.FC = () => {
 
       {/* Strategy Info Card */}
       {showInfoCard && (
-        <div className="bg-primary-50 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 relative">
+        <div className="bg-primary-50 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6 relative">
           <button
             onClick={() => {
               setShowInfoCard(false);
               localStorage.setItem('pmcc-show-info', 'false');
             }}
-            className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+            className="absolute top-4 right-4 p-1 rounded-full hover:bg-surface-muted dark:hover:bg-trading-dark-600 transition-colors"
             title="Dismiss"
           >
-            <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            <X className="w-5 h-5 text-ink-500 dark:text-ink-400" />
           </button>
           <div className="flex items-start gap-4">
             <Shield className="w-12 h-12 icon-text-primary flex-shrink-0" />
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
                 How Poor Man's Covered Call Works
               </h3>
-              <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+              <ul className="space-y-2 text-sm text-ink-700 dark:text-ink-300">
                 <li className="flex items-start gap-2">
                   <span className="icon-text-primary mt-0.5">•</span>
                   <span>
@@ -183,16 +183,16 @@ export const PMCCStrategy: React.FC = () => {
 
       {/* Coverage Overview */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white dark:bg-trading-dark-800 border border-gray-200 dark:border-trading-dark-600 rounded-lg p-6">
-          <h3 className="text-gray-600 dark:text-gray-400 text-sm mb-2">Total LEAPs</h3>
-          <p className="text-3xl font-bold text-gray-900 dark:text-white">{leaps.length}</p>
+        <div className="bg-white dark:bg-trading-dark-800 border border-surface-line dark:border-trading-dark-600 rounded-lg p-6">
+          <h3 className="text-ink-600 dark:text-ink-400 text-sm mb-2">Total LEAPs</h3>
+          <p className="text-3xl font-bold text-ink-900 dark:text-white">{leaps.length}</p>
         </div>
-        <div className="bg-white dark:bg-trading-dark-800 border border-gray-200 dark:border-trading-dark-600 rounded-lg p-6">
-          <h3 className="text-gray-600 dark:text-gray-400 text-sm mb-2">Active Covered Calls</h3>
-          <p className="text-3xl font-bold text-gray-900 dark:text-white">{coveredCalls.length}</p>
+        <div className="bg-white dark:bg-trading-dark-800 border border-surface-line dark:border-trading-dark-600 rounded-lg p-6">
+          <h3 className="text-ink-600 dark:text-ink-400 text-sm mb-2">Active Covered Calls</h3>
+          <p className="text-3xl font-bold text-ink-900 dark:text-white">{coveredCalls.length}</p>
         </div>
         <div className="bg-caution-50 dark:bg-trading-dark-800 border border-caution-500/30 dark:border-caution-500/50 rounded-lg p-6">
-          <h3 className="text-gray-600 dark:text-gray-400 text-sm mb-2">Uncovered Contracts</h3>
+          <h3 className="text-ink-600 dark:text-ink-400 text-sm mb-2">Uncovered Contracts</h3>
           <p className="text-3xl font-bold text-caution-600 dark:text-caution-500">
             {coverageAnalysis.reduce((sum, item) => sum + item.uncovered, 0)}
           </p>
@@ -210,11 +210,11 @@ export const PMCCStrategy: React.FC = () => {
           return (
             <div
               key={item.underlying.id}
-              className="bg-white dark:bg-trading-dark-800 border border-gray-200 dark:border-trading-dark-600 rounded-lg overflow-hidden"
+              className="bg-white dark:bg-trading-dark-800 border border-surface-line dark:border-trading-dark-600 rounded-lg overflow-hidden"
             >
               {/* Underlying Position Header */}
               <div
-                className={`p-6 border-b border-gray-200 dark:border-trading-dark-600 ${
+                className={`p-6 border-b border-surface-line dark:border-trading-dark-600 ${
                   expirationWarning === 'critical'
                     ? 'bg-negative-50 dark:bg-negative-700/15'
                     : expirationWarning === 'warning'
@@ -225,10 +225,10 @@ export const PMCCStrategy: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                      <h3 className="text-xl font-bold text-ink-900 dark:text-white">
                         {item.underlying.ticker}
                       </h3>
-                      <span className="px-2 py-1 bg-gray-100 dark:bg-trading-dark-700 rounded text-xs text-gray-600 dark:text-gray-400">
+                      <span className="px-2 py-1 bg-surface-subtle dark:bg-trading-dark-700 rounded text-xs text-ink-600 dark:text-ink-400">
                         {isLeap ? 'LEAP' : 'STOCK'}
                       </span>
                       {expirationWarning !== 'safe' && (
@@ -244,7 +244,7 @@ export const PMCCStrategy: React.FC = () => {
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                    <div className="flex items-center gap-4 text-sm text-ink-600 dark:text-ink-400">
                       {isLeap ? (
                         <>
                           <span>Strike: ${leap.strike}</span>
@@ -261,7 +261,7 @@ export const PMCCStrategy: React.FC = () => {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Coverage</p>
+                    <p className="text-sm text-ink-600 dark:text-ink-400 mb-1">Coverage</p>
                     <div className="flex items-center gap-2">
                       {item.uncovered > 0 ? (
                         <AlertTriangle className="w-5 h-5 text-caution-600 dark:text-caution-500" />
@@ -285,7 +285,7 @@ export const PMCCStrategy: React.FC = () => {
               {/* Covered Calls List */}
               {item.coveredCalls.length > 0 && (
                 <div className="p-6">
-                  <h4 className="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-4">
+                  <h4 className="text-sm font-semibold text-ink-600 dark:text-ink-400 uppercase tracking-wider mb-4">
                     Covered Calls
                   </h4>
                   <div className="space-y-3">
@@ -301,7 +301,7 @@ export const PMCCStrategy: React.FC = () => {
                       const isITM = underlyingPrice > 0 && underlyingPrice > call.strike;
                       const daysToExpiry = getDaysToExpiration(call.expiration);
 
-                      let bgClass = 'bg-gray-50 dark:bg-trading-dark-700';
+                      let bgClass = 'bg-surface dark:bg-trading-dark-700';
                       if (profitStatus === 'take-profit')
                         bgClass = 'bg-positive-50 dark:bg-positive-700/15';
                       else if (isITM) bgClass = 'bg-negative-50 dark:bg-negative-700/15';
@@ -313,15 +313,15 @@ export const PMCCStrategy: React.FC = () => {
                       return (
                         <div
                           key={call.id}
-                          className={`${bgClass} border border-gray-200 dark:border-trading-dark-600 rounded-lg p-4`}
+                          className={`${bgClass} border border-surface-line dark:border-trading-dark-600 rounded-lg p-4`}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-2">
-                                <span className="font-medium text-gray-900 dark:text-white">
+                                <span className="font-medium text-ink-900 dark:text-white">
                                   ${call.strike} Strike
                                 </span>
-                                <span className="text-sm text-gray-600 dark:text-gray-400">
+                                <span className="text-sm text-ink-600 dark:text-ink-400">
                                   {call.contracts} contracts
                                 </span>
                                 {profitStatus === 'take-profit' && (
@@ -337,7 +337,7 @@ export const PMCCStrategy: React.FC = () => {
                                   </span>
                                 )}
                               </div>
-                              <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                              <div className="flex items-center gap-4 text-sm text-ink-600 dark:text-ink-400">
                                 <span className="flex items-center gap-1">
                                   <Clock className="w-3 h-3" />
                                   {call.expiration} ({daysToExpiry}d)
@@ -355,7 +355,7 @@ export const PMCCStrategy: React.FC = () => {
                                 </span>
                               </div>
                             </div>
-                            <button className="px-3 py-1.5 bg-gray-200 dark:bg-trading-dark-600 hover:bg-gray-300 dark:hover:bg-trading-dark-500 text-gray-900 dark:text-white rounded text-sm font-medium transition-colors">
+                            <button className="px-3 py-1.5 bg-surface-muted dark:bg-trading-dark-600 hover:bg-ink-200 dark:hover:bg-trading-dark-500 text-ink-900 dark:text-white rounded text-sm font-medium transition-colors">
                               Manage
                             </button>
                           </div>
@@ -369,7 +369,7 @@ export const PMCCStrategy: React.FC = () => {
               {/* No Covered Calls */}
               {item.coveredCalls.length === 0 && (
                 <div className="p-6 text-center">
-                  <p className="text-gray-600 dark:text-gray-400 mb-4">
+                  <p className="text-ink-600 dark:text-ink-400 mb-4">
                     No covered calls on this position
                   </p>
                   <button
@@ -390,8 +390,8 @@ export const PMCCStrategy: React.FC = () => {
 
       {/* Empty State */}
       {coverageAnalysis.length === 0 && (
-        <div className="bg-white dark:bg-trading-dark-800 border border-gray-200 dark:border-trading-dark-600 rounded-lg p-12 text-center">
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
+        <div className="bg-white dark:bg-trading-dark-800 border border-surface-line dark:border-trading-dark-600 rounded-lg p-12 text-center">
+          <p className="text-ink-600 dark:text-ink-400 mb-4">
             No positions found for this strategy. Get started by adding a LEAP or stock position.
           </p>
           <button

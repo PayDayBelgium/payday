@@ -1173,12 +1173,12 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   if (allPositions.length === 0) {
     return (
       <div
-        className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center h-full min-h-[400px] ${className}`}
+        className={`bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 flex items-center justify-center h-full min-h-[400px] ${className}`}
       >
         <div className="text-center">
-          <TrendingUp className="w-12 h-12 mx-auto mb-3 text-gray-400 dark:text-gray-500" />
-          <p className="text-gray-600 dark:text-gray-400">Nog geen posities</p>
-          <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
+          <TrendingUp className="w-12 h-12 mx-auto mb-3 text-ink-400 dark:text-ink-500" />
+          <p className="text-ink-600 dark:text-ink-400">Nog geen posities</p>
+          <p className="text-sm text-ink-500 dark:text-ink-500 mt-1">
             Voeg een positie toe om te beginnen
           </p>
         </div>
@@ -1188,11 +1188,11 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
   return (
     <div
-      className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full overflow-x-hidden ${className}`}
+      className={`bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 flex flex-col h-full overflow-x-hidden ${className}`}
     >
       {/* Controls Bar - Fixed at top */}
       {allPositions.length > 0 && (
-        <div className="px-6 py-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0 bg-gray-50 dark:bg-gray-800/50">
+        <div className="px-6 py-3 border-b border-surface-line dark:border-trading-dark-600 flex-shrink-0 bg-surface dark:bg-trading-dark-800/50">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <div className="flex-1 max-w-xs">
@@ -1201,7 +1201,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                   placeholder="Zoek op ticker..."
                   value={tickerSearch}
                   onChange={(e) => setTickerSearch(e.target.value)}
-                  className="w-full px-3 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-sm"
+                  className="w-full px-3 py-1 bg-white dark:bg-trading-dark-700 border border-ink-200 dark:border-trading-dark-500 rounded text-sm"
                 />
               </div>
 
@@ -1217,7 +1217,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                       filterAlerts ||
                       filterIdeas
                         ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 border-2 border-primary-500 dark:border-primary-500'
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600'
+                        : 'bg-surface-subtle dark:bg-trading-dark-700 text-ink-700 dark:text-ink-300 border border-ink-200 dark:border-trading-dark-500 hover:bg-surface-muted dark:hover:bg-trading-dark-600'
                     }`}
                   >
                     <Filter className="w-4 h-4" />
@@ -1248,7 +1248,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
                         {/* Popup Content */}
                         <div
-                          className="fixed w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-[9999] p-4"
+                          className="fixed w-80 bg-white dark:bg-trading-dark-800 border border-surface-line dark:border-trading-dark-600 rounded-lg shadow-xl z-[9999] p-4"
                           style={{
                             top: `${filterPopupPosition.top}px`,
                             left: `${filterPopupPosition.left}px`,
@@ -1256,8 +1256,8 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                         >
                           <div className="space-y-4">
                             {/* Header */}
-                            <div className="flex items-center justify-between pb-2 border-b border-gray-200 dark:border-gray-700">
-                              <h3 className="font-semibold text-gray-900 dark:text-white">
+                            <div className="flex items-center justify-between pb-2 border-b border-surface-line dark:border-trading-dark-600">
+                              <h3 className="font-semibold text-ink-900 dark:text-white">
                                 Filters
                               </h3>
                               <button
@@ -1275,13 +1275,13 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
                             {/* Expiration Filter */}
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                              <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
                                 Verloopt binnen:
                               </label>
                               <select
                                 value={filterExpiration}
                                 onChange={(e) => setFilterExpiration(e.target.value)}
-                                className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-sm"
+                                className="w-full px-3 py-2 bg-white dark:bg-trading-dark-700 border border-ink-200 dark:border-trading-dark-500 rounded text-sm"
                               >
                                 <option value="all">Alle</option>
                                 <option value="1">1 week</option>
@@ -1293,36 +1293,36 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
                             {/* Category Filters */}
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                              <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
                                 CategorieÃ«n:
                               </label>
                               <div className="space-y-2">
-                                <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                <label className="flex items-center gap-2 text-sm text-ink-700 dark:text-ink-300 cursor-pointer p-2 rounded hover:bg-surface dark:hover:bg-trading-dark-700/50">
                                   <input
                                     type="checkbox"
                                     checked={filterOpportunities}
                                     onChange={(e) => setFilterOpportunities(e.target.checked)}
-                                    className="w-4 h-4 rounded border-gray-300 dark:border-gray-600"
+                                    className="w-4 h-4 rounded border-ink-200 dark:border-trading-dark-500"
                                   />
                                   <Target className="w-4 h-4 text-positive-600 dark:text-positive-500" />
                                   <span>Opportunities</span>
                                 </label>
-                                <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                <label className="flex items-center gap-2 text-sm text-ink-700 dark:text-ink-300 cursor-pointer p-2 rounded hover:bg-surface dark:hover:bg-trading-dark-700/50">
                                   <input
                                     type="checkbox"
                                     checked={filterAlerts}
                                     onChange={(e) => setFilterAlerts(e.target.checked)}
-                                    className="w-4 h-4 rounded border-gray-300 dark:border-gray-600"
+                                    className="w-4 h-4 rounded border-ink-200 dark:border-trading-dark-500"
                                   />
                                   <AlertCircle className="w-4 h-4 text-negative-600 dark:text-negative-500" />
                                   <span>Alerts</span>
                                 </label>
-                                <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                <label className="flex items-center gap-2 text-sm text-ink-700 dark:text-ink-300 cursor-pointer p-2 rounded hover:bg-surface dark:hover:bg-trading-dark-700/50">
                                   <input
                                     type="checkbox"
                                     checked={filterIdeas}
                                     onChange={(e) => setFilterIdeas(e.target.checked)}
-                                    className="w-4 h-4 rounded border-gray-300 dark:border-gray-600"
+                                    className="w-4 h-4 rounded border-ink-200 dark:border-trading-dark-500"
                                   />
                                   <Lightbulb className="w-4 h-4 text-caution-600 dark:text-caution-500" />
                                   <span>Ideas</span>
@@ -1343,7 +1343,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
               <select
                 value={groupBy}
                 onChange={(e) => setGroupBy(e.target.value as GroupBy)}
-                className="px-3 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-sm"
+                className="px-3 py-1 bg-white dark:bg-trading-dark-700 border border-ink-200 dark:border-trading-dark-500 rounded text-sm"
               >
                 <option value="none">Geen groepering</option>
                 <option value="strategy">Groepeer op type</option>
@@ -1357,7 +1357,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
       )}
 
       {/* Position List - Scrollable */}
-      <div className="divide-y divide-gray-200 dark:divide-gray-700 flex-1 overflow-y-auto">
+      <div className="divide-y divide-surface-line dark:divide-trading-dark-600 flex-1 overflow-y-auto">
 
         {/* Grouped Stock/ETF Tree */}
         {stockLots.length > 0 && (
@@ -1375,14 +1375,14 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
         {/* All Positions Table */}
         {allPositions.length > 0 && (
-          <div className="bg-gray-50 dark:bg-gray-800/50 overflow-x-auto">
+          <div className="bg-surface dark:bg-trading-dark-800/50 overflow-x-auto">
             {/* Column Headers */}
-            <div className="px-6 py-2 bg-gray-100 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700 border-l-4 border-l-transparent">
-              <div className={`grid ${POSITION_GRID_COLS} gap-2 text-xs font-semibold text-gray-600 dark:text-gray-400 items-center`}>
+            <div className="px-6 py-2 bg-surface-subtle dark:bg-trading-dark-900/50 border-b border-surface-line dark:border-trading-dark-600 border-l-4 border-l-transparent">
+              <div className={`grid ${POSITION_GRID_COLS} gap-2 text-xs font-semibold text-ink-600 dark:text-ink-400 items-center`}>
                 <div></div> {/* Icon */}
                 <button
                   onClick={() => handleSort('ticker')}
-                  className="text-left hover:text-gray-900 dark:hover:text-gray-200 flex items-center gap-1"
+                  className="text-left hover:text-ink-900 dark:hover:text-ink-200 flex items-center gap-1"
                 >
                   Ticker{' '}
                   {sortField === 'ticker' &&
@@ -1394,7 +1394,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                 </button>
                 <button
                   onClick={() => handleSort('expiration')}
-                  className="text-left hover:text-gray-900 dark:hover:text-gray-200 flex items-center gap-1"
+                  className="text-left hover:text-ink-900 dark:hover:text-ink-200 flex items-center gap-1"
                 >
                   Expiratie{' '}
                   {sortField === 'expiration' &&
@@ -1406,7 +1406,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                 </button>
                 <button
                   onClick={() => handleSort('strike')}
-                  className="text-left hover:text-gray-900 dark:hover:text-gray-200 flex items-center gap-1"
+                  className="text-left hover:text-ink-900 dark:hover:text-ink-200 flex items-center gap-1"
                 >
                   Strike{' '}
                   {sortField === 'strike' &&
@@ -1422,7 +1422,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                 <div>Huidige</div>
                 <button
                   onClick={() => handleSort('pnl')}
-                  className="text-left hover:text-gray-900 dark:hover:text-gray-200 flex items-center gap-1"
+                  className="text-left hover:text-ink-900 dark:hover:text-ink-200 flex items-center gap-1"
                 >
                   Winst/Verlies{' '}
                   {sortField === 'pnl' &&
@@ -1502,16 +1502,16 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                   {groupBy !== 'none' && (
                     <div className="relative">
                       <div
-                        className="px-6 py-2 bg-gray-200 dark:bg-gray-800 border-b border-gray-300 dark:border-gray-600 cursor-pointer hover:bg-gray-250 dark:hover:bg-gray-750 transition-colors flex items-center justify-between"
+                        className="px-6 py-2 bg-surface-muted dark:bg-trading-dark-800 border-b border-ink-200 dark:border-trading-dark-500 cursor-pointer hover:bg-surface-muted dark:hover:bg-trading-dark-700 transition-colors flex items-center justify-between"
                         onClick={() => toggleGroup(strategyName)}
                       >
                         <div className="flex items-center gap-2">
                           {isCollapsed ? (
-                            <ChevronDown className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                            <ChevronDown className="w-4 h-4 text-ink-600 dark:text-ink-400" />
                           ) : (
-                            <ChevronUp className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                            <ChevronUp className="w-4 h-4 text-ink-600 dark:text-ink-400" />
                           )}
-                          <h4 className="font-semibold text-gray-900 dark:text-white">
+                          <h4 className="font-semibold text-ink-900 dark:text-white">
                             {strategyName} ({filteredGroupPositions.length}
                             {filteredGroupPositions.length !== strategyPositions.length
                               ? `/${strategyPositions.length}`
@@ -1526,7 +1526,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                               groupFilterPopup === strategyName ? null : strategyName
                             );
                           }}
-                          className={`p-1 rounded hover:bg-gray-300 dark:hover:bg-gray-700 ${hasGroupFilter ? 'text-primary-700 dark:text-primary-300' : 'text-gray-500 dark:text-gray-400'}`}
+                          className={`p-1 rounded hover:bg-ink-200 dark:hover:bg-trading-dark-700 ${hasGroupFilter ? 'text-primary-700 dark:text-primary-300' : 'text-ink-500 dark:text-ink-400'}`}
                           title="Filter groep"
                         >
                           <Filter className="w-4 h-4" />
@@ -1534,10 +1534,10 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                       </div>
                       {/* Group Filter Popup */}
                       {groupFilterPopup === strategyName && (
-                        <div className="absolute right-4 top-full mt-1 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-50 p-3">
+                        <div className="absolute right-4 top-full mt-1 w-64 bg-white dark:bg-trading-dark-800 border border-surface-line dark:border-trading-dark-600 rounded-lg shadow-xl z-50 p-3">
                           <div className="space-y-3">
-                            <div className="flex items-center justify-between pb-2 border-b border-gray-200 dark:border-gray-700">
-                              <span className="text-sm font-medium text-gray-900 dark:text-white">
+                            <div className="flex items-center justify-between pb-2 border-b border-surface-line dark:border-trading-dark-600">
+                              <span className="text-sm font-medium text-ink-900 dark:text-white">
                                 Filter
                               </span>
                               <button
@@ -1552,7 +1552,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                             </div>
                             {/* Expiration Filter */}
                             <div>
-                              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                              <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
                                 Verloopt binnen:
                               </label>
                               <select
@@ -1562,7 +1562,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                   updateGroupFilter(strategyName, { expiration: e.target.value });
                                 }}
                                 onClick={(e) => e.stopPropagation()}
-                                className="w-full px-2 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-xs"
+                                className="w-full px-2 py-1 bg-white dark:bg-trading-dark-700 border border-ink-200 dark:border-trading-dark-500 rounded text-xs"
                               >
                                 <option value="all">Alle</option>
                                 <option value="1">1 week</option>
@@ -1573,7 +1573,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                             </div>
                             {/* Category Filters */}
                             <div className="space-y-1">
-                              <label className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-300 cursor-pointer p-1 rounded hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                              <label className="flex items-center gap-2 text-xs text-ink-700 dark:text-ink-300 cursor-pointer p-1 rounded hover:bg-surface dark:hover:bg-trading-dark-700/50">
                                 <input
                                   type="checkbox"
                                   checked={groupFilter.opportunities}
@@ -1584,12 +1584,12 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                     });
                                   }}
                                   onClick={(e) => e.stopPropagation()}
-                                  className="w-3 h-3 rounded border-gray-300 dark:border-gray-600"
+                                  className="w-3 h-3 rounded border-ink-200 dark:border-trading-dark-500"
                                 />
                                 <Target className="w-3 h-3 text-positive-600 dark:text-positive-500" />
                                 <span>Opportunities</span>
                               </label>
-                              <label className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-300 cursor-pointer p-1 rounded hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                              <label className="flex items-center gap-2 text-xs text-ink-700 dark:text-ink-300 cursor-pointer p-1 rounded hover:bg-surface dark:hover:bg-trading-dark-700/50">
                                 <input
                                   type="checkbox"
                                   checked={groupFilter.alerts}
@@ -1598,12 +1598,12 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                     updateGroupFilter(strategyName, { alerts: e.target.checked });
                                   }}
                                   onClick={(e) => e.stopPropagation()}
-                                  className="w-3 h-3 rounded border-gray-300 dark:border-gray-600"
+                                  className="w-3 h-3 rounded border-ink-200 dark:border-trading-dark-500"
                                 />
                                 <AlertCircle className="w-3 h-3 text-negative-600 dark:text-negative-500" />
                                 <span>Alerts</span>
                               </label>
-                              <label className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-300 cursor-pointer p-1 rounded hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                              <label className="flex items-center gap-2 text-xs text-ink-700 dark:text-ink-300 cursor-pointer p-1 rounded hover:bg-surface dark:hover:bg-trading-dark-700/50">
                                 <input
                                   type="checkbox"
                                   checked={groupFilter.ideas}
@@ -1612,7 +1612,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                     updateGroupFilter(strategyName, { ideas: e.target.checked });
                                   }}
                                   onClick={(e) => e.stopPropagation()}
-                                  className="w-3 h-3 rounded border-gray-300 dark:border-gray-600"
+                                  className="w-3 h-3 rounded border-ink-200 dark:border-trading-dark-500"
                                 />
                                 <Lightbulb className="w-3 h-3 text-caution-600 dark:text-caution-500" />
                                 <span>Ideas</span>

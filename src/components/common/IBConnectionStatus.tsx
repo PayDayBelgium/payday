@@ -59,8 +59,8 @@ export const IBConnectionStatus: React.FC<IBConnectionStatusProps> = ({
       default:
         return {
           icon: WifiOff,
-          color: 'text-gray-600 dark:text-gray-400',
-          bgColor: 'bg-gray-100 dark:bg-gray-900/30',
+          color: 'text-ink-600 dark:text-ink-400',
+          bgColor: 'bg-surface-subtle dark:bg-trading-dark-900/30',
           label: 'Disconnected',
           pulse: false,
         };
@@ -97,9 +97,9 @@ export const IBConnectionStatus: React.FC<IBConnectionStatusProps> = ({
         </button>
 
         {/* Tooltip */}
-        <div className="absolute right-0 top-full mt-2 hidden group-hover:block w-72 bg-gray-50 dark:bg-gray-50 text-gray-900 text-xs rounded-lg shadow-lg border-2 border-primary-900 z-50 overflow-hidden">
+        <div className="absolute right-0 top-full mt-2 hidden group-hover:block w-72 bg-surface dark:bg-surface text-ink-900 text-xs rounded-lg shadow-lg border-2 border-primary-900 z-50 overflow-hidden">
           <div className="p-3">
-            <p className="font-bold mb-1 text-gray-900">IB TWS Connection</p>
+            <p className="font-bold mb-1 text-ink-900">IB TWS Connection</p>
             <p
               className={`${
                 status === 'connected'
@@ -108,7 +108,7 @@ export const IBConnectionStatus: React.FC<IBConnectionStatusProps> = ({
                     ? 'text-primary-700'
                     : status === 'error'
                       ? 'text-negative-600'
-                      : 'text-gray-600'
+                      : 'text-ink-600'
               } font-semibold`}
             >
               {config.label}
@@ -119,19 +119,19 @@ export const IBConnectionStatus: React.FC<IBConnectionStatusProps> = ({
               </div>
             )}
             {lastConnected && status === 'connected' && (
-              <p className="text-gray-600 mt-2">
+              <p className="text-ink-600 mt-2">
                 ✓ Connected: {new Date(lastConnected).toLocaleTimeString()}
               </p>
             )}
             {status === 'connecting' && reconnectAttempts > 0 && (
-              <p className="text-gray-600 mt-2">
+              <p className="text-ink-600 mt-2">
                 🔄 Retry {reconnectAttempts}/{maxReconnectAttempts}
               </p>
             )}
           </div>
 
           {(status === 'disconnected' || status === 'error') && (
-            <div className="border-t border-gray-300 p-2 bg-gray-100">
+            <div className="border-t border-ink-200 p-2 bg-surface-subtle">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -163,12 +163,12 @@ export const IBConnectionStatus: React.FC<IBConnectionStatusProps> = ({
             <p className="text-xs text-negative-600 dark:text-negative-500 mt-0.5">{error}</p>
           )}
           {lastConnected && status === 'connected' && (
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
+            <p className="text-xs text-ink-600 dark:text-ink-400 mt-0.5">
               Last: {new Date(lastConnected).toLocaleTimeString()}
             </p>
           )}
           {status === 'connecting' && reconnectAttempts > 0 && (
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
+            <p className="text-xs text-ink-600 dark:text-ink-400 mt-0.5">
               Attempt {reconnectAttempts}/{maxReconnectAttempts}
             </p>
           )}

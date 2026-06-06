@@ -179,7 +179,7 @@ export const OptionCheck: React.FC = () => {
                 {VERDICT_META[assessment.result.verdict].label}
               </p>
               <div
-                className="mt-3 h-2 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden"
+                className="mt-3 h-2 rounded-full bg-surface-subtle dark:bg-trading-dark-700 overflow-hidden"
                 role="progressbar"
                 aria-valuenow={assessment.result.totalScore}
                 aria-valuemin={0}

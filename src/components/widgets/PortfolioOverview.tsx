@@ -77,12 +77,12 @@ export const PortfolioOverview: React.FC = memo(() => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+    <div className="bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+      <div className="px-6 py-4 border-b border-surface-line dark:border-trading-dark-600 flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Portefeuilles</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <h3 className="text-lg font-semibold text-ink-900 dark:text-white">Portefeuilles</h3>
+          <p className="text-sm text-ink-600 dark:text-ink-400 mt-1">
             {summaries.length} {summaries.length === 1 ? 'portefeuille' : 'portefeuilles'}
           </p>
         </div>
@@ -247,7 +247,7 @@ export const PortfolioOverview: React.FC = memo(() => {
                   >
                     <button
                       onClick={() => handlePortfolioClick(summary.portfolio)}
-                      className="w-full h-full bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 p-4 hover:shadow-md transition-shadow text-left flex flex-col relative"
+                      className="w-full h-full bg-surface dark:bg-trading-dark-700/50 rounded-lg border border-surface-line dark:border-trading-dark-500 p-4 hover:shadow-md transition-shadow text-left flex flex-col relative"
                     >
                       {/* Top-right badges and flip button */}
                       <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
@@ -260,8 +260,8 @@ export const PortfolioOverview: React.FC = memo(() => {
                               </span>
                             </div>
                             {alertsOpp.alertItems.length > 0 && (
-                              <div className="absolute right-0 top-full mt-2 hidden group-hover:block w-64 p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-xs rounded-lg shadow-lg z-50 border-2 border-gray-200 dark:border-gray-600">
-                                <div className="absolute -top-1.5 right-3 w-3 h-3 bg-white dark:bg-gray-800 border-l border-t border-gray-200 dark:border-gray-600 transform rotate-45"></div>
+                              <div className="absolute right-0 top-full mt-2 hidden group-hover:block w-64 p-3 bg-white dark:bg-trading-dark-800 text-ink-900 dark:text-white text-xs rounded-lg shadow-lg z-50 border-2 border-surface-line dark:border-trading-dark-500">
+                                <div className="absolute -top-1.5 right-3 w-3 h-3 bg-white dark:bg-trading-dark-800 border-l border-t border-surface-line dark:border-trading-dark-500 transform rotate-45"></div>
                                 <AlertTooltipContent items={alertsOpp.alertItems} type="alert" />
                               </div>
                             )}
@@ -276,8 +276,8 @@ export const PortfolioOverview: React.FC = memo(() => {
                               </span>
                             </div>
                             {alertsOpp.opportunityItems.length > 0 && (
-                              <div className="absolute right-0 top-full mt-2 hidden group-hover:block w-64 p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-xs rounded-lg shadow-lg z-50 border-2 border-gray-200 dark:border-gray-600">
-                                <div className="absolute -top-1.5 right-3 w-3 h-3 bg-white dark:bg-gray-800 border-l border-t border-gray-200 dark:border-gray-600 transform rotate-45"></div>
+                              <div className="absolute right-0 top-full mt-2 hidden group-hover:block w-64 p-3 bg-white dark:bg-trading-dark-800 text-ink-900 dark:text-white text-xs rounded-lg shadow-lg z-50 border-2 border-surface-line dark:border-trading-dark-500">
+                                <div className="absolute -top-1.5 right-3 w-3 h-3 bg-white dark:bg-trading-dark-800 border-l border-t border-surface-line dark:border-trading-dark-500 transform rotate-45"></div>
                                 <AlertTooltipContent
                                   items={alertsOpp.opportunityItems}
                                   type="opportunity"
@@ -288,7 +288,7 @@ export const PortfolioOverview: React.FC = memo(() => {
                         )}
                         <div
                           onClick={(e) => handleEditPortfolio(portfolio.id, e)}
-                          className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors cursor-pointer"
+                          className="p-1.5 hover:bg-surface-muted dark:hover:bg-trading-dark-600 rounded-lg transition-colors cursor-pointer"
                           title="Bewerk portfolio"
                           role="button"
                           tabIndex={0}
@@ -299,11 +299,11 @@ export const PortfolioOverview: React.FC = memo(() => {
                             }
                           }}
                         >
-                          <Settings className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                          <Settings className="w-4 h-4 text-ink-500 dark:text-ink-400" />
                         </div>
                         <div
                           onClick={(e) => toggleFlip(summary.portfolio, e)}
-                          className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors cursor-pointer"
+                          className="p-1.5 hover:bg-surface-muted dark:hover:bg-trading-dark-600 rounded-lg transition-colors cursor-pointer"
                           title="Toon gains"
                           role="button"
                           tabIndex={0}
@@ -314,7 +314,7 @@ export const PortfolioOverview: React.FC = memo(() => {
                             }
                           }}
                         >
-                          <RotateCcw className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                          <RotateCcw className="w-4 h-4 text-ink-500 dark:text-ink-400" />
                         </div>
                       </div>
 
@@ -328,10 +328,10 @@ export const PortfolioOverview: React.FC = memo(() => {
                           />
                         )}
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">
+                          <h3 className="text-base font-semibold text-ink-900 dark:text-white truncate">
                             {portfolio.name}
                           </h3>
-                          <p className="text-lg font-bold text-gray-900 dark:text-white">
+                          <p className="text-lg font-bold text-ink-900 dark:text-white">
                             {formatCurrency(summary.totalValue, currencySymbol)}
                           </p>
                         </div>
@@ -340,31 +340,31 @@ export const PortfolioOverview: React.FC = memo(() => {
                       {/* Stats - all aligned left */}
                       <div className="space-y-1.5 text-xs flex-1">
                         <div className="flex">
-                          <span className="text-gray-500 dark:text-gray-400 w-20">
+                          <span className="text-ink-500 dark:text-ink-400 w-20">
                             Long posities
                           </span>
-                          <span className="font-medium text-gray-900 dark:text-white">
+                          <span className="font-medium text-ink-900 dark:text-white">
                             {formatCurrency(longValue, currencySymbol)}
                           </span>
                         </div>
                         <div className="flex">
-                          <span className="text-gray-500 dark:text-gray-400 w-20">
+                          <span className="text-ink-500 dark:text-ink-400 w-20">
                             Short posities
                           </span>
-                          <span className="font-medium text-gray-900 dark:text-white">
+                          <span className="font-medium text-ink-900 dark:text-white">
                             {formatCurrency(shortValue, currencySymbol)}
                           </span>
                         </div>
                         <div className="flex">
-                          <span className="text-gray-500 dark:text-gray-400 w-20">Cash</span>
-                          <span className="font-medium text-gray-900 dark:text-white">
+                          <span className="text-ink-500 dark:text-ink-400 w-20">Cash</span>
+                          <span className="font-medium text-ink-900 dark:text-white">
                             {formatCurrency(summary.cash, currencySymbol)}
                           </span>
                         </div>
                         <div className="flex">
-                          <span className="text-gray-500 dark:text-gray-400 w-20">Vrije cash</span>
+                          <span className="text-ink-500 dark:text-ink-400 w-20">Vrije cash</span>
                           <span
-                            className={`font-medium ${freeCash < 0 ? 'text-negative-600 dark:text-negative-500' : 'text-gray-900 dark:text-white'}`}
+                            className={`font-medium ${freeCash < 0 ? 'text-negative-600 dark:text-negative-500' : 'text-ink-900 dark:text-white'}`}
                           >
                             {formatCurrency(freeCash, currencySymbol)}
                           </span>
@@ -383,7 +383,7 @@ export const PortfolioOverview: React.FC = memo(() => {
                   >
                     <button
                       onClick={() => handlePortfolioClick(summary.portfolio)}
-                      className="w-full h-full bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 p-4 flex flex-col text-left hover:shadow-md transition-shadow"
+                      className="w-full h-full bg-surface dark:bg-trading-dark-700/50 rounded-lg border border-surface-line dark:border-trading-dark-500 p-4 flex flex-col text-left hover:shadow-md transition-shadow"
                     >
                       {/* Header with flip back button */}
                       <div className="flex items-center justify-between mb-3">
@@ -395,13 +395,13 @@ export const PortfolioOverview: React.FC = memo(() => {
                               className="w-8 h-8 rounded-lg object-cover flex-shrink-0"
                             />
                           )}
-                          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                          <h3 className="text-sm font-semibold text-ink-900 dark:text-white">
                             {portfolio.name}
                           </h3>
                         </div>
                         <div
                           onClick={(e) => toggleFlip(summary.portfolio, e)}
-                          className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors cursor-pointer"
+                          className="p-1.5 hover:bg-surface-muted dark:hover:bg-trading-dark-600 rounded-lg transition-colors cursor-pointer"
                           title="Terug"
                           role="button"
                           tabIndex={0}
@@ -412,7 +412,7 @@ export const PortfolioOverview: React.FC = memo(() => {
                             }
                           }}
                         >
-                          <RotateCcw className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                          <RotateCcw className="w-4 h-4 text-ink-500 dark:text-ink-400" />
                         </div>
                       </div>
 
@@ -425,7 +425,7 @@ export const PortfolioOverview: React.FC = memo(() => {
                             className={`flex-1 py-1 text-xs font-medium rounded transition-colors text-center cursor-pointer ${
                               selectedPeriod === period
                                 ? 'bg-primary-700 text-white'
-                                : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500'
+                                : 'bg-surface-muted dark:bg-trading-dark-600 text-ink-600 dark:text-ink-300 hover:bg-ink-200 dark:hover:bg-ink-400'
                             }`}
                             role="button"
                             tabIndex={0}
@@ -447,7 +447,7 @@ export const PortfolioOverview: React.FC = memo(() => {
 
                       {/* Gain display */}
                       <div className="flex-1 flex flex-col items-center justify-center">
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                        <p className="text-xs text-ink-500 dark:text-ink-400 mb-1">
                           {selectedPeriod === 'ALL' ? 'Totale Gain' : `Gain (${selectedPeriod})`}
                         </p>
                         <p

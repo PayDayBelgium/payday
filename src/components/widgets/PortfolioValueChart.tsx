@@ -80,15 +80,15 @@ export const PortfolioValueChart: React.FC<PortfolioValueChartProps> = ({
   if (chartData.length === 0) {
     return (
       <div
-        className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 h-full flex flex-col ${className}`}
+        className={`bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 h-full flex flex-col ${className}`}
       >
         {/* Empty State */}
         <div className="p-12 text-center flex-1 flex flex-col items-center justify-center">
-          <TrendingUp className="w-16 h-16 mx-auto mb-4 text-gray-400 dark:text-gray-500" />
-          <p className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+          <TrendingUp className="w-16 h-16 mx-auto mb-4 text-ink-400 dark:text-ink-500" />
+          <p className="text-lg font-medium text-ink-900 dark:text-white mb-2">
             Nog geen historische data
           </p>
-          <p className="text-sm text-gray-600 dark:text-gray-400 max-w-md mx-auto">
+          <p className="text-sm text-ink-600 dark:text-ink-400 max-w-md mx-auto">
             Voeg een transactie toe (deposit, withdrawal, of aanpassing) om automatisch je portfolio
             waarde te tracken over tijd
           </p>
@@ -99,30 +99,30 @@ export const PortfolioValueChart: React.FC<PortfolioValueChartProps> = ({
 
   return (
     <div
-      className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 h-full flex flex-col ${className}`}
+      className={`bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 h-full flex flex-col ${className}`}
     >
       {/* Header */}
       <div
-        className={`px-6 ${title ? 'py-4' : 'py-3'} border-b border-gray-200 dark:border-gray-700 flex-shrink-0`}
+        className={`px-6 ${title ? 'py-4' : 'py-3'} border-b border-surface-line dark:border-trading-dark-600 flex-shrink-0`}
       >
         <div className="flex items-center justify-between">
           {title && (
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>
+              <h3 className="text-lg font-semibold text-ink-900 dark:text-white">{title}</h3>
               {subtitle && (
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{subtitle}</p>
+                <p className="text-sm text-ink-600 dark:text-ink-400 mt-1">{subtitle}</p>
               )}
             </div>
           )}
           <div className={`flex items-center gap-2 ${!title ? 'ml-auto' : ''}`}>
             {/* View Toggle */}
-            <div className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+            <div className="flex items-center bg-surface-subtle dark:bg-trading-dark-700 rounded-lg p-1">
               <button
                 onClick={() => setViewMode('chart')}
                 className={`p-2 rounded-md transition-colors ${
                   viewMode === 'chart'
-                    ? 'bg-white dark:bg-gray-600 text-primary-700 dark:text-primary-300 shadow-sm'
-                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                    ? 'bg-white dark:bg-trading-dark-600 text-primary-700 dark:text-primary-300 shadow-sm'
+                    : 'text-ink-500 dark:text-ink-400 hover:text-ink-700 dark:hover:text-ink-300'
                 }`}
                 title="Grafiek weergave"
               >
@@ -132,8 +132,8 @@ export const PortfolioValueChart: React.FC<PortfolioValueChartProps> = ({
                 onClick={() => setViewMode('table')}
                 className={`p-2 rounded-md transition-colors ${
                   viewMode === 'table'
-                    ? 'bg-white dark:bg-gray-600 text-primary-700 dark:text-primary-300 shadow-sm'
-                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                    ? 'bg-white dark:bg-trading-dark-600 text-primary-700 dark:text-primary-300 shadow-sm'
+                    : 'text-ink-500 dark:text-ink-400 hover:text-ink-700 dark:hover:text-ink-300'
                 }`}
                 title="Tabel weergave"
               >
@@ -146,7 +146,7 @@ export const PortfolioValueChart: React.FC<PortfolioValueChartProps> = ({
               className={`p-2 rounded-lg transition-colors ${
                 copied
                   ? 'bg-positive-50 dark:bg-positive-700/25 text-positive-600 dark:text-positive-500'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                  : 'bg-surface-subtle dark:bg-trading-dark-700 text-ink-500 dark:text-ink-400 hover:text-ink-700 dark:hover:text-ink-300'
               }`}
               title={copied ? 'Gekopieerd!' : 'Kopieer naar clipboard (Excel)'}
             >
@@ -167,11 +167,11 @@ export const PortfolioValueChart: React.FC<PortfolioValueChartProps> = ({
               />
               <XAxis
                 dataKey="date"
-                className="text-xs text-gray-600 dark:text-gray-400"
+                className="text-xs text-ink-600 dark:text-ink-400"
                 tick={{ fill: 'currentColor' }}
               />
               <YAxis
-                className="text-xs text-gray-600 dark:text-gray-400"
+                className="text-xs text-ink-600 dark:text-ink-400"
                 tick={{ fill: 'currentColor' }}
                 tickFormatter={(value) => formatCompactNumber(value, currencySymbol)}
               />
@@ -206,36 +206,36 @@ export const PortfolioValueChart: React.FC<PortfolioValueChartProps> = ({
       {viewMode === 'table' && (
         <div className="overflow-x-auto flex-1">
           <table className="w-full">
-            <thead className="bg-gray-50 dark:bg-gray-700/50">
+            <thead className="bg-surface dark:bg-trading-dark-700/50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
                   datum
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-3 text-right text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
                   Portfolio Waarde
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-3 text-right text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
                   Cash
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-3 text-right text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
                   Dagelijkse P&L
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className="divide-y divide-surface-line dark:divide-trading-dark-600">
               {chartData.map((row) => (
-                <tr key={row.fullDate} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                  <td className="px-6 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                <tr key={row.fullDate} className="hover:bg-surface dark:hover:bg-trading-dark-700/50">
+                  <td className="px-6 py-3 whitespace-nowrap text-sm text-ink-900 dark:text-white">
                     {new Date(row.fullDate).toLocaleDateString('nl-NL', {
                       day: '2-digit',
                       month: 'short',
                       year: 'numeric',
                     })}
                   </td>
-                  <td className="px-6 py-3 whitespace-nowrap text-sm text-right font-medium text-gray-900 dark:text-white">
+                  <td className="px-6 py-3 whitespace-nowrap text-sm text-right font-medium text-ink-900 dark:text-white">
                     {formatCurrency(row.totalValue, currencySymbol)}
                   </td>
-                  <td className="px-6 py-3 whitespace-nowrap text-sm text-right text-gray-600 dark:text-gray-400">
+                  <td className="px-6 py-3 whitespace-nowrap text-sm text-right text-ink-600 dark:text-ink-400">
                     {formatCurrency(row.cash, currencySymbol)}
                   </td>
                   <td
@@ -257,10 +257,10 @@ export const PortfolioValueChart: React.FC<PortfolioValueChartProps> = ({
 
       {/* Footer */}
       <div
-        className="px-6 py-3 border-t border-gray-200 dark:border-gray-700 flex-shrink-0"
+        className="px-6 py-3 border-t border-surface-line dark:border-trading-dark-600 flex-shrink-0"
         style={{ minHeight: '52px' }}
       >
-        {footer && <p className="text-sm text-gray-600 dark:text-gray-400">{footer}</p>}
+        {footer && <p className="text-sm text-ink-600 dark:text-ink-400">{footer}</p>}
       </div>
     </div>
   );

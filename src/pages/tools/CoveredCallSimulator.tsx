@@ -226,18 +226,18 @@ export const CoveredCallSimulator: React.FC = () => {
       green: 'text-positive-600 dark:text-positive-500',
       red: 'text-negative-600 dark:text-negative-500',
       blue: 'text-primary-700 dark:text-primary-300',
-      none: 'text-gray-900 dark:text-white',
+      none: 'text-ink-900 dark:text-white',
     };
 
     return (
-      <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
-        <span className="text-gray-600 dark:text-gray-400 flex items-center gap-1">
+      <div className="flex justify-between items-center py-2 border-b border-surface-subtle dark:border-trading-dark-600 last:border-0">
+        <span className="text-ink-600 dark:text-ink-400 flex items-center gap-1">
           {label}
           {tooltip && (
             <PortalTooltip
               content={<pre className="whitespace-pre-wrap text-xs max-w-xs">{tooltip}</pre>}
             >
-              <Info className="w-3.5 h-3.5 text-gray-400 hover:text-primary-500 cursor-help" />
+              <Info className="w-3.5 h-3.5 text-ink-400 hover:text-primary-500 cursor-help" />
             </PortalTooltip>
           )}
         </span>
@@ -259,19 +259,19 @@ export const CoveredCallSimulator: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Input Section */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        <div className="bg-white dark:bg-trading-dark-800 rounded-xl border border-surface-line dark:border-trading-dark-600 p-6">
+          <h2 className="text-lg font-semibold text-ink-900 dark:text-white mb-4">
             Input Parameters
           </h2>
 
           <div className="space-y-4">
             {/* Ticker Selection */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
                 Aandeel
               </label>
               {isCreatingTicker ? (
-                <div className="space-y-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                <div className="space-y-3 p-4 bg-surface dark:bg-trading-dark-700/50 rounded-lg">
                   <input
                     type="text"
                     value={newTickerData.symbol}
@@ -282,7 +282,7 @@ export const CoveredCallSimulator: React.FC = () => {
                       }))
                     }
                     placeholder="Ticker symbol (bijv. AAPL)"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className="w-full px-3 py-2 border border-ink-200 dark:border-trading-dark-500 rounded-lg bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white"
                   />
                   <input
                     type="text"
@@ -291,7 +291,7 @@ export const CoveredCallSimulator: React.FC = () => {
                       setNewTickerData((prev) => ({ ...prev, name: e.target.value }))
                     }
                     placeholder="Bedrijfsnaam"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className="w-full px-3 py-2 border border-ink-200 dark:border-trading-dark-500 rounded-lg bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white"
                   />
                   <div className="flex gap-2">
                     <button
@@ -302,7 +302,7 @@ export const CoveredCallSimulator: React.FC = () => {
                     </button>
                     <button
                       onClick={() => setIsCreatingTicker(false)}
-                      className="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg"
+                      className="px-4 py-2 bg-surface-muted dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300 rounded-lg"
                     >
                       Annuleren
                     </button>
@@ -319,7 +319,7 @@ export const CoveredCallSimulator: React.FC = () => {
 
             {/* Stock Price */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
                 Huidige Aandelenprijs ($)
               </label>
               <input
@@ -328,13 +328,13 @@ export const CoveredCallSimulator: React.FC = () => {
                 value={inputs.stockPrice || ''}
                 onChange={(e) => handleInputChange('stockPrice', parseFloat(e.target.value) || 0)}
                 placeholder="175.00"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-3 py-2 border border-ink-200 dark:border-trading-dark-500 rounded-lg bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white"
               />
             </div>
 
             {/* Number of Shares */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
                 Aantal Aandelen
               </label>
               <input
@@ -343,9 +343,9 @@ export const CoveredCallSimulator: React.FC = () => {
                 value={inputs.shares || ''}
                 onChange={(e) => handleInputChange('shares', parseInt(e.target.value) || 0)}
                 placeholder="100"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-3 py-2 border border-ink-200 dark:border-trading-dark-500 rounded-lg bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-ink-500 mt-1">
                 {inputs.shares
                   ? `${Math.floor(inputs.shares / 100)} contract(en)`
                   : 'Minimaal 100 aandelen voor 1 contract'}
@@ -354,10 +354,10 @@ export const CoveredCallSimulator: React.FC = () => {
 
             {/* Cost Basis */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
                 Kostprijs per Aandeel ($)
                 <PortalTooltip content="De prijs die je betaald hebt voor de aandelen. Leeg = huidige prijs.">
-                  <Info className="w-3.5 h-3.5 inline ml-1 text-gray-400" />
+                  <Info className="w-3.5 h-3.5 inline ml-1 text-ink-400" />
                 </PortalTooltip>
               </label>
               <input
@@ -366,15 +366,15 @@ export const CoveredCallSimulator: React.FC = () => {
                 value={inputs.costBasis || ''}
                 onChange={(e) => handleInputChange('costBasis', parseFloat(e.target.value) || 0)}
                 placeholder={inputs.stockPrice ? inputs.stockPrice.toString() : 'Optioneel'}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-3 py-2 border border-ink-200 dark:border-trading-dark-500 rounded-lg bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white"
               />
             </div>
 
-            <hr className="border-gray-200 dark:border-gray-700" />
+            <hr className="border-surface-line dark:border-trading-dark-600" />
 
             {/* Strike Price */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
                 Strike Prijs ($)
               </label>
               <input
@@ -383,7 +383,7 @@ export const CoveredCallSimulator: React.FC = () => {
                 value={inputs.strikePrice || ''}
                 onChange={(e) => handleInputChange('strikePrice', parseFloat(e.target.value) || 0)}
                 placeholder="180.00"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-3 py-2 border border-ink-200 dark:border-trading-dark-500 rounded-lg bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white"
               />
               {inputs.stockPrice > 0 && inputs.strikePrice > 0 && (
                 <p
@@ -398,7 +398,7 @@ export const CoveredCallSimulator: React.FC = () => {
 
             {/* Premium */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
                 Premium per Contract ($)
               </label>
               <input
@@ -407,13 +407,13 @@ export const CoveredCallSimulator: React.FC = () => {
                 value={inputs.premium || ''}
                 onChange={(e) => handleInputChange('premium', parseFloat(e.target.value) || 0)}
                 placeholder="2.50"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-3 py-2 border border-ink-200 dark:border-trading-dark-500 rounded-lg bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white"
               />
             </div>
 
             {/* Expiration Date */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
                 Expiratie Datum
               </label>
               <FridayDatePicker
@@ -462,8 +462,8 @@ export const CoveredCallSimulator: React.FC = () => {
               </div>
 
               {/* Premium Details */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+              <div className="bg-white dark:bg-trading-dark-800 rounded-xl border border-surface-line dark:border-trading-dark-600 p-4">
+                <h3 className="font-semibold text-ink-900 dark:text-white mb-3 flex items-center gap-2">
                   <DollarSign className="w-4 h-4 text-primary-500" />
                   Premium Details
                 </h3>
@@ -489,8 +489,8 @@ export const CoveredCallSimulator: React.FC = () => {
               </div>
 
               {/* Strike Analysis */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+              <div className="bg-white dark:bg-trading-dark-800 rounded-xl border border-surface-line dark:border-trading-dark-600 p-4">
+                <h3 className="font-semibold text-ink-900 dark:text-white mb-3 flex items-center gap-2">
                   <Target className="w-4 h-4 text-primary-500" />
                   Strike Analyse
                 </h3>
@@ -513,8 +513,8 @@ export const CoveredCallSimulator: React.FC = () => {
               </div>
 
               {/* If Called Away */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+              <div className="bg-white dark:bg-trading-dark-800 rounded-xl border border-surface-line dark:border-trading-dark-600 p-4">
+                <h3 className="font-semibold text-ink-900 dark:text-white mb-3 flex items-center gap-2">
                   <TrendingUp className="w-4 h-4 text-primary-500" />
                   Als Aandelen Worden Weggeroepen
                 </h3>
@@ -542,8 +542,8 @@ export const CoveredCallSimulator: React.FC = () => {
               </div>
 
               {/* Cost Basis Impact */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+              <div className="bg-white dark:bg-trading-dark-800 rounded-xl border border-surface-line dark:border-trading-dark-600 p-4">
+                <h3 className="font-semibold text-ink-900 dark:text-white mb-3 flex items-center gap-2">
                   <Calculator className="w-4 h-4 text-primary-500" />
                   Kostprijs Impact
                 </h3>
@@ -560,9 +560,9 @@ export const CoveredCallSimulator: React.FC = () => {
               </div>
             </>
           ) : (
-            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8 text-center">
-              <Calculator className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500 dark:text-gray-400">
+            <div className="bg-white dark:bg-trading-dark-800 rounded-xl border border-surface-line dark:border-trading-dark-600 p-8 text-center">
+              <Calculator className="w-12 h-12 text-ink-400 mx-auto mb-4" />
+              <p className="text-ink-500 dark:text-ink-400">
                 Vul alle velden in om de resultaten te berekenen
               </p>
             </div>

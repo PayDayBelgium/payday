@@ -67,7 +67,7 @@ export const SpreadSummaryRow: React.FC<SpreadSummaryRowProps> = React.memo(
   }) => {
     return (
       <div
-        className={`px-6 py-3 hover:bg-white dark:hover:bg-gray-700/30 transition-colors border-b border-gray-200 dark:border-gray-700 bg-surface-subtle/30 dark:bg-trading-dark-700 border-l-4 ${spreadBorderColor}`}
+        className={`px-6 py-3 hover:bg-white dark:hover:bg-trading-dark-700/30 transition-colors border-b border-surface-line dark:border-trading-dark-600 bg-surface-subtle/30 dark:bg-trading-dark-700 border-l-4 ${spreadBorderColor}`}
       >
         <div className={`grid ${POSITION_GRID_COLS} gap-2 items-start`}>
           {/* Icon with expand/collapse indicator - clickable for expand */}
@@ -94,7 +94,7 @@ export const SpreadSummaryRow: React.FC<SpreadSummaryRowProps> = React.memo(
             {/* Ticker with spread badges */}
             <div>
               <div className="flex items-center gap-1.5 flex-wrap">
-                <h4 className="text-sm font-bold text-gray-900 dark:text-white">
+                <h4 className="text-sm font-bold text-ink-900 dark:text-white">
                   {summary.contracts}x {summary.ticker}
                 </h4>
                 <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-surface-muted dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300">
@@ -126,7 +126,7 @@ export const SpreadSummaryRow: React.FC<SpreadSummaryRowProps> = React.memo(
                       triggerRef={getTooltipRef(`spread-alert-${spread.id}`)}
                       show={showTooltip === `spread-alert-${spread.id}`}
                     >
-                      <div className="w-72 p-3 bg-white dark:bg-gray-800 border-2 border-caution-500/30 dark:border-caution-600/40 rounded-lg shadow-xl">
+                      <div className="w-72 p-3 bg-white dark:bg-trading-dark-800 border-2 border-caution-500/30 dark:border-caution-600/40 rounded-lg shadow-xl">
                         <AlertTooltipContent
                           items={
                             uniqueSpreadAlerts.length > 0
@@ -160,7 +160,7 @@ export const SpreadSummaryRow: React.FC<SpreadSummaryRowProps> = React.memo(
                       triggerRef={getTooltipRef(`spread-opp-${spread.id}`)}
                       show={showTooltip === `spread-opp-${spread.id}`}
                     >
-                      <div className="w-72 p-3 bg-white dark:bg-gray-800 border-2 border-positive-500/20 dark:border-positive-700/30 rounded-lg shadow-xl">
+                      <div className="w-72 p-3 bg-white dark:bg-trading-dark-800 border-2 border-positive-500/20 dark:border-positive-700/30 rounded-lg shadow-xl">
                         <AlertTooltipContent
                           items={[
                             {
@@ -175,14 +175,14 @@ export const SpreadSummaryRow: React.FC<SpreadSummaryRowProps> = React.memo(
                   </>
                 )}
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-ink-500 dark:text-ink-400">
                 {spreadTickerData?.name || `Breedte: $${formatNumber(summary.spreadWidth, 2)}`}
               </p>
             </div>
 
             {/* Expiratie */}
             <div>
-              <p className="text-sm font-medium text-gray-900 dark:text-white">
+              <p className="text-sm font-medium text-ink-900 dark:text-white">
                 {summary.expiration
                   ? new Date(summary.expiration).toLocaleDateString('nl-NL')
                   : 'N/A'}
@@ -193,7 +193,7 @@ export const SpreadSummaryRow: React.FC<SpreadSummaryRowProps> = React.memo(
                     ? 'text-negative-600 dark:text-negative-500 font-semibold'
                     : expiresWithinTwoWeeks
                       ? 'text-caution-500 dark:text-caution-500 font-semibold'
-                      : 'text-gray-500 dark:text-gray-400'
+                      : 'text-ink-500 dark:text-ink-400'
                 }`}
               >
                 {daysToExpiration > 0
@@ -206,7 +206,7 @@ export const SpreadSummaryRow: React.FC<SpreadSummaryRowProps> = React.memo(
 
             {/* Strike Range - always show lowest first */}
             <div>
-              <p className="text-sm font-semibold text-gray-900 dark:text-white">
+              <p className="text-sm font-semibold text-ink-900 dark:text-white">
                 ${Math.min(summary.longStrike, summary.shortStrike)}-$
                 {Math.max(summary.longStrike, summary.shortStrike)}
               </p>
@@ -215,11 +215,11 @@ export const SpreadSummaryRow: React.FC<SpreadSummaryRowProps> = React.memo(
             {/* Stock prijs */}
             <div>
               {currentStockPrice > 0 ? (
-                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                <p className="text-sm font-medium text-ink-700 dark:text-ink-300">
                   {formatCurrency(currentStockPrice, currencySymbol)}
                 </p>
               ) : (
-                <p className="text-sm text-gray-400 dark:text-gray-600">-</p>
+                <p className="text-sm text-ink-400 dark:text-ink-600">-</p>
               )}
             </div>
 
@@ -237,14 +237,14 @@ export const SpreadSummaryRow: React.FC<SpreadSummaryRowProps> = React.memo(
                       : priceDifference < 0;
 
                     if (isBadForPosition) return 'text-negative-600 dark:text-negative-500';
-                    return 'text-gray-900 dark:text-white';
+                    return 'text-ink-900 dark:text-white';
                   })()}`}
                 >
                   {priceDifference > 0 ? '+' : ''}
                   {formatCurrency(priceDifference, currencySymbol)}
                 </p>
               ) : (
-                <p className="text-sm text-gray-400 dark:text-gray-600">-</p>
+                <p className="text-sm text-ink-400 dark:text-ink-600">-</p>
               )}
             </div>
 
@@ -262,10 +262,10 @@ export const SpreadSummaryRow: React.FC<SpreadSummaryRowProps> = React.memo(
 
                 return (
                   <>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                    <p className="text-sm font-semibold text-ink-900 dark:text-white">
                       {formatCurrency(netPremiumPerContract, currencySymbol)}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <p className="text-xs text-ink-500 dark:text-ink-400">
                       {formatCurrency(Math.abs(summary.netPremium), currencySymbol)}
                     </p>
                   </>
@@ -291,10 +291,10 @@ export const SpreadSummaryRow: React.FC<SpreadSummaryRowProps> = React.memo(
 
                 return (
                   <>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                    <p className="text-sm font-semibold text-ink-900 dark:text-white">
                       {formatCurrency(netPerContract, currencySymbol)}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <p className="text-xs text-ink-500 dark:text-ink-400">
                       {formatCurrency(Math.abs(summary.totalCurrentValue), currencySymbol)}
                     </p>
                   </>
@@ -310,7 +310,7 @@ export const SpreadSummaryRow: React.FC<SpreadSummaryRowProps> = React.memo(
                     ? 'text-positive-600 dark:text-positive-500'
                     : summary.totalPnL < 0
                       ? 'text-negative-600 dark:text-negative-500'
-                      : 'text-gray-900 dark:text-white'
+                      : 'text-ink-900 dark:text-white'
                 }`}
               >
                 {summary.totalPnL > 0 ? '+' : ''}
@@ -322,7 +322,7 @@ export const SpreadSummaryRow: React.FC<SpreadSummaryRowProps> = React.memo(
                     ? 'text-positive-600 dark:text-positive-500'
                     : summary.totalPnL < 0
                       ? 'text-negative-600 dark:text-negative-500'
-                      : 'text-gray-900 dark:text-white'
+                      : 'text-ink-900 dark:text-white'
                 }`}
               >
                 {summary.totalPnL > 0 ? '+' : ''}
@@ -353,14 +353,14 @@ export const SpreadSummaryRow: React.FC<SpreadSummaryRowProps> = React.memo(
                       <p className="text-sm font-semibold text-caution-600 dark:text-caution-500">
                         Cash
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-xs text-ink-500 dark:text-ink-400">
                         {formatCurrency(maxLoss, currencySymbol)}
                       </p>
                     </>
                   );
                 } else {
                   // Debit spread - no collateral needed
-                  return <p className="text-sm text-gray-400 dark:text-gray-600">-</p>;
+                  return <p className="text-sm text-ink-400 dark:text-ink-600">-</p>;
                 }
               })()}
             </div>

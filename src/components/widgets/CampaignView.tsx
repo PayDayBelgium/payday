@@ -543,14 +543,14 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               <div className="p-3 bg-primary-50 dark:bg-primary-900/30 rounded-full w-fit mx-auto mb-4">
                 <TrendingUp className="w-8 h-8 text-primary-700 dark:text-primary-300" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
                 Geen Covered Calls
               </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+              <p className="text-sm text-ink-500 dark:text-ink-400 mb-4">
                 Schrijf calls op aandelen die je bezit en ontvang premie. Je aandelen dienen als
                 onderpand.
               </p>
-              <p className="text-xs text-gray-400 dark:text-gray-500 mb-4 italic">
+              <p className="text-xs text-ink-400 dark:text-ink-500 mb-4 italic">
                 Risico: Je loopt potentiële winst mis als het aandeel sterk stijgt boven je strike.
               </p>
               <button
@@ -569,14 +569,14 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               <div className="p-3 bg-surface-muted dark:bg-trading-dark-600 rounded-full w-fit mx-auto mb-4">
                 <Layers className="w-8 h-8 text-ink-600 dark:text-ink-300" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
                 Geen Poor Man's Covered Calls
               </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+              <p className="text-sm text-ink-500 dark:text-ink-400 mb-4">
                 Koop een LEAPS call en schrijf korte termijn calls. De LEAPS fungeert als goedkoper
                 onderpand i.p.v. aandelen.
               </p>
-              <p className="text-xs text-gray-400 dark:text-gray-500 mb-4 italic">
+              <p className="text-xs text-ink-400 dark:text-ink-500 mb-4 italic">
                 Risico: Je LEAPS kan waardeloos aflopen. Beperkt verlies = LEAPS kostprijs -
                 ontvangen premies.
               </p>
@@ -596,14 +596,14 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               <div className="p-3 bg-caution-50 dark:bg-caution-600/25 rounded-full w-fit mx-auto mb-4">
                 <Zap className="w-8 h-8 text-caution-600 dark:text-caution-500" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
                 Geen KaChing Campagnes
               </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+              <p className="text-sm text-ink-500 dark:text-ink-400 mb-4">
                 Koop een protective put en schrijf wekelijks puts met hogere strikes. Je long put
                 beschermt tegen grote dalingen.
               </p>
-              <p className="text-xs text-gray-400 dark:text-gray-500 mb-4 italic">
+              <p className="text-xs text-ink-400 dark:text-ink-500 mb-4 italic">
                 Risico: De spread tussen je protective put en geschreven put × 100. Beperkt maar
                 gedefinieerd verlies.
               </p>
@@ -623,14 +623,14 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               <div className="p-3 bg-teal-100 dark:bg-teal-900/30 rounded-full w-fit mx-auto mb-4">
                 <RefreshCw className="w-8 h-8 text-teal-600 dark:text-teal-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
                 Geen wheel campagnes
               </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+              <p className="text-sm text-ink-500 dark:text-ink-400 mb-4">
                 Verkoop Cash Secured Puts tot assignment, schrijf dan covered calls tot verkoop, en
                 herhaal. Continu premie ontvangen.
               </p>
-              <p className="text-xs text-gray-400 dark:text-gray-500 mb-4 italic">
+              <p className="text-xs text-ink-400 dark:text-ink-500 mb-4 italic">
                 Risico: Je koopt aandelen bij assignment. Bij grote daling zit je vast met
                 verliesgevende positie.
               </p>
@@ -650,7 +650,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
 
   return (
     <div
-      className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 h-full flex flex-col ${className}`}
+      className={`bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 h-full flex flex-col ${className}`}
     >
       {/* Filter Tabs */}
       <CampaignFilterTabs
@@ -661,7 +661,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
       />
 
       {/* Campaign List */}
-      <div className="divide-y divide-gray-200 dark:divide-gray-700 flex-1 overflow-y-auto">
+      <div className="divide-y divide-surface-line dark:divide-trading-dark-600 flex-1 overflow-y-auto">
         {filteredCampaigns.length === 0 ? (
           <div className="h-full flex items-center justify-center min-h-[400px]">
             {renderEmptyState(filter)}
@@ -799,20 +799,20 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
             />
 
             {/* Modal */}
-            <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md transform transition-all">
+            <div className="relative bg-white dark:bg-trading-dark-800 rounded-xl shadow-xl w-full max-w-md transform transition-all">
               {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between p-4 border-b border-surface-line dark:border-trading-dark-600">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-negative-50 dark:bg-negative-700/25 rounded-lg">
                     <Trash2 className="w-5 h-5 text-negative-600 dark:text-negative-500" />
                   </div>
-                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  <h2 className="text-lg font-semibold text-ink-900 dark:text-white">
                     Wheel Verwijderen
                   </h2>
                 </div>
                 <button
                   onClick={() => setWheelToDelete(null)}
-                  className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                  className="p-1 text-ink-400 hover:text-ink-600 dark:hover:text-ink-300 transition-colors"
                 >
                   <XIcon className="w-5 h-5" />
                 </button>
@@ -820,7 +820,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
 
               {/* Content */}
               <div className="p-4 space-y-4">
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-ink-600 dark:text-ink-400">
                   Weet je zeker dat je deze Wheel wilt verwijderen?
                 </p>
                 <div className="p-3 bg-caution-50 dark:bg-caution-600/15 rounded-lg border border-caution-500/30 dark:border-caution-600/40">
@@ -833,10 +833,10 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               </div>
 
               {/* Actions */}
-              <div className="flex justify-end gap-3 p-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex justify-end gap-3 p-4 border-t border-surface-line dark:border-trading-dark-600">
                 <button
                   onClick={() => setWheelToDelete(null)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-ink-700 dark:text-ink-300 hover:bg-surface-subtle dark:hover:bg-trading-dark-700 rounded-lg transition-colors"
                 >
                   Annuleren
                 </button>

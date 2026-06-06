@@ -225,12 +225,12 @@ export const TickersOverview: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Filters */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+      <div className="bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 p-4">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-4 flex-wrap">
             <div className="flex items-center gap-2">
-              <Filter className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Filters:</span>
+              <Filter className="w-5 h-5 text-ink-600 dark:text-ink-400" />
+              <span className="text-sm font-medium text-ink-700 dark:text-ink-300">Filters:</span>
             </div>
 
             {/* Portfolio filters */}
@@ -242,7 +242,7 @@ export const TickersOverview: React.FC = () => {
                   className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                     selectedPortfolios.includes(portfolio.name)
                       ? 'bg-primary-700 text-white'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                      : 'bg-surface-subtle dark:bg-trading-dark-700 text-ink-700 dark:text-ink-300 hover:bg-surface-muted dark:hover:bg-trading-dark-600'
                   }`}
                 >
                   <img
@@ -261,7 +261,7 @@ export const TickersOverview: React.FC = () => {
               className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 showWatchlistOnly
                   ? 'bg-primary-700 text-white'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  : 'bg-surface-subtle dark:bg-trading-dark-700 text-ink-700 dark:text-ink-300 hover:bg-surface-muted dark:hover:bg-trading-dark-600'
               }`}
             >
               <Eye className="w-4 h-4" />
@@ -297,7 +297,7 @@ export const TickersOverview: React.FC = () => {
       {isAddWatchlistOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <form
-            className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md"
+            className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-xl p-6 w-full max-w-md"
             onSubmit={(e) => {
               e.preventDefault();
               if (newWatchlistTicker.symbol.trim()) {
@@ -306,21 +306,21 @@ export const TickersOverview: React.FC = () => {
             }}
           >
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <h3 className="text-lg font-semibold text-ink-900 dark:text-white">
                 Ticker toevoegen aan Watchlist
               </h3>
               <button
                 type="button"
                 onClick={() => setIsAddWatchlistOpen(false)}
-                className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                className="p-1 hover:bg-surface-subtle dark:hover:bg-trading-dark-700 rounded"
               >
-                <X className="w-5 h-5 text-gray-500" />
+                <X className="w-5 h-5 text-ink-500" />
               </button>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
                   Symbol *
                 </label>
                 <input
@@ -332,13 +332,13 @@ export const TickersOverview: React.FC = () => {
                       symbol: e.target.value.toUpperCase(),
                     }))
                   }
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-3 py-2 border border-ink-200 dark:border-trading-dark-500 rounded-lg bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white"
                   placeholder="AAPL"
                   autoFocus
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
                   Naam
                 </label>
                 <input
@@ -347,12 +347,12 @@ export const TickersOverview: React.FC = () => {
                   onChange={(e) =>
                     setNewWatchlistTicker((prev) => ({ ...prev, name: e.target.value }))
                   }
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-3 py-2 border border-ink-200 dark:border-trading-dark-500 rounded-lg bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white"
                   placeholder="Apple Inc."
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
                   Huidige Prijs
                 </label>
                 <input
@@ -362,7 +362,7 @@ export const TickersOverview: React.FC = () => {
                   onChange={(e) =>
                     setNewWatchlistTicker((prev) => ({ ...prev, price: e.target.value }))
                   }
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-3 py-2 border border-ink-200 dark:border-trading-dark-500 rounded-lg bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white"
                   placeholder="150.00"
                 />
               </div>
@@ -372,7 +372,7 @@ export const TickersOverview: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsAddWatchlistOpen(false)}
-                className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                className="px-4 py-2 text-ink-700 dark:text-ink-300 hover:bg-surface-subtle dark:hover:bg-trading-dark-700 rounded-lg transition-colors"
               >
                 Annuleren
               </button>
@@ -389,10 +389,10 @@ export const TickersOverview: React.FC = () => {
       )}
 
       {/* Tickers List */}
-      <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div className="bg-surface dark:bg-trading-dark-800/50 rounded-lg border border-surface-line dark:border-trading-dark-600 overflow-hidden">
         {/* Column Headers */}
-        <div className="px-6 py-2 bg-gray-100 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
-          <div className="grid grid-cols-[70px_minmax(150px,2fr)_80px_70px_70px_80px_90px_100px_80px_80px] gap-2 text-xs font-semibold text-gray-600 dark:text-gray-400 items-center">
+        <div className="px-6 py-2 bg-surface-subtle dark:bg-trading-dark-900/50 border-b border-surface-line dark:border-trading-dark-600">
+          <div className="grid grid-cols-[70px_minmax(150px,2fr)_80px_70px_70px_80px_90px_100px_80px_80px] gap-2 text-xs font-semibold text-ink-600 dark:text-ink-400 items-center">
             <div>Ticker</div>
             <div>Naam</div>
             <div>Portfolios</div>
@@ -407,11 +407,11 @@ export const TickersOverview: React.FC = () => {
         </div>
 
         {/* Ticker Rows */}
-        <div className="divide-y divide-gray-200 dark:divide-gray-700">
+        <div className="divide-y divide-surface-line dark:divide-trading-dark-600">
           {filteredTickers.map((ticker) => (
             <div
               key={ticker.symbol}
-              className="px-6 py-3 hover:bg-white dark:hover:bg-gray-700/30 transition-colors"
+              className="px-6 py-3 hover:bg-white dark:hover:bg-trading-dark-700/30 transition-colors"
             >
               <div className="grid grid-cols-[70px_minmax(150px,2fr)_80px_70px_70px_80px_90px_100px_80px_80px] gap-2 items-center">
                 {/* Ticker Symbol */}
@@ -420,7 +420,7 @@ export const TickersOverview: React.FC = () => {
                     href={getYahooFinanceUrl(ticker.symbol)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 font-mono font-bold text-sm text-gray-900 dark:text-white hover:text-primary-700 dark:hover:text-primary-500 transition-colors group"
+                    className="inline-flex items-center gap-1.5 font-mono font-bold text-sm text-ink-900 dark:text-white hover:text-primary-700 dark:hover:text-primary-500 transition-colors group"
                     title="View on Yahoo Finance"
                   >
                     {ticker.symbol}
@@ -435,10 +435,10 @@ export const TickersOverview: React.FC = () => {
                       type="text"
                       value={editValues.name}
                       onChange={(e) => setEditValues((prev) => ({ ...prev, name: e.target.value }))}
-                      className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                      className="w-full px-2 py-1 border border-ink-200 dark:border-trading-dark-500 rounded bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white text-sm"
                     />
                   ) : (
-                    <span className="text-sm text-gray-600 dark:text-gray-300 truncate block">
+                    <span className="text-sm text-ink-600 dark:text-ink-300 truncate block">
                       {ticker.name}
                     </span>
                   )}
@@ -459,17 +459,17 @@ export const TickersOverview: React.FC = () => {
                     ) : null;
                   })}
                   {ticker.portfolios.length === 0 && (
-                    <span className="text-gray-400 dark:text-gray-600 text-xs">-</span>
+                    <span className="text-ink-400 dark:text-ink-600 text-xs">-</span>
                   )}
                 </div>
 
                 {/* Shares */}
-                <div className="text-right text-sm font-medium text-gray-900 dark:text-white">
+                <div className="text-right text-sm font-medium text-ink-900 dark:text-white">
                   {ticker.totalShares > 0 ? ticker.totalShares.toLocaleString() : '-'}
                 </div>
 
                 {/* Avg Price */}
-                <div className="text-right text-xs text-gray-500 dark:text-gray-400">
+                <div className="text-right text-xs text-ink-500 dark:text-ink-400">
                   {ticker.averagePrice > 0 ? `$${formatNumber(ticker.averagePrice, 2)}` : '-'}
                 </div>
 
@@ -483,17 +483,17 @@ export const TickersOverview: React.FC = () => {
                       onChange={(e) =>
                         setEditValues((prev) => ({ ...prev, price: e.target.value }))
                       }
-                      className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs text-right"
+                      className="w-full px-2 py-1 border border-ink-200 dark:border-trading-dark-500 rounded bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white text-xs text-right"
                     />
                   ) : (
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">
+                    <span className="text-sm font-medium text-ink-900 dark:text-white">
                       {ticker.currentPrice ? `$${formatNumber(ticker.currentPrice, 2)}` : '-'}
                     </span>
                   )}
                 </div>
 
                 {/* Market Value */}
-                <div className="text-right text-sm font-medium text-gray-900 dark:text-white">
+                <div className="text-right text-sm font-medium text-ink-900 dark:text-white">
                   {ticker.totalValue > 0
                     ? `$${ticker.totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
                     : '-'}
@@ -518,7 +518,7 @@ export const TickersOverview: React.FC = () => {
                       </div>
                     </div>
                   ) : (
-                    <span className="text-gray-400 dark:text-gray-600 text-xs">-</span>
+                    <span className="text-ink-400 dark:text-ink-600 text-xs">-</span>
                   )}
                 </div>
 
@@ -535,7 +535,7 @@ export const TickersOverview: React.FC = () => {
                       Active
                     </span>
                   ) : (
-                    <span className="text-gray-400 dark:text-gray-600 text-xs">-</span>
+                    <span className="text-ink-400 dark:text-ink-600 text-xs">-</span>
                   )}
                 </div>
 
@@ -552,7 +552,7 @@ export const TickersOverview: React.FC = () => {
                       </button>
                       <button
                         onClick={cancelEdit}
-                        className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded transition-colors"
+                        className="p-1 hover:bg-surface-subtle dark:hover:bg-trading-dark-700 text-ink-600 dark:text-ink-400 rounded transition-colors"
                         title="Annuleren"
                       >
                         <X className="w-3.5 h-3.5" />
@@ -586,8 +586,8 @@ export const TickersOverview: React.FC = () => {
 
         {filteredTickers.length === 0 && (
           <div className="p-12 text-center">
-            <p className="text-gray-500 dark:text-gray-400">Geen tickers gevonden</p>
-            <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
+            <p className="text-ink-500 dark:text-ink-400">Geen tickers gevonden</p>
+            <p className="text-sm text-ink-400 dark:text-ink-500 mt-1">
               Voeg posities toe aan je portfolios of voeg tickers toe aan je watchlist
             </p>
           </div>

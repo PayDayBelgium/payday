@@ -112,10 +112,10 @@ export const OptionRow: React.FC<OptionRowProps> = ({
   return (
     <div
       onClick={() => onClick?.(option)}
-      className={`px-6 py-3 transition-colors border-b border-gray-200 dark:border-gray-700 cursor-pointer relative border-l-4 ${
+      className={`px-6 py-3 transition-colors border-b border-surface-line dark:border-trading-dark-600 cursor-pointer relative border-l-4 ${
         isExpired
-          ? 'bg-gray-100 dark:bg-gray-900/50 hover:bg-gray-200 dark:hover:bg-gray-800/50'
-          : 'hover:bg-white dark:hover:bg-gray-700/30'
+          ? 'bg-surface-subtle dark:bg-trading-dark-900/50 hover:bg-surface-muted dark:hover:bg-trading-dark-800/50'
+          : 'hover:bg-white dark:hover:bg-trading-dark-700/30'
       } ${getBorderColor()}`}
     >
       <div
@@ -140,7 +140,7 @@ export const OptionRow: React.FC<OptionRowProps> = ({
         {/* Ticker with badges and comment indicator */}
         <div>
           <div className="flex items-center gap-1.5">
-            <h4 className="text-sm font-bold text-gray-900 dark:text-white">
+            <h4 className="text-sm font-bold text-ink-900 dark:text-white">
               {option.contracts}x {option.ticker}
             </h4>
             <span
@@ -158,8 +158,8 @@ export const OptionRow: React.FC<OptionRowProps> = ({
                 triggerRef={getTooltipRef(`action-${option.id}`)}
                 show={showTooltip === `action-${option.id}`}
               >
-                <div className="w-64 p-3 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg shadow-xl">
-                  <p className="text-xs text-gray-600 dark:text-gray-300">
+                <div className="w-64 p-3 bg-white dark:bg-trading-dark-800 border-2 border-surface-line dark:border-trading-dark-600 rounded-lg shadow-xl">
+                  <p className="text-xs text-ink-600 dark:text-ink-300">
                     {isBuy ? t('optionRow.longTooltip') : t('optionRow.shortTooltip')}
                   </p>
                 </div>
@@ -192,14 +192,14 @@ export const OptionRow: React.FC<OptionRowProps> = ({
                   triggerRef={getTooltipRef(`alert-${option.id}`)}
                   show={showTooltip === `alert-${option.id}`}
                 >
-                  <div className="w-72 p-3 bg-white dark:bg-gray-800 border-2 border-negative-500/20 dark:border-negative-700/30 rounded-lg shadow-xl">
+                  <div className="w-72 p-3 bg-white dark:bg-trading-dark-800 border-2 border-negative-500/20 dark:border-negative-700/30 rounded-lg shadow-xl">
                     <div className="flex items-start gap-2">
                       <AlertCircle className="w-4 h-4 text-negative-600 dark:text-negative-500 flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="font-semibold text-sm text-gray-900 dark:text-white mb-1">
+                        <p className="font-semibold text-sm text-ink-900 dark:text-white mb-1">
                           {t('optionRow.alert')}
                         </p>
-                        <p className="text-xs text-gray-600 dark:text-gray-300 whitespace-pre-line">
+                        <p className="text-xs text-ink-600 dark:text-ink-300 whitespace-pre-line">
                           {alertMessage}
                         </p>
                       </div>
@@ -221,14 +221,14 @@ export const OptionRow: React.FC<OptionRowProps> = ({
                   triggerRef={getTooltipRef(`opportunity-${option.id}`)}
                   show={showTooltip === `opportunity-${option.id}`}
                 >
-                  <div className="w-72 p-3 bg-white dark:bg-gray-800 border-2 border-positive-500/20 dark:border-positive-700/30 rounded-lg shadow-xl">
+                  <div className="w-72 p-3 bg-white dark:bg-trading-dark-800 border-2 border-positive-500/20 dark:border-positive-700/30 rounded-lg shadow-xl">
                     <div className="flex items-start gap-2">
                       <Target className="w-4 h-4 text-positive-600 dark:text-positive-500 flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="font-semibold text-sm text-gray-900 dark:text-white mb-1">
+                        <p className="font-semibold text-sm text-ink-900 dark:text-white mb-1">
                           {t('optionRow.opportunity')}
                         </p>
-                        <p className="text-xs text-gray-600 dark:text-gray-300 whitespace-pre-line">
+                        <p className="text-xs text-ink-600 dark:text-ink-300 whitespace-pre-line">
                           {opportunityMessage}
                         </p>
                       </div>
@@ -254,14 +254,14 @@ export const OptionRow: React.FC<OptionRowProps> = ({
                     triggerRef={getTooltipRef(`notes-${option.id}`)}
                     show={showTooltip === `notes-${option.id}`}
                   >
-                    <div className="w-72 p-3 bg-white dark:bg-gray-800 border-2 border-primary-200 dark:border-primary-800 rounded-lg shadow-xl">
+                    <div className="w-72 p-3 bg-white dark:bg-trading-dark-800 border-2 border-primary-200 dark:border-primary-800 rounded-lg shadow-xl">
                       <div className="flex items-start gap-2">
                         <MessageSquare className="w-4 h-4 text-primary-600 dark:text-primary-300 flex-shrink-0 mt-0.5" />
                         <div>
-                          <p className="font-semibold text-sm text-gray-900 dark:text-white mb-1">
+                          <p className="font-semibold text-sm text-ink-900 dark:text-white mb-1">
                             {t('optionRow.note')}
                           </p>
-                          <p className="text-xs text-gray-600 dark:text-gray-300 whitespace-pre-line">
+                          <p className="text-xs text-ink-600 dark:text-ink-300 whitespace-pre-line">
                             {displayNotes}
                           </p>
                         </div>
@@ -273,13 +273,13 @@ export const OptionRow: React.FC<OptionRowProps> = ({
             })()}
           </div>
           {tickerData?.name && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{tickerData.name}</p>
+            <p className="text-xs text-ink-500 dark:text-ink-400 truncate">{tickerData.name}</p>
           )}
         </div>
 
         {/* Expiratie */}
         <div>
-          <p className="text-sm font-medium text-gray-900 dark:text-white">
+          <p className="text-sm font-medium text-ink-900 dark:text-white">
             {new Date(option.expiration).toLocaleDateString('nl-NL')}
           </p>
           <p
@@ -288,7 +288,7 @@ export const OptionRow: React.FC<OptionRowProps> = ({
                 ? 'text-negative-600 dark:text-negative-500 font-semibold'
                 : expiresWithinTwoWeeks
                   ? 'text-caution-500 dark:text-caution-500 font-semibold'
-                  : 'text-gray-500 dark:text-gray-400'
+                  : 'text-ink-500 dark:text-ink-400'
             }`}
           >
             {daysToExpiration > 0
@@ -301,7 +301,7 @@ export const OptionRow: React.FC<OptionRowProps> = ({
 
         {/* Strike */}
         <div>
-          <p className="text-sm font-semibold text-gray-900 dark:text-white">
+          <p className="text-sm font-semibold text-ink-900 dark:text-white">
             {formatCurrency(option.strike, currencySymbol)}
           </p>
         </div>
@@ -309,11 +309,11 @@ export const OptionRow: React.FC<OptionRowProps> = ({
         {/* Stock prijs */}
         <div>
           {stockPrice > 0 ? (
-            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <p className="text-sm font-medium text-ink-700 dark:text-ink-300">
               {formatCurrency(stockPrice, currencySymbol)}
             </p>
           ) : (
-            <p className="text-sm text-gray-400 dark:text-gray-600">-</p>
+            <p className="text-sm text-ink-400 dark:text-ink-600">-</p>
           )}
         </div>
 
@@ -336,33 +336,33 @@ export const OptionRow: React.FC<OptionRowProps> = ({
                     : priceDifference < 0;
 
                 if (isBadForPosition) return 'text-negative-600 dark:text-negative-500';
-                return 'text-gray-900 dark:text-white';
+                return 'text-ink-900 dark:text-white';
               })()}`}
             >
               {priceDifference > 0 ? '+' : ''}
               {formatCurrency(priceDifference, currencySymbol)}
             </p>
           ) : (
-            <p className="text-sm text-gray-400 dark:text-gray-600">-</p>
+            <p className="text-sm text-ink-400 dark:text-ink-600">-</p>
           )}
         </div>
 
         {/* Aankoopwaarde */}
         <div>
-          <p className="text-sm font-semibold text-gray-900 dark:text-white">
+          <p className="text-sm font-semibold text-ink-900 dark:text-white">
             {formatCurrency(option.premium, currencySymbol)}
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p className="text-xs text-ink-500 dark:text-ink-400">
             {formatCurrency(option.premium * option.contracts * 100, currencySymbol)}
           </p>
         </div>
 
         {/* Huidige Waarde */}
         <div>
-          <p className="text-sm font-semibold text-gray-900 dark:text-white">
+          <p className="text-sm font-semibold text-ink-900 dark:text-white">
             {formatCurrency(pricePerContract, currencySymbol)}
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p className="text-xs text-ink-500 dark:text-ink-400">
             {formatCurrency(totalValue, currencySymbol)}
           </p>
         </div>
@@ -375,7 +375,7 @@ export const OptionRow: React.FC<OptionRowProps> = ({
                 ? 'text-positive-600 dark:text-positive-500'
                 : nominalProfit < 0
                   ? 'text-negative-600 dark:text-negative-500'
-                  : 'text-gray-900 dark:text-white'
+                  : 'text-ink-900 dark:text-white'
             }`}
           >
             {nominalProfit > 0 ? '+' : ''}
@@ -387,7 +387,7 @@ export const OptionRow: React.FC<OptionRowProps> = ({
                 ? 'text-positive-600 dark:text-positive-500'
                 : nominalProfit < 0
                   ? 'text-negative-600 dark:text-negative-500'
-                  : 'text-gray-900 dark:text-white'
+                  : 'text-ink-900 dark:text-white'
             }`}
           >
             {nominalProfit > 0 ? '+' : ''}
@@ -428,7 +428,7 @@ export const OptionRow: React.FC<OptionRowProps> = ({
                           ? t('optionRow.callCollateral')
                           : t('optionRow.cashCollateral')}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
+                <p className="text-xs text-ink-500 dark:text-ink-400">
                   {collateralType === 'stock'
                     ? option.ticker
                     : collateralType === 'leaps' && leapsInfo
@@ -442,10 +442,10 @@ export const OptionRow: React.FC<OptionRowProps> = ({
                 triggerRef={getTooltipRef(`collateral-${option.id}`)}
                 show={showTooltip === `collateral-${option.id}`}
               >
-                <div className="w-72 p-3 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg shadow-xl">
+                <div className="w-72 p-3 bg-white dark:bg-trading-dark-800 border-2 border-surface-line dark:border-trading-dark-600 rounded-lg shadow-xl">
                   <div className="flex items-start gap-2">
                     <div>
-                      <p className="font-semibold text-sm text-gray-900 dark:text-white mb-1">
+                      <p className="font-semibold text-sm text-ink-900 dark:text-white mb-1">
                         {collateralType === 'stock'
                           ? t('optionRow.stockCollateralDesc')
                           : collateralType === 'leaps'
@@ -454,7 +454,7 @@ export const OptionRow: React.FC<OptionRowProps> = ({
                               ? t('optionRow.protectivePut')
                               : t('optionRow.cashCollateralDesc')}
                       </p>
-                      <p className="text-xs text-gray-600 dark:text-gray-300">
+                      <p className="text-xs text-ink-600 dark:text-ink-300">
                         {collateralDescription}
                       </p>
                     </div>
@@ -463,7 +463,7 @@ export const OptionRow: React.FC<OptionRowProps> = ({
               </PortalTooltip>
             </>
           ) : (
-            <p className="text-sm text-gray-400 dark:text-gray-600">-</p>
+            <p className="text-sm text-ink-400 dark:text-ink-600">-</p>
           )}
         </div>
 

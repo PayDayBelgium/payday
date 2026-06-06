@@ -36,7 +36,7 @@ export const FeatureGate: React.FC<FeatureGateProps> = ({ feature, children, fal
 
   return (
     <div className="min-h-[400px] flex items-center justify-center">
-      <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8 text-center">
+      <div className="max-w-md w-full bg-white dark:bg-trading-dark-800 rounded-xl border border-surface-line dark:border-trading-dark-600 p-8 text-center">
         {/* Lock icon with level color */}
         <div
           className={`
@@ -50,7 +50,7 @@ export const FeatureGate: React.FC<FeatureGateProps> = ({ feature, children, fal
                   ? 'bg-negative-50 dark:bg-negative-700/25'
                   : levelConfig?.slopeColor === 'orange'
                     ? 'bg-caution-50 dark:bg-caution-600/25'
-                    : 'bg-gray-100 dark:bg-gray-700'
+                    : 'bg-surface-subtle dark:bg-trading-dark-700'
           }
         `}
         >
@@ -66,19 +66,19 @@ export const FeatureGate: React.FC<FeatureGateProps> = ({ feature, children, fal
                     ? 'text-negative-600 dark:text-negative-500'
                     : levelConfig?.slopeColor === 'orange'
                       ? 'text-caution-600 dark:text-caution-500'
-                      : 'text-gray-600 dark:text-gray-400'
+                      : 'text-ink-600 dark:text-ink-400'
             }
           `}
           />
         </div>
 
         {/* Title */}
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+        <h2 className="text-xl font-bold text-ink-900 dark:text-white mb-2">
           Feature Vergrendeld
         </h2>
 
         {/* Description */}
-        <p className="text-gray-600 dark:text-gray-400 mb-4">
+        <p className="text-ink-600 dark:text-ink-400 mb-4">
           Deze functie is beschikbaar vanaf niveau{' '}
           <span className="font-semibold">{levelConfig?.name}</span> ({levelConfig?.slopeName}).
         </p>
@@ -97,21 +97,21 @@ export const FeatureGate: React.FC<FeatureGateProps> = ({ feature, children, fal
                     ? 'bg-negative-50 dark:bg-negative-700/15 border border-negative-500/20 dark:border-negative-700'
                     : levelConfig.slopeColor === 'orange'
                       ? 'bg-caution-50 dark:bg-caution-600/15 border border-caution-500/30 dark:border-caution-600'
-                      : 'bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600'
+                      : 'bg-surface dark:bg-trading-dark-700 border border-surface-line dark:border-trading-dark-500'
             }
           `}
           >
             <div className="flex items-center justify-center gap-2 mb-2">
               <span className="text-2xl">{levelConfig.icon}</span>
-              <span className="font-bold text-gray-900 dark:text-white">
+              <span className="font-bold text-ink-900 dark:text-white">
                 {levelConfig.slopeName}
               </span>
             </div>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-ink-600 dark:text-ink-400">
               {levelConfig.creditsRequired > 0 && (
                 <>
                   <span className="font-medium">{levelConfig.creditsRequired} credits</span> nodig
-                  {credits > 0 && <span className="text-gray-500"> (je hebt {credits})</span>}
+                  {credits > 0 && <span className="text-ink-500"> (je hebt {credits})</span>}
                 </>
               )}
             </p>
@@ -130,7 +130,7 @@ export const FeatureGate: React.FC<FeatureGateProps> = ({ feature, children, fal
           </button>
 
           {levelConfig?.priceEUR && levelConfig.priceEUR > 0 && (
-            <button className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg font-medium transition-colors text-gray-700 dark:text-gray-300">
+            <button className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-ink-200 dark:border-trading-dark-500 hover:bg-surface dark:hover:bg-trading-dark-700 rounded-lg font-medium transition-colors text-ink-700 dark:text-ink-300">
               <Star className="w-5 h-5" />
               Direct Ontgrendelen voor €{levelConfig.priceEUR}
             </button>
@@ -170,5 +170,5 @@ export const FeatureLockIndicator: React.FC<{ feature: FeatureId; className?: st
     return null;
   }
 
-  return <Lock className={`w-3 h-3 text-gray-400 ${className}`} />;
+  return <Lock className={`w-3 h-3 text-ink-400 ${className}`} />;
 };

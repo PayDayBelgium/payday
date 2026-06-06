@@ -241,17 +241,17 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[9999] p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col">
+      <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+        <div className="flex items-center justify-between p-4 border-b border-surface-line dark:border-trading-dark-600">
+          <h2 className="text-xl font-bold text-ink-900 dark:text-white">
             {t('imageCrop.title')}
           </h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            className="p-2 hover:bg-surface-subtle dark:hover:bg-trading-dark-700 rounded-lg transition-colors"
           >
-            <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            <X className="w-5 h-5 text-ink-600 dark:text-ink-400" />
           </button>
         </div>
 
@@ -284,12 +284,12 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
         </div>
 
         {/* Controls */}
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
+        <div className="p-4 border-t border-surface-line dark:border-trading-dark-600 space-y-3">
           {/* Zoom and Rotation Controls */}
           <div className="grid grid-cols-2 gap-3">
             {/* Zoom Control */}
             <div className="space-y-1">
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+              <label className="block text-xs font-medium text-ink-700 dark:text-ink-300">
                 <ZoomIn className="w-3 h-3 inline mr-1" />
                 {t('imageCrop.zoom')}
               </label>
@@ -300,13 +300,13 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
                 step={0.1}
                 value={zoom}
                 onChange={(e) => setZoom(Number(e.target.value))}
-                className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                className="w-full h-2 bg-surface-muted dark:bg-trading-dark-700 rounded-lg appearance-none cursor-pointer"
               />
             </div>
 
             {/* Rotation Control */}
             <div className="space-y-1">
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+              <label className="block text-xs font-medium text-ink-700 dark:text-ink-300">
                 <RotateCw className="w-3 h-3 inline mr-1" />
                 {t('imageCrop.rotation')}
               </label>
@@ -317,23 +317,23 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
                 step={1}
                 value={rotation}
                 onChange={(e) => setRotation(Number(e.target.value))}
-                className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                className="w-full h-2 bg-surface-muted dark:bg-trading-dark-700 rounded-lg appearance-none cursor-pointer"
               />
             </div>
           </div>
 
           {/* Background Color */}
           <div className="flex items-center gap-3">
-            <span className="text-xs text-gray-600 dark:text-gray-400">
+            <span className="text-xs text-ink-600 dark:text-ink-400">
               {t('imageCrop.backgroundColor')}:
             </span>
             <input
               type="color"
               value={backgroundColor}
               onChange={(e) => setBackgroundColor(e.target.value)}
-              className="w-10 h-6 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
+              className="w-10 h-6 rounded border border-ink-200 dark:border-trading-dark-500 cursor-pointer"
             />
-            <span className="text-xs font-mono text-gray-500">{backgroundColor}</span>
+            <span className="text-xs font-mono text-ink-500">{backgroundColor}</span>
           </div>
 
           {/* Border Control */}
@@ -344,11 +344,11 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
                 id="add-border-checkbox"
                 checked={addBorder}
                 onChange={(e) => setAddBorder(e.target.checked)}
-                className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-700 focus:ring-primary-500 cursor-pointer"
+                className="w-4 h-4 rounded border-ink-200 dark:border-trading-dark-500 text-primary-700 focus:ring-primary-500 cursor-pointer"
               />
               <label
                 htmlFor="add-border-checkbox"
-                className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer"
+                className="text-sm font-medium text-ink-700 dark:text-ink-300 cursor-pointer"
               >
                 {t('imageCrop.addBorder')}
               </label>
@@ -358,7 +358,7 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
                 {/* Border Size and Radius in a row */}
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                    <span className="text-xs text-ink-600 dark:text-ink-400">
                       {t('imageCrop.borderSize')}: {borderSize}px
                     </span>
                     <input
@@ -368,11 +368,11 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
                       step={5}
                       value={borderSize}
                       onChange={(e) => setBorderSize(Number(e.target.value))}
-                      className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                      className="w-full h-2 bg-surface-muted dark:bg-trading-dark-700 rounded-lg appearance-none cursor-pointer"
                     />
                   </div>
                   <div className="space-y-1">
-                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                    <span className="text-xs text-ink-600 dark:text-ink-400">
                       {t('imageCrop.borderRadius')}: {borderRadius}px
                     </span>
                     <input
@@ -382,22 +382,22 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
                       step={5}
                       value={borderRadius}
                       onChange={(e) => setBorderRadius(Number(e.target.value))}
-                      className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                      className="w-full h-2 bg-surface-muted dark:bg-trading-dark-700 rounded-lg appearance-none cursor-pointer"
                     />
                   </div>
                 </div>
                 {/* Border Color */}
                 <div className="flex items-center gap-3">
-                  <span className="text-xs text-gray-600 dark:text-gray-400">
+                  <span className="text-xs text-ink-600 dark:text-ink-400">
                     {t('imageCrop.borderColor')}:
                   </span>
                   <input
                     type="color"
                     value={borderColor}
                     onChange={(e) => setBorderColor(e.target.value)}
-                    className="w-10 h-6 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
+                    className="w-10 h-6 rounded border border-ink-200 dark:border-trading-dark-500 cursor-pointer"
                   />
-                  <span className="text-xs font-mono text-gray-500">{borderColor}</span>
+                  <span className="text-xs font-mono text-ink-500">{borderColor}</span>
                 </div>
               </div>
             )}
@@ -407,7 +407,7 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
           <div className="flex gap-3 pt-2">
             <button
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              className="flex-1 px-4 py-2 border border-ink-200 dark:border-trading-dark-500 text-ink-700 dark:text-ink-300 rounded-lg hover:bg-surface dark:hover:bg-trading-dark-700 transition-colors"
             >
               {t('common.cancel')}
             </button>

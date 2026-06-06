@@ -206,57 +206,57 @@ export const CashOnderpandAnalysis: React.FC = () => {
     <div className="space-y-6">
       {/* Total Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
           <div className="flex items-center gap-2 mb-2">
             <DollarSign className="w-5 h-5 text-primary-700 dark:text-primary-300" />
-            <p className="text-sm text-gray-600 dark:text-gray-400">Totale Cash</p>
+            <p className="text-sm text-ink-600 dark:text-ink-400">Totale Cash</p>
           </div>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white">
+          <p className="text-2xl font-bold text-ink-900 dark:text-white">
             {formatCurrency(totalAnalysis.totalCash, portfolios)}
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
             Alle portfolios met opties
           </p>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
           <div className="flex items-center gap-2 mb-2">
             <Shield className="w-5 h-5 text-ink-600 dark:text-ink-300" />
-            <p className="text-sm text-gray-600 dark:text-gray-400">Totaal Onderpand</p>
+            <p className="text-sm text-ink-600 dark:text-ink-400">Totaal Onderpand</p>
           </div>
           <p className="text-2xl font-bold text-ink-600 dark:text-ink-300">
             {formatCurrency(totalAnalysis.totalOnderpand, portfolios)}
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
             {totalAnalysis.positionsCount} posities
           </p>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
           <div className="flex items-center gap-2 mb-2">
             <TrendingUp className="w-5 h-5 text-positive-600 dark:text-positive-500" />
-            <p className="text-sm text-gray-600 dark:text-gray-400">Vrije cash</p>
+            <p className="text-sm text-ink-600 dark:text-ink-400">Vrije cash</p>
           </div>
           <p className="text-2xl font-bold text-positive-600 dark:text-positive-500">
             {formatCurrency(totalAnalysis.freeCash, portfolios)}
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
             Beschikbaar voor nieuwe posities
           </p>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
           <div className="flex items-center gap-2 mb-2">
             <Calendar className="w-5 h-5 text-caution-600 dark:text-caution-500" />
-            <p className="text-sm text-gray-600 dark:text-gray-400">Onderpand %</p>
+            <p className="text-sm text-ink-600 dark:text-ink-400">Onderpand %</p>
           </div>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white">
+          <p className="text-2xl font-bold text-ink-900 dark:text-white">
             {totalAnalysis.totalCash > 0
               ? formatNumber((totalAnalysis.totalOnderpand / totalAnalysis.totalCash) * 100, 1)
               : 0}
             %
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Van totale cash</p>
+          <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">Van totale cash</p>
         </div>
       </div>
 
@@ -264,29 +264,29 @@ export const CashOnderpandAnalysis: React.FC = () => {
       {cashAnalysis.map((portfolio) => (
         <div
           key={portfolio.portfolio}
-          className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
+          className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 overflow-hidden"
         >
           {/* Portfolio Header */}
-          <div className="bg-gradient-to-r from-primary-50 to-primary-50 dark:from-gray-700 dark:to-gray-750 p-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="bg-gradient-to-r from-primary-50 to-primary-50 dark:from-trading-dark-600 dark:to-trading-dark-700 p-4 border-b border-surface-line dark:border-trading-dark-600">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+              <h3 className="text-lg font-bold text-ink-900 dark:text-white">
                 {portfolio.portfolio}
               </h3>
               <div className="flex gap-4 text-sm">
                 <div className="text-right">
-                  <p className="text-gray-600 dark:text-gray-400">Cash</p>
-                  <p className="font-bold text-gray-900 dark:text-white">
+                  <p className="text-ink-600 dark:text-ink-400">Cash</p>
+                  <p className="font-bold text-ink-900 dark:text-white">
                     {formatCurrency(portfolio.totalCash, portfolios)}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-gray-600 dark:text-gray-400">Onderpand</p>
+                  <p className="text-ink-600 dark:text-ink-400">Onderpand</p>
                   <p className="font-bold text-ink-600 dark:text-ink-300">
                     {formatCurrency(portfolio.totalOnderpand, portfolios)}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-gray-600 dark:text-gray-400">Vrij</p>
+                  <p className="text-ink-600 dark:text-ink-400">Vrij</p>
                   <p className="font-bold text-positive-600 dark:text-positive-500">
                     {formatCurrency(portfolio.freeCash, portfolios)}
                   </p>
@@ -299,36 +299,36 @@ export const CashOnderpandAnalysis: React.FC = () => {
           {portfolio.positions.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 dark:bg-gray-700">
+                <thead className="bg-surface dark:bg-trading-dark-700">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
                       Ticker
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
                       Type
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-right text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
                       Onderpand
                     </th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-center text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
                       Expiratie
                     </th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-center text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
                       DTE
                     </th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-center text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
                       Delta
                     </th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-center text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
                       Actie
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody className="divide-y divide-surface-line dark:divide-trading-dark-600">
                   {portfolio.positions.map((position) => (
-                    <tr key={position.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                    <tr key={position.id} className="hover:bg-surface dark:hover:bg-trading-dark-700/50">
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <span className="font-medium text-gray-900 dark:text-white">
+                        <span className="font-medium text-ink-900 dark:text-white">
                           {position.ticker}
                         </span>
                       </td>
@@ -350,11 +350,11 @@ export const CashOnderpandAnalysis: React.FC = () => {
                         </span>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-right">
-                        <span className="font-medium text-gray-900 dark:text-white">
+                        <span className="font-medium text-ink-900 dark:text-white">
                           {formatCurrency(position.onderpand, portfolios)}
                         </span>
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-center text-sm text-gray-600 dark:text-gray-400">
+                      <td className="px-4 py-3 whitespace-nowrap text-center text-sm text-ink-600 dark:text-ink-400">
                         {new Date(position.expiration).toLocaleDateString('nl-NL', {
                           month: 'short',
                           day: 'numeric',
@@ -367,7 +367,7 @@ export const CashOnderpandAnalysis: React.FC = () => {
                               ? 'text-caution-600 dark:text-caution-500'
                               : position.daysToExpiration < 14
                                 ? 'text-caution-600 dark:text-caution-500'
-                                : 'text-gray-600 dark:text-gray-400'
+                                : 'text-ink-600 dark:text-ink-400'
                           }`}
                         >
                           {position.daysToExpiration}d
@@ -395,7 +395,7 @@ export const CashOnderpandAnalysis: React.FC = () => {
                             </span>
                           </div>
                         ) : (
-                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                          <span className="text-xs text-ink-500 dark:text-ink-400">
                             Aanhouden
                           </span>
                         )}
@@ -406,7 +406,7 @@ export const CashOnderpandAnalysis: React.FC = () => {
               </table>
             </div>
           ) : (
-            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+            <div className="p-8 text-center text-ink-500 dark:text-ink-400">
               Geen posities met onderpand vereisten
             </div>
           )}

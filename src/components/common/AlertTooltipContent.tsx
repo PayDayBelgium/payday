@@ -75,10 +75,10 @@ export const AlertTooltipContent: React.FC<AlertTooltipContentProps> = ({ items,
               <Icon className={`w-3 h-3 ${iconColorClass}`} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+              <p className="text-sm font-semibold text-ink-900 dark:text-white truncate">
                 {item.ticker}
               </p>
-              <p className="text-xs text-gray-600 dark:text-gray-400 whitespace-pre-line">
+              <p className="text-xs text-ink-600 dark:text-ink-400 whitespace-pre-line">
                 {item.message}
               </p>
             </div>

@@ -89,25 +89,25 @@ export const MultiPortfolioChart: React.FC<MultiPortfolioChartProps> = ({
   if (chartData.length === 0) {
     return (
       <div
-        className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 ${className}`}
+        className={`bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 ${className}`}
       >
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+        <div className="px-6 py-4 border-b border-surface-line dark:border-trading-dark-600">
+          <h3 className="text-lg font-semibold text-ink-900 dark:text-white">
             Portfolio Vergelijking
           </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-sm text-ink-600 dark:text-ink-400 mt-1">
             Vergelijk de ontwikkeling van je verschillende portfolios
           </p>
         </div>
 
         {/* Empty State */}
         <div className="p-12 text-center">
-          <TrendingUp className="w-16 h-16 mx-auto mb-4 text-gray-400 dark:text-gray-500" />
-          <p className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+          <TrendingUp className="w-16 h-16 mx-auto mb-4 text-ink-400 dark:text-ink-500" />
+          <p className="text-lg font-medium text-ink-900 dark:text-white mb-2">
             Nog geen historische data
           </p>
-          <p className="text-sm text-gray-600 dark:text-gray-400 max-w-md mx-auto">
+          <p className="text-sm text-ink-600 dark:text-ink-400 max-w-md mx-auto">
             Voeg transacties toe aan je portfolios om ze te vergelijken
           </p>
         </div>
@@ -117,14 +117,14 @@ export const MultiPortfolioChart: React.FC<MultiPortfolioChartProps> = ({
 
   return (
     <div
-      className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 h-full flex flex-col ${className}`}
+      className={`bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 h-full flex flex-col ${className}`}
     >
       {/* Header */}
-      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+      <div className="px-6 py-4 border-b border-surface-line dark:border-trading-dark-600 flex-shrink-0">
+        <h3 className="text-lg font-semibold text-ink-900 dark:text-white">
           Portfolio Vergelijking
         </h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+        <p className="text-sm text-ink-600 dark:text-ink-400 mt-1">
           {chartData.length} {chartData.length === 1 ? 'datapunt' : 'datapunten'}
         </p>
       </div>
@@ -136,11 +136,11 @@ export const MultiPortfolioChart: React.FC<MultiPortfolioChartProps> = ({
             <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200 dark:stroke-gray-700" />
             <XAxis
               dataKey="date"
-              className="text-xs text-gray-600 dark:text-gray-400"
+              className="text-xs text-ink-600 dark:text-ink-400"
               tick={{ fill: 'currentColor' }}
             />
             <YAxis
-              className="text-xs text-gray-600 dark:text-gray-400"
+              className="text-xs text-ink-600 dark:text-ink-400"
               tick={{ fill: 'currentColor' }}
               tickFormatter={(value) => formatCompactNumber(value, currencySymbol)}
             />
@@ -184,7 +184,7 @@ export const MultiPortfolioChart: React.FC<MultiPortfolioChartProps> = ({
 
       {/* Interactive Legend Controls */}
       <div
-        className="px-6 py-3 border-t border-gray-200 dark:border-gray-700 flex-shrink-0"
+        className="px-6 py-3 border-t border-surface-line dark:border-trading-dark-600 flex-shrink-0"
         style={{ minHeight: '52px' }}
       >
         <div className="flex flex-wrap gap-2">
@@ -198,8 +198,8 @@ export const MultiPortfolioChart: React.FC<MultiPortfolioChartProps> = ({
                 onClick={() => togglePortfolio(portfolio.name)}
                 className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border transition-all ${
                   isVisible
-                    ? 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 shadow-sm'
-                    : 'bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 opacity-50'
+                    ? 'bg-white dark:bg-trading-dark-700 border-ink-200 dark:border-trading-dark-500 shadow-sm'
+                    : 'bg-surface-subtle dark:bg-trading-dark-800 border-surface-line dark:border-trading-dark-600 opacity-50'
                 }`}
               >
                 <div
@@ -208,7 +208,7 @@ export const MultiPortfolioChart: React.FC<MultiPortfolioChartProps> = ({
                 />
                 <span
                   className={`text-sm font-medium ${
-                    isVisible ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'
+                    isVisible ? 'text-ink-900 dark:text-white' : 'text-ink-500 dark:text-ink-400'
                   }`}
                 >
                   {portfolio.name}

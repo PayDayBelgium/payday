@@ -180,7 +180,7 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
         isValid: positionType !== null,
         component: (
           <div className="space-y-4">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-ink-600 dark:text-ink-400">
               {t('stockWizard.typeStep.selectType')}
             </p>
             <div className="grid grid-cols-2 gap-4">
@@ -189,20 +189,20 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
                 className={`p-6 rounded-lg border-2 transition-all ${
                   positionType === 'stock'
                     ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-                    : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                    : 'border-ink-200 dark:border-trading-dark-500 hover:border-ink-300'
                 }`}
               >
                 <TrendingUp
                   className={`w-12 h-12 mx-auto mb-3 ${
                     positionType === 'stock'
                       ? 'text-primary-700 dark:text-primary-300'
-                      : 'text-gray-400'
+                      : 'text-ink-400'
                   }`}
                 />
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                <h3 className="text-lg font-semibold text-ink-900 dark:text-white">
                   {t('stockWizard.typeStep.stock')}
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                <p className="text-sm text-ink-600 dark:text-ink-400 mt-1">
                   {t('stockWizard.typeStep.stockDesc')}
                 </p>
               </button>
@@ -212,20 +212,20 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
                 className={`p-6 rounded-lg border-2 transition-all ${
                   positionType === 'etf'
                     ? 'border-positive-500 bg-positive-50 dark:bg-positive-700/15'
-                    : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                    : 'border-ink-200 dark:border-trading-dark-500 hover:border-ink-300'
                 }`}
               >
                 <Building2
                   className={`w-12 h-12 mx-auto mb-3 ${
                     positionType === 'etf'
                       ? 'text-positive-600 dark:text-positive-500'
-                      : 'text-gray-400'
+                      : 'text-ink-400'
                   }`}
                 />
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                <h3 className="text-lg font-semibold text-ink-900 dark:text-white">
                   {t('stockWizard.typeStep.etf')}
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                <p className="text-sm text-ink-600 dark:text-ink-400 mt-1">
                   {t('stockWizard.typeStep.etfDesc')}
                 </p>
               </button>
@@ -247,26 +247,26 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
         component: isCreatingTicker ? (
           <div className="space-y-4">
             <div>
-              <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+              <label className="block mb-2 text-sm font-medium text-ink-900 dark:text-white">
                 {t('stockWizard.tickerStep.tickerSymbol')}
               </label>
               <input
                 type="text"
                 value={newTickerData.symbol}
                 disabled
-                className="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="bg-surface-subtle border border-ink-200 text-ink-900 text-sm rounded-lg block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
               />
             </div>
 
             <div>
-              <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+              <label className="block mb-2 text-sm font-medium text-ink-900 dark:text-white">
                 {t('stockWizard.tickerStep.name')}
               </label>
               <input
                 type="text"
                 value={newTickerData.name}
                 onChange={(e) => setNewTickerData({ ...newTickerData, name: e.target.value })}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                 placeholder={t('stockWizard.tickerStep.namePlaceholder', {
                   example: positionType === 'stock' ? 'Apple Inc.' : 'SPDR S&P 500 ETF',
                 })}
@@ -283,9 +283,9 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
                   onChange={(e) =>
                     setNewTickerData({ ...newTickerData, optionsAvailable: e.target.checked })
                   }
-                  className="w-4 h-4 text-primary-700 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
+                  className="w-4 h-4 text-primary-700 bg-surface-subtle border-ink-200 rounded focus:ring-primary-500"
                 />
-                <span className="text-sm font-medium text-gray-900 dark:text-white">
+                <span className="text-sm font-medium text-ink-900 dark:text-white">
                   {t('stockWizard.tickerStep.optionsAvailable')}
                 </span>
               </label>
@@ -297,13 +297,13 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
                   onChange={(e) =>
                     setNewTickerData({ ...newTickerData, miniContractsAvailable: e.target.checked })
                   }
-                  className="w-4 h-4 text-primary-700 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
+                  className="w-4 h-4 text-primary-700 bg-surface-subtle border-ink-200 rounded focus:ring-primary-500"
                 />
-                <span className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                <span className="text-sm font-medium text-ink-900 dark:text-white flex items-center gap-2">
                   {t('stockWizard.tickerStep.miniContracts')}
                   <div className="group relative">
-                    <Info className="w-4 h-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-help" />
-                    <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 z-50">
+                    <Info className="w-4 h-4 text-ink-400 hover:text-ink-600 dark:hover:text-ink-300 cursor-help" />
+                    <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-white dark:bg-trading-dark-800 text-ink-700 dark:text-ink-300 text-xs rounded-lg shadow-lg border border-surface-line dark:border-trading-dark-500 z-50">
                       {t('stockWizard.tickerStep.miniContractsTooltip')}
                     </div>
                   </div>
@@ -323,14 +323,14 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
                     hasDividend: false,
                   });
                 }}
-                className="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg font-medium transition-colors"
+                className="flex-1 px-4 py-2 bg-surface-muted dark:bg-trading-dark-700 hover:bg-ink-200 dark:hover:bg-trading-dark-600 text-ink-700 dark:text-ink-200 rounded-lg font-medium transition-colors"
               >
                 {t('stockWizard.tickerStep.cancel')}
               </button>
               <button
                 onClick={handleSaveNewTicker}
                 disabled={!newTickerData.name}
-                className="flex-1 px-4 py-2 bg-primary-700 hover:bg-primary-800 disabled:bg-gray-400 text-white rounded-lg font-medium transition-colors"
+                className="flex-1 px-4 py-2 bg-primary-700 hover:bg-primary-800 disabled:bg-ink-300 text-white rounded-lg font-medium transition-colors"
               >
                 {t('stockWizard.tickerStep.save')}
               </button>
@@ -338,7 +338,7 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
           </div>
         ) : (
           <div className="space-y-4">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-ink-600 dark:text-ink-400">
               {t('stockWizard.tickerStep.searchTicker')}
             </p>
             <TickerSelector
@@ -398,7 +398,7 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                <label className="block mb-2 text-sm font-medium text-ink-900 dark:text-white flex items-center gap-2">
                   <Hash className="w-4 h-4" />
                   {t('stockWizard.detailsStep.numberOfShares')}
                 </label>
@@ -413,7 +413,7 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
                       shares: parseInt(e.target.value) || 0,
                     })
                   }
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                   placeholder="100"
                   required
                   autoFocus
@@ -421,7 +421,7 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
               </div>
 
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                <label className="block mb-2 text-sm font-medium text-ink-900 dark:text-white flex items-center gap-2">
                   <DollarSign className="w-4 h-4" />
                   {t('stockWizard.detailsStep.pricePerShare')} ({currencySymbol})
                 </label>
@@ -436,7 +436,7 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
                       purchasePrice: parseFloat(e.target.value) || 0,
                     })
                   }
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                   placeholder="150,00"
                   required
                 />
@@ -444,7 +444,7 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
             </div>
 
             <div>
-              <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+              <label className="block mb-2 text-sm font-medium text-ink-900 dark:text-white flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
                 {t('stockWizard.detailsStep.purchaseDate')}
               </label>
@@ -455,20 +455,20 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
                   setPurchaseDetails({ ...purchaseDetails, purchaseDate: e.target.value })
                 }
                 max={new Date().toISOString().split('T')[0]}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                 required
               />
             </div>
 
             <div>
-              <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+              <label className="block mb-2 text-sm font-medium text-ink-900 dark:text-white">
                 {t('stockWizard.detailsStep.notes')}
               </label>
               <textarea
                 value={purchaseDetails.notes}
                 onChange={(e) => setPurchaseDetails({ ...purchaseDetails, notes: e.target.value })}
                 rows={3}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                 placeholder={t('stockWizard.detailsStep.notesPlaceholder')}
               />
             </div>

@@ -48,24 +48,24 @@ export const RollModalShell: React.FC<RollModalShellProps> = ({
 
       {/* Modal */}
       <div
-        className={`relative bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full ${maxWidthClassName} mx-4 max-h-[90vh] overflow-y-auto`}
+        className={`relative bg-white dark:bg-trading-dark-800 rounded-lg shadow-xl w-full ${maxWidthClassName} mx-4 max-h-[90vh] overflow-y-auto`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between p-6 border-b border-surface-line dark:border-trading-dark-600">
           <div className="flex items-center gap-3">
             <div className={`p-2 ${iconWrapperClassName} rounded-lg`}>
               <Redo2 className={`w-5 h-5 ${iconClassName}`} />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{title}</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{subtitle}</p>
+              <h2 className="text-xl font-semibold text-ink-900 dark:text-white">{title}</h2>
+              <p className="text-sm text-ink-500 dark:text-ink-400">{subtitle}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             {showHelpToggle && (
               <button
                 onClick={onToggleHelp}
-                className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="p-2 text-ink-400 hover:text-ink-600 dark:hover:text-ink-300 rounded-lg hover:bg-surface-subtle dark:hover:bg-trading-dark-700"
                 title={helpToggleTitle}
               >
                 <HelpCircle className="w-5 h-5" />
@@ -73,7 +73,7 @@ export const RollModalShell: React.FC<RollModalShellProps> = ({
             )}
             <button
               onClick={onClose}
-              className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              className="p-2 text-ink-400 hover:text-ink-600 dark:hover:text-ink-300"
             >
               <X className="w-5 h-5" />
             </button>

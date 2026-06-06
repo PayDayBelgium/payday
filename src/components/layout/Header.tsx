@@ -376,7 +376,7 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Dropdown Menu */}
             {showUserMenu && (
-              <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-surface-line dark:border-slate-700 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                 {/* User Profile Header */}
                 <div className="relative overflow-hidden">
                   {/* Gradient Background - uses theme color */}
@@ -392,11 +392,11 @@ export const Header: React.FC<HeaderProps> = ({
                       </div>
 
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-base text-gray-900 dark:text-white truncate">
+                        <h3 className="font-bold text-base text-ink-900 dark:text-white truncate">
                           {username || 'Trader'}
                         </h3>
                         <div className="flex items-center gap-2">
-                          <p className="text-xs text-gray-500 dark:text-gray-400">Options Trader</p>
+                          <p className="text-xs text-ink-500 dark:text-ink-400">Options Trader</p>
                           {/* Credits Badge */}
                           <div className="flex items-center gap-1 px-1.5 py-0.5 bg-caution-50 dark:bg-caution-600/25 rounded-full">
                             <Star className="w-2.5 h-2.5 text-caution-600 dark:text-caution-500" />
@@ -424,7 +424,7 @@ export const Header: React.FC<HeaderProps> = ({
                           ? 'border-primary-200 dark:border-primary-800 bg-primary-50/50 dark:bg-primary-900/15 hover:border-primary-300 dark:hover:border-primary-700'
                           : currentLevelConfig.slopeColor === 'red'
                             ? 'border-negative-500/20 dark:border-negative-700/30 bg-negative-50/50 dark:bg-negative-700/10 hover:border-negative-500/30 dark:hover:border-negative-700'
-                            : 'border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/10 hover:border-gray-300 dark:hover:border-gray-600'
+                            : 'border-surface-line dark:border-trading-dark-600 bg-surface/50 dark:bg-trading-dark-900/10 hover:border-ink-200 dark:hover:border-trading-dark-500'
                     }`}
                   >
                     <div className="flex items-center justify-between">
@@ -437,7 +437,7 @@ export const Header: React.FC<HeaderProps> = ({
                                 ? 'bg-primary-50 dark:bg-primary-900/30'
                                 : currentLevelConfig.slopeColor === 'red'
                                   ? 'bg-negative-50 dark:bg-negative-700/25'
-                                  : 'bg-gray-100 dark:bg-gray-700'
+                                  : 'bg-surface-subtle dark:bg-trading-dark-700'
                           }`}
                         >
                           {currentLevelConfig.icon}
@@ -451,12 +451,12 @@ export const Header: React.FC<HeaderProps> = ({
                                   ? 'text-primary-700 dark:text-primary-300'
                                   : currentLevelConfig.slopeColor === 'red'
                                     ? 'text-negative-700 dark:text-negative-500'
-                                    : 'text-gray-700 dark:text-gray-300'
+                                    : 'text-ink-700 dark:text-ink-300'
                             }`}
                           >
                             {currentLevelConfig.slopeName}
                           </span>
-                          <p className="text-[10px] text-gray-500 dark:text-gray-400">
+                          <p className="text-[10px] text-ink-500 dark:text-ink-400">
                             {currentLevelConfig.name} niveau
                           </p>
                         </div>
@@ -469,7 +469,7 @@ export const Header: React.FC<HeaderProps> = ({
                               ? 'text-primary-500 dark:text-primary-300'
                               : currentLevelConfig.slopeColor === 'red'
                                 ? 'text-negative-500 dark:text-negative-500'
-                                : 'text-gray-400 dark:text-gray-500'
+                                : 'text-ink-400 dark:text-ink-500'
                         }`}
                       />
                     </div>
@@ -488,12 +488,12 @@ export const Header: React.FC<HeaderProps> = ({
                         setShowUserMenu(false);
                         navigate('/settings');
                       }}
-                      className="flex items-center gap-2 p-2 rounded-lg bg-gray-50 dark:bg-slate-700/50 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors group"
+                      className="flex items-center gap-2 p-2 rounded-lg bg-surface dark:bg-slate-700/50 hover:bg-surface-subtle dark:hover:bg-slate-700 transition-colors group"
                     >
                       <div className="w-7 h-7 rounded-md bg-white dark:bg-slate-600 shadow-sm flex items-center justify-center group-hover:scale-105 transition-transform">
-                        <Settings className="w-3.5 h-3.5 text-gray-600 dark:text-gray-300" />
+                        <Settings className="w-3.5 h-3.5 text-ink-600 dark:text-ink-300" />
                       </div>
-                      <span className="text-xs font-medium text-gray-700 dark:text-gray-200">
+                      <span className="text-xs font-medium text-ink-700 dark:text-ink-200">
                         Instellingen
                       </span>
                     </button>
@@ -501,17 +501,17 @@ export const Header: React.FC<HeaderProps> = ({
                     {/* Help Cards Toggle */}
                     <button
                       onClick={handleToggleExtraInfo}
-                      className="flex items-center gap-2 p-2 rounded-lg bg-gray-50 dark:bg-slate-700/50 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors group"
+                      className="flex items-center gap-2 p-2 rounded-lg bg-surface dark:bg-slate-700/50 hover:bg-surface-subtle dark:hover:bg-slate-700 transition-colors group"
                     >
                       <div className="w-7 h-7 rounded-md bg-white dark:bg-slate-600 shadow-sm flex items-center justify-center group-hover:scale-105 transition-transform">
-                        <Info className="w-3.5 h-3.5 text-gray-600 dark:text-gray-300" />
+                        <Info className="w-3.5 h-3.5 text-ink-600 dark:text-ink-300" />
                       </div>
                       <div className="flex-1 flex items-center justify-between">
-                        <span className="text-xs font-medium text-gray-700 dark:text-gray-200">
+                        <span className="text-xs font-medium text-ink-700 dark:text-ink-200">
                           Help
                         </span>
                         <div
-                          className={`w-7 h-3.5 rounded-full transition-colors ${showExtraInfo ? 'bg-primary-500' : 'bg-gray-300 dark:bg-gray-600'} relative`}
+                          className={`w-7 h-3.5 rounded-full transition-colors ${showExtraInfo ? 'bg-primary-500' : 'bg-ink-200 dark:bg-trading-dark-600'} relative`}
                         >
                           <div
                             className={`absolute top-0.5 left-0.5 w-2.5 h-2.5 rounded-full bg-white shadow-sm transition-transform ${showExtraInfo ? 'translate-x-3.5' : ''}`}
@@ -527,23 +527,23 @@ export const Header: React.FC<HeaderProps> = ({
 
                 {/* Preferences Section */}
                 <div className="p-3 space-y-2">
-                  <p className="text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-1">
+                  <p className="text-[10px] font-semibold text-ink-400 dark:text-ink-500 uppercase tracking-wider px-1">
                     Voorkeuren
                   </p>
 
                   {/* Language */}
-                  <div className="flex items-center gap-2 p-1.5 rounded-lg bg-gray-50 dark:bg-slate-700/50">
+                  <div className="flex items-center gap-2 p-1.5 rounded-lg bg-surface dark:bg-slate-700/50">
                     <div className="w-7 h-7 rounded-md bg-white dark:bg-slate-600 shadow-sm flex items-center justify-center">
-                      <Globe className="w-3.5 h-3.5 text-gray-600 dark:text-gray-300" />
+                      <Globe className="w-3.5 h-3.5 text-ink-600 dark:text-ink-300" />
                     </div>
                     <div className="flex-1">
-                      <span className="text-[10px] text-gray-500 dark:text-gray-400">
+                      <span className="text-[10px] text-ink-500 dark:text-ink-400">
                         {t('header.language')}
                       </span>
                       <select
                         value={i18n.language}
                         onChange={(e) => handleLanguageChange(e.target.value)}
-                        className="w-full px-0 py-0 text-xs font-medium bg-transparent border-none text-gray-900 dark:text-white focus:outline-none focus:ring-0 cursor-pointer"
+                        className="w-full px-0 py-0 text-xs font-medium bg-transparent border-none text-ink-900 dark:text-white focus:outline-none focus:ring-0 cursor-pointer"
                       >
                         <option value="en">English</option>
                         <option value="nl">Nederlands</option>
@@ -553,18 +553,18 @@ export const Header: React.FC<HeaderProps> = ({
                   </div>
 
                   {/* Theme */}
-                  <div className="flex items-center gap-2 p-1.5 rounded-lg bg-gray-50 dark:bg-slate-700/50">
+                  <div className="flex items-center gap-2 p-1.5 rounded-lg bg-surface dark:bg-slate-700/50">
                     <div className="w-7 h-7 rounded-md bg-white dark:bg-slate-600 shadow-sm flex items-center justify-center">
-                      <Palette className="w-3.5 h-3.5 text-gray-600 dark:text-gray-300" />
+                      <Palette className="w-3.5 h-3.5 text-ink-600 dark:text-ink-300" />
                     </div>
                     <div className="flex-1">
-                      <span className="text-[10px] text-gray-500 dark:text-gray-400">
+                      <span className="text-[10px] text-ink-500 dark:text-ink-400">
                         {t('header.theme')}
                       </span>
                       <select
                         value={currentTheme}
                         onChange={(e) => handleThemeChange(e.target.value as ThemeColor)}
-                        className="w-full px-0 py-0 text-xs font-medium bg-transparent border-none text-gray-900 dark:text-white focus:outline-none focus:ring-0 cursor-pointer"
+                        className="w-full px-0 py-0 text-xs font-medium bg-transparent border-none text-ink-900 dark:text-white focus:outline-none focus:ring-0 cursor-pointer"
                       >
                         {Object.values(THEMES).map((theme) => (
                           <option key={theme.id} value={theme.id}>
@@ -581,26 +581,26 @@ export const Header: React.FC<HeaderProps> = ({
 
                 {/* Data Section */}
                 <div className="p-3 space-y-1.5">
-                  <p className="text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-1">
+                  <p className="text-[10px] font-semibold text-ink-400 dark:text-ink-500 uppercase tracking-wider px-1">
                     Data
                   </p>
 
                   <div className="flex gap-2">
                     <button
                       onClick={handleBackupData}
-                      className="flex-1 flex items-center justify-center gap-1.5 p-2 rounded-lg bg-gray-50 dark:bg-slate-700/50 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors group"
+                      className="flex-1 flex items-center justify-center gap-1.5 p-2 rounded-lg bg-surface dark:bg-slate-700/50 hover:bg-surface-subtle dark:hover:bg-slate-700 transition-colors group"
                     >
-                      <Download className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200" />
-                      <span className="text-xs font-medium text-gray-600 dark:text-gray-300 group-hover:text-gray-800 dark:group-hover:text-white">
+                      <Download className="w-3.5 h-3.5 text-ink-500 dark:text-ink-400 group-hover:text-ink-700 dark:group-hover:text-ink-200" />
+                      <span className="text-xs font-medium text-ink-600 dark:text-ink-300 group-hover:text-ink-800 dark:group-hover:text-white">
                         Backup
                       </span>
                     </button>
                     <button
                       onClick={handleRestoreData}
-                      className="flex-1 flex items-center justify-center gap-1.5 p-2 rounded-lg bg-gray-50 dark:bg-slate-700/50 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors group"
+                      className="flex-1 flex items-center justify-center gap-1.5 p-2 rounded-lg bg-surface dark:bg-slate-700/50 hover:bg-surface-subtle dark:hover:bg-slate-700 transition-colors group"
                     >
-                      <Upload className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200" />
-                      <span className="text-xs font-medium text-gray-600 dark:text-gray-300 group-hover:text-gray-800 dark:group-hover:text-white">
+                      <Upload className="w-3.5 h-3.5 text-ink-500 dark:text-ink-400 group-hover:text-ink-700 dark:group-hover:text-ink-200" />
+                      <span className="text-xs font-medium text-ink-600 dark:text-ink-300 group-hover:text-ink-800 dark:group-hover:text-white">
                         Restore
                       </span>
                     </button>
