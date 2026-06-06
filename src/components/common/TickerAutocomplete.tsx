@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useId } from 'react';
 import { Search } from 'lucide-react';
 import type { TickerSuggestion } from './TickerAutocomplete.types';
 
@@ -30,6 +30,10 @@ export const TickerAutocomplete: React.FC<TickerAutocompleteProps> = ({
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Stabiele ids voor de WAI-ARIA combobox-structuur
+  const listboxId = useId();
+  const optionId = (index: number) => `${listboxId}-option-${index}`;
 
   // Filter suggestions based on input
   useEffect(() => {
@@ -121,16 +125,28 @@ export const TickerAutocomplete: React.FC<TickerAutocompleteProps> = ({
             className={`w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent ${className}`}
             placeholder={placeholder}
             autoComplete="off"
+            role="combobox"
+            aria-expanded={isOpen && filteredSuggestions.length > 0}
+            aria-controls={listboxId}
+            aria-autocomplete="list"
+            aria-activedescendant={selectedIndex >= 0 ? optionId(selectedIndex) : undefined}
           />
           <Search className="absolute right-3 top-2.5 w-5 h-5 text-gray-400" />
         </div>
 
         {/* Dropdown Suggestions */}
         {isOpen && filteredSuggestions.length > 0 && (
-          <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+          <div
+            id={listboxId}
+            role="listbox"
+            className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto"
+          >
             {filteredSuggestions.map((suggestion, index) => (
               <button
                 key={`${suggestion.ticker}-${index}`}
+                id={optionId(index)}
+                role="option"
+                aria-selected={index === selectedIndex}
                 type="button"
                 onClick={() => handleSelectSuggestion(suggestion)}
                 onMouseEnter={() => setSelectedIndex(index)}

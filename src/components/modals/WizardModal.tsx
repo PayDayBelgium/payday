@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight, Check } from 'lucide-react';
+import { Modal } from '../common/Modal';
 
 export interface WizardStep {
   id: string;
@@ -96,8 +97,21 @@ export const WizardModal: React.FC<WizardModalProps> = ({
   const canGoNext = currentStep.isValid !== false;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-[900px] h-[750px] overflow-hidden flex flex-col">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      // De wizard heeft een eigen header/footer; verberg de standaard chrome van Modal.
+      showCloseButton={false}
+      blur
+      // Identiek aan het origineel: niet sluiten via backdrop-klik of Escape.
+      closeOnBackdropClick={false}
+      closeOnEscape={false}
+      // Vaste breedte/hoogte i.p.v. een max-width, identiek aan de originele wizard.
+      sizeClassName="w-[900px] h-[750px]"
+      cardClassName="bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden flex flex-col"
+      contentClassName="flex flex-col flex-1 overflow-hidden"
+    >
+      <>
         {/* Header */}
         <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
           <div>
@@ -211,7 +225,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
             </button>
           </div>
         </div>
-      </div>
-    </div>
+      </>
+    </Modal>
   );
 };

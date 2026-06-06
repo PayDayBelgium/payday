@@ -1,5 +1,6 @@
 import React from 'react';
 import { AlertTriangle } from 'lucide-react';
+import { Modal } from '../common/Modal';
 
 export interface ConfirmDialogProps {
   isOpen: boolean;
@@ -53,8 +54,6 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   variant = 'danger',
   style = 'icon',
 }) => {
-  if (!isOpen) return null;
-
   const handleClose = () => {
     // Support both onClose and legacy onCancel
     if (onClose) {
@@ -75,84 +74,92 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   // Icon style (default) - centered icon with rounded background
   if (style === 'icon') {
     return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-        <div className="absolute inset-0" onClick={handleClose} />
-        <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full border border-gray-200 dark:border-gray-700">
-          <div className="p-6">
-            {/* Icon */}
-            <div className={`inline-flex p-3 rounded-full mb-4 ${styles.iconBg}`}>
-              <AlertTriangle className={`w-6 h-6 ${styles.iconColor}`} />
-            </div>
-
-            {/* Title */}
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{title}</h3>
-
-            {/* Message */}
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">{message}</p>
-
-            {/* Actions */}
-            <div className="flex gap-3 justify-end">
-              <button
-                onClick={handleClose}
-                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-lg font-medium transition-colors"
-              >
-                {cancelText}
-              </button>
-              <button
-                onClick={handleConfirm}
-                className={`px-4 py-2 ${styles.button} rounded-lg font-medium transition-colors`}
-              >
-                {confirmText}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Header style - colored header with icon
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={handleClose} />
-
-      {/* Dialog */}
-      <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-2xl max-w-md w-full mx-4 overflow-hidden border border-gray-200 dark:border-gray-700">
-        {/* Header with colored background */}
-        <div className={`${styles.headerBg} border-b ${styles.headerBorder} p-6`}>
-          <div className="flex items-start gap-4">
-            <div className={`flex-shrink-0 ${styles.iconColor}`}>
-              <AlertTriangle className="w-6 h-6" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>
-            </div>
-          </div>
+      <Modal
+        isOpen={isOpen}
+        onClose={handleClose}
+        showCloseButton={false}
+        // Identiek aan het origineel: wel sluiten via backdrop-klik, niet via Escape.
+        closeOnEscape={false}
+        size="md"
+        contentClassName="p-6"
+      >
+        {/* Icon */}
+        <div className={`inline-flex p-3 rounded-full mb-4 ${styles.iconBg}`}>
+          <AlertTriangle className={`w-6 h-6 ${styles.iconColor}`} />
         </div>
 
-        {/* Content */}
-        <div className="p-6">
-          <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">{message}</p>
-        </div>
+        {/* Title */}
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{title}</h3>
+
+        {/* Message */}
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">{message}</p>
 
         {/* Actions */}
-        <div className="flex items-center justify-end gap-3 p-6 pt-0">
+        <div className="flex gap-3 justify-end">
           <button
             onClick={handleClose}
-            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
+            className="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-lg font-medium transition-colors"
           >
             {cancelText}
           </button>
           <button
             onClick={handleConfirm}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${styles.button}`}
+            className={`px-4 py-2 ${styles.button} rounded-lg font-medium transition-colors`}
           >
             {confirmText}
           </button>
         </div>
+      </Modal>
+    );
+  }
+
+  // Header style - colored header with icon
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      showCloseButton={false}
+      blur
+      // Identiek aan het origineel: wel sluiten via backdrop-klik, niet via Escape.
+      closeOnEscape={false}
+      size="md"
+      cardClassName="bg-white dark:bg-gray-800 rounded-lg shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-700"
+      // De secties brengen hun eigen padding mee; geen extra content-wrapper.
+      contentClassName=""
+    >
+      {/* Header with colored background */}
+      <div className={`${styles.headerBg} border-b ${styles.headerBorder} p-6`}>
+        <div className="flex items-start gap-4">
+          <div className={`flex-shrink-0 ${styles.iconColor}`}>
+            <AlertTriangle className="w-6 h-6" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>
+          </div>
+        </div>
       </div>
-    </div>
+
+      {/* Content */}
+      <div className="p-6">
+        <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">{message}</p>
+      </div>
+
+      {/* Actions */}
+      <div className="flex items-center justify-end gap-3 p-6 pt-0">
+        <button
+          onClick={handleClose}
+          className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
+        >
+          {cancelText}
+        </button>
+        <button
+          onClick={handleConfirm}
+          className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${styles.button}`}
+        >
+          {confirmText}
+        </button>
+      </div>
+    </Modal>
   );
 };
 

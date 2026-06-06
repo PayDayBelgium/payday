@@ -5,13 +5,13 @@ import { useState, useCallback } from 'react';
  * @param initialData - The initial form data
  * @returns Form data, update function, and reset function
  */
-export function useFormData<T extends Record<string, any>>(initialData: T) {
+export function useFormData<T extends Record<string, unknown>>(initialData: T) {
   const [formData, setFormData] = useState<T>(initialData);
 
   /**
    * Update a single field in the form data
    */
-  const updateField = useCallback((field: keyof T, value: any) => {
+  const updateField = useCallback(<K extends keyof T>(field: K, value: T[K]) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,

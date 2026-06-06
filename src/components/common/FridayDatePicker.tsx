@@ -118,6 +118,7 @@ export const FridayDatePicker: React.FC<FridayDatePickerProps> = ({
           onClick={handlePreviousFriday}
           disabled={isPrevDisabled}
           className="w-8 flex items-center justify-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 bg-gray-50 dark:bg-gray-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-gray-50 dark:disabled:hover:bg-gray-700 border-r border-gray-300 dark:border-gray-600"
+          aria-label="Vorige vrijdag"
           title="Vorige vrijdag"
         >
           <ChevronLeft className="w-4 h-4" />
@@ -128,6 +129,7 @@ export const FridayDatePicker: React.FC<FridayDatePickerProps> = ({
           onClick={handleNextFriday}
           disabled={isNextDisabled}
           className="w-9 flex items-center justify-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 bg-gray-50 dark:bg-gray-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-gray-50 dark:disabled:hover:bg-gray-700"
+          aria-label="Volgende vrijdag"
           title="Volgende vrijdag"
         >
           <ChevronRight className="w-4 h-4" />
