@@ -1,0 +1,7 @@
+dist
+node_modules
+coverage
+*.md
+src/i18n/locales
+src/config/educationCurriculum.ts
+src/config/learningResources.ts
