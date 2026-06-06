@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ArrowRight } from 'lucide-react';
 import type { TradeIdea } from '../../types';
 
@@ -10,13 +11,18 @@ const STRATEGY_LABEL: Partial<Record<TradeIdea['strategy'], string>> = {
   spreads: 'Spread',
 };
 
-const juiceLabel = (iv: number) => (iv >= 70 ? 'hoog' : iv >= 50 ? 'matig' : 'laag');
-
 export const TradeIdeaCard: React.FC<{
   idea: TradeIdea;
   onPlaceTrade?: (idea: TradeIdea) => void;
   compact?: boolean;
 }> = ({ idea, onPlaceTrade, compact = false }) => {
+  const { t } = useTranslation();
+  const juiceLabel = (iv: number) =>
+    iv >= 70
+      ? t('learnFeat.tradeJuiceHigh')
+      : iv >= 50
+        ? t('learnFeat.tradeJuiceMedium')
+        : t('learnFeat.tradeJuiceLow');
   return (
     <div className="border border-[var(--line)] rounded-lg p-3 bg-surface-subtle dark:bg-trading-dark-700/40">
       <div className="flex items-center justify-between">
@@ -26,12 +32,14 @@ export const TradeIdeaCard: React.FC<{
             {STRATEGY_LABEL[idea.strategy] ?? idea.strategy.replace(/_/g, ' ')}
           </span>
         </div>
-        <span className="text-[11px] text-ink-400">vervalt {idea.expiry}</span>
+        <span className="text-[11px] text-ink-400">
+          {t('learnFeat.tradeExpires', { expiry: idea.expiry })}
+        </span>
       </div>
 
       <div className="mt-2">
         <div className="flex items-center justify-between text-[11px] text-ink-500">
-          <span>Juice (IV rank)</span>
+          <span>{t('learnFeat.tradeJuiceLabel')}</span>
           <span>
             <b className="text-ink-900 dark:text-white">{idea.ivRank}%</b> ·{' '}
             {juiceLabel(idea.ivRank)}
@@ -52,17 +60,20 @@ export const TradeIdeaCard: React.FC<{
         <div className="flex gap-4 mt-2 text-[11px] text-ink-500">
           {idea.strike != null && (
             <span>
-              Strike <b className="text-ink-900 dark:text-white">${idea.strike}</b>
+              {t('learnFeat.tradeStrike')}{' '}
+              <b className="text-ink-900 dark:text-white">${idea.strike}</b>
             </span>
           )}
           {idea.premium != null && (
             <span>
-              Premie <b className="text-ink-900 dark:text-white">${idea.premium}</b>
+              {t('learnFeat.tradePremium')}{' '}
+              <b className="text-ink-900 dark:text-white">${idea.premium}</b>
             </span>
           )}
           {idea.returnPct != null && (
             <span>
-              Rend. <b className="text-ink-900 dark:text-white">{idea.returnPct}%</b>
+              {t('learnFeat.tradeReturn')}{' '}
+              <b className="text-ink-900 dark:text-white">{idea.returnPct}%</b>
             </span>
           )}
           {idea.delta != null && (
@@ -78,7 +89,7 @@ export const TradeIdeaCard: React.FC<{
           onClick={() => onPlaceTrade(idea)}
           className="mt-3 inline-flex items-center gap-1.5 bg-positive-500 hover:bg-positive-600 text-white rounded-md px-3 py-1.5 text-xs font-bold transition-colors"
         >
-          Leg deze trade in
+          {t('learnFeat.tradePlace')}
           <ArrowRight className="w-3.5 h-3.5" />
         </button>
       )}

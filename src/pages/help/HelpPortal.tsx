@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   HelpCircle,
   ChevronRight,
@@ -26,80 +27,80 @@ interface HelpSection {
   }[];
 }
 
-const helpSections: HelpSection[] = [
+const buildHelpSections = (t: (key: string) => string): HelpSection[] => [
   {
     id: 'glossary',
-    title: 'Woordenlijst / Glossary',
+    title: t('pagesA.help.glossaryTitle'),
     icon: <BookOpen className="w-6 h-6" />,
-    description: 'Overzicht van alle termen en afkortingen gebruikt in PayDay',
+    description: t('pagesA.help.glossaryDesc'),
     content: [
       {
         subtitle: 'Cash Secured Put',
-        text: 'Een optiestrategie waarbij je een put optie verkoopt terwijl je voldoende cash aanhoudt om de aandelen te kopen als je wordt assigned. Je ontvangt direct premie en koopt mogelijk aandelen tegen een prijs die je acceptabel vindt.',
+        text: t('pagesA.help.glossaryCspText'),
       },
       {
         subtitle: 'Covered Call',
-        text: 'Een strategie waarbij je call opties schrijft (verkoopt) op aandelen die je al bezit. Voor elke 100 aandelen kun je 1 call contract verkopen. Je ontvangt premie maar beperkt je upside potential tot de strike price.',
+        text: t('pagesA.help.glossaryCoveredCallText'),
       },
       {
         subtitle: "Poor Man's Covered Call",
-        text: 'Een variant van de Covered Call waarbij je een LEAP (langlopende call optie) gebruikt als onderpand in plaats van aandelen. Dit verlaagt de kapitaalvereiste maar voegt het risico toe dat de LEAP waardeloos kan aflopen.',
+        text: t('pagesA.help.glossaryPmccText'),
       },
       {
         subtitle: 'LEAP / LEAPS',
-        text: 'Long-term Equity Anticipation Securities. Call of put opties met een looptijd van meer dan 1 jaar. Vaak gebruikt als goedkoper alternatief voor het kopen van aandelen.',
+        text: t('pagesA.help.glossaryLeapText'),
       },
       {
         subtitle: 'Wheel Strategie',
-        text: 'Een cyclische strategie: verkoop Cash Secured Puts tot assignment, schrijf dan Covered Calls op de verkregen aandelen tot verkoop, en herhaal. Continue premie-inkomsten.',
+        text: t('pagesA.help.glossaryWheelText'),
       },
       {
         subtitle: 'KaChing',
-        text: 'Een beschermde inkomensstrategie. Koop een protective put met langere looptijd (6+ weken) en verkoop wekelijks puts boven die strike om de kosten van de bescherming terug te verdienen.',
+        text: t('pagesA.help.glossaryKachingText'),
       },
       {
         subtitle: 'Assignment',
-        text: 'Wanneer een optie wordt uitgeoefend. Bij een put assignment koop je de aandelen tegen de strike price. Bij een call assignment verkoop je de aandelen tegen de strike price.',
+        text: t('pagesA.help.glossaryAssignmentText'),
       },
       {
         subtitle: 'Strike Price',
-        text: 'De prijs waartegen je de aandelen kunt kopen (put) of verkopen (call) als de optie wordt uitgeoefend.',
+        text: t('pagesA.help.glossaryStrikeText'),
       },
       {
         subtitle: 'Premium',
-        text: 'De prijs die je betaalt of ontvangt voor een optiecontract. Wordt uitgedrukt per aandeel (1 contract = 100 aandelen).',
+        text: t('pagesA.help.glossaryPremiumText'),
       },
       {
         subtitle: 'DTE (Days To Expiration)',
-        text: 'Het aantal dagen tot de optie expireert. Opties verliezen waarde naarmate de expiratiedatum nadert (time decay).',
+        text: t('pagesA.help.glossaryDteText'),
       },
       {
         subtitle: 'ITM / ATM / OTM',
-        text: 'In The Money (optie heeft intrinsieke waarde), At The Money (strike = huidige koers), Out of The Money (optie heeft geen intrinsieke waarde).',
+        text: t('pagesA.help.glossaryMoneynessText'),
       },
       {
         subtitle: 'Credit Spread',
-        text: 'Een spread waarbij je netto premie ontvangt. Bijvoorbeeld een bull put spread of bear call spread. Beperkt risico en beperkte winst.',
+        text: t('pagesA.help.glossaryCreditSpreadText'),
       },
       {
         subtitle: 'Iron Condor',
-        text: 'Een combinatie van een bear call spread en bull put spread op dezelfde underlying. Wint als de koers binnen een bepaalde range blijft.',
+        text: t('pagesA.help.glossaryIronCondorText'),
       },
       {
         subtitle: 'Onderpand / Collateral',
-        text: 'De waarde die gereserveerd moet worden om een positie te openen. Bij een Cash Secured Put is dit strike × 100. Bij een spread is dit het verschil tussen de strikes × 100.',
+        text: t('pagesA.help.glossaryCollateralText'),
       },
       {
         subtitle: 'Kostenbasis / Cost Basis',
-        text: 'Je totale investering in een positie. Bij aandelen: aankoopprijs × aantal. Kan worden verlaagd door ontvangen premie van covered calls.',
+        text: t('pagesA.help.glossaryCostBasisText'),
       },
       {
         subtitle: 'Roll',
-        text: 'Het sluiten van een bestaande optie en tegelijk openen van een nieuwe met andere strike en/of expiratie. Gebruikt om posities te beheren.',
+        text: t('pagesA.help.glossaryRollText'),
       },
       {
         subtitle: 'Break-even',
-        text: 'De koers waarbij je geen winst of verlies maakt. Bij een covered call: aankoopprijs aandelen - ontvangen premie.',
+        text: t('pagesA.help.glossaryBreakEvenText'),
       },
     ],
   },
@@ -310,8 +311,10 @@ const helpSections: HelpSection[] = [
 ];
 
 export const HelpPortal: React.FC = () => {
+  const { t } = useTranslation();
   const { setPageTitle } = usePageTitle();
   const [expandedSections, setExpandedSections] = useState<string[]>(['overview']);
+  const helpSections = useMemo(() => buildHelpSections(t), [t]);
 
   useEffect(() => {
     setPageTitle('Help Portal', 'Everything you need to know about using PayDay');

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Calculator, TrendingUp, AlertTriangle, ArrowRight, Plus, X, Info } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../../hooks/useAppSelector';
@@ -11,27 +12,6 @@ import { PortalTooltip } from '../../components/common/PortalTooltip';
 import { addTicker } from '../../store/slices/tickersSlice';
 import { formatNumber } from '../../utils/numberFormat';
 import type { Ticker } from '../../types';
-
-// Tooltip explanations for PMCC calculations
-const TOOLTIPS = {
-  initialInvestment:
-    'Initiële Investering = LEAP Premium × 100\n\nDit is het bedrag dat je betaalt voor de LEAP call optie. Het is je maximale risico in deze strategie.',
-  leapBreakEven:
-    'Break-Even = LEAP Strike + LEAP Premium\n\nDe koers die het aandeel moet bereiken zodat je LEAP call op expiratie break-even is.',
-  periods:
-    'Aantal periodes dat je covered calls kunt verkopen voordat de LEAP expireert.\n\nPeriodes = Dagen tot LEAP expiratie / Dagen per periode',
-  extrinsicValue:
-    'Extrinsieke Waarde = LEAP Premium - Intrinsieke Waarde\n\nIntrinsieke Waarde = max(0, Koers - Strike)\n\nDit is het tijdswaarde-gedeelte dat je betaalt en dat langzaam vervalt.',
-  residualValue:
-    'Restwaarde = max(0, Koers - Strike) × 100\n\nDe intrinsieke waarde van je LEAP op expiratie als de koers gelijk blijft.',
-  premiumCollected:
-    'Ontvangen Premium = Premium per Call × 100 × Aantal Periodes\n\nDe totale premium die je ontvangt door het verkopen van covered calls.',
-  netPnL:
-    'Netto Winst/Verlies = Restwaarde + Ontvangen Premium - Initiële Investering\n\nJe totale rendement op de PMCC strategie.',
-  roi: 'ROI = (Netto Winst/Verlies / Initiële Investering) × 100%\n\nHet procentuele rendement op je investering.',
-  annualizedROI:
-    'Annualized ROI = ROI × (365 / Dagen)\n\nHet rendement genormaliseerd naar een volledig jaar. Dit geeft een betere vergelijking tussen strategieën met verschillende looptijden.',
-};
 
 interface PMCCInputs {
   // Stock
@@ -66,6 +46,21 @@ interface PMCCResults {
 const MULTIPLIER = 100; // Standard option contract size
 
 export const PMCCCalculator: React.FC = () => {
+  const { t } = useTranslation();
+
+  // Tooltip explanations for PMCC calculations
+  const TOOLTIPS = {
+    initialInvestment: t('toolsPages.pmcc.tooltipInitialInvestment'),
+    leapBreakEven: t('toolsPages.pmcc.tooltipLeapBreakEven'),
+    periods: t('toolsPages.pmcc.tooltipPeriods'),
+    extrinsicValue: t('toolsPages.pmcc.tooltipExtrinsicValue'),
+    residualValue: t('toolsPages.pmcc.tooltipResidualValue'),
+    premiumCollected: t('toolsPages.pmcc.tooltipPremiumCollected'),
+    netPnL: t('toolsPages.pmcc.tooltipNetPnL'),
+    roi: t('toolsPages.pmcc.tooltipRoi'),
+    annualizedROI: t('toolsPages.pmcc.tooltipAnnualizedRoi'),
+  };
+
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { setPageTitle } = usePageTitle();
@@ -293,7 +288,7 @@ export const PMCCCalculator: React.FC = () => {
                       }
                     }}
                     onCreateNew={handleOpenCreateTicker}
-                    placeholder="Zoek ticker..."
+                    placeholder={t('toolsPages.searchTicker')}
                   />
                 </div>
               ) : (
@@ -301,7 +296,7 @@ export const PMCCCalculator: React.FC = () => {
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-semibold text-primary-900 dark:text-primary-300 flex items-center gap-2">
                       <Plus className="w-4 h-4" />
-                      Nieuwe ticker toevoegen
+                      {t('toolsPages.pmcc.addNewTicker')}
                     </h4>
                     <button
                       onClick={() => {
@@ -324,7 +319,7 @@ export const PMCCCalculator: React.FC = () => {
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
-                          Ticker Symbool *
+                          {t('toolsPages.pmcc.tickerSymbolRequired')}
                         </label>
                         <input
                           type="text"
@@ -341,7 +336,7 @@ export const PMCCCalculator: React.FC = () => {
                       </div>
                       <div>
                         <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
-                          Type
+                          {t('toolsPages.pmcc.type')}
                         </label>
                         <select
                           value={newTickerData.type}
@@ -353,15 +348,15 @@ export const PMCCCalculator: React.FC = () => {
                           }
                           className="w-full rounded-md border-ink-200 dark:border-trading-dark-500 dark:bg-trading-dark-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-1.5 text-sm"
                         >
-                          <option value="stock">Aandeel</option>
-                          <option value="etf">ETF</option>
+                          <option value="stock">{t('toolsPages.stock')}</option>
+                          <option value="etf">{t('toolsPages.etf')}</option>
                         </select>
                       </div>
                     </div>
 
                     <div>
                       <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
-                        Bedrijfsnaam *
+                        {t('toolsPages.pmcc.companyNameRequired')}
                       </label>
                       <input
                         type="text"
@@ -391,7 +386,7 @@ export const PMCCCalculator: React.FC = () => {
                           className="w-4 h-4 text-primary-700 bg-surface-subtle border-ink-200 rounded focus:ring-primary-500"
                         />
                         <span className="text-sm text-ink-700 dark:text-ink-300">
-                          Opties beschikbaar
+                          {t('toolsPages.optionsAvailable')}
                         </span>
                       </label>
 
@@ -408,12 +403,11 @@ export const PMCCCalculator: React.FC = () => {
                           className="w-4 h-4 text-primary-700 bg-surface-subtle border-ink-200 rounded focus:ring-primary-500"
                         />
                         <span className="text-sm text-ink-700 dark:text-ink-300 flex items-center gap-2">
-                          Mini contracts beschikbaar
+                          {t('toolsPages.pmcc.miniContractsAvailable')}
                           <div className="group relative">
                             <Info className="w-4 h-4 text-ink-400 hover:text-ink-600 dark:hover:text-ink-300 cursor-help" />
                             <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-white dark:bg-trading-dark-800 text-ink-700 dark:text-ink-300 text-xs rounded-lg shadow-lg border border-surface-line dark:border-trading-dark-500 z-50">
-                              Sommige aandelen hebben mini-contracten van 10 aandelen per contract
-                              in plaats van de standaard 100.
+                              {t('toolsPages.pmcc.miniContractsTooltip')}
                             </div>
                           </div>
                         </span>
@@ -426,7 +420,7 @@ export const PMCCCalculator: React.FC = () => {
                         disabled={!newTickerData.symbol || !newTickerData.name}
                         className="flex-1 px-4 py-2 bg-primary-700 hover:bg-primary-800 disabled:bg-ink-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors text-sm"
                       >
-                        Ticker Toevoegen
+                        {t('toolsPages.pmcc.addTicker')}
                       </button>
                       <button
                         onClick={() => {
@@ -441,7 +435,7 @@ export const PMCCCalculator: React.FC = () => {
                         }}
                         className="px-4 py-2 bg-surface-muted dark:bg-trading-dark-700 hover:bg-ink-200 dark:hover:bg-trading-dark-600 text-ink-700 dark:text-ink-200 rounded-lg font-medium transition-colors text-sm"
                       >
-                        Annuleren
+                        {t('toolsPages.cancel')}
                       </button>
                     </div>
                   </div>

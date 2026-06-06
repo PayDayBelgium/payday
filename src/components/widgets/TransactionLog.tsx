@@ -10,6 +10,8 @@ import {
   Calendar,
   RefreshCw,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import i18n from '../../i18n/config';
 import type { PortfolioTransaction, CurrencyType } from '../../types';
 import { getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency } from '../../utils/numberFormat';
@@ -71,25 +73,25 @@ const getTransactionColor = (type: PortfolioTransaction['type']) => {
 const getTransactionLabel = (type: PortfolioTransaction['type']) => {
   switch (type) {
     case 'deposit':
-      return 'Deposit';
+      return i18n.t('widgetsB.labelDeposit');
     case 'withdrawal':
-      return 'Opname';
+      return i18n.t('widgetsB.labelWithdrawal');
     case 'adjustment':
-      return 'Aanpassing';
+      return i18n.t('widgetsB.labelAdjustment');
     case 'position_buy':
-      return 'Aankoop';
+      return i18n.t('widgetsB.labelBuy');
     case 'position_sell':
-      return 'Verkoop';
+      return i18n.t('widgetsB.labelSell');
     case 'premium_collected':
-      return 'Premie+';
+      return i18n.t('widgetsB.labelPremiumPlus');
     case 'premium_paid':
-      return 'Premie-';
+      return i18n.t('widgetsB.labelPremiumMinus');
     case 'dividend':
-      return 'Dividend';
+      return i18n.t('widgetsB.labelDividend');
     case 'fee':
-      return 'Kosten';
+      return i18n.t('widgetsB.labelFee');
     case 'option_roll':
-      return 'Roll';
+      return i18n.t('widgetsB.labelRoll');
     default:
       return type;
   }
@@ -109,6 +111,7 @@ export const TransactionLog: React.FC<TransactionLogProps> = ({
   currency,
   className = '',
 }) => {
+  const { t } = useTranslation();
   const currencySymbol = getCurrencySymbol(currency);
 
   // Sort transactions by date (newest first), then by createdAt for same-day transactions
@@ -130,9 +133,9 @@ export const TransactionLog: React.FC<TransactionLogProps> = ({
         className={`bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 p-8 text-center ${className}`}
       >
         <Calendar className="w-12 h-12 mx-auto mb-3 text-ink-400 dark:text-ink-500" />
-        <p className="text-ink-600 dark:text-ink-400">Nog geen transacties</p>
+        <p className="text-ink-600 dark:text-ink-400">{t('widgetsB.noTransactions')}</p>
         <p className="text-sm text-ink-500 dark:text-ink-500 mt-1">
-          Transacties worden hier getoond zodra je deposits, withdrawals of trades maakt
+          {t('widgetsB.transactionsShownHere')}
         </p>
       </div>
     );
@@ -140,10 +143,10 @@ export const TransactionLog: React.FC<TransactionLogProps> = ({
 
   return (
     <div
-      className={`bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 ${className}`}
+      className={`bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 flex flex-col ${className}`}
     >
-      {/* Transaction List */}
-      <div className="divide-y divide-surface-line dark:divide-trading-dark-600 max-h-[600px] overflow-y-auto">
+      {/* Transaction List — fills the available height and scrolls internally */}
+      <div className="divide-y divide-surface-line dark:divide-trading-dark-600 flex-1 min-h-0 overflow-y-auto">
         {sortedTransactions.map((transaction) => {
           const isPositive = transaction.amount >= 0;
           const color = getTransactionColor(transaction.type);
@@ -196,7 +199,9 @@ export const TransactionLog: React.FC<TransactionLogProps> = ({
                       </p>
                       {transaction.newValue !== undefined && (
                         <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
-                          Nieuwe waarde: {formatCurrency(transaction.newValue, currencySymbol)}
+                          {t('widgetsB.newValue', {
+                            value: formatCurrency(transaction.newValue, currencySymbol),
+                          })}
                         </p>
                       )}
                     </div>

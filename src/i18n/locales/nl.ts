@@ -1,4 +1,6 @@
-export const nl = {
+import { sweepNl } from '../sweep';
+
+const nlBase = {
   // Common
   common: {
     save: 'Opslaan',
@@ -12,6 +14,9 @@ export const nl = {
     search: 'Zoeken',
     filter: 'Filteren',
     reset: 'Resetten',
+    next: 'Volgende',
+    previous: 'Vorige',
+    complete: 'Voltooien',
   },
 
   // AI-assistent
@@ -846,4 +851,17 @@ export const nl = {
     viewPmccCampaign: "Bekijk Poor Man's Covered Call-campagne",
     viewKachingCampaign: 'Bekijk KaChing-campagne',
   },
+  mountain: {
+    green: 'GROEN',
+    blue: 'BLAUW',
+    red: 'ROOD',
+    black: 'ZWART',
+    offPiste: 'OFF-PISTE',
+    unlock: 'ONTGRENDELEN',
+    requested: 'AANGEVRAAGD',
+    mentorship: 'SKI-SCHOOL · MENTORSHIP',
+    community: 'APRÈS-SKI · COMMUNITY',
+  },
 };
+
+export const nl = { ...nlBase, ...sweepNl };

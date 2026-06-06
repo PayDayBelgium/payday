@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronRight, AlertCircle, Target, X as XIcon, Redo2 } from 'lucide-react';
 import type { Position, CallOption, PutOption } from '../../types';
 import type { AlertItem } from '../../utils/alertEvaluator';
@@ -65,6 +66,7 @@ export const SpreadSummaryRow: React.FC<SpreadSummaryRowProps> = React.memo(
     onRollSpread,
     onCloseSpread,
   }) => {
+    const { t } = useTranslation();
     return (
       <div
         className={`px-6 py-3 hover:bg-white dark:hover:bg-trading-dark-700/30 transition-colors border-b border-surface-line dark:border-trading-dark-600 bg-surface-subtle/30 dark:bg-trading-dark-700 border-l-4 ${spreadBorderColor}`}
@@ -176,7 +178,8 @@ export const SpreadSummaryRow: React.FC<SpreadSummaryRowProps> = React.memo(
                 )}
               </div>
               <p className="text-xs text-ink-500 dark:text-ink-400">
-                {spreadTickerData?.name || `Breedte: $${formatNumber(summary.spreadWidth, 2)}`}
+                {spreadTickerData?.name ||
+                  t('widgetsA.width', { value: formatNumber(summary.spreadWidth, 2) })}
               </p>
             </div>
 
@@ -199,8 +202,8 @@ export const SpreadSummaryRow: React.FC<SpreadSummaryRowProps> = React.memo(
                 {daysToExpiration > 0
                   ? `${daysToExpiration}d`
                   : daysToExpiration === 0
-                    ? 'Vandaag'
-                    : 'Verlopen'}
+                    ? t('widgetsA.today')
+                    : t('widgetsA.expired')}
               </p>
             </div>
 
@@ -385,7 +388,7 @@ export const SpreadSummaryRow: React.FC<SpreadSummaryRowProps> = React.memo(
                 }
               }}
               className="p-1.5 hover:bg-primary-50 dark:hover:bg-primary-900/25 text-primary-700 dark:text-primary-300 rounded"
-              title="Spread Rollen"
+              title={t('widgetsA.rollSpread')}
             >
               <Redo2 className="w-4 h-4" />
             </button>
@@ -397,7 +400,7 @@ export const SpreadSummaryRow: React.FC<SpreadSummaryRowProps> = React.memo(
                 onCloseSpread(spread.legs[0]);
               }}
               className="p-1.5 hover:bg-negative-50 dark:hover:bg-negative-700/25 text-negative-600 dark:text-negative-500 rounded"
-              title="Spread Sluiten"
+              title={t('widgetsA.closeSpread')}
             >
               <XIcon className="w-4 h-4" />
             </button>

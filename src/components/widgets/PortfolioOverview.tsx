@@ -1,5 +1,6 @@
 import React, { useState, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useNavigation } from '../../contexts/NavigationContext';
 import { selectPortfolioSummaries } from '../../store/slices/portfoliosSlice';
@@ -13,7 +14,6 @@ import {
   RotateCcw,
   AlertCircle,
   Target,
-  Plus,
   Settings,
 } from 'lucide-react';
 
@@ -21,6 +21,7 @@ type TimePeriod = '1W' | '1M' | '3M' | 'YTD' | '1Y' | 'ALL';
 
 export const PortfolioOverview: React.FC = memo(() => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { pushNavigation } = useNavigation();
   const summaries = useAppSelector(selectPortfolioSummaries);
   const dailyData = useAppSelector((state) => state.portfolios.dailyData);
@@ -63,14 +64,14 @@ export const PortfolioOverview: React.FC = memo(() => {
     return null;
   }
 
-  const handleAddPortfolio = () => {
-    pushNavigation('/settings/portfolios', 'Portfolio Beheer');
-    navigate('/settings/portfolios', { state: { addPortfolio: true } });
+  const handleManagePortfolios = () => {
+    pushNavigation('/settings/portfolios', t('widgetsB.portfolioManagement'));
+    navigate('/settings/portfolios');
   };
 
   const handleEditPortfolio = (portfolioId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    pushNavigation('/settings/portfolios', 'Portfolio Beheer');
+    pushNavigation('/settings/portfolios', t('widgetsB.portfolioManagement'));
     navigate('/settings/portfolios', {
       state: { editPortfolioId: portfolioId, fromPage: 'dashboard' },
     });
@@ -81,18 +82,23 @@ export const PortfolioOverview: React.FC = memo(() => {
       {/* Header */}
       <div className="px-6 py-4 border-b border-surface-line dark:border-trading-dark-600 flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-ink-900 dark:text-white">Portefeuilles</h3>
+          <h3 className="text-lg font-semibold text-ink-900 dark:text-white">
+            {t('widgetsB.portfolios')}
+          </h3>
           <p className="text-sm text-ink-600 dark:text-ink-400 mt-1">
-            {summaries.length} {summaries.length === 1 ? 'portefeuille' : 'portefeuilles'}
+            {summaries.length}{' '}
+            {summaries.length === 1
+              ? t('widgetsB.onePortfolio')
+              : t('widgetsB.multiplePortfolios')}
           </p>
         </div>
         <button
-          onClick={handleAddPortfolio}
+          onClick={handleManagePortfolios}
           className="flex items-center gap-2 px-3 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-medium transition-colors"
-          title="Portfolio beheren"
+          title={t('widgetsB.managePortfolio')}
         >
-          <Plus className="w-4 h-4" />
-          <span className="hidden sm:inline">Beheer</span>
+          <Settings className="w-4 h-4" />
+          <span className="hidden sm:inline">{t('widgetsB.manage')}</span>
         </button>
       </div>
 
@@ -289,7 +295,7 @@ export const PortfolioOverview: React.FC = memo(() => {
                         <div
                           onClick={(e) => handleEditPortfolio(portfolio.id, e)}
                           className="p-1.5 hover:bg-surface-muted dark:hover:bg-trading-dark-600 rounded-lg transition-colors cursor-pointer"
-                          title="Bewerk portfolio"
+                          title={t('widgetsB.editPortfolio')}
                           role="button"
                           tabIndex={0}
                           onKeyDown={(e) => {
@@ -304,7 +310,7 @@ export const PortfolioOverview: React.FC = memo(() => {
                         <div
                           onClick={(e) => toggleFlip(summary.portfolio, e)}
                           className="p-1.5 hover:bg-surface-muted dark:hover:bg-trading-dark-600 rounded-lg transition-colors cursor-pointer"
-                          title="Toon gains"
+                          title={t('widgetsB.showGains')}
                           role="button"
                           tabIndex={0}
                           onKeyDown={(e) => {
@@ -340,27 +346,33 @@ export const PortfolioOverview: React.FC = memo(() => {
                       {/* Stats - all aligned left */}
                       <div className="space-y-1.5 text-xs flex-1">
                         <div className="flex">
-                          <span className="text-ink-500 dark:text-ink-400 w-20">Long posities</span>
+                          <span className="text-ink-500 dark:text-ink-400 w-20">
+                            {t('widgetsB.longPositions')}
+                          </span>
                           <span className="font-medium text-ink-900 dark:text-white">
                             {formatCurrency(longValue, currencySymbol)}
                           </span>
                         </div>
                         <div className="flex">
                           <span className="text-ink-500 dark:text-ink-400 w-20">
-                            Short posities
+                            {t('widgetsB.shortPositions')}
                           </span>
                           <span className="font-medium text-ink-900 dark:text-white">
                             {formatCurrency(shortValue, currencySymbol)}
                           </span>
                         </div>
                         <div className="flex">
-                          <span className="text-ink-500 dark:text-ink-400 w-20">Cash</span>
+                          <span className="text-ink-500 dark:text-ink-400 w-20">
+                            {t('widgetsB.cash')}
+                          </span>
                           <span className="font-medium text-ink-900 dark:text-white">
                             {formatCurrency(summary.cash, currencySymbol)}
                           </span>
                         </div>
                         <div className="flex">
-                          <span className="text-ink-500 dark:text-ink-400 w-20">Vrije cash</span>
+                          <span className="text-ink-500 dark:text-ink-400 w-20">
+                            {t('widgetsB.freeCash')}
+                          </span>
                           <span
                             className={`font-medium ${freeCash < 0 ? 'text-negative-600 dark:text-negative-500' : 'text-ink-900 dark:text-white'}`}
                           >
@@ -400,7 +412,7 @@ export const PortfolioOverview: React.FC = memo(() => {
                         <div
                           onClick={(e) => toggleFlip(summary.portfolio, e)}
                           className="p-1.5 hover:bg-surface-muted dark:hover:bg-trading-dark-600 rounded-lg transition-colors cursor-pointer"
-                          title="Terug"
+                          title={t('widgetsB.back')}
                           role="button"
                           tabIndex={0}
                           onKeyDown={(e) => {
@@ -446,7 +458,9 @@ export const PortfolioOverview: React.FC = memo(() => {
                       {/* Gain display */}
                       <div className="flex-1 flex flex-col items-center justify-center">
                         <p className="text-xs text-ink-500 dark:text-ink-400 mb-1">
-                          {selectedPeriod === 'ALL' ? 'Totale Gain' : `Gain (${selectedPeriod})`}
+                          {selectedPeriod === 'ALL'
+                            ? t('widgetsB.totalGain')
+                            : t('widgetsB.gainPeriod', { period: selectedPeriod })}
                         </p>
                         <p
                           className={`text-2xl font-bold mb-1 ${

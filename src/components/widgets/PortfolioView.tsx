@@ -1,5 +1,6 @@
 ﻿import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import {
   TrendingUp,
   ChevronDown,
@@ -74,6 +75,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   onNavigateToCampaigns,
   onWriteCoveredCall,
 }) => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const tickers = useAppSelector(selectAllTickers);
   const portfolios = useAppSelector((state) => state.portfolios.portfolios);
@@ -500,7 +502,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
     );
 
     if (groupBy === 'none') {
-      return { 'Alle Posities': nonStockPositions };
+      return { [t('widgetsB.groupAllPositions')]: nonStockPositions };
     }
 
     const groups: Record<string, Position[]> = {};
@@ -522,16 +524,19 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
         if (spreadLegs && spreadLegs.legs.length === 2) {
           const firstLeg = spreadLegs.legs[0] as CallOption | PutOption;
 
-          let groupName = 'Andere';
+          let groupName = t('widgetsB.groupOther');
           if (groupBy === 'strategy') {
-            groupName = firstLeg.type === 'call' ? 'Call Spreads' : 'Put Spreads';
+            groupName =
+              firstLeg.type === 'call'
+                ? t('widgetsB.groupCallSpreads')
+                : t('widgetsB.groupPutSpreads');
           } else if (groupBy === 'expiry') {
             groupName = firstLeg.expiration;
           } else if (groupBy === 'ticker') {
             groupName = firstLeg.ticker;
           } else if (groupBy === 'action') {
             // For spreads, check the first leg action
-            groupName = firstLeg.action === 'buy' ? 'Long' : 'Short';
+            groupName = firstLeg.action === 'buy' ? t('widgetsB.groupLong') : t('widgetsB.groupShort');
           }
 
           if (!groups[groupName]) {
@@ -544,20 +549,20 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
       }
 
       // For standalone positions
-      let groupName = 'Andere';
+      let groupName = t('widgetsB.groupOther');
 
       if (groupBy === 'strategy') {
         // Stocks and ETFs
         if (position.type === 'stock' || position.type === 'etf') {
-          groupName = 'Aandelen en ETFs';
+          groupName = t('widgetsB.groupStocksEtfs');
         }
         // Options (standalone, not part of spreads)
         else if (position.type === 'put' || position.type === 'call') {
           const option = position as CallOption | PutOption;
           if (option.type === 'call') {
-            groupName = 'Calls';
+            groupName = t('widgetsB.groupCalls');
           } else {
-            groupName = 'Puts';
+            groupName = t('widgetsB.groupPuts');
           }
         }
       } else if (groupBy === 'expiry') {
@@ -566,7 +571,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
           const option = position as CallOption | PutOption;
           groupName = option.expiration;
         } else {
-          groupName = 'Geen expiratie';
+          groupName = t('widgetsB.groupNoExpiration');
         }
       } else if (groupBy === 'ticker') {
         // Group by ticker
@@ -575,12 +580,12 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
         // Group by long/short
         // Stocks and ETFs are always Long
         if (position.type === 'stock' || position.type === 'etf') {
-          groupName = 'Long';
+          groupName = t('widgetsB.groupLong');
         }
         // Options: buy = Long, sell = Short
         else if (position.type === 'put' || position.type === 'call') {
           const option = position as CallOption | PutOption;
-          groupName = option.action === 'buy' ? 'Long' : 'Short';
+          groupName = option.action === 'buy' ? t('widgetsB.groupLong') : t('widgetsB.groupShort');
         }
       }
 
@@ -595,8 +600,8 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
     const sortedKeys = Object.keys(groups).sort((a, b) => {
       // For expiry grouping, sort by date
       if (groupBy === 'expiry') {
-        if (a === 'Geen expiratie') return 1;
-        if (b === 'Geen expiratie') return -1;
+        if (a === t('widgetsB.groupNoExpiration')) return 1;
+        if (b === t('widgetsB.groupNoExpiration')) return -1;
         return new Date(a).getTime() - new Date(b).getTime();
       }
       return a.localeCompare(b);
@@ -607,7 +612,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
     });
 
     return sortedGroups;
-  }, [filteredPositions, groupBy, spreads]);
+  }, [filteredPositions, groupBy, spreads, t]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -678,14 +683,21 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
         date: closeData.closeDate,
         type: 'position_sell' as const,
         amount: closeValue,
-        description: `Verkoop ${closeData.quantity} ${positionToClose.ticker} (gedeeltelijk)`,
+        description: t('widgetsB.txnPartialSell', {
+          quantity: closeData.quantity,
+          ticker: positionToClose.ticker,
+        }),
         relatedPositionId: positionToClose.id,
         previousValue: portfolioCurrentValue,
         newValue: portfolioCurrentValue + realizedPnL,
         createdAt: new Date().toISOString(),
         notes:
           closeData.notes ||
-          `Verkocht ${closeData.quantity} van ${positionToClose.shares} aandelen. Realized P&L: ${formatCurrency(realizedPnL, currencySymbol)}`,
+          t('widgetsB.txnPartialSellNotes', {
+            quantity: closeData.quantity,
+            total: positionToClose.shares,
+            pnl: formatCurrency(realizedPnL, currencySymbol),
+          }),
       };
 
       dispatch(addTransaction(transaction));
@@ -711,12 +723,17 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
         date: closeData.closeDate,
         type: 'position_sell' as const,
         amount: closeValue, // Cash received (can be 0 for worthless options)
-        description: `Close ${positionToClose.type}: ${positionToClose.ticker}`,
+        description: t('widgetsB.txnClose', {
+          type: positionToClose.type,
+          ticker: positionToClose.ticker,
+        }),
         relatedPositionId: positionToClose.id,
         previousValue: portfolioCurrentValue,
         newValue: portfolioCurrentValue + realizedPnL,
         createdAt: new Date().toISOString(),
-        notes: closeData.notes || `Realized P&L: ${formatCurrency(realizedPnL, currencySymbol)}`,
+        notes:
+          closeData.notes ||
+          t('widgetsB.txnRealizedPnl', { pnl: formatCurrency(realizedPnL, currencySymbol) }),
       };
 
       dispatch(addTransaction(transaction));
@@ -778,14 +795,19 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
       date: closeData.closeDate,
       type: 'position_sell' as const,
       amount: totalCloseValue,
-      description: `Close ${firstLeg.type} spread: ${firstLeg.ticker}`,
+      description: t('widgetsB.txnCloseSpread', {
+        type: firstLeg.type,
+        ticker: firstLeg.ticker,
+      }),
       relatedPositionId: firstLeg.id,
       previousValue: portfolioCurrentValue,
       newValue: portfolioCurrentValue + totalRealizedPnL,
       createdAt: new Date().toISOString(),
       notes:
         closeData.notes ||
-        `Spread gesloten. Realized P&L: ${formatCurrency(totalRealizedPnL, currencySymbol)}`,
+        t('widgetsB.txnSpreadClosedNotes', {
+          pnl: formatCurrency(totalRealizedPnL, currencySymbol),
+        }),
     };
 
     dispatch(addTransaction(transaction));
@@ -865,7 +887,10 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
       currentValue: positionToRoll.action === 'sell' ? -newCostBasis : newCostBasis,
       status: 'open',
       openDate: rollData.closeDate,
-      notes: `Rolled from ${positionToRoll.strike} strike (${new Date(positionToRoll.expiration).toLocaleDateString('nl-NL')})`,
+      notes: t('widgetsB.rolledFrom', {
+        strike: positionToRoll.strike,
+        date: new Date(positionToRoll.expiration).toLocaleDateString('nl-NL'),
+      }),
       strategy: positionToRoll.strategy,
       // Preserve wheel and underlying links when rolling
       wheelId: positionToRoll.wheelId,
@@ -892,13 +917,13 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
     let rollTypeLabel = '';
     if (isHorizontalRoll) {
-      rollTypeLabel = `Horizontaal (+${daysDiff}d)`;
+      rollTypeLabel = t('widgetsB.rollHorizontal', { days: daysDiff });
     } else if (isVerticalRoll) {
       const direction = rollData.newStrike > positionToRoll.strike ? 'â†‘' : 'â†“';
-      rollTypeLabel = `Verticaal ${direction}`;
+      rollTypeLabel = t('widgetsB.rollVertical', { direction });
     } else if (isDiagonalRoll) {
       const direction = rollData.newStrike > positionToRoll.strike ? 'â†‘' : 'â†“';
-      rollTypeLabel = `Diagonaal ${direction} (+${daysDiff}d)`;
+      rollTypeLabel = t('widgetsB.rollDiagonal', { direction, days: daysDiff });
     }
 
     // Format dates for display
@@ -922,7 +947,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
       createdAt: new Date().toISOString(),
       notes:
         rollData.notes ||
-        `${rollTypeLabel} â€¢ ${netCashFlow >= 0 ? 'Credit' : 'Debit'}: ${formatCurrency(Math.abs(netCashFlow), currencySymbol)}${daysDiff > 0 ? ` â€¢ +${daysDiff} dagen` : ''}`,
+        `${rollTypeLabel} â€¢ ${netCashFlow >= 0 ? 'Credit' : 'Debit'}: ${formatCurrency(Math.abs(netCashFlow), currencySymbol)}${daysDiff > 0 ? t('widgetsB.rollNotesDays', { days: daysDiff }) : ''}`,
     };
 
     dispatch(addTransaction(transaction));
@@ -1221,7 +1246,11 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
           date: assignmentData.assignmentDate,
           type: 'position_sell' as const,
           amount: totalProceeds + premiumReceived,
-          description: `Assignment: Verkoop ${shares} ${option.ticker} @ $${option.strike}`,
+          description: t('widgetsB.txnAssignmentSell', {
+            shares,
+            ticker: option.ticker,
+            strike: option.strike,
+          }),
           relatedPositionId: option.id,
           previousValue: portfolioCurrentValue,
           newValue: portfolioCurrentValue + stockRealizedPnL + realizedPnL,
@@ -1244,9 +1273,9 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
       >
         <div className="text-center">
           <TrendingUp className="w-12 h-12 mx-auto mb-3 text-ink-400 dark:text-ink-500" />
-          <p className="text-ink-600 dark:text-ink-400">Nog geen posities</p>
+          <p className="text-ink-600 dark:text-ink-400">{t('widgetsB.noPositions')}</p>
           <p className="text-sm text-ink-500 dark:text-ink-500 mt-1">
-            Voeg een positie toe om te beginnen
+            {t('widgetsB.addPositionToStart')}
           </p>
         </div>
       </div>
@@ -1265,7 +1294,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
               <div className="flex-1 max-w-xs">
                 <input
                   type="text"
-                  placeholder="Zoek op ticker..."
+                  placeholder={t('widgetsB.searchTickerPlaceholder')}
                   value={tickerSearch}
                   onChange={(e) => setTickerSearch(e.target.value)}
                   className="w-full px-3 py-1 bg-white dark:bg-trading-dark-700 border border-ink-200 dark:border-trading-dark-500 rounded text-sm"
@@ -1325,7 +1354,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                             {/* Header */}
                             <div className="flex items-center justify-between pb-2 border-b border-surface-line dark:border-trading-dark-600">
                               <h3 className="font-semibold text-ink-900 dark:text-white">
-                                Filters
+                                {t('widgetsB.filters')}
                               </h3>
                               <button
                                 onClick={() => {
@@ -1343,25 +1372,25 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                             {/* Expiration Filter */}
                             <div>
                               <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
-                                Verloopt binnen:
+                                {t('widgetsB.expiresWithin')}
                               </label>
                               <select
                                 value={filterExpiration}
                                 onChange={(e) => setFilterExpiration(e.target.value)}
                                 className="w-full px-3 py-2 bg-white dark:bg-trading-dark-700 border border-ink-200 dark:border-trading-dark-500 rounded text-sm"
                               >
-                                <option value="all">Alle</option>
-                                <option value="1">1 week</option>
-                                <option value="2">2 weken</option>
-                                <option value="4">4 weken</option>
-                                <option value="8">8 weken</option>
+                                <option value="all">{t('widgetsB.all')}</option>
+                                <option value="1">{t('widgetsB.week1')}</option>
+                                <option value="2">{t('widgetsB.weeks2')}</option>
+                                <option value="4">{t('widgetsB.weeks4')}</option>
+                                <option value="8">{t('widgetsB.weeks8')}</option>
                               </select>
                             </div>
 
                             {/* Category Filters */}
                             <div>
                               <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
-                                CategorieÃ«n:
+                                {t('widgetsB.categories')}
                               </label>
                               <div className="space-y-2">
                                 <label className="flex items-center gap-2 text-sm text-ink-700 dark:text-ink-300 cursor-pointer p-2 rounded hover:bg-surface dark:hover:bg-trading-dark-700/50">
@@ -1412,11 +1441,11 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                 onChange={(e) => setGroupBy(e.target.value as GroupBy)}
                 className="px-3 py-1 bg-white dark:bg-trading-dark-700 border border-ink-200 dark:border-trading-dark-500 rounded text-sm"
               >
-                <option value="none">Geen groepering</option>
-                <option value="strategy">Groepeer op type</option>
-                <option value="expiry">Groepeer op expiry</option>
-                <option value="ticker">Groepeer op ticker</option>
-                <option value="action">Groepeer op long/short</option>
+                <option value="none">{t('widgetsB.groupNone')}</option>
+                <option value="strategy">{t('widgetsB.groupByType')}</option>
+                <option value="expiry">{t('widgetsB.groupByExpiry')}</option>
+                <option value="ticker">{t('widgetsB.groupByTicker')}</option>
+                <option value="action">{t('widgetsB.groupByLongShort')}</option>
               </select>
             )}
           </div>
@@ -1452,7 +1481,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                   onClick={() => handleSort('ticker')}
                   className="text-left hover:text-ink-900 dark:hover:text-ink-200 flex items-center gap-1"
                 >
-                  Ticker{' '}
+                  {t('widgetsB.colTicker')}{' '}
                   {sortField === 'ticker' &&
                     (sortDirection === 'asc' ? (
                       <ChevronUp className="w-3 h-3" />
@@ -1464,7 +1493,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                   onClick={() => handleSort('expiration')}
                   className="text-left hover:text-ink-900 dark:hover:text-ink-200 flex items-center gap-1"
                 >
-                  Expiratie{' '}
+                  {t('widgetsB.colExpiration')}{' '}
                   {sortField === 'expiration' &&
                     (sortDirection === 'asc' ? (
                       <ChevronUp className="w-3 h-3" />
@@ -1476,7 +1505,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                   onClick={() => handleSort('strike')}
                   className="text-left hover:text-ink-900 dark:hover:text-ink-200 flex items-center gap-1"
                 >
-                  Strike{' '}
+                  {t('widgetsB.colStrike')}{' '}
                   {sortField === 'strike' &&
                     (sortDirection === 'asc' ? (
                       <ChevronUp className="w-3 h-3" />
@@ -1484,15 +1513,15 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                       <ChevronDown className="w-3 h-3" />
                     ))}
                 </button>
-                <div>Stock prijs</div>
-                <div>Verschil</div>
-                <div>Open</div>
-                <div>Huidige</div>
+                <div>{t('widgetsB.colStockPrice')}</div>
+                <div>{t('widgetsB.colDifference')}</div>
+                <div>{t('widgetsB.colOpen')}</div>
+                <div>{t('widgetsB.colCurrent')}</div>
                 <button
                   onClick={() => handleSort('pnl')}
                   className="text-left hover:text-ink-900 dark:hover:text-ink-200 flex items-center gap-1"
                 >
-                  Winst/Verlies{' '}
+                  {t('widgetsB.colProfitLoss')}{' '}
                   {sortField === 'pnl' &&
                     (sortDirection === 'asc' ? (
                       <ChevronUp className="w-3 h-3" />
@@ -1500,9 +1529,9 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                       <ChevronDown className="w-3 h-3" />
                     ))}
                 </button>
-                <div>Onderpand</div>
+                <div>{t('widgetsB.colCollateral')}</div>
                 <div></div> {/* Spacer */}
-                <div className="text-right">Actions</div> {/* Actions */}
+                <div className="text-right">{t('widgetsB.colActions')}</div> {/* Actions */}
               </div>
             </div>
 
@@ -1595,7 +1624,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                             );
                           }}
                           className={`p-1 rounded hover:bg-ink-200 dark:hover:bg-trading-dark-700 ${hasGroupFilter ? 'text-primary-700 dark:text-primary-300' : 'text-ink-500 dark:text-ink-400'}`}
-                          title="Filter groep"
+                          title={t('widgetsB.filterGroup')}
                         >
                           <Filter className="w-4 h-4" />
                         </button>
@@ -1606,7 +1635,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                           <div className="space-y-3">
                             <div className="flex items-center justify-between pb-2 border-b border-surface-line dark:border-trading-dark-600">
                               <span className="text-sm font-medium text-ink-900 dark:text-white">
-                                Filter
+                                {t('widgetsB.filter')}
                               </span>
                               <button
                                 onClick={(e) => {
@@ -1621,7 +1650,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                             {/* Expiration Filter */}
                             <div>
                               <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
-                                Verloopt binnen:
+                                {t('widgetsB.expiresWithin')}
                               </label>
                               <select
                                 value={groupFilter.expiration}
@@ -1632,11 +1661,11 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                 onClick={(e) => e.stopPropagation()}
                                 className="w-full px-2 py-1 bg-white dark:bg-trading-dark-700 border border-ink-200 dark:border-trading-dark-500 rounded text-xs"
                               >
-                                <option value="all">Alle</option>
-                                <option value="1">1 week</option>
-                                <option value="2">2 weken</option>
-                                <option value="4">4 weken</option>
-                                <option value="8">8 weken</option>
+                                <option value="all">{t('widgetsB.all')}</option>
+                                <option value="1">{t('widgetsB.week1')}</option>
+                                <option value="2">{t('widgetsB.weeks2')}</option>
+                                <option value="4">{t('widgetsB.weeks4')}</option>
+                                <option value="8">{t('widgetsB.weeks8')}</option>
                               </select>
                             </div>
                             {/* Category Filters */}
@@ -1746,7 +1775,9 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                               const hasOpportunity =
                                 !isExpired && isProfitable && profitPercent >= 80;
                               const opportunityMessage = hasOpportunity
-                                ? `Opportunity: ${formatNumber(profitPercent, 0)}% van max winst - overweeg spread te sluiten`
+                                ? t('widgetsB.opportunityMaxProfit', {
+                                    percent: formatNumber(profitPercent, 0),
+                                  })
                                 : '';
 
                               // Check if expires this week (alert)
@@ -1776,9 +1807,9 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                               const alertMessage = hasExternalSpreadAlert
                                 ? spreadAlertMessage
                                 : isExpired
-                                  ? 'Spread is verlopen - sluit deze positie'
+                                  ? t('widgetsB.spreadExpired')
                                   : expiresThisWeek
-                                    ? `Spread verloopt binnen ${daysToExpiration} dagen`
+                                    ? t('widgetsB.spreadExpiresInDays', { days: daysToExpiration })
                                     : '';
 
                               // Determine border color based on expiration or alerts
@@ -1856,7 +1887,15 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                             const spreadWidth = Math.abs(
                                               option.strike - longCallLeg.strike
                                             );
-                                            legCollateralDescription = `Beschermd door long call @ $${longCallLeg.strike}. Max verlies: $${spreadWidth} Ã— 100 Ã— ${option.contracts} = $${spreadWidth * 100 * option.contracts}.`;
+                                            legCollateralDescription = t(
+                                              'widgetsB.protectedByLongCall',
+                                              {
+                                                strike: longCallLeg.strike,
+                                                width: spreadWidth,
+                                                contracts: option.contracts,
+                                                total: spreadWidth * 100 * option.contracts,
+                                              }
+                                            );
                                           } else {
                                             // Standalone short call - check for stock or LEAPS as collateral
                                             const stockPosition = positions.find(
@@ -1870,7 +1909,13 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                             if (stockPosition && 'shares' in stockPosition) {
                                               legCollateralType = 'stock';
                                               legCollateralValue = stockPosition.costBasis || 0;
-                                              legCollateralDescription = `Deze call is gedekt door ${stockPosition.shares} aandelen ${option.ticker}. Bij assignment lever je de aandelen, geen cash nodig.`;
+                                              legCollateralDescription = t(
+                                                'widgetsB.callCoveredByShares',
+                                                {
+                                                  shares: stockPosition.shares,
+                                                  ticker: option.ticker,
+                                                }
+                                              );
                                             } else {
                                               // Check for LEAPS as collateral (PMCC)
                                               const leapsPosition = positions.find(
@@ -1887,8 +1932,9 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                               if (leapsPosition) {
                                                 legCollateralType = 'leaps';
                                                 legCollateralValue = leapsPosition.costBasis;
-                                                legCollateralDescription =
-                                                  'Deze call is gedekt door je LEAPS call optie. De LEAPS fungeert als onderpand in plaats van aandelen (PMCC strategie).';
+                                                legCollateralDescription = t(
+                                                  'widgetsB.callCoveredByLeaps'
+                                                );
                                               }
                                             }
                                           }
@@ -1908,13 +1954,29 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                             const spreadWidth = Math.abs(
                                               option.strike - longPutLeg.strike
                                             );
-                                            legCollateralDescription = `Beschermd door long put @ $${longPutLeg.strike}. Max verlies: $${spreadWidth} Ã— 100 Ã— ${option.contracts} = $${spreadWidth * 100 * option.contracts}.`;
+                                            legCollateralDescription = t(
+                                              'widgetsB.protectedByLongPut',
+                                              {
+                                                strike: longPutLeg.strike,
+                                                width: spreadWidth,
+                                                contracts: option.contracts,
+                                                total: spreadWidth * 100 * option.contracts,
+                                              }
+                                            );
                                           } else {
                                             // Standalone short put - cash secured
                                             legCollateralType = 'cash';
                                             legCollateralValue =
                                               option.strike * option.contracts * 100;
-                                            legCollateralDescription = `Deze put vereist ${formatCurrency(legCollateralValue, currencySymbol)} cash als onderpand voor mogelijke assignment.`;
+                                            legCollateralDescription = t(
+                                              'widgetsB.putRequiresCash',
+                                              {
+                                                amount: formatCurrency(
+                                                  legCollateralValue,
+                                                  currencySymbol
+                                                ),
+                                              }
+                                            );
                                           }
                                         }
                                       }
@@ -2061,7 +2123,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                               // Determine if there's an alert
                               const hasAlert = isExpired || hasExternalAlert;
                               const alertMessage = isExpired
-                                ? 'Optie is vervallen - sluit deze positie'
+                                ? t('widgetsB.optionExpired')
                                 : hasExternalAlert
                                   ? externalAlerts.map((a) => a.message).join('\n')
                                   : '';

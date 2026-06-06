@@ -8,6 +8,7 @@ import {
   X,
   Target,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { StockPosition, PriceAlert, Portfolio, CallOption } from '../../types';
 import { formatCurrency } from '../../utils/currencyHelpers';
 import { formatNumber } from '../../utils/numberFormat';
@@ -66,6 +67,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
   onWriteCoveredCall,
   onSellPosition,
 }) => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const allStorePositions = useAppSelector(selectPositions);
   const [expandedTickers, setExpandedTickers] = useState<Set<string>>(new Set());
@@ -225,7 +227,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Zoek ticker..."
+          placeholder={t('widgetsB.searchTicker')}
           className="w-full pl-10 pr-4 py-2 border border-ink-200 dark:border-trading-dark-500 rounded-lg bg-white dark:bg-trading-dark-800 text-ink-900 dark:text-white placeholder-ink-500 dark:placeholder-ink-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
         />
       </div>
@@ -305,7 +307,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                           {hasUnreadAlerts && (
                             <div
                               className="flex items-center gap-1 px-2 py-1 bg-negative-50 dark:bg-negative-700/25 text-negative-700 dark:text-negative-500 rounded-full text-xs font-medium"
-                              title="Prijs waarschuwingen - De prijs is significant veranderd"
+                              title={t('widgetsB.priceWarningsTitle')}
                             >
                               <AlertCircle className="w-3.5 h-3.5" />
                               {group.alerts.length}
@@ -314,7 +316,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                           {ruleAlerts.length > 0 && (
                             <div
                               className="flex items-center gap-1 px-2 py-1 bg-caution-50 dark:bg-caution-600/25 text-caution-600 dark:text-caution-500 rounded-full text-xs font-medium"
-                              title="Waarschuwingen - Regels die aandacht vereisen"
+                              title={t('widgetsB.ruleWarningsTitle')}
                             >
                               <AlertCircle className="w-3.5 h-3.5" />
                               {ruleAlerts.length}
@@ -323,7 +325,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                           {ruleOpportunities.length > 0 && (
                             <div
                               className="flex items-center gap-1 px-2 py-1 bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 rounded-full text-xs font-medium"
-                              title="Kansen - Mogelijkheden om te handelen"
+                              title={t('widgetsB.opportunitiesTitle')}
                             >
                               <Target className="w-3.5 h-3.5" />
                               {ruleOpportunities.length}
@@ -337,7 +339,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                                   onWriteCoveredCall(group.ticker);
                                 }}
                                 className="flex items-center gap-1 px-2 py-1 bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 rounded-full text-xs font-medium hover:bg-positive-100 dark:hover:bg-positive-700/40 transition-colors"
-                                title="Schrijf een covered call op deze aandelen"
+                                title={t('widgetsB.writeCoveredCallTitle')}
                               >
                                 <CheckCircle className="w-3.5 h-3.5" />
                                 CC
@@ -345,7 +347,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                             ) : (
                               <div
                                 className="flex items-center gap-1 px-2 py-1 bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 rounded-full text-xs font-medium"
-                                title="Covered Calls mogelijk - Voldoende aandelen om covered calls te schrijven"
+                                title={t('widgetsB.coveredCallsPossibleTitle')}
                               >
                                 <CheckCircle className="w-3.5 h-3.5" />
                                 CC
@@ -357,7 +359,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                         <div className="flex items-end gap-6 text-sm">
                           <div className="w-24 flex-shrink-0">
                             <p className="text-ink-500 dark:text-ink-400 text-xs mb-1">
-                              Eerste positie op
+                              {t('widgetsB.firstPositionOn')}
                             </p>
                             <p className="text-ink-900 dark:text-white font-medium text-xs">
                               {new Date(group.positions[0].openDate).toLocaleDateString('nl-NL', {
@@ -368,20 +370,24 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                             </p>
                           </div>
                           <div className="w-16 flex-shrink-0">
-                            <p className="text-ink-500 dark:text-ink-400 text-xs mb-1">Aantal</p>
+                            <p className="text-ink-500 dark:text-ink-400 text-xs mb-1">
+                              {t('widgetsB.quantity')}
+                            </p>
                             <p className="text-ink-900 dark:text-white font-medium">
                               {group.totalShares}
                             </p>
                           </div>
                           <div className="w-20 flex-shrink-0">
-                            <p className="text-ink-500 dark:text-ink-400 text-xs mb-1">GAK</p>
+                            <p className="text-ink-500 dark:text-ink-400 text-xs mb-1">
+                              {t('widgetsB.averageCost')}
+                            </p>
                             <p className="text-ink-900 dark:text-white font-medium">
                               {formatCurrency(group.averageCost, allPortfolios)}
                             </p>
                           </div>
                           <div className="w-28 flex-shrink-0">
                             <p className="text-ink-500 dark:text-ink-400 text-xs mb-1">
-                              Aankoopwaarde
+                              {t('widgetsB.purchaseValue')}
                             </p>
                             <p className="text-ink-900 dark:text-white font-medium">
                               {formatCurrency(group.totalCostBasis, allPortfolios)}
@@ -389,7 +395,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                           </div>
                           <div className="w-24 flex-shrink-0">
                             <p className="text-ink-500 dark:text-ink-400 text-xs mb-1">
-                              Huidige Prijs
+                              {t('widgetsB.currentPrice')}
                             </p>
                             {editingTicker === group.ticker ? (
                               <div
@@ -424,7 +430,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                           </div>
                           <div className="w-28 flex-shrink-0">
                             <p className="text-ink-500 dark:text-ink-400 text-xs mb-1">
-                              Huidige Waarde
+                              {t('widgetsB.currentValue')}
                             </p>
                             <p className="text-ink-900 dark:text-white font-medium">
                               {formatCurrency(group.totalValue, allPortfolios)}
@@ -476,7 +482,9 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                           }}
                           className="w-8 h-8 flex items-center justify-center bg-ink-200 dark:bg-trading-dark-600 hover:bg-ink-300 dark:hover:bg-ink-400 text-ink-700 dark:text-ink-200 rounded font-semibold text-sm transition-colors"
                           title={
-                            group.positions.length === 1 ? 'Verkoop' : 'Verkoop een lot (klap uit)'
+                            group.positions.length === 1
+                              ? t('widgetsB.sell')
+                              : t('widgetsB.sellLotExpand')
                           }
                         >
                           S
@@ -608,7 +616,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                                       onSellPosition(position);
                                     }}
                                     className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-surface-muted dark:bg-trading-dark-600 hover:bg-ink-200 dark:hover:bg-ink-400 text-ink-700 dark:text-ink-200 rounded font-semibold text-sm transition-colors"
-                                    title="Verkoop dit lot"
+                                    title={t('widgetsB.sellThisLot')}
                                   >
                                     S
                                   </button>
@@ -653,7 +661,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                                           setDismissConfirm({ isOpen: true, alert });
                                         }}
                                         className={`p-0.5 hover:bg-surface-muted dark:hover:bg-trading-dark-700 rounded transition-colors flex-shrink-0`}
-                                        title="Alert sluiten"
+                                        title={t('widgetsB.closeAlert')}
                                       >
                                         <X className="w-3.5 h-3.5" />
                                       </button>
@@ -690,7 +698,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                                             handleDismissStrategyAlert(e, alert.id, alert.message)
                                           }
                                           className={`p-0.5 hover:bg-surface-muted dark:hover:bg-trading-dark-700 rounded transition-colors flex-shrink-0`}
-                                          title="Alert sluiten"
+                                          title={t('widgetsB.closeAlert')}
                                         >
                                           <X className="w-3.5 h-3.5" />
                                         </button>
@@ -743,7 +751,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                                 setDismissConfirm({ isOpen: true, alert });
                               }}
                               className={`p-0.5 hover:bg-surface-muted dark:hover:bg-trading-dark-700 rounded transition-colors flex-shrink-0`}
-                              title="Alert sluiten"
+                              title={t('widgetsB.closeAlert')}
                             >
                               <X className="w-3.5 h-3.5" />
                             </button>
@@ -752,7 +760,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                       })}
                       {group.alerts.length > 2 && (
                         <p className="text-xs text-ink-500 dark:text-ink-400 text-center">
-                          +{group.alerts.length - 2} meer
+                          {t('widgetsB.more', { count: group.alerts.length - 2 })}
                         </p>
                       )}
                     </div>
@@ -766,11 +774,11 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
         <div className="text-center py-12 text-ink-500 dark:text-ink-400">
           {searchQuery ? (
             <>
-              <p className="text-lg font-medium">Geen resultaten gevonden</p>
-              <p className="text-sm mt-1">Probeer een andere zoekterm</p>
+              <p className="text-lg font-medium">{t('widgetsB.noResultsFound')}</p>
+              <p className="text-sm mt-1">{t('widgetsB.tryAnotherSearch')}</p>
             </>
           ) : (
-            <p>Geen posities beschikbaar</p>
+            <p>{t('widgetsB.noPositionsAvailable')}</p>
           )}
         </div>
       )}

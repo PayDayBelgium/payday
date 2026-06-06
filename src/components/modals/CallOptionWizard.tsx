@@ -1131,8 +1131,9 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                     </p>
                     {action === 'covered-call' && Number.isFinite(maxCoveredCallContracts) && (
                       <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
-                        Max {maxCoveredCallContracts} vrij contract
-                        {maxCoveredCallContracts === 1 ? '' : 'en'} beschikbaar
+                        {t('modalsB.callWizard.maxFreeContracts', {
+                          count: maxCoveredCallContracts,
+                        })}
                       </p>
                     )}
                   </div>

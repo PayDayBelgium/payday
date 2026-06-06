@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { usePageTitle } from '../../contexts/PageTitleContext';
@@ -11,13 +12,14 @@ import type { CommunityAuthor, CommunityChannel } from '../../types';
 // The logged-in user as the community author (mock; no real profiles).
 const ME: CommunityAuthor = { name: 'Jij', initials: 'JIJ', color: '#2F6CAE', level: 'beginner' };
 
-const CHANNELS: { id: CommunityChannel; label: string }[] = [
-  { id: 'ideas', label: 'Trading ideas' },
-  { id: 'general', label: 'Algemeen' },
-  { id: 'quant', label: 'Off-piste · Quant' },
+const CHANNELS: { id: CommunityChannel; labelKey: string }[] = [
+  { id: 'ideas', labelKey: 'pagesA.community.channelIdeas' },
+  { id: 'general', labelKey: 'pagesA.community.channelGeneral' },
+  { id: 'quant', labelKey: 'pagesA.community.channelQuant' },
 ];
 
 export const Community: React.FC = () => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { setPageTitle } = usePageTitle();
   const [channel, setChannel] = useState<CommunityChannel>('ideas');
@@ -27,8 +29,8 @@ export const Community: React.FC = () => {
   const { launch, wizard } = useTradeIdeaWizard();
 
   useEffect(() => {
-    setPageTitle('Community', 'Trading ideas & gesprekken');
-  }, [setPageTitle]);
+    setPageTitle('Community', t('pagesA.community.pageSubtitle'));
+  }, [setPageTitle, t]);
 
   return (
     <div className="space-y-5">
@@ -47,7 +49,7 @@ export const Community: React.FC = () => {
                   : 'bg-white dark:bg-trading-dark-800 text-ink-500 border-[var(--line)]'
               } ${locked ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              {c.label}
+              {t(c.labelKey)}
               {locked ? ' 🔒' : ''}
             </button>
           );
@@ -73,7 +75,7 @@ export const Community: React.FC = () => {
           />
         ))}
         {posts.length === 0 && (
-          <p className="text-sm text-ink-400 text-center py-8">Nog geen berichten in dit kanaal.</p>
+          <p className="text-sm text-ink-400 text-center py-8">{t('pagesA.community.emptyFeed')}</p>
         )}
       </div>
 

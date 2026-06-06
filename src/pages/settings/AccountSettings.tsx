@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Trash2, AlertTriangle, Globe } from 'lucide-react';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
@@ -7,6 +8,7 @@ import { setNationality } from '../../store/slices/authSlice';
 import type { NationalityType } from '../../store/slices/authSlice';
 
 export const AccountSettings: React.FC = () => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const username = useAppSelector((state) => state.auth.user);
   const nationality = useAppSelector((state) => state.auth.nationality);
@@ -52,24 +54,24 @@ export const AccountSettings: React.FC = () => {
             <div className="flex items-center gap-2 mb-2">
               <Globe className="w-4 h-4 text-ink-600 dark:text-ink-400" />
               <span className="text-sm font-medium text-ink-700 dark:text-ink-300">
-                Nationaliteit
+                {t('pagesA.account.nationality')}
               </span>
             </div>
             <p className="text-xs text-ink-500 dark:text-ink-400 mb-3">
-              Voor belastingregels en rapportage (bijv. Belgische meerwaardebelasting vanaf 2026)
+              {t('pagesA.account.nationalityHelp')}
             </p>
             <select
               value={nationality || 'OTHER'}
               onChange={(e) => handleNationalityChange(e.target.value as NationalityType)}
               className="w-full px-3 py-2 text-sm bg-surface-subtle dark:bg-slate-700 border border-ink-200 dark:border-slate-600 rounded-lg text-ink-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
-              <option value="BE">België (BE)</option>
-              <option value="NL">Nederland (NL)</option>
-              <option value="FR">Frankrijk (FR)</option>
-              <option value="DE">Duitsland (DE)</option>
-              <option value="US">Verenigde Staten (US)</option>
-              <option value="UK">Verenigd Koninkrijk (UK)</option>
-              <option value="OTHER">Anders</option>
+              <option value="BE">{t('pagesA.account.countryBE')}</option>
+              <option value="NL">{t('pagesA.account.countryNL')}</option>
+              <option value="FR">{t('pagesA.account.countryFR')}</option>
+              <option value="DE">{t('pagesA.account.countryDE')}</option>
+              <option value="US">{t('pagesA.account.countryUS')}</option>
+              <option value="UK">{t('pagesA.account.countryUK')}</option>
+              <option value="OTHER">{t('pagesA.account.countryOTHER')}</option>
             </select>
           </div>
         </div>

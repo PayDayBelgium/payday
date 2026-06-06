@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, Plus, TrendingUp, Building2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { selectTickersSorted, addTicker } from '../../store/slices/tickersSlice';
@@ -18,10 +19,11 @@ export const TickerSelector: React.FC<TickerSelectorProps> = ({
   value,
   onChange,
   onCreateNew,
-  placeholder = 'Zoek of voeg ticker toe...',
+  placeholder,
   className = '',
   autoFocus = false,
 }) => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const tickers = useAppSelector(selectTickersSorted);
 
@@ -151,7 +153,7 @@ export const TickerSelector: React.FC<TickerSelectorProps> = ({
           }}
           onKeyDown={handleKeyDown}
           className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
-          placeholder={placeholder}
+          placeholder={placeholder ?? t('compCommon.searchOrAddTicker')}
         />
       </div>
 
@@ -163,8 +165,8 @@ export const TickerSelector: React.FC<TickerSelectorProps> = ({
         >
           {filteredTickers.length === 0 && !showCreateNew ? (
             <div className="px-4 py-8 text-center text-ink-500 dark:text-ink-400">
-              <p className="text-sm">Geen tickers gevonden</p>
-              <p className="text-xs mt-1">Typ een ticker symbool om een nieuwe toe te voegen</p>
+              <p className="text-sm">{t('compCommon.noTickersFound')}</p>
+              <p className="text-xs mt-1">{t('compCommon.typeTickerToAdd')}</p>
             </div>
           ) : (
             <>
@@ -203,7 +205,9 @@ export const TickerSelector: React.FC<TickerSelectorProps> = ({
                               : 'bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500'
                           }`}
                         >
-                          {ticker.type === 'stock' ? 'Aandeel' : 'ETF'}
+                          {ticker.type === 'stock'
+                            ? t('compCommon.stockBadge')
+                            : t('compCommon.etfBadge')}
                         </span>
                       </div>
                       <p className="text-sm text-ink-600 dark:text-ink-400 truncate">
@@ -211,8 +215,8 @@ export const TickerSelector: React.FC<TickerSelectorProps> = ({
                       </p>
                       {ticker.optionsAvailable && (
                         <p className="text-xs text-ink-500 dark:text-ink-500 mt-0.5">
-                          Opties beschikbaar
-                          {ticker.miniContractsAvailable && ' • Mini contracts'}
+                          {t('compCommon.optionsAvailable')}
+                          {ticker.miniContractsAvailable && t('compCommon.miniContracts')}
                         </p>
                       )}
                     </div>
@@ -235,10 +239,10 @@ export const TickerSelector: React.FC<TickerSelectorProps> = ({
                   </div>
                   <div className="flex-1 text-left">
                     <span className="font-semibold text-primary-700 dark:text-primary-300">
-                      Nieuwe ticker toevoegen: {searchTerm.toUpperCase()}
+                      {t('compCommon.addNewTicker', { symbol: searchTerm.toUpperCase() })}
                     </span>
                     <p className="text-sm text-ink-600 dark:text-ink-400">
-                      Klik om details in te vullen
+                      {t('compCommon.clickToFillDetails')}
                     </p>
                   </div>
                 </button>

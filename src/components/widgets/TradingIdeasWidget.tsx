@@ -1,12 +1,14 @@
 import React from 'react';
 import { Lightbulb, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { selectFeaturedTradeIdeas } from '../../store/slices/communitySlice';
 import { TradeIdeaCard, LevelBadge, useTradeIdeaWizard } from '../community';
 
 export const TradingIdeasWidget: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const ideas = useAppSelector(selectFeaturedTradeIdeas(2));
   const { launch, wizard } = useTradeIdeaWizard();
 
@@ -17,16 +19,16 @@ export const TradingIdeasWidget: React.FC = () => {
           <Lightbulb className="w-[18px] h-[18px]" strokeWidth={1.75} />
         </div>
         <div>
-          <p className="eyebrow">Markt</p>
+          <p className="eyebrow">{t('widgetsB.market')}</p>
           <h2 className="text-base font-semibold text-ink-900 dark:text-white tracking-tight">
-            Trading ideas
+            {t('widgetsB.tradingIdeas')}
           </h2>
         </div>
         <button
           onClick={() => navigate('/community')}
           className="ml-auto inline-flex items-center gap-1 text-xs font-semibold text-primary-700"
         >
-          Bekijk alle <ArrowRight className="w-3.5 h-3.5" />
+          {t('widgetsB.viewAll')} <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>
 
@@ -40,7 +42,9 @@ export const TradingIdeasWidget: React.FC = () => {
             <TradeIdeaCard idea={post.tradeIdea!} onPlaceTrade={launch} />
           </div>
         ))}
-        {ideas.length === 0 && <p className="text-sm text-ink-400">Nog geen trading ideas.</p>}
+        {ideas.length === 0 && (
+          <p className="text-sm text-ink-400">{t('widgetsB.noTradingIdeas')}</p>
+        )}
       </div>
       {wizard}
     </div>

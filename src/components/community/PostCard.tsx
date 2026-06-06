@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ThumbsUp, MessageSquare } from 'lucide-react';
 import type { CommunityPost, TradeIdea } from '../../types';
 import { LevelBadge } from './LevelBadge';
@@ -11,6 +12,7 @@ export const PostCard: React.FC<{
   onReply: (text: string) => void;
   onPlaceTrade?: (idea: TradeIdea) => void;
 }> = ({ post, onLike, onReply, onPlaceTrade }) => {
+  const { t } = useTranslation();
   const [showReplies, setShowReplies] = useState(false);
   return (
     <div className="surface-card p-4">
@@ -47,7 +49,8 @@ export const PostCard: React.FC<{
           onClick={() => setShowReplies((v) => !v)}
           className="inline-flex items-center gap-1.5"
         >
-          <MessageSquare className="w-3.5 h-3.5" /> {post.replies.length} reacties
+          <MessageSquare className="w-3.5 h-3.5" />{' '}
+          {t('learnFeat.postReplies', { count: post.replies.length })}
         </button>
       </div>
 

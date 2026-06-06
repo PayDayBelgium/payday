@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { usePageTitle } from '../../contexts/PageTitleContext';
 import { useNavigation } from '../../contexts/NavigationContext';
 import {
@@ -18,6 +19,7 @@ import { useStrategyRules } from '../../hooks/useStrategyRules';
 
 export const KaChingStrategy: React.FC = () => {
   const { portfolio } = useParams<{ portfolio: string }>();
+  const { t } = useTranslation();
   const { setPageTitle } = usePageTitle();
   const navigate = useNavigate();
   const { pushNavigation } = useNavigation();
@@ -52,7 +54,7 @@ export const KaChingStrategy: React.FC = () => {
                   : 'text-ink-600 dark:text-ink-400 hover:text-ink-900 dark:hover:text-white'
               }`}
             >
-              Posities
+              {t('stratPages.tabPositions')}
               <span className="px-2 py-0.5 rounded-full text-xs bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
                 0
               </span>
@@ -66,7 +68,7 @@ export const KaChingStrategy: React.FC = () => {
               }`}
             >
               <ListTodo className="w-4 h-4" />
-              Regels
+              {t('stratPages.tabRules')}
               {strategyRules.length > 0 && (
                 <span className="px-2 py-0.5 rounded-full text-xs bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
                   {strategyRules.length}
@@ -82,7 +84,7 @@ export const KaChingStrategy: React.FC = () => {
               }`}
             >
               <Info className="w-4 h-4" />
-              Informatie
+              {t('stratPages.tabInfo')}
             </button>
           </div>
           {(activeTab === 'positions' || activeTab === 'rules') && (
@@ -91,7 +93,7 @@ export const KaChingStrategy: React.FC = () => {
               className="flex items-center gap-2 px-3 py-1.5 bg-primary-700 hover:bg-primary-800 text-white rounded-lg text-sm font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
-              {activeTab === 'positions' ? 'KaChing Toevoegen' : 'Regel Toevoegen'}
+              {activeTab === 'positions' ? t('stratPages.kaAdd') : t('stratPages.addRule')}
             </button>
           )}
         </div>
@@ -125,13 +127,13 @@ export const KaChingStrategy: React.FC = () => {
             <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-12 text-center">
               <Zap className="w-16 h-16 text-ink-300 dark:text-ink-600 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
-                Geen KaChing posities
+                {t('stratPages.kaNoPositionsTitle')}
               </h3>
               <p className="text-ink-600 dark:text-ink-400 mb-4">
-                Start je eerste KaChing strategie om beschermde inkomsten te genereren
+                {t('stratPages.kaNoPositionsDesc')}
               </p>
               <button className="px-6 py-3 btn-primary text-white rounded-lg font-medium transition-colors">
-                Voeg je eerste positie toe
+                {t('stratPages.kaAddFirst')}
               </button>
             </div>
           </>
@@ -147,39 +149,38 @@ export const KaChingStrategy: React.FC = () => {
                 <div className="flex-1 space-y-6">
                   <div>
                     <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
-                      Hoe werkt KaChing?
+                      {t('stratPages.kaHowTitle')}
                     </h3>
                     <p className="text-sm text-ink-700 dark:text-ink-300 mb-3">
-                      KaChing is een beschermende strategie die long-term protective puts combineert
-                      met wekelijkse premie collectie om de kosten van bescherming te compenseren.
+                      {t('stratPages.kaHowDesc')}
                     </p>
                     <div className="space-y-2">
                       <div className="flex items-start gap-2">
                         <Shield className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                         <p className="text-sm text-ink-700 dark:text-ink-300">
-                          <strong>Bescherming:</strong> Koop long-term protective puts voor downside
-                          bescherming
+                          <strong>{t('stratPages.kaProtectionLabel')}</strong>
+                          {t('stratPages.kaProtection')}
                         </p>
                       </div>
                       <div className="flex items-start gap-2">
                         <Zap className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                         <p className="text-sm text-ink-700 dark:text-ink-300">
-                          <strong>Inkomen:</strong> Verkoop wekelijkse calls of puts om premie te
-                          verzamelen
+                          <strong>{t('stratPages.kaIncomeLabel')}</strong>
+                          {t('stratPages.kaIncome')}
                         </p>
                       </div>
                       <div className="flex items-start gap-2">
                         <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                         <p className="text-sm text-ink-700 dark:text-ink-300">
-                          <strong>Doel:</strong> De wekelijkse premies betalen voor de kosten van de
-                          bescherming
+                          <strong>{t('stratPages.kaGoalLabel')}</strong>
+                          {t('stratPages.kaGoal')}
                         </p>
                       </div>
                       <div className="flex items-start gap-2">
                         <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                         <p className="text-sm text-ink-700 dark:text-ink-300">
-                          <strong>Voordeel:</strong> Beschermde positie die mogelijk zichzelf
-                          terugbetaalt
+                          <strong>{t('stratPages.kaAdvantageLabel')}</strong>
+                          {t('stratPages.kaAdvantage')}
                         </p>
                       </div>
                     </div>
@@ -188,7 +189,7 @@ export const KaChingStrategy: React.FC = () => {
                   {/* Strategy components */}
                   <div className="bg-white dark:bg-trading-dark-800 rounded-lg p-5 border border-primary-200 dark:border-primary-700/30">
                     <h4 className="font-semibold text-ink-900 dark:text-white mb-3">
-                      Componenten van de KaChing Strategie
+                      {t('stratPages.kaComponentsTitle')}
                     </h4>
                     <div className="space-y-3">
                       <div className="flex items-start gap-3">
@@ -197,10 +198,10 @@ export const KaChingStrategy: React.FC = () => {
                         </div>
                         <div>
                           <p className="text-sm font-medium text-ink-900 dark:text-white">
-                            Koop Protective Puts
+                            {t('stratPages.kaComponent1Title')}
                           </p>
                           <p className="text-xs text-ink-600 dark:text-ink-400">
-                            Long-term puts (3-12 maanden) voor downside bescherming
+                            {t('stratPages.kaComponent1Desc')}
                           </p>
                         </div>
                       </div>
@@ -210,11 +211,10 @@ export const KaChingStrategy: React.FC = () => {
                         </div>
                         <div>
                           <p className="text-sm font-medium text-ink-900 dark:text-white">
-                            Verkoop Wekelijkse Opties
+                            {t('stratPages.kaComponent2Title')}
                           </p>
                           <p className="text-xs text-ink-600 dark:text-ink-400">
-                            Gebruik CSPs (Cash Secured Puts) en/of Covered Calls om wekelijks premie
-                            te verzamelen
+                            {t('stratPages.kaComponent2Desc')}
                           </p>
                         </div>
                       </div>
@@ -224,10 +224,10 @@ export const KaChingStrategy: React.FC = () => {
                         </div>
                         <div>
                           <p className="text-sm font-medium text-ink-900 dark:text-white">
-                            Herhaal Wekelijks
+                            {t('stratPages.kaComponent3Title')}
                           </p>
                           <p className="text-xs text-ink-600 dark:text-ink-400">
-                            Continue proces - de wekelijkse premies betalen idealiter je bescherming
+                            {t('stratPages.kaComponent3Desc')}
                           </p>
                         </div>
                       </div>
@@ -237,25 +237,27 @@ export const KaChingStrategy: React.FC = () => {
                   {/* Build on CSP */}
                   <div className="bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-700/30 rounded-lg p-5">
                     <h4 className="font-semibold text-ink-900 dark:text-white mb-3">
-                      Bouw op bestaande strategieën
+                      {t('stratPages.kaBuildOnTitle')}
                     </h4>
                     <p className="text-sm text-ink-700 dark:text-ink-300 mb-3">
-                      KaChing combineert strategieën die je al kent:
+                      {t('stratPages.kaBuildOnDesc')}
                     </p>
                     <div className="space-y-2 text-xs text-ink-700 dark:text-ink-300">
                       <p>
-                        • <strong>Cash Secured Puts</strong> als basis voor wekelijkse premie
+                        • <strong>{t('stratPages.kaBuildOnCspLabel')}</strong>
+                        {t('stratPages.kaBuildOnCsp')}
                       </p>
                       <p>
-                        • <strong>Covered Calls</strong> op je aandelen voor extra inkomen
+                        • <strong>{t('stratPages.kaBuildOnCcLabel')}</strong>
+                        {t('stratPages.kaBuildOnCc')}
                       </p>
                       <p>
-                        • <strong>Protective Puts</strong> voor downside bescherming
+                        • <strong>{t('stratPages.kaBuildOnPpLabel')}</strong>
+                        {t('stratPages.kaBuildOnPp')}
                       </p>
                     </div>
                     <p className="text-xs text-ink-600 dark:text-ink-400 mt-3">
-                      Net zoals een Covered Call op een LEAP een Poor Man's Covered Call wordt,
-                      bouwt KaChing voort op je bestaande Cash Secured Put en Covered Call kennis.
+                      {t('stratPages.kaBuildOnNote')}
                     </p>
                   </div>
                 </div>
@@ -267,51 +269,66 @@ export const KaChingStrategy: React.FC = () => {
               <div className="flex items-start gap-3 mb-4">
                 <GraduationCap className="w-5 h-5 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                 <h3 className="text-lg font-semibold text-ink-900 dark:text-white">
-                  Volgende Stappen
+                  {t('stratPages.nextSteps')}
                 </h3>
               </div>
               <div className="space-y-3">
                 <button
                   onClick={() => {
-                    pushNavigation(`/portfolio/${portfolio}/stocks-etfs`, 'Aandelen & ETFs');
+                    pushNavigation(
+                      `/portfolio/${portfolio}/stocks-etfs`,
+                      t('stratPages.navStocksEtfs')
+                    );
                     navigate(`/portfolio/${portfolio}/stocks-etfs`);
                   }}
                   className="w-full flex items-center justify-between p-4 bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 hover:border-primary-300 dark:hover:border-primary-500 transition-colors"
                 >
                   <div className="flex-1 text-left">
-                    <p className="font-medium text-ink-900 dark:text-white">Aandelen & ETFs</p>
+                    <p className="font-medium text-ink-900 dark:text-white">
+                      {t('stratPages.navStocksEtfs')}
+                    </p>
                     <p className="text-sm text-ink-600 dark:text-ink-400">
-                      Zorg eerst voor een sterke basis portfolio
+                      {t('stratPages.kaLinkStocksDesc')}
                     </p>
                   </div>
                   <ArrowRight className="w-5 h-5 text-ink-400 flex-shrink-0 ml-3" />
                 </button>
                 <button
                   onClick={() => {
-                    pushNavigation(`/portfolio/${portfolio}/covered-calls`, 'Covered Calls');
+                    pushNavigation(
+                      `/portfolio/${portfolio}/covered-calls`,
+                      t('stratPages.navCoveredCalls')
+                    );
                     navigate(`/portfolio/${portfolio}/covered-calls`);
                   }}
                   className="w-full flex items-center justify-between p-4 bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 hover:border-primary-300 dark:hover:border-primary-500 transition-colors"
                 >
                   <div className="flex-1 text-left">
-                    <p className="font-medium text-ink-900 dark:text-white">Covered Calls</p>
+                    <p className="font-medium text-ink-900 dark:text-white">
+                      {t('stratPages.navCoveredCalls')}
+                    </p>
                     <p className="text-sm text-ink-600 dark:text-ink-400">
-                      Leer eerst hoe je wekelijkse premies verzamelt
+                      {t('stratPages.kaLinkCcDesc')}
                     </p>
                   </div>
                   <ArrowRight className="w-5 h-5 text-ink-400 flex-shrink-0 ml-3" />
                 </button>
                 <button
                   onClick={() => {
-                    pushNavigation(`/portfolio/${portfolio}/spreads`, 'Credit Spreads');
+                    pushNavigation(
+                      `/portfolio/${portfolio}/spreads`,
+                      t('stratPages.navCreditSpreads')
+                    );
                     navigate(`/portfolio/${portfolio}/spreads`);
                   }}
                   className="w-full flex items-center justify-between p-4 bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 hover:border-primary-300 dark:hover:border-primary-500 transition-colors"
                 >
                   <div className="flex-1 text-left">
-                    <p className="font-medium text-ink-900 dark:text-white">Credit Spreads</p>
+                    <p className="font-medium text-ink-900 dark:text-white">
+                      {t('stratPages.navCreditSpreads')}
+                    </p>
                     <p className="text-sm text-ink-600 dark:text-ink-400">
-                      Geavanceerde strategie voor ervaren traders
+                      {t('stratPages.kaLinkSpreadsDesc')}
                     </p>
                   </div>
                   <ArrowRight className="w-5 h-5 text-ink-400 flex-shrink-0 ml-3" />

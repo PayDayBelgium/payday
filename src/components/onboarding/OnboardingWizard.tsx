@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   X,
   ChevronLeft,
@@ -1004,6 +1005,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   onComplete,
   showDontShowAgain = true,
 }) => {
+  const { t } = useTranslation();
   const currentUserLevel = useAppSelector(selectCurrentLevel);
   const wizardLevel = level || currentUserLevel;
 
@@ -1177,7 +1179,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
             </div>
             <div className="leading-tight">
               <p className="text-[10px] uppercase tracking-[0.16em] text-ink-400 mb-0.5">
-                Stap {currentStep + 1} van {totalSteps}
+                {t('learnFeat.wizardStepOf', { current: currentStep + 1, total: totalSteps })}
               </p>
               <h3 className="text-base font-semibold text-ink-900 dark:text-white tracking-tight">
                 {currentStepData.title}
@@ -1199,7 +1201,9 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                 className="flex items-center gap-2 text-sm font-medium text-ink-700 dark:text-ink-300 hover:text-ink-900 dark:hover:text-white transition-colors w-full"
               >
                 <BookOpen className="w-4 h-4" />
-                <span>Begrippen ({currentStepData.glossaryTerms.length})</span>
+                <span>
+                  {t('learnFeat.wizardGlossary', { count: currentStepData.glossaryTerms.length })}
+                </span>
                 <ChevronRight
                   className={`w-4 h-4 ml-auto transition-transform ${showGlossary ? 'rotate-90' : ''}`}
                 />
@@ -1220,7 +1224,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                       </p>
                       {term.example && (
                         <p className="text-xs text-ink-500 dark:text-ink-500 mt-1 italic">
-                          Voorbeeld: {term.example}
+                          {t('learnFeat.wizardExample', { example: term.example })}
                         </p>
                       )}
                     </div>
@@ -1242,7 +1246,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   onChange={(e) => setDontShowAgain(e.target.checked)}
                   className="w-3.5 h-3.5 rounded border-ink-200 text-primary-700 focus:ring-primary-500"
                 />
-                <span>Niet meer tonen voor dit niveau</span>
+                <span>{t('learnFeat.wizardDontShow')}</span>
               </label>
             )}
 
@@ -1256,7 +1260,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   className="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium text-ink-700 dark:text-ink-300 hover:bg-surface-subtle dark:hover:bg-trading-dark-700 rounded-md transition-colors"
                 >
                   <ChevronLeft className="w-4 h-4" />
-                  Vorige
+                  {t('learnFeat.wizardPrev')}
                 </button>
               )}
               <button
@@ -1266,11 +1270,11 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                 {currentStep === totalSteps - 1 ? (
                   <>
                     <CheckCircle className="w-4 h-4" />
-                    Afronden
+                    {t('learnFeat.wizardFinish')}
                   </>
                 ) : (
                   <>
-                    Volgende
+                    {t('learnFeat.wizardNext')}
                     <ChevronRight className="w-4 h-4" />
                   </>
                 )}

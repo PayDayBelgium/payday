@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import { Modal } from '../common/Modal';
 
@@ -32,8 +33,9 @@ export const WizardModal: React.FC<WizardModalProps> = ({
   currentStepIndex: externalStepIndex,
   onStepChange,
   showStepIndicator = true,
-  completeButtonLabel = 'Voltooien',
+  completeButtonLabel,
 }) => {
+  const { t } = useTranslation();
   const [internalStepIndex, setInternalStepIndex] = useState(0);
 
   // Use external step index if provided (controlled), otherwise use internal (uncontrolled)
@@ -204,7 +206,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
               onClick={onClose}
               className="px-4 py-2 bg-surface-muted dark:bg-trading-dark-700 hover:bg-ink-200 dark:hover:bg-trading-dark-600 text-ink-700 dark:text-ink-200 rounded-lg font-medium transition-colors"
             >
-              Annuleren
+              {t('common.cancel')}
             </button>
             {!isFirstStep && (
               <button
@@ -212,7 +214,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                 className="flex items-center gap-2 px-4 py-2 bg-surface-muted dark:bg-trading-dark-700 hover:bg-ink-200 dark:hover:bg-trading-dark-600 text-ink-700 dark:text-ink-200 rounded-lg font-medium transition-colors"
               >
                 <ChevronLeft className="w-4 h-4" />
-                Vorige
+                {t('common.previous')}
               </button>
             )}
             <button
@@ -220,7 +222,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
               disabled={!canGoNext}
               className="flex items-center gap-2 px-4 py-2 bg-primary-700 hover:bg-primary-800 disabled:bg-ink-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
             >
-              {isLastStep ? completeButtonLabel : 'Volgende'}
+              {isLastStep ? (completeButtonLabel ?? t('common.complete')) : t('common.next')}
               {!isLastStep && <ChevronRight className="w-4 h-4" />}
             </button>
           </div>

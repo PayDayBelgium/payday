@@ -1,4 +1,6 @@
-export const en = {
+import { sweepEn } from '../sweep';
+
+const enBase = {
   // Common
   common: {
     save: 'Save',
@@ -12,6 +14,9 @@ export const en = {
     search: 'Search',
     filter: 'Filter',
     reset: 'Reset',
+    next: 'Next',
+    previous: 'Previous',
+    complete: 'Finish',
   },
 
   // AI Assistant
@@ -846,4 +851,17 @@ export const en = {
     viewPmccCampaign: "View Poor Man's Covered Call campaign",
     viewKachingCampaign: 'View KaChing campaign',
   },
+  mountain: {
+    green: 'GREEN',
+    blue: 'BLUE',
+    red: 'RED',
+    black: 'BLACK',
+    offPiste: 'OFF-PISTE',
+    unlock: 'UNLOCK',
+    requested: 'REQUESTED',
+    mentorship: 'SKI SCHOOL · MENTORSHIP',
+    community: 'APRÈS-SKI · COMMUNITY',
+  },
 };
+
+export const en = { ...enBase, ...sweepEn };

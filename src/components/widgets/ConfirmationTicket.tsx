@@ -7,6 +7,7 @@ import {
   TrendingDown,
   AlertCircle,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { getCurrencySymbol } from '../../utils/currency';
 import { formatNumber } from '../../utils/numberFormat';
 import type { CurrencyType } from '../../types';
@@ -75,6 +76,7 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
   notes,
   className = '',
 }) => {
+  const { t } = useTranslation();
   const currencySymbol = getCurrencySymbol(currency);
 
   const isDebit = costBasis > 0;
@@ -83,19 +85,19 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
   const getTypeLabel = () => {
     switch (type) {
       case 'stock':
-        return 'Aandeel';
+        return t('widgetsB.typeStock');
       case 'etf':
-        return 'ETF';
+        return t('widgetsB.typeEtf');
       case 'call':
-        return action === 'buy' ? 'Koop Call' : 'Verkoop Call';
+        return action === 'buy' ? t('widgetsB.buyCall') : t('widgetsB.sellCall');
       case 'put':
-        return action === 'buy' ? 'Koop Put' : 'Verkoop Put (Cash Secured Put)';
+        return action === 'buy' ? t('widgetsB.buyPut') : t('widgetsB.sellPutCsp');
       case 'spread-call':
-        return 'Call Spread';
+        return t('widgetsB.callSpread');
       case 'spread-put':
-        return 'Put Spread';
+        return t('widgetsB.putSpread');
       default:
-        return 'Position';
+        return t('widgetsB.position');
     }
   };
 
@@ -156,13 +158,17 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
         {(type === 'stock' || type === 'etf') && (
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-ink-500 dark:text-ink-400 mb-1">Aantal Aandelen</p>
+              <p className="text-sm text-ink-500 dark:text-ink-400 mb-1">
+                {t('widgetsB.numberOfShares')}
+              </p>
               <p className="text-lg font-semibold text-ink-900 dark:text-white">
                 {shares?.toLocaleString()}
               </p>
             </div>
             <div>
-              <p className="text-sm text-ink-500 dark:text-ink-400 mb-1">Koopprijs per Aandeel</p>
+              <p className="text-sm text-ink-500 dark:text-ink-400 mb-1">
+                {t('widgetsB.pricePerShare')}
+              </p>
               <p className="text-lg font-semibold text-ink-900 dark:text-white">
                 {currencySymbol}
                 {purchasePrice !== undefined ? formatNumber(purchasePrice, 2) : ''}
@@ -175,35 +181,41 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
         {(type === 'call' || type === 'put') && !longStrike && !shortStrike && (
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-ink-500 dark:text-ink-400 mb-1">Strike prijs</p>
+              <p className="text-sm text-ink-500 dark:text-ink-400 mb-1">
+                {t('widgetsB.strikePrice')}
+              </p>
               <p className="text-lg font-semibold text-ink-900 dark:text-white">
                 {currencySymbol}
                 {strike !== undefined ? formatNumber(strike, 2) : ''}
               </p>
             </div>
             <div>
-              <p className="text-sm text-ink-500 dark:text-ink-400 mb-1">Premium</p>
+              <p className="text-sm text-ink-500 dark:text-ink-400 mb-1">{t('widgetsB.premium')}</p>
               <p className="text-lg font-semibold text-ink-900 dark:text-white">
                 {currencySymbol}
                 {premium !== undefined ? formatNumber(premium, 2) : ''}
               </p>
             </div>
             <div>
-              <p className="text-sm text-ink-500 dark:text-ink-400 mb-1">Expiratie</p>
+              <p className="text-sm text-ink-500 dark:text-ink-400 mb-1">
+                {t('widgetsB.expiration')}
+              </p>
               <p className="text-lg font-semibold text-ink-900 dark:text-white">
                 {expiration ? new Date(expiration).toLocaleDateString('nl-NL') : '-'}
               </p>
               {dte !== undefined && (
                 <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
-                  {dte} dagen tot expiratie
+                  {t('widgetsB.daysToExpiration', { days: dte })}
                 </p>
               )}
             </div>
             <div>
-              <p className="text-sm text-ink-500 dark:text-ink-400 mb-1">Contracten</p>
+              <p className="text-sm text-ink-500 dark:text-ink-400 mb-1">
+                {t('widgetsB.contracts')}
+              </p>
               <p className="text-lg font-semibold text-ink-900 dark:text-white">{contracts}</p>
               <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
-                = {(contracts || 0) * 100} aandelen
+                {t('widgetsB.equalsShares', { shares: (contracts || 0) * 100 })}
               </p>
             </div>
           </div>
@@ -215,18 +227,20 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
             <div className="grid grid-cols-2 gap-4 p-4 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
               <div className="col-span-2">
                 <p className="text-sm font-semibold text-primary-900 dark:text-primary-300 mb-2">
-                  Long Leg ({type === 'spread-call' ? 'Lagere' : 'Hogere'} Strike)
+                  {t('widgetsB.longLeg', {
+                    strike: type === 'spread-call' ? t('widgetsB.lower') : t('widgetsB.higher'),
+                  })}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-ink-600 dark:text-ink-400">Strike</p>
+                <p className="text-xs text-ink-600 dark:text-ink-400">{t('widgetsB.strike')}</p>
                 <p className="text-base font-semibold text-ink-900 dark:text-white">
                   {currencySymbol}
                   {formatNumber(longStrike, 2)}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-ink-600 dark:text-ink-400">Premium</p>
+                <p className="text-xs text-ink-600 dark:text-ink-400">{t('widgetsB.premium')}</p>
                 <p className="text-base font-semibold text-ink-900 dark:text-white">
                   {currencySymbol}
                   {longPremium !== undefined ? formatNumber(longPremium, 2) : ''}
@@ -237,18 +251,20 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
             <div className="grid grid-cols-2 gap-4 p-4 bg-caution-50 dark:bg-caution-600/15 rounded-lg border border-caution-500/30 dark:border-caution-600/40">
               <div className="col-span-2">
                 <p className="text-sm font-semibold text-orange-900 dark:text-caution-500 mb-2">
-                  Short Leg ({type === 'spread-call' ? 'Hogere' : 'Lagere'} Strike)
+                  {t('widgetsB.shortLeg', {
+                    strike: type === 'spread-call' ? t('widgetsB.higher') : t('widgetsB.lower'),
+                  })}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-ink-600 dark:text-ink-400">Strike</p>
+                <p className="text-xs text-ink-600 dark:text-ink-400">{t('widgetsB.strike')}</p>
                 <p className="text-base font-semibold text-ink-900 dark:text-white">
                   {currencySymbol}
                   {formatNumber(shortStrike, 2)}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-ink-600 dark:text-ink-400">Premium</p>
+                <p className="text-xs text-ink-600 dark:text-ink-400">{t('widgetsB.premium')}</p>
                 <p className="text-base font-semibold text-ink-900 dark:text-white">
                   {currencySymbol}
                   {shortPremium !== undefined ? formatNumber(shortPremium, 2) : ''}
@@ -258,21 +274,25 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-ink-500 dark:text-ink-400 mb-1">Expiratie</p>
+                <p className="text-sm text-ink-500 dark:text-ink-400 mb-1">
+                  {t('widgetsB.expiration')}
+                </p>
                 <p className="text-lg font-semibold text-ink-900 dark:text-white">
                   {expiration ? new Date(expiration).toLocaleDateString('nl-NL') : '-'}
                 </p>
                 {dte !== undefined && (
                   <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
-                    {dte} dagen tot expiratie
+                    {t('widgetsB.daysToExpiration', { days: dte })}
                   </p>
                 )}
               </div>
               <div>
-                <p className="text-sm text-ink-500 dark:text-ink-400 mb-1">Contracten</p>
+                <p className="text-sm text-ink-500 dark:text-ink-400 mb-1">
+                  {t('widgetsB.contracts')}
+                </p>
                 <p className="text-lg font-semibold text-ink-900 dark:text-white">{contracts}</p>
                 <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
-                  = {(contracts || 0) * 100} aandelen per leg
+                  {t('widgetsB.equalsSharesPerLeg', { shares: (contracts || 0) * 100 })}
                 </p>
               </div>
             </div>
@@ -282,7 +302,7 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
         {/* Financial Summary */}
         <div className="border-t border-surface-line dark:border-trading-dark-600 pt-4">
           <h4 className="text-sm font-semibold text-ink-700 dark:text-ink-300 mb-3">
-            Financiële Samenvatting
+            {t('widgetsB.financialSummary')}
           </h4>
 
           <div className="space-y-3">
@@ -291,7 +311,11 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
               <div className="flex items-center gap-2">
                 <DollarSign className="w-5 h-5 text-ink-600 dark:text-ink-400" />
                 <span className="text-sm font-medium text-ink-700 dark:text-ink-300">
-                  {isDebit ? 'Netto Debit' : isCredit ? 'Netto Credit' : 'Totale kost'}
+                  {isDebit
+                    ? t('widgetsB.netDebit')
+                    : isCredit
+                      ? t('widgetsB.netCredit')
+                      : t('widgetsB.totalCost')}
                 </span>
               </div>
               <span
@@ -313,7 +337,7 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
             {breakEven !== undefined && (
               <div className="flex items-center justify-between p-3 bg-surface dark:bg-trading-dark-900 rounded-lg">
                 <span className="text-sm font-medium text-ink-700 dark:text-ink-300">
-                  Break-even prijs
+                  {t('widgetsB.breakEvenPrice')}
                 </span>
                 <span className="text-lg font-bold text-ink-900 dark:text-white">
                   {currencySymbol}
@@ -328,7 +352,7 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
                 <div className="flex items-center gap-2">
                   <TrendingUp className="w-5 h-5 text-positive-600 dark:text-positive-500" />
                   <span className="text-sm font-medium text-positive-700 dark:text-positive-500">
-                    Max Winst
+                    {t('widgetsB.maxProfit')}
                   </span>
                 </div>
                 <span className="text-lg font-bold text-positive-600 dark:text-positive-500">
@@ -343,7 +367,7 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
                 <div className="flex items-center gap-2">
                   <TrendingDown className="w-5 h-5 text-negative-600 dark:text-negative-500" />
                   <span className="text-sm font-medium text-negative-700 dark:text-negative-500">
-                    Max Verlies
+                    {t('widgetsB.maxLoss')}
                   </span>
                 </div>
                 <span className="text-lg font-bold text-negative-600 dark:text-negative-500">
@@ -358,7 +382,7 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
                 <div className="flex items-center gap-2">
                   <AlertCircle className="w-5 h-5 text-caution-600 dark:text-caution-500" />
                   <span className="text-sm font-medium text-caution-600 dark:text-caution-500">
-                    Cash Gereserveerd
+                    {t('widgetsB.cashReserved')}
                   </span>
                 </div>
                 <span className="text-lg font-bold text-caution-600 dark:text-caution-500">
@@ -373,13 +397,17 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
         {/* Date */}
         <div className="flex items-center gap-2 text-sm text-ink-600 dark:text-ink-400">
           <Calendar className="w-4 h-4" />
-          <span>Datum: {new Date(date).toLocaleDateString('nl-NL')}</span>
+          <span>
+            {t('widgetsB.dateLabel', { date: new Date(date).toLocaleDateString('nl-NL') })}
+          </span>
         </div>
 
         {/* Notes */}
         {notes && (
           <div className="p-3 bg-surface dark:bg-trading-dark-900 rounded-lg">
-            <p className="text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">Notities</p>
+            <p className="text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
+              {t('widgetsB.notes')}
+            </p>
             <p className="text-sm text-ink-600 dark:text-ink-400">{notes}</p>
           </div>
         )}
@@ -389,10 +417,7 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
       <div className="px-6 py-4 bg-surface dark:bg-trading-dark-900 border-t border-surface-line dark:border-trading-dark-600">
         <div className="flex items-start gap-2">
           <AlertCircle className="w-5 h-5 text-caution-600 dark:text-caution-500 flex-shrink-0 mt-0.5" />
-          <p className="text-xs text-ink-600 dark:text-ink-400">
-            Controleer alle details voordat je deze positie opent. Deze actie kan niet ongedaan
-            worden gemaakt.
-          </p>
+          <p className="text-xs text-ink-600 dark:text-ink-400">{t('widgetsB.ticketWarning')}</p>
         </div>
       </div>
     </div>

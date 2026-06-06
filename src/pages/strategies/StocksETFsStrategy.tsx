@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { usePageTitle } from '../../contexts/PageTitleContext';
 import { useNavigation } from '../../contexts/NavigationContext';
 import { useAppSelector } from '../../hooks/useAppSelector';
@@ -31,6 +32,7 @@ import { formatNumber } from '../../utils/numberFormat';
 
 export const StocksETFsStrategy: React.FC = () => {
   const { portfolio } = useParams<{ portfolio: string }>();
+  const { t } = useTranslation();
   const { setPageTitle } = usePageTitle();
   const navigate = useNavigate();
   const { pushNavigation } = useNavigation();
@@ -128,14 +130,22 @@ export const StocksETFsStrategy: React.FC = () => {
             ((position.currentPrice - position.purchasePrice) / position.purchasePrice) * 100;
           if (changePercent <= -rule.parameters.percentage) {
             triggered = true;
-            message = `${position.ticker} is ${formatNumber(Math.abs(changePercent), 1)}% gedaald (drempel: -${rule.parameters.percentage}%)`;
+            message = t('stratPages.stocksAlertDecreased', {
+              ticker: position.ticker,
+              percent: formatNumber(Math.abs(changePercent), 1),
+              threshold: rule.parameters.percentage,
+            });
           }
         } else if (rule.trigger === 'price_increase' && rule.parameters?.percentage) {
           const changePercent =
             ((position.currentPrice - position.purchasePrice) / position.purchasePrice) * 100;
           if (changePercent >= rule.parameters.percentage) {
             triggered = true;
-            message = `${position.ticker} is ${formatNumber(changePercent, 1)}% gestegen (drempel: +${rule.parameters.percentage}%)`;
+            message = t('stratPages.stocksAlertIncreased', {
+              ticker: position.ticker,
+              percent: formatNumber(changePercent, 1),
+              threshold: rule.parameters.percentage,
+            });
           }
         }
 
@@ -158,7 +168,7 @@ export const StocksETFsStrategy: React.FC = () => {
     });
 
     return alertsMap;
-  }, [allPositions, strategyRules, dismissedStrategyAlerts]);
+  }, [allPositions, strategyRules, dismissedStrategyAlerts, t]);
 
   const handleDismissStrategyAlert = useCallback((alertId: string) => {
     setDismissedStrategyAlerts((prev) => new Set([...prev, alertId]));
@@ -171,8 +181,8 @@ export const StocksETFsStrategy: React.FC = () => {
   const availableForCC = holdings.filter((h) => h.canWriteCoveredCall).length;
 
   useEffect(() => {
-    setPageTitle('Aandelen & ETFs', `De basis van je portfolio - long-term holdings`);
-  }, [setPageTitle, portfolio]);
+    setPageTitle(t('stratPages.navStocksEtfs'), t('stratPages.stocksSubtitle'));
+  }, [setPageTitle, portfolio, t]);
 
   const handleEditPosition = (position: StockPosition) => {
     setSelectedPosition(position);
@@ -199,7 +209,7 @@ export const StocksETFsStrategy: React.FC = () => {
                   : 'text-ink-600 dark:text-ink-400 hover:text-ink-900 dark:hover:text-white'
               }`}
             >
-              Posities
+              {t('stratPages.tabPositions')}
               {totalPositions > 0 && (
                 <span className="px-2 py-0.5 rounded-full text-xs bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
                   {totalPositions}
@@ -215,7 +225,7 @@ export const StocksETFsStrategy: React.FC = () => {
               }`}
             >
               <ListTodo className="w-4 h-4" />
-              Regels
+              {t('stratPages.tabRules')}
               {strategyRules.length > 0 && (
                 <span className="px-2 py-0.5 rounded-full text-xs bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
                   {strategyRules.length}
@@ -231,7 +241,7 @@ export const StocksETFsStrategy: React.FC = () => {
               }`}
             >
               <Info className="w-4 h-4" />
-              Informatie
+              {t('stratPages.tabInfo')}
             </button>
           </div>
           {(activeTab === 'positions' || activeTab === 'rules') && (
@@ -240,7 +250,7 @@ export const StocksETFsStrategy: React.FC = () => {
               className="flex items-center gap-2 px-3 py-1.5 bg-primary-700 hover:bg-primary-800 text-white rounded-lg text-sm font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
-              {activeTab === 'positions' ? 'Aandeel/ETF Toevoegen' : 'Regel Toevoegen'}
+              {activeTab === 'positions' ? t('stratPages.stocksAdd') : t('stratPages.addRule')}
             </button>
           )}
         </div>
@@ -253,13 +263,17 @@ export const StocksETFsStrategy: React.FC = () => {
               className={`grid grid-cols-1 gap-4 ${currentPortfolio?.hasOptions ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}
             >
               <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
-                <p className="text-sm text-ink-600 dark:text-ink-400">Totale Waarde</p>
+                <p className="text-sm text-ink-600 dark:text-ink-400">
+                  {t('stratPages.stocksTotalValue')}
+                </p>
                 <p className="text-2xl font-bold text-primary-700 dark:text-primary-300 mt-1">
                   {formatCurrency(totalValue, allPortfolios)}
                 </p>
               </div>
               <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
-                <p className="text-sm text-ink-600 dark:text-ink-400">Aantal Posities</p>
+                <p className="text-sm text-ink-600 dark:text-ink-400">
+                  {t('stratPages.stocksCount')}
+                </p>
                 <p className="text-2xl font-bold text-ink-900 dark:text-white mt-1">
                   {totalPositions}
                 </p>
@@ -267,13 +281,13 @@ export const StocksETFsStrategy: React.FC = () => {
               {currentPortfolio?.hasOptions && (
                 <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
                   <p className="text-sm text-ink-600 dark:text-ink-400">
-                    Beschikbaar voor Covered Calls
+                    {t('stratPages.stocksAvailableForCC')}
                   </p>
                   <p className="text-2xl font-bold text-primary-700 dark:text-primary-300 mt-1">
                     {availableForCC}
                   </p>
                   <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
-                    Niet gedekt met calls
+                    {t('stratPages.stocksNotCovered')}
                   </p>
                 </div>
               )}
@@ -293,16 +307,16 @@ export const StocksETFsStrategy: React.FC = () => {
               <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-12 text-center">
                 <TrendingUp className="w-16 h-16 text-ink-300 dark:text-ink-600 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
-                  Geen aandelen of ETFs
+                  {t('stratPages.stocksNoPositionsTitle')}
                 </h3>
                 <p className="text-ink-600 dark:text-ink-400 mb-4">
-                  Begin met het toevoegen van je eerste aandelen of ETFs aan je portfolio
+                  {t('stratPages.stocksNoPositionsDesc')}
                 </p>
                 <button
                   onClick={() => setIsModalOpen(true)}
                   className="px-6 py-3 bg-primary-700 hover:bg-primary-800 text-white rounded-lg font-medium transition-colors"
                 >
-                  Voeg je eerste positie toe
+                  {t('stratPages.stocksAddFirst')}
                 </button>
               </div>
             )}
@@ -331,26 +345,25 @@ export const StocksETFsStrategy: React.FC = () => {
                 <Lightbulb className="w-5 h-5 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
-                    Waarom beginnen met Aandelen & ETFs?
+                    {t('stratPages.stocksWhyTitle')}
                   </h3>
                   <p className="text-sm text-ink-700 dark:text-ink-300 mb-3">
-                    Dit is de basis van je portfolio. Je koopt aandelen of ETFs die je wilt houden
-                    voor de lange termijn. Denk aan bedrijven waar je in gelooft of gediversifieerde
-                    ETFs zoals SPY, QQQ, of sector-specifieke ETFs.
+                    {t('stratPages.stocksWhyDesc')}
                   </p>
                   {currentPortfolio?.hasOptions ? (
                     <div className="space-y-2">
                       <div className="flex items-start gap-2">
                         <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                         <p className="text-sm text-ink-700 dark:text-ink-300">
-                          <strong>Stap 1:</strong> Begin met sterke, betrouwbare aandelen of ETFs
+                          <strong>{t('stratPages.stocksStep1Label')}</strong>
+                          {t('stratPages.stocksStep1')}
                         </p>
                       </div>
                       <div className="flex items-start gap-2">
                         <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                         <p className="text-sm text-ink-700 dark:text-ink-300">
-                          <strong>Volgende stap:</strong> Verdien extra inkomen door Covered Calls
-                          te schrijven op deze aandelen
+                          <strong>{t('stratPages.stocksStep2Label')}</strong>
+                          {t('stratPages.stocksStep2')}
                         </p>
                       </div>
                     </div>
@@ -359,15 +372,15 @@ export const StocksETFsStrategy: React.FC = () => {
                       <div className="flex items-start gap-2">
                         <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                         <p className="text-sm text-ink-700 dark:text-ink-300">
-                          <strong>Let op:</strong> Deze portfolio ondersteunt geen opties. Je kunt
-                          alleen verdienen via koersstijgingen en eventuele dividenden.
+                          <strong>{t('stratPages.stocksNoOptionsLabel')}</strong>
+                          {t('stratPages.stocksNoOptions')}
                         </p>
                       </div>
                       <div className="flex items-start gap-2">
                         <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                         <p className="text-sm text-ink-700 dark:text-ink-300">
-                          <strong>Strategie:</strong> Focus op kwaliteitsaandelen met groei
-                          potentieel en/of dividend uitkeringen
+                          <strong>{t('stratPages.stocksStrategyLabel')}</strong>
+                          {t('stratPages.stocksStrategy')}
                         </p>
                       </div>
                     </div>
@@ -382,22 +395,27 @@ export const StocksETFsStrategy: React.FC = () => {
                 <div className="flex items-start gap-3 mb-4">
                   <GraduationCap className="w-5 h-5 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                   <h3 className="text-lg font-semibold text-ink-900 dark:text-white">
-                    Volgende Stappen
+                    {t('stratPages.nextSteps')}
                   </h3>
                 </div>
                 <div className="space-y-3">
                   <button
                     onClick={() => {
-                      pushNavigation(`/portfolio/${portfolio}/covered-calls`, 'Covered Calls');
+                      pushNavigation(
+                        `/portfolio/${portfolio}/covered-calls`,
+                        t('stratPages.navCoveredCalls')
+                      );
                       navigate(`/portfolio/${portfolio}/covered-calls`);
                     }}
                     className="w-full text-left p-4 bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 hover:border-primary-300 dark:hover:border-primary-500 transition-colors"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1 text-left">
-                        <p className="font-medium text-ink-900 dark:text-white">Covered Calls</p>
+                        <p className="font-medium text-ink-900 dark:text-white">
+                          {t('stratPages.navCoveredCalls')}
+                        </p>
                         <p className="text-sm text-ink-600 dark:text-ink-400">
-                          Verdien extra premies op je aandelen en ETFs
+                          {t('stratPages.stocksLinkCcDesc')}
                         </p>
                       </div>
                       <ArrowRight className="w-5 h-5 text-ink-400 flex-shrink-0 ml-3" />
@@ -405,7 +423,7 @@ export const StocksETFsStrategy: React.FC = () => {
                   </button>
                   <button
                     onClick={() => {
-                      pushNavigation(`/portfolio/${portfolio}/leaps`, 'LEAPS');
+                      pushNavigation(`/portfolio/${portfolio}/leaps`, t('stratPages.navLeaps'));
                       navigate(`/portfolio/${portfolio}/leaps`);
                     }}
                     className="w-full text-left p-4 bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 hover:border-primary-300 dark:hover:border-primary-500 transition-colors"
@@ -413,10 +431,10 @@ export const StocksETFsStrategy: React.FC = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex-1 text-left">
                         <p className="font-medium text-ink-900 dark:text-white">
-                          LEAPS (Synthetische Aandelen)
+                          {t('stratPages.stocksLinkLeapsTitle')}
                         </p>
                         <p className="text-sm text-ink-600 dark:text-ink-400">
-                          Krijg exposure met leverage - ook geschikt voor Covered Calls
+                          {t('stratPages.stocksLinkLeapsDesc')}
                         </p>
                       </div>
                       <ArrowRight className="w-5 h-5 text-ink-400 flex-shrink-0 ml-3" />

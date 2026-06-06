@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export const Composer: React.FC<{
   initials: string;
   color: string;
   placeholder?: string;
   onSubmit: (text: string) => void;
-}> = ({ initials, color, placeholder = 'Deel een trading idea of stel een vraag…', onSubmit }) => {
+}> = ({ initials, color, placeholder, onSubmit }) => {
+  const { t } = useTranslation();
   const [text, setText] = useState('');
   const submit = () => {
     const trimmed = text.trim();
@@ -25,11 +27,11 @@ export const Composer: React.FC<{
         value={text}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={(e) => e.key === 'Enter' && submit()}
-        placeholder={placeholder}
+        placeholder={placeholder ?? t('learnFeat.composerPlaceholder')}
         className="flex-1 bg-transparent outline-none text-sm text-ink-700 dark:text-ink-200 placeholder:text-ink-400"
       />
       <button onClick={submit} className="btn-primary rounded-md px-3 py-1.5 text-xs font-semibold">
-        Plaatsen
+        {t('learnFeat.composerPost')}
       </button>
     </div>
   );

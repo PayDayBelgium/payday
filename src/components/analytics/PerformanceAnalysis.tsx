@@ -25,19 +25,20 @@ import {
   ReferenceLine,
 } from 'recharts';
 import { useAppSelector } from '../../hooks/useAppSelector';
+import { useTranslation } from 'react-i18next';
 import type { Trade } from '../../types';
 
 type PeriodPreset = 'week' | 'month' | 'quarter' | 'year' | 'ytd' | 'all' | 'custom';
 type DisplayMode = 'nominal' | 'percent';
 
-const PRESETS: { id: PeriodPreset; label: string }[] = [
-  { id: 'week', label: '7 dagen' },
-  { id: 'month', label: '30 dagen' },
-  { id: 'quarter', label: '3 maanden' },
-  { id: 'year', label: '12 maanden' },
-  { id: 'ytd', label: 'YTD' },
-  { id: 'all', label: 'Alles' },
-  { id: 'custom', label: 'Custom' },
+const PRESETS: { id: PeriodPreset; labelKey: string; rawLabel?: string }[] = [
+  { id: 'week', labelKey: 'compCommon.presetWeek' },
+  { id: 'month', labelKey: 'compCommon.presetMonth' },
+  { id: 'quarter', labelKey: 'compCommon.presetQuarter' },
+  { id: 'year', labelKey: 'compCommon.presetYear' },
+  { id: 'ytd', labelKey: '', rawLabel: 'YTD' },
+  { id: 'all', labelKey: 'compCommon.presetAll' },
+  { id: 'custom', labelKey: '', rawLabel: 'Custom' },
 ];
 
 const toIso = (d: Date) => d.toISOString().split('T')[0];
@@ -84,7 +85,10 @@ interface KPI {
 }
 
 export const PerformanceAnalysis: React.FC = () => {
+  const { t } = useTranslation();
   const trades = useAppSelector((state) => state.trades.trades) as Trade[];
+  const presetLabel = (p: { labelKey: string; rawLabel?: string }): string =>
+    p.labelKey ? t(p.labelKey) : (p.rawLabel ?? '');
   const [preset, setPreset] = useState<PeriodPreset>('month');
   const [customFrom, setCustomFrom] = useState<string>(
     toIso(new Date(Date.now() - 30 * 86400_000))
@@ -103,9 +107,10 @@ export const PerformanceAnalysis: React.FC = () => {
     return {
       fromDate: startOfPreset(preset),
       toDate: new Date(),
-      label: PRESETS.find((p) => p.id === preset)!.label,
+      label: presetLabel(PRESETS.find((p) => p.id === preset)!),
     };
-  }, [preset, customFrom, customTo]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [preset, customFrom, customTo, t]);
 
   // Trades closed in the period
   const periodTrades = useMemo(() => {
@@ -218,13 +223,13 @@ export const PerformanceAnalysis: React.FC = () => {
 
   const kpis: KPI[] = [
     {
-      label: 'Netto P&L',
+      label: t('compCommon.netPnl'),
       value:
         display === 'nominal' ? formatCurrency(stats.totalPnL) : formatPercent(stats.pnlPercent),
       hint:
         stats.deltaPnL >= 0
-          ? `+${formatCompact(stats.deltaPnL)} vs vorige periode`
-          : `${formatCompact(stats.deltaPnL)} vs vorige periode`,
+          ? `+${formatCompact(stats.deltaPnL)} ${t('compCommon.vsPreviousPeriod')}`
+          : `${formatCompact(stats.deltaPnL)} ${t('compCommon.vsPreviousPeriod')}`,
       tone: stats.totalPnL >= 0 ? 'positive' : 'negative',
       icon:
         stats.totalPnL >= 0 ? (
@@ -234,57 +239,66 @@ export const PerformanceAnalysis: React.FC = () => {
         ),
     },
     {
-      label: 'Win rate',
+      label: t('compCommon.winRate'),
       value: `${stats.winRate.toFixed(1)}%`,
-      hint: `${stats.wins} wins · ${stats.losses} losses${stats.breakevens ? ` · ${stats.breakevens} break-even` : ''}`,
+      hint: stats.breakevens
+        ? t('compCommon.winsLossesBreakeven', {
+            wins: stats.wins,
+            losses: stats.losses,
+            breakevens: stats.breakevens,
+          })
+        : t('compCommon.winsLosses', { wins: stats.wins, losses: stats.losses }),
       tone: stats.winRate >= 50 ? 'positive' : stats.winRate >= 35 ? 'neutral' : 'negative',
       icon: <Target className="w-4 h-4" />,
     },
     {
-      label: 'Profit factor',
+      label: t('compCommon.profitFactor'),
       value: stats.profitFactor === Infinity ? '∞' : stats.profitFactor.toFixed(2),
       hint:
         stats.profitFactor >= 2
-          ? 'Sterk'
+          ? t('compCommon.strong')
           : stats.profitFactor >= 1
-            ? 'Boven break-even'
-            : 'Onder break-even',
+            ? t('compCommon.aboveBreakEven')
+            : t('compCommon.belowBreakEven'),
       tone:
         stats.profitFactor >= 1.5 ? 'positive' : stats.profitFactor >= 1 ? 'neutral' : 'negative',
       icon: <Activity className="w-4 h-4" />,
     },
     {
-      label: 'Contracten',
+      label: t('compCommon.contracts'),
       value: stats.totalContracts.toLocaleString('nl-BE'),
-      hint: `${periodTrades.length} afgesloten trades`,
+      hint: t('compCommon.closedTradesCount', { n: periodTrades.length }),
       tone: 'neutral',
       icon: <Coins className="w-4 h-4" />,
     },
     {
-      label: 'Bruto winst',
+      label: t('compCommon.grossProfit'),
       value:
         display === 'nominal'
           ? formatCurrency(stats.grossProfit)
           : formatPercent(stats.totalCost > 0 ? (stats.grossProfit / stats.totalCost) * 100 : 0),
-      hint: stats.wins > 0 ? `Gem. ${formatCompact(stats.avgWin)} per win` : 'Geen winnende trades',
+      hint:
+        stats.wins > 0
+          ? t('compCommon.avgPerWin', { amount: formatCompact(stats.avgWin) })
+          : t('compCommon.noWinningTrades'),
       tone: 'positive',
       icon: <TrendingUp className="w-4 h-4" />,
     },
     {
-      label: 'Bruto verlies',
+      label: t('compCommon.grossLoss'),
       value:
         display === 'nominal'
           ? formatCurrency(stats.grossLoss)
           : formatPercent(stats.totalCost > 0 ? (stats.grossLoss / stats.totalCost) * 100 : 0),
       hint:
         stats.losses > 0
-          ? `Gem. ${formatCompact(stats.avgLoss)} per loss`
-          : 'Geen verliezende trades',
+          ? t('compCommon.avgPerLoss', { amount: formatCompact(stats.avgLoss) })
+          : t('compCommon.noLosingTrades'),
       tone: 'negative',
       icon: <TrendingDown className="w-4 h-4" />,
     },
     {
-      label: 'Gem. P&L / trade',
+      label: t('compCommon.avgPnlPerTrade'),
       value:
         display === 'nominal'
           ? formatCurrency(stats.avgPnL)
@@ -293,16 +307,18 @@ export const PerformanceAnalysis: React.FC = () => {
                 ? (stats.avgPnL / (stats.totalCost / periodTrades.length)) * 100
                 : 0
             ),
-      hint: `Over ${periodTrades.length} trade(s)`,
+      hint: t('compCommon.overNTrades', { n: periodTrades.length }),
       tone: stats.avgPnL >= 0 ? 'positive' : 'negative',
       icon: <Percent className="w-4 h-4" />,
     },
     {
-      label: 'Fees & commissies',
+      label: t('compCommon.feesAndCommissions'),
       value: formatCurrency(stats.totalFees),
       hint:
         stats.totalPnL !== 0
-          ? `${((stats.totalFees / Math.abs(stats.totalPnL)) * 100).toFixed(1)}% van P&L`
+          ? t('compCommon.percentOfPnl', {
+              percent: ((stats.totalFees / Math.abs(stats.totalPnL)) * 100).toFixed(1),
+            })
           : '—',
       tone: 'neutral',
       icon: <Receipt className="w-4 h-4" />,
@@ -326,7 +342,7 @@ export const PerformanceAnalysis: React.FC = () => {
                   : 'text-ink-700 dark:text-ink-300 hover:bg-surface-subtle dark:hover:bg-trading-dark-700'
               }`}
             >
-              {p.label}
+              {presetLabel(p)}
             </button>
           ))}
         </div>
@@ -359,7 +375,7 @@ export const PerformanceAnalysis: React.FC = () => {
                   : 'text-ink-700 dark:text-ink-300'
               }`}
             >
-              € Nominaal
+              {t('compCommon.euroNominal')}
             </button>
             <button
               onClick={() => setDisplay('percent')}
@@ -369,7 +385,7 @@ export const PerformanceAnalysis: React.FC = () => {
                   : 'text-ink-700 dark:text-ink-300'
               }`}
             >
-              % Procent
+              {t('compCommon.percentPercent')}
             </button>
           </div>
         </div>
@@ -389,11 +405,10 @@ export const PerformanceAnalysis: React.FC = () => {
         <div className="surface-card p-12 text-center">
           <Activity className="w-12 h-12 mx-auto mb-3 text-ink-300" strokeWidth={1.5} />
           <h3 className="text-base font-semibold text-ink-900 dark:text-white mb-1">
-            Geen trades in deze periode
+            {t('compCommon.noTradesInPeriod')}
           </h3>
           <p className="text-sm text-ink-500 dark:text-ink-400 max-w-md mx-auto">
-            Sluit een positie om hier je prestaties te zien verschijnen. Probeer ook een ruimere
-            periode te selecteren.
+            {t('compCommon.noTradesHint')}
           </p>
         </div>
       ) : (
@@ -444,9 +459,10 @@ export const PerformanceAnalysis: React.FC = () => {
             <div className="surface-card p-5">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="eyebrow mb-1">Verloop</p>
+                  <p className="eyebrow mb-1">{t('compCommon.progression')}</p>
                   <h3 className="text-base font-semibold text-ink-900 dark:text-white tracking-tight">
-                    Cumulatieve {display === 'nominal' ? 'P&L' : 'rendement'}
+                    {t('compCommon.cumulative')}{' '}
+                    {display === 'nominal' ? t('compCommon.pnlLabel') : t('compCommon.returnLabel')}
                   </h3>
                 </div>
                 <div className="text-right">
@@ -462,7 +478,7 @@ export const PerformanceAnalysis: React.FC = () => {
                       : formatPercent(stats.pnlPercent)}
                   </p>
                   <p className="text-[11px] text-ink-500 dark:text-ink-400">
-                    {periodTrades.length} trade(s)
+                    {t('compCommon.tradesCount', { n: periodTrades.length })}
                   </p>
                 </div>
               </div>
@@ -500,7 +516,7 @@ export const PerformanceAnalysis: React.FC = () => {
                       contentStyle={{ border: '1px solid #DCE4EE', borderRadius: 6, fontSize: 12 }}
                       formatter={(value: number) => [
                         display === 'nominal' ? formatCurrency(value) : `${value.toFixed(2)}%`,
-                        'Cumulatief',
+                        t('compCommon.cumulativeLabel'),
                       ]}
                     />
                     <ReferenceLine y={0} stroke="#B4BFCF" strokeDasharray="3 3" />
@@ -518,16 +534,16 @@ export const PerformanceAnalysis: React.FC = () => {
 
             {/* Win/loss distribution */}
             <div className="surface-card p-5">
-              <p className="eyebrow mb-1">Verdeling</p>
+              <p className="eyebrow mb-1">{t('compCommon.distribution')}</p>
               <h3 className="text-base font-semibold text-ink-900 dark:text-white tracking-tight mb-4">
-                Wins vs. losses
+                {t('compCommon.winsVsLosses')}
               </h3>
 
               {/* Stacked bar */}
               <div className="space-y-3">
                 <div>
                   <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="text-ink-500 dark:text-ink-400">Winnaars</span>
+                    <span className="text-ink-500 dark:text-ink-400">{t('compCommon.winners')}</span>
                     <span className="font-semibold tabular-nums text-positive-700 dark:text-positive-500">
                       {stats.wins}
                     </span>
@@ -543,7 +559,7 @@ export const PerformanceAnalysis: React.FC = () => {
                 </div>
                 <div>
                   <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="text-ink-500 dark:text-ink-400">Verliezers</span>
+                    <span className="text-ink-500 dark:text-ink-400">{t('compCommon.losers')}</span>
                     <span className="font-semibold tabular-nums text-negative-700 dark:text-negative-500">
                       {stats.losses}
                     </span>
@@ -560,7 +576,9 @@ export const PerformanceAnalysis: React.FC = () => {
                 {stats.breakevens > 0 && (
                   <div>
                     <div className="flex items-center justify-between text-xs mb-1">
-                      <span className="text-ink-500 dark:text-ink-400">Break-even</span>
+                      <span className="text-ink-500 dark:text-ink-400">
+                        {t('compCommon.breakEven')}
+                      </span>
                       <span className="font-semibold tabular-nums text-ink-700 dark:text-ink-300">
                         {stats.breakevens}
                       </span>
@@ -577,19 +595,25 @@ export const PerformanceAnalysis: React.FC = () => {
 
               <div className="border-t border-[var(--line)] pt-4 mt-5 space-y-2.5 text-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-ink-500 dark:text-ink-400">Gem. winst per win</span>
+                  <span className="text-ink-500 dark:text-ink-400">
+                    {t('compCommon.avgProfitPerWin')}
+                  </span>
                   <span className="font-semibold tabular-nums text-positive-700 dark:text-positive-500">
                     {formatCurrency(stats.avgWin)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-ink-500 dark:text-ink-400">Gem. verlies per loss</span>
+                  <span className="text-ink-500 dark:text-ink-400">
+                    {t('compCommon.avgLossPerLoss')}
+                  </span>
                   <span className="font-semibold tabular-nums text-negative-700 dark:text-negative-500">
                     {formatCurrency(stats.avgLoss)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-ink-500 dark:text-ink-400">Win/loss ratio</span>
+                  <span className="text-ink-500 dark:text-ink-400">
+                    {t('compCommon.winLossRatio')}
+                  </span>
                   <span className="font-semibold tabular-nums text-ink-900 dark:text-white">
                     {stats.avgLoss !== 0 ? Math.abs(stats.avgWin / stats.avgLoss).toFixed(2) : '∞'}
                   </span>
@@ -602,14 +626,14 @@ export const PerformanceAnalysis: React.FC = () => {
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
             {/* Best/worst */}
             <div className="surface-card p-5">
-              <p className="eyebrow mb-3">Hoogtepunten</p>
+              <p className="eyebrow mb-3">{t('compCommon.highlights')}</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-[var(--line)] rounded-md overflow-hidden">
                 {stats.best && (
                   <div className="bg-white dark:bg-trading-dark-800 p-4">
                     <div className="flex items-center gap-2 text-positive-600 dark:text-positive-500 mb-2">
                       <Trophy className="w-4 h-4" />
                       <p className="text-[11px] uppercase tracking-[0.08em] font-semibold">
-                        Beste trade
+                        {t('compCommon.bestTrade')}
                       </p>
                     </div>
                     <p className="text-xl font-semibold tabular-nums text-positive-700 dark:text-positive-500">
@@ -628,7 +652,7 @@ export const PerformanceAnalysis: React.FC = () => {
                     <div className="flex items-center gap-2 text-negative-600 dark:text-negative-500 mb-2">
                       <AlertTriangle className="w-4 h-4" />
                       <p className="text-[11px] uppercase tracking-[0.08em] font-semibold">
-                        Slechtste trade
+                        {t('compCommon.worstTrade')}
                       </p>
                     </div>
                     <p className="text-xl font-semibold tabular-nums text-negative-700 dark:text-negative-500">
@@ -649,9 +673,9 @@ export const PerformanceAnalysis: React.FC = () => {
             <div className="surface-card p-5">
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <p className="eyebrow mb-1">Per strategie</p>
+                  <p className="eyebrow mb-1">{t('compCommon.perStrategy')}</p>
                   <h3 className="text-sm font-semibold text-ink-900 dark:text-white tracking-tight">
-                    P&L verdeeld over strategieën
+                    {t('compCommon.pnlByStrategy')}
                   </h3>
                 </div>
               </div>
@@ -685,7 +709,7 @@ export const PerformanceAnalysis: React.FC = () => {
                           borderRadius: 6,
                           fontSize: 12,
                         }}
-                        formatter={(v: number) => [formatCurrency(v), 'P&L']}
+                        formatter={(v: number) => [formatCurrency(v), t('compCommon.pnlLabel')]}
                       />
                       <ReferenceLine x={0} stroke="#B4BFCF" />
                       <Bar dataKey="pnl" radius={[0, 3, 3, 0]}>
@@ -697,7 +721,9 @@ export const PerformanceAnalysis: React.FC = () => {
                   </ResponsiveContainer>
                 </div>
               ) : (
-                <p className="text-sm text-ink-500 dark:text-ink-400">Geen strategie-data.</p>
+                <p className="text-sm text-ink-500 dark:text-ink-400">
+                  {t('compCommon.noStrategyData')}
+                </p>
               )}
             </div>
           </div>
@@ -706,9 +732,12 @@ export const PerformanceAnalysis: React.FC = () => {
           <div className="surface-card overflow-hidden">
             <div className="px-5 py-4 border-b border-[var(--line)] flex items-center justify-between">
               <div>
-                <p className="eyebrow mb-1">Afgesloten trades</p>
+                <p className="eyebrow mb-1">{t('compCommon.closedTrades')}</p>
                 <h3 className="text-sm font-semibold text-ink-900 dark:text-white tracking-tight">
-                  {periodTrades.length} trade(s) in {label.toLowerCase()}
+                  {t('compCommon.tradesInPeriod', {
+                    n: periodTrades.length,
+                    period: label.toLowerCase(),
+                  })}
                 </h3>
               </div>
             </div>
@@ -716,14 +745,20 @@ export const PerformanceAnalysis: React.FC = () => {
               <table className="w-full text-sm">
                 <thead className="bg-surface-subtle dark:bg-trading-dark-700/40 text-[11px] uppercase tracking-[0.08em] text-ink-500 dark:text-ink-400">
                   <tr>
-                    <th className="text-left px-5 py-2.5 font-semibold">Datum</th>
-                    <th className="text-left px-5 py-2.5 font-semibold">Ticker</th>
-                    <th className="text-left px-5 py-2.5 font-semibold">Strategie</th>
-                    <th className="text-right px-5 py-2.5 font-semibold">Aantal</th>
-                    <th className="text-right px-5 py-2.5 font-semibold">Entry</th>
-                    <th className="text-right px-5 py-2.5 font-semibold">Exit</th>
-                    <th className="text-right px-5 py-2.5 font-semibold">Fees</th>
-                    <th className="text-right px-5 py-2.5 font-semibold">P&L</th>
+                    <th className="text-left px-5 py-2.5 font-semibold">{t('compCommon.thDate')}</th>
+                    <th className="text-left px-5 py-2.5 font-semibold">
+                      {t('compCommon.thTicker')}
+                    </th>
+                    <th className="text-left px-5 py-2.5 font-semibold">
+                      {t('compCommon.thStrategy')}
+                    </th>
+                    <th className="text-right px-5 py-2.5 font-semibold">
+                      {t('compCommon.thQuantity')}
+                    </th>
+                    <th className="text-right px-5 py-2.5 font-semibold">{t('compCommon.thEntry')}</th>
+                    <th className="text-right px-5 py-2.5 font-semibold">{t('compCommon.thExit')}</th>
+                    <th className="text-right px-5 py-2.5 font-semibold">{t('compCommon.thFees')}</th>
+                    <th className="text-right px-5 py-2.5 font-semibold">{t('compCommon.thPnl')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -773,7 +808,7 @@ export const PerformanceAnalysis: React.FC = () => {
               </table>
               {periodTrades.length > 25 && (
                 <div className="px-5 py-2.5 text-[11px] text-ink-500 dark:text-ink-400 border-t border-[var(--line)]">
-                  Top 25 weergegeven · {periodTrades.length - 25} extra trade(s) in deze periode
+                  {t('compCommon.topShown', { n: periodTrades.length - 25 })}
                 </div>
               )}
             </div>

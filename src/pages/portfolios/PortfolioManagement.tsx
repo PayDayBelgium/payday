@@ -206,7 +206,7 @@ export const PortfolioManagement: React.FC = () => {
 
     // Validate URL format - must start with https://
     if (formData.url && !formData.url.startsWith('https://')) {
-      alert('Portfolio URL moet beginnen met https://');
+      alert(t('pagesB.portfolioManagement.urlMustStartHttps'));
       return;
     }
 
@@ -236,7 +236,7 @@ export const PortfolioManagement: React.FC = () => {
           previousValue: 0,
           newValue: formData.initialCapital,
           createdAt: new Date().toISOString(),
-          notes: 'Automatisch gelogd bij aanmaken portfolio',
+          notes: t('pagesB.portfolioManagement.initialDepositNote'),
         };
         dispatch(addTransaction(depositTransaction));
         console.log('Initial deposit logged:', depositTransaction);
@@ -286,8 +286,13 @@ export const PortfolioManagement: React.FC = () => {
     setLogoPreview(null);
     setLogoOriginal(null);
     setLogoMetadata(undefined);
-    // Clear navigation stack and stay on portfolio list (component will re-render to show list)
+    // After creating a new portfolio, open it right away; when editing an
+    // existing one, return to the portfolio list. (editingPortfolioId and
+    // formData still hold their pre-reset values in this closure.)
     clearNavigation();
+    if (editingPortfolioId === 'new') {
+      navigate(`/portfolio/${encodeURIComponent(formData.name)}`);
+    }
   };
 
   const handleCancelEdit = () => {
@@ -378,7 +383,7 @@ export const PortfolioManagement: React.FC = () => {
   // If editing, show edit form - full page integration without extra padding
   if (editingPortfolioId) {
     return (
-      <div className="-m-6 min-h-[calc(100vh-4rem)]">
+      <div className="-m-6 min-h-[calc(100vh-4rem)] bg-white dark:bg-trading-dark-800">
         {/* Edit Form - Full page layout */}
         <div className="bg-white dark:bg-trading-dark-800 p-6 min-h-full">
           <div className="space-y-6 max-w-4xl">
@@ -541,7 +546,9 @@ export const PortfolioManagement: React.FC = () => {
 
               <div>
                 <label className="block mb-2 text-sm font-medium text-ink-900 dark:text-white">
-                  Startkapitaal ({getCurrencySymbol(formData.currency)})
+                  {t('pagesB.portfolioManagement.startCapital', {
+                    symbol: getCurrencySymbol(formData.currency),
+                  })}
                 </label>
                 <NumberInput
                   value={formData.initialCapital || 0}
@@ -552,7 +559,7 @@ export const PortfolioManagement: React.FC = () => {
                   className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:placeholder-ink-400 dark:text-white"
                 />
                 <p className="mt-1 text-xs text-ink-500 dark:text-ink-400">
-                  Initieel kapitaal (0 = geen storting)
+                  {t('pagesB.portfolioManagement.initialCapitalHint')}
                 </p>
               </div>
             </div>

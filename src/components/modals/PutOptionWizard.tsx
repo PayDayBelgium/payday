@@ -606,16 +606,15 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                   newTickerHeading: t('putWizard.tickerStep.newTicker'),
                   newTickerDesc: t('putWizard.tickerStep.newTickerDesc'),
                   companyName: t('putWizard.tickerStep.companyName'),
-                  companyPlaceholder: 'Apple Inc.',
-                  type: 'Type *',
-                  stock: 'Aandeel',
-                  etf: 'ETF',
-                  optionsAvailableCheck: 'Opties beschikbaar',
-                  miniContractsCheck: 'Mini contracts beschikbaar',
-                  miniContractsTooltip:
-                    'Sommige aandelen hebben mini-contracten van 10 aandelen per contract in plaats van de standaard 100 aandelen per contract',
-                  addTicker: 'Ticker Toevoegen',
-                  cancel: 'Annuleren',
+                  companyPlaceholder: t('modalsB.putWizard.companyPlaceholder'),
+                  type: t('modalsB.putWizard.type'),
+                  stock: t('modalsB.putWizard.stock'),
+                  etf: t('modalsB.putWizard.etf'),
+                  optionsAvailableCheck: t('modalsB.putWizard.optionsAvailableCheck'),
+                  miniContractsCheck: t('modalsB.putWizard.miniContractsCheck'),
+                  miniContractsTooltip: t('modalsB.putWizard.miniContractsTooltip'),
+                  addTicker: t('modalsB.putWizard.addTicker'),
+                  cancel: t('modalsB.putWizard.cancel'),
                 }}
               />
             )}
@@ -624,10 +623,10 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
       },
       {
         id: 'details',
-        title: 'Optie details',
+        title: t('modalsB.putWizard.detailsTitle'),
         description: isSpread
-          ? 'Voer details in voor beide legs van de spread'
-          : 'Voer de optie details in',
+          ? t('modalsB.putWizard.detailsDescSpread')
+          : t('modalsB.putWizard.detailsDescSingle'),
         isValid: isSpread
           ? longLeg.strike > 0 &&
             longLeg.expiration !== '' &&
@@ -655,12 +654,12 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                       {/* Short Leg first for credit spread */}
                       <div className="p-3 bg-caution-50 dark:bg-caution-600/15 rounded-lg border border-caution-500/30 dark:border-caution-600/40">
                         <h4 className="font-semibold text-orange-900 dark:text-caution-500 mb-3 text-sm">
-                          Short Leg (Verkoop - Hogere Strike)
+                          {t('modalsB.putWizard.shortLegCredit')}
                         </h4>
                         <div className="space-y-3">
                           <div>
                             <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
-                              Strike prijs *
+                              {t('modalsB.putWizard.strikePrice')}
                             </label>
                             <LocalizedNumberInput
                               ref={strikeInputRef}
@@ -673,7 +672,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
 
                           <div>
                             <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
-                              Premuim per aandeel *
+                              {t('modalsB.putWizard.premiumPerShare')}
                             </label>
                             <LocalizedNumberInput
                               value={shortLeg.premium}
@@ -688,12 +687,12 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                       {/* Long Leg second for credit spread */}
                       <div className="p-3 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
                         <h4 className="font-semibold text-primary-900 dark:text-primary-300 mb-3 text-sm">
-                          Long Leg (Koop - Lagere Strike)
+                          {t('modalsB.putWizard.longLegCredit')}
                         </h4>
                         <div className="space-y-3">
                           <div>
                             <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
-                              Strike prijs *
+                              {t('modalsB.putWizard.strikePrice')}
                             </label>
                             <LocalizedNumberInput
                               value={longLeg.strike}
@@ -705,7 +704,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
 
                           <div>
                             <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
-                              Premuim per aandeel *
+                              {t('modalsB.putWizard.premiumPerShare')}
                             </label>
                             <LocalizedNumberInput
                               value={longLeg.premium}
@@ -722,12 +721,12 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                       {/* Long Leg first for debit spread */}
                       <div className="p-3 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
                         <h4 className="font-semibold text-primary-900 dark:text-primary-300 mb-3 text-sm">
-                          Long Leg (Koop - Hogere Strike)
+                          {t('modalsB.putWizard.longLegDebit')}
                         </h4>
                         <div className="space-y-3">
                           <div>
                             <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
-                              Strike prijs *
+                              {t('modalsB.putWizard.strikePrice')}
                             </label>
                             <LocalizedNumberInput
                               ref={strikeInputRef}
@@ -740,7 +739,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
 
                           <div>
                             <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
-                              Premuim per aandeel *
+                              {t('modalsB.putWizard.premiumPerShare')}
                             </label>
                             <LocalizedNumberInput
                               value={longLeg.premium}
@@ -755,12 +754,12 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                       {/* Short Leg second for debit spread */}
                       <div className="p-3 bg-caution-50 dark:bg-caution-600/15 rounded-lg border border-caution-500/30 dark:border-caution-600/40">
                         <h4 className="font-semibold text-orange-900 dark:text-caution-500 mb-3 text-sm">
-                          Short Leg (Verkoop - Lagere Strike)
+                          {t('modalsB.putWizard.shortLegDebit')}
                         </h4>
                         <div className="space-y-3">
                           <div>
                             <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
-                              Strike prijs *
+                              {t('modalsB.putWizard.strikePrice')}
                             </label>
                             <LocalizedNumberInput
                               value={shortLeg.strike}
@@ -772,7 +771,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
 
                           <div>
                             <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
-                              Premuim per aandeel *
+                              {t('modalsB.putWizard.premiumPerShare')}
                             </label>
                             <LocalizedNumberInput
                               value={shortLeg.premium}
@@ -790,12 +789,12 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                 {/* Shared Settings */}
                 <div className="p-3 bg-surface dark:bg-trading-dark-700 rounded-lg border border-surface-line dark:border-trading-dark-500">
                   <h4 className="font-semibold text-ink-900 dark:text-white mb-3 text-sm">
-                    Spread instellingen
+                    {t('modalsB.putWizard.spreadSettings')}
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
-                        Expiratie datum *
+                        {t('modalsB.putWizard.expirationDate')}
                       </label>
                       <FridayDatePicker
                         value={longLeg.expiration}
@@ -807,14 +806,14 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                       />
                       {longLeg.expiration && (
                         <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
-                          DTE: {calculateDTE(longLeg.expiration)} dagen
+                          {t('modalsB.putWizard.dte', { days: calculateDTE(longLeg.expiration) })}
                         </p>
                       )}
                     </div>
 
                     <div>
                       <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
-                        Aantal contracten *
+                        {t('modalsB.putWizard.numberOfContracts')}
                       </label>
                       <input
                         type="number"
@@ -829,7 +828,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                         placeholder="1"
                       />
                       <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
-                        = {longLeg.contracts * 100} aandelen
+                        {t('modalsB.putWizard.equalsShares', { shares: longLeg.contracts * 100 })}
                       </p>
                     </div>
                   </div>
@@ -843,12 +842,14 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                     <div className="p-3 bg-surface-subtle dark:bg-trading-dark-700 rounded-lg border border-ink-200 dark:border-trading-dark-600">
                       <h4 className="font-semibold text-purple-900 dark:text-ink-300 mb-3 text-sm flex items-center gap-2">
                         <BarChart3 className="w-4 h-4" />
-                        Spread Overzicht
+                        {t('modalsB.putWizard.spreadOverview')}
                       </h4>
                       <div className="grid grid-cols-2 gap-3 text-sm">
                         <div>
                           <p className="text-xs text-ink-600 dark:text-ink-400">
-                            {action === 'credit-spread' ? 'Netto Credit' : 'Netto Debit'}
+                            {action === 'credit-spread'
+                              ? t('modalsB.putWizard.netCredit')
+                              : t('modalsB.putWizard.netDebit')}
                           </p>
                           <p
                             className={`font-semibold ${action === 'credit-spread' ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
@@ -863,7 +864,9 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                           </p>
                         </div>
                         <div>
-                          <p className="text-xs text-ink-600 dark:text-ink-400">Max Winst</p>
+                          <p className="text-xs text-ink-600 dark:text-ink-400">
+                            {t('modalsB.putWizard.maxProfit')}
+                          </p>
                           <p className="font-semibold text-positive-600 dark:text-positive-500">
                             $
                             {action === 'credit-spread'
@@ -881,7 +884,9 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                           </p>
                         </div>
                         <div>
-                          <p className="text-xs text-ink-600 dark:text-ink-400">Max Verlies</p>
+                          <p className="text-xs text-ink-600 dark:text-ink-400">
+                            {t('modalsB.putWizard.maxLoss')}
+                          </p>
                           <p className="font-semibold text-negative-600 dark:text-negative-500">
                             -$
                             {action === 'credit-spread'
@@ -900,11 +905,13 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                           <p className="text-[10px] text-ink-500 dark:text-ink-500 mt-0.5">
                             {action === 'credit-spread'
                               ? `($${formatNumber(Math.abs(shortLeg.strike - longLeg.strike), 2)} × 100 × ${longLeg.contracts}) - $${formatNumber((shortLeg.premium - longLeg.premium) * longLeg.contracts * 100, 2)}`
-                              : `Netto debit betaald`}
+                              : t('modalsB.putWizard.netDebitPaid')}
                           </p>
                         </div>
                         <div>
-                          <p className="text-xs text-ink-600 dark:text-ink-400">Spread Breedte</p>
+                          <p className="text-xs text-ink-600 dark:text-ink-400">
+                            {t('modalsB.putWizard.spreadWidth')}
+                          </p>
                           <p className="font-semibold text-ink-900 dark:text-white">
                             ${formatNumber(Math.abs(shortLeg.strike - longLeg.strike), 2)}
                           </p>
@@ -928,7 +935,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                   <div className="mb-4 p-3 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-primary-700 dark:text-primary-300">
-                        Huidige Koers {selectedTicker?.symbol}
+                        {t('modalsB.putWizard.currentPrice', { ticker: selectedTicker?.symbol })}
                       </span>
                       <span className="text-lg font-bold text-primary-900 dark:text-blue-100">
                         ${formatNumber(currentTickerPrice, 2)}
@@ -941,7 +948,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
-                      Strike prijs *
+                      {t('modalsB.putWizard.strikePrice')}
                     </label>
                     <LocalizedNumberInput
                       ref={strikeInputRef}
@@ -954,7 +961,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
 
                   <div>
                     <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
-                      Premuim per aandeel *
+                      {t('modalsB.putWizard.premiumPerShare')}
                     </label>
                     <LocalizedNumberInput
                       value={longLeg.premium}
@@ -963,13 +970,15 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                       placeholder={`5${getDecimalSeparator()}50`}
                     />
                     <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
-                      Totaal: ${formatNumber(longLeg.premium * longLeg.contracts * 100, 2)}
+                      {t('modalsB.putWizard.total', {
+                        total: `$${formatNumber(longLeg.premium * longLeg.contracts * 100, 2)}`,
+                      })}
                     </p>
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
-                      Expiratie datum *
+                      {t('modalsB.putWizard.expirationDate')}
                     </label>
                     <FridayDatePicker
                       value={longLeg.expiration}
@@ -978,14 +987,14 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                     />
                     {longLeg.expiration && (
                       <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
-                        DTE: {calculateDTE(longLeg.expiration)} dagen
+                        {t('modalsB.putWizard.dte', { days: calculateDTE(longLeg.expiration) })}
                       </p>
                     )}
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
-                      Aantal contracten *
+                      {t('modalsB.putWizard.numberOfContracts')}
                     </label>
                     <input
                       type="number"
@@ -998,7 +1007,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                       placeholder="1"
                     />
                     <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
-                      = {longLeg.contracts * 100} aandelen
+                      {t('modalsB.putWizard.equalsShares', { shares: longLeg.contracts * 100 })}
                     </p>
                   </div>
                 </div>
@@ -1014,14 +1023,18 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                   >
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <p className="text-sm text-ink-600 dark:text-ink-400">Break-even prijs</p>
+                        <p className="text-sm text-ink-600 dark:text-ink-400">
+                          {t('modalsB.putWizard.breakEvenPrice')}
+                        </p>
                         <p className="text-lg font-semibold text-ink-900 dark:text-white">
                           ${formatNumber(calculatePutBreakEven(longLeg.strike, longLeg.premium), 2)}
                         </p>
                       </div>
                       <div>
                         <p className="text-sm text-ink-600 dark:text-ink-400">
-                          {action === 'buy' ? 'Max Verlies' : 'Max Winst'}
+                          {action === 'buy'
+                            ? t('modalsB.putWizard.maxLoss')
+                            : t('modalsB.putWizard.maxProfit')}
                         </p>
                         <p
                           className={`text-lg font-semibold ${
@@ -1043,7 +1056,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
             {/* Common Fields */}
             <div>
               <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
-                Aankoop datum
+                {t('modalsB.putWizard.purchaseDate')}
               </label>
               <input
                 type="date"
@@ -1055,14 +1068,14 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
 
             <div>
               <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
-                Notities
+                {t('modalsB.putWizard.notes')}
               </label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={3}
                 className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
-                placeholder="Bijv. strategie notities, doelen, ..."
+                placeholder={t('modalsB.putWizard.notesPlaceholder')}
               />
             </div>
 
@@ -1073,15 +1086,17 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                   <RefreshCw className="w-5 h-5 text-caution-600 dark:text-caution-500 mt-0.5 flex-shrink-0" />
                   <div className="flex-1">
                     <h4 className="font-semibold text-amber-900 dark:text-caution-500 mb-2">
-                      Wheel campagne Gevonden
+                      {t('modalsB.putWizard.wheelFound')}
                     </h4>
                     <p className="text-sm text-caution-600 dark:text-caution-500 mb-3">
-                      Er{' '}
                       {matchingWheels.length === 1
-                        ? 'is een actieve Wheel'
-                        : `zijn ${matchingWheels.length} actieve Wheels`}{' '}
-                      voor {selectedTicker?.symbol} in dit portfolio. Wil je deze CSP koppelen aan
-                      een Wheel?
+                        ? t('modalsB.putWizard.wheelFoundSingle', {
+                            ticker: selectedTicker?.symbol,
+                          })
+                        : t('modalsB.putWizard.wheelFoundPlural', {
+                            count: matchingWheels.length,
+                            ticker: selectedTicker?.symbol,
+                          })}
                     </p>
                     <div className="space-y-2">
                       {matchingWheels.map((wheel) => (
@@ -1105,8 +1120,11 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                               Wheel - {wheel.ticker}
                             </p>
                             <p className="text-xs text-ink-600 dark:text-ink-400">
-                              {wheel.targetContracts} contracten • Cycli: {wheel.cycles} • Premium:
-                              ${formatNumber(wheel.totalPremiumCollected, 2)}
+                              {t('modalsB.putWizard.wheelInfo', {
+                                contracts: wheel.targetContracts,
+                                cycles: wheel.cycles,
+                                premium: `$${formatNumber(wheel.totalPremiumCollected, 2)}`,
+                              })}
                             </p>
                           </div>
                         </label>
@@ -1127,10 +1145,10 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                         />
                         <div className="flex-1">
                           <p className="font-medium text-ink-900 dark:text-white text-sm">
-                            Niet koppelen
+                            {t('modalsB.putWizard.dontLink')}
                           </p>
                           <p className="text-xs text-ink-600 dark:text-ink-400">
-                            Deze CSP wordt een standalone positie
+                            {t('modalsB.putWizard.dontLinkDesc')}
                           </p>
                         </div>
                       </label>

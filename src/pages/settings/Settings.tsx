@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { User, Wifi, AlertCircle, Sparkles } from 'lucide-react';
 import { ConnectivitySettings } from './ConnectivitySettings';
 import { AccountSettings } from './AccountSettings';
@@ -8,28 +9,29 @@ import { usePageTitle } from '../../contexts/PageTitleContext';
 
 type TabType = 'account' | 'connectivity' | 'rules' | 'ai';
 
-const TAB_TITLES: Record<TabType, { title: string; description: string }> = {
-  account: { title: 'Instellingen - Account', description: 'Beheer je accountgegevens' },
+const TAB_TITLE_KEYS: Record<TabType, { title: string; description: string }> = {
+  account: { title: 'pagesA.settings.tabAccountTitle', description: 'pagesA.settings.tabAccountDesc' },
   connectivity: {
-    title: 'Instellingen - Connectivity',
-    description: 'WebSocket verbinding configureren',
+    title: 'pagesA.settings.tabConnectivityTitle',
+    description: 'pagesA.settings.tabConnectivityDesc',
   },
   rules: {
-    title: 'Instellingen - Trading Rules',
-    description: 'Beheer regels voor alerts en opportunities',
+    title: 'pagesA.settings.tabRulesTitle',
+    description: 'pagesA.settings.tabRulesDesc',
   },
-  ai: { title: 'Instellingen - AI-assistent', description: 'AI-assistent configureren' },
+  ai: { title: 'pagesA.settings.tabAiTitle', description: 'pagesA.settings.tabAiDesc' },
 };
 
 export const Settings: React.FC = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabType>('account');
   const { setPageTitle } = usePageTitle();
 
   // Update page title when tab changes
   useEffect(() => {
-    const { title, description } = TAB_TITLES[activeTab];
-    setPageTitle(title, description);
-  }, [activeTab, setPageTitle]);
+    const { title, description } = TAB_TITLE_KEYS[activeTab];
+    setPageTitle(t(title), t(description));
+  }, [activeTab, setPageTitle, t]);
 
   return (
     <div className="space-y-4">

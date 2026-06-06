@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { formatCurrency } from '../../utils/numberFormat';
 
 interface RollCalculationSummaryProps {
@@ -35,6 +36,7 @@ export const RollCalculationSummary: React.FC<RollCalculationSummaryProps> = ({
   isDebit,
   currencySymbol,
 }) => {
+  const { t } = useTranslation();
   return (
     <div
       className={`p-4 rounded-lg ${
@@ -45,7 +47,9 @@ export const RollCalculationSummary: React.FC<RollCalculationSummaryProps> = ({
             : 'bg-surface dark:bg-trading-dark-700/50'
       }`}
     >
-      <h3 className="text-sm font-semibold text-ink-700 dark:text-ink-300 mb-3">Berekening</h3>
+      <h3 className="text-sm font-semibold text-ink-700 dark:text-ink-300 mb-3">
+        {t('modalsA.calculation')}
+      </h3>
       <div className="space-y-2 text-sm">
         <div className="flex justify-between">
           <span className="text-ink-600 dark:text-ink-400">{closeLabel}</span>
@@ -68,7 +72,13 @@ export const RollCalculationSummary: React.FC<RollCalculationSummaryProps> = ({
         <div className="border-t border-surface-line dark:border-trading-dark-500 pt-2 mt-2">
           <div className="flex justify-between items-center">
             <span className="font-semibold text-ink-700 dark:text-ink-300">
-              Netto {isCredit ? 'Credit' : isDebit ? 'Debit' : 'Resultaat'}:
+              Netto{' '}
+              {isCredit
+                ? t('modalsA.netCredit')
+                : isDebit
+                  ? t('modalsA.netDebit')
+                  : t('modalsA.netResult')}
+              :
             </span>
             <span
               className={`text-lg font-bold ${

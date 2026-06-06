@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { TrendingUp, Layers, Zap, RefreshCw, Plus } from 'lucide-react';
 import type { CampaignType } from '../../utils/campaignDetector';
 
@@ -21,6 +22,7 @@ export const CampaignFilterTabs: React.FC<CampaignFilterTabsProps> = ({
   campaignCounts,
   onNewWheel,
 }) => {
+  const { t } = useTranslation();
   return (
     <div className="border-b border-surface-line dark:border-trading-dark-600 flex-shrink-0">
       <nav className="flex -mb-px overflow-x-auto">
@@ -120,7 +122,7 @@ export const CampaignFilterTabs: React.FC<CampaignFilterTabsProps> = ({
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-teal-600 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-900/20 rounded-lg transition-colors"
             >
               <Plus className="w-4 h-4" />
-              Nieuw wheel
+              {t('widgetsA.newWheel')}
             </button>
           </div>
         )}

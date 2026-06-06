@@ -1,11 +1,13 @@
 import React from 'react';
 import { MessageSquare, ArrowRight, ThumbsUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { selectRecentPosts } from '../../store/slices/communitySlice';
 
 export const CommunityWidget: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const posts = useAppSelector(selectRecentPosts(4));
 
   return (
@@ -15,16 +17,16 @@ export const CommunityWidget: React.FC = () => {
           <MessageSquare className="w-[18px] h-[18px]" strokeWidth={1.75} />
         </div>
         <div>
-          <p className="eyebrow">Gesprekken</p>
+          <p className="eyebrow">{t('widgetsB.conversations')}</p>
           <h2 className="text-base font-semibold text-ink-900 dark:text-white tracking-tight">
-            Community
+            {t('widgetsB.community')}
           </h2>
         </div>
         <button
           onClick={() => navigate('/community')}
           className="ml-auto inline-flex items-center gap-1 text-xs font-semibold text-primary-700"
         >
-          Naar de community <ArrowRight className="w-3.5 h-3.5" />
+          {t('widgetsB.toTheCommunity')} <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>
 

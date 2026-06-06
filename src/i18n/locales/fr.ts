@@ -1,4 +1,6 @@
-export const fr = {
+import { sweepFr } from '../sweep';
+
+const frBase = {
   // Common
   common: {
     save: 'Enregistrer',
@@ -12,6 +14,9 @@ export const fr = {
     search: 'Rechercher',
     filter: 'Filtrer',
     reset: 'Réinitialiser',
+    next: 'Suivant',
+    previous: 'Précédent',
+    complete: 'Terminer',
   },
 
   // Assistant IA
@@ -846,4 +851,17 @@ export const fr = {
     viewPmccCampaign: "Voir campagne Poor Man's Covered Call",
     viewKachingCampaign: 'Voir campagne KaChing',
   },
+  mountain: {
+    green: 'VERT',
+    blue: 'BLEU',
+    red: 'ROUGE',
+    black: 'NOIR',
+    offPiste: 'HORS-PISTE',
+    unlock: 'DÉBLOQUER',
+    requested: 'DEMANDÉ',
+    mentorship: 'ÉCOLE DE SKI · MENTORAT',
+    community: 'APRÈS-SKI · COMMUNAUTÉ',
+  },
 };
+
+export const fr = { ...frBase, ...sweepFr };

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   TrendingUp,
   Target,
@@ -113,6 +114,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
   onView,
   onOpportunityAction,
 }) => {
+  const { t } = useTranslation();
   const color = getCampaignColor(campaign.type);
 
   return (
@@ -155,7 +157,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
             <>
               {/* Current Collateral */}
               <div className="text-right">
-                <p className="text-xs text-ink-500 dark:text-ink-400">Onderpand</p>
+                <p className="text-xs text-ink-500 dark:text-ink-400">{t('widgetsA.collateral')}</p>
                 {campaign.activeOptions.length > 0 ? (
                   <>
                     {campaign.activeOptions[0].position.type === 'put' ? (
@@ -171,7 +173,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                     ) : (
                       <p className="font-semibold text-ink-900 dark:text-white">
                         {campaign.root.quantity}
-                        <span className="text-xs text-ink-500 ml-1">aandelen</span>
+                        <span className="text-xs text-ink-500 ml-1">{t('widgetsA.shares')}</span>
                       </p>
                     )}
                   </>
@@ -182,7 +184,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
 
               {/* Total P&L (realized + unrealized) */}
               <div className="text-right">
-                <p className="text-xs text-ink-500 dark:text-ink-400">Totale Winst</p>
+                <p className="text-xs text-ink-500 dark:text-ink-400">{t('widgetsA.totalProfit')}</p>
                 {(() => {
                   // Calculate total P&L: realized from closed positions + unrealized from active option
                   let totalPnL = campaign.totalRealizedPnL;
@@ -219,7 +221,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
             <>
               {/* Purchase cost - for non-Wheel campaigns */}
               <div className="text-right">
-                <p className="text-xs text-ink-500 dark:text-ink-400">Aankoopkost</p>
+                <p className="text-xs text-ink-500 dark:text-ink-400">{t('widgetsA.purchaseCost')}</p>
                 <p className="font-semibold text-ink-900 dark:text-white">
                   {formatCurrency(campaign.root.originalCostBasis, currencySymbol)}
                 </p>
@@ -227,7 +229,9 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
 
               {/* Premiums received - for non-Wheel campaigns */}
               <div className="text-right">
-                <p className="text-xs text-ink-500 dark:text-ink-400">Ontvangen premies</p>
+                <p className="text-xs text-ink-500 dark:text-ink-400">
+                  {t('widgetsA.premiumsReceived')}
+                </p>
                 <p className="font-semibold text-positive-600 dark:text-positive-500">
                   +
                   {formatCurrency(
@@ -249,7 +253,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                 onDeleteWheel(wheelId);
               }}
               className="p-1.5 text-ink-400 hover:text-negative-600 dark:hover:text-negative-500 transition-colors rounded hover:bg-negative-50 dark:hover:bg-negative-700/20"
-              title="Verwijder Wheel"
+              title={t('widgetsA.deleteWheel')}
             >
               <Trash2 className="w-4 h-4" />
             </button>
@@ -313,7 +317,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                       <ChevronRight className="w-4 h-4" />
                     )}
                     <Shield className="w-4 h-4" />
-                    Basis positie
+                    {t('widgetsA.basisPosition')}
                   </button>
                   {isBasisExpanded && (
                     <div className="border border-surface-line dark:border-trading-dark-600 rounded-lg overflow-hidden bg-surface dark:bg-trading-dark-800/50">
@@ -323,15 +327,15 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                           className={`grid ${POSITION_GRID_COLS_COMPACT} gap-2 text-xs font-semibold text-ink-600 dark:text-ink-400 items-center`}
                         >
                           <div></div> {/* Icon */}
-                          <div>Ticker</div>
-                          <div>Expiratie</div>
-                          <div>Strike</div>
-                          <div>Stock prijs</div>
-                          <div>Verschil</div>
-                          <div>Open</div>
-                          <div>Huidige</div>
-                          <div>Winst/Verlies</div>
-                          <div>Aangepast</div>
+                          <div>{t('widgetsA.colTicker')}</div>
+                          <div>{t('widgetsA.colExpiration')}</div>
+                          <div>{t('widgetsA.colStrike')}</div>
+                          <div>{t('widgetsA.colStockPrice')}</div>
+                          <div>{t('widgetsA.colDifference')}</div>
+                          <div>{t('widgetsA.colOpen')}</div>
+                          <div>{t('widgetsA.colCurrent')}</div>
+                          <div>{t('widgetsA.colProfitLoss')}</div>
+                          <div>{t('widgetsA.colAdjusted')}</div>
                         </div>
                       </div>
                       {/* Root Position - Same grid structure as PortfolioView */}
@@ -558,12 +562,12 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                       <ChevronRight className="w-4 h-4" />
                     )}
                     <DollarSign className="w-4 h-4" />
-                    Actieve{' '}
+                    {t('widgetsA.active')}{' '}
                     {campaign.type === 'kaching'
-                      ? 'Puts'
+                      ? t('widgetsA.activePuts')
                       : campaign.type === 'wheel'
-                        ? 'Optie'
-                        : 'Calls'}
+                        ? t('widgetsA.activeOption')
+                        : t('widgetsA.activeCalls')}
                     {campaign.type !== 'wheel' && ` (${campaign.activeOptions.length})`}
                   </button>
                   {isActiveExpanded && (
@@ -574,17 +578,17 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                           className={`grid ${POSITION_GRID_COLS} gap-2 text-xs font-semibold text-ink-600 dark:text-ink-400 items-center`}
                         >
                           <div></div> {/* Icon */}
-                          <div>Ticker</div>
-                          <div>Expiratie</div>
-                          <div>Strike</div>
-                          <div>Stock prijs</div>
-                          <div>Verschil</div>
-                          <div>Open</div>
-                          <div>Huidige</div>
-                          <div>Winst/Verlies</div>
-                          <div>Onderpand</div>
+                          <div>{t('widgetsA.colTicker')}</div>
+                          <div>{t('widgetsA.colExpiration')}</div>
+                          <div>{t('widgetsA.colStrike')}</div>
+                          <div>{t('widgetsA.colStockPrice')}</div>
+                          <div>{t('widgetsA.colDifference')}</div>
+                          <div>{t('widgetsA.colOpen')}</div>
+                          <div>{t('widgetsA.colCurrent')}</div>
+                          <div>{t('widgetsA.colProfitLoss')}</div>
+                          <div>{t('widgetsA.colCollateral')}</div>
                           <div></div> {/* Spacer */}
-                          <div className="text-right">Actions</div> {/* Actions */}
+                          <div className="text-right">{t('widgetsA.colActions')}</div> {/* Actions */}
                         </div>
                       </div>
                       {campaign.activeOptions.map((opt) => {
@@ -599,11 +603,17 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                         if (campaign.type === 'covered-call') {
                           collateralType = 'stock';
                           collateralValue = campaign.root.originalCostBasis;
-                          collateralDescription = `Deze call is gedekt door ${campaign.root.position.type === 'stock' ? 'aandelen' : 'ETF'} (${campaign.root.quantity} stuks). Bij assignment lever je de aandelen, geen cash nodig.`;
+                          collateralDescription = t('widgetsA.coveredCallStockDesc', {
+                            kind:
+                              campaign.root.position.type === 'stock'
+                                ? t('widgetsA.kindShares')
+                                : t('widgetsA.kindEtf'),
+                            count: campaign.root.quantity,
+                          });
                         } else if (campaign.type === 'pmcc') {
                           collateralType = 'leaps';
                           collateralValue = campaign.root.originalCostBasis;
-                          collateralDescription = `Deze call is gedekt door je LEAPS call optie. De LEAPS fungeert als onderpand in plaats van aandelen.`;
+                          collateralDescription = t('widgetsA.coveredCallLeapsDesc');
                           // Get LEAPS ticker and expiration
                           const leapsOption = campaign.root.position as CallOption;
                           leapsInfo = {
@@ -614,18 +624,22 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                           collateralType = 'cash';
                           const putOption = opt.position as PutOption;
                           collateralValue = putOption.strike * putOption.contracts * 100;
-                          collateralDescription = `Deze put vereist ${formatCurrency(collateralValue, currencySymbol)} cash als onderpand voor mogelijke assignment.`;
+                          collateralDescription = t('widgetsA.kachingPutDesc', {
+                            amount: formatCurrency(collateralValue, currencySymbol),
+                          });
                         } else if (campaign.type === 'wheel') {
                           // Wheel can have both Cash Secured Puts (cash) or Covered Calls (stock)
                           if (opt.position.type === 'put') {
                             collateralType = 'cash';
                             const putOption = opt.position as PutOption;
                             collateralValue = putOption.strike * putOption.contracts * 100;
-                            collateralDescription = `Deze Cash Secured Put vereist ${formatCurrency(collateralValue, currencySymbol)} cash als onderpand voor mogelijke assignment.`;
+                            collateralDescription = t('widgetsA.wheelCspDesc', {
+                              amount: formatCurrency(collateralValue, currencySymbol),
+                            });
                           } else if (opt.position.type === 'call') {
                             collateralType = 'stock';
                             collateralValue = campaign.root.originalCostBasis;
-                            collateralDescription = `Deze covered call is gedekt door je aandelen. Bij assignment lever je de aandelen.`;
+                            collateralDescription = t('widgetsA.wheelCallDesc');
                           }
                         }
 
@@ -700,7 +714,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                   <ChevronRight className="w-4 h-4" />
                 )}
                 <History className="w-4 h-4" />
-                Geschiedenis ({campaign.historicalOptions.length})
+                {t('widgetsA.history')} ({campaign.historicalOptions.length})
               </button>
 
               {showingHistory && (
@@ -733,7 +747,9 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                           </p>
                         </div>
                         <div className="min-w-[80px]">
-                          <p className="text-xs text-ink-500 dark:text-ink-400">Verkocht</p>
+                          <p className="text-xs text-ink-500 dark:text-ink-400">
+                            {t('widgetsA.sold')}
+                          </p>
                           <p className="text-sm font-medium text-ink-900 dark:text-white">
                             {formatCurrency(openPremium, currencySymbol)}
                           </p>
@@ -742,7 +758,9 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                           </p>
                         </div>
                         <div className="min-w-[80px]">
-                          <p className="text-xs text-ink-500 dark:text-ink-400">Teruggekocht</p>
+                          <p className="text-xs text-ink-500 dark:text-ink-400">
+                            {t('widgetsA.boughtBack')}
+                          </p>
                           <p className="text-sm font-medium text-ink-900 dark:text-white">
                             {formatCurrency(closePremium, currencySymbol)}
                           </p>
@@ -752,7 +770,9 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                         </div>
                         <div className="flex-1"></div>
                         <div className="min-w-[80px] text-right">
-                          <p className="text-xs text-ink-500 dark:text-ink-400">Winst</p>
+                          <p className="text-xs text-ink-500 dark:text-ink-400">
+                            {t('widgetsA.profit')}
+                          </p>
                           <p
                             className={`text-sm font-semibold ${
                               (opt.realizedPnL || 0) >= 0

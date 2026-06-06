@@ -1,6 +1,7 @@
 import React, { useState, memo } from 'react';
 import { AlertCircle, Target, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useNavigation } from '../../contexts/NavigationContext';
 import { ConfirmModal } from '../modals/ConfirmModal';
 import { useAlerts } from '../../hooks/useAlerts';
@@ -12,6 +13,7 @@ interface AlertsOpportunitiesWidgetProps {
 export const AlertsOpportunitiesWidget: React.FC<AlertsOpportunitiesWidgetProps> = memo(
   ({ type = 'both' }) => {
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const { pushNavigation } = useNavigation();
 
     // Use central alerts hook
@@ -41,7 +43,10 @@ export const AlertsOpportunitiesWidget: React.FC<AlertsOpportunitiesWidgetProps>
         pushNavigation(`/portfolio/${portfolio}`, portfolio);
         navigate(`/portfolio/${portfolio}`);
       } else {
-        pushNavigation(`/portfolio/${portfolio}/stocks-etfs`, `${portfolio} - Aandelen & ETFs`);
+        pushNavigation(
+          `/portfolio/${portfolio}/stocks-etfs`,
+          t('widgetsB.stocksEtfsSuffix', { portfolio })
+        );
         navigate(`/portfolio/${portfolio}/stocks-etfs`);
       }
     };
@@ -100,7 +105,9 @@ export const AlertsOpportunitiesWidget: React.FC<AlertsOpportunitiesWidgetProps>
                   <Icon className={`w-6 h-6 ${iconColor}`} />
                 </div>
                 <p className="text-sm text-ink-600 dark:text-ink-400">
-                  {type === 'alerts' ? 'Geen actieve alerts' : 'Geen actieve opportunities'}
+                  {type === 'alerts'
+                    ? t('widgetsB.noActiveAlerts')
+                    : t('widgetsB.noActiveOpportunities')}
                 </p>
               </div>
             ) : (
@@ -130,7 +137,7 @@ export const AlertsOpportunitiesWidget: React.FC<AlertsOpportunitiesWidgetProps>
                   <button
                     onClick={(e) => handleDismissAlert(e, item.id, item.message)}
                     className="absolute top-2 right-2 p-1.5 hover:bg-surface-muted dark:hover:bg-trading-dark-600 rounded transition-colors"
-                    title="Sluiten"
+                    title={t('widgetsB.close')}
                   >
                     <X className="w-3.5 h-3.5 text-ink-400 hover:text-ink-600 dark:hover:text-ink-300" />
                   </button>
@@ -159,10 +166,10 @@ export const AlertsOpportunitiesWidget: React.FC<AlertsOpportunitiesWidgetProps>
             isOpen={confirmDismiss.isOpen}
             onClose={() => setConfirmDismiss({ isOpen: false, alertId: null, message: '' })}
             onConfirm={confirmDismissAlert}
-            title="Alert Verwijderen"
-            message={`Weet je zeker dat je deze alert wilt sluiten?\n\n"${confirmDismiss.message}"\n\nDeze komt niet meer terug.`}
-            confirmText="Verwijderen"
-            cancelText="Annuleren"
+            title={t('widgetsB.deleteAlertTitle')}
+            message={t('widgetsB.deleteAlertMessage', { message: confirmDismiss.message })}
+            confirmText={t('widgetsB.delete')}
+            cancelText={t('widgetsB.cancel')}
             variant="danger"
           />
         )}

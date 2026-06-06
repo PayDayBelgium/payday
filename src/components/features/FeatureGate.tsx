@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Lock, Mountain, Star, ArrowRight } from 'lucide-react';
 import { useFeatureAccess } from '../../hooks/useFeatureAccess';
 import { getLevelConfig } from '../../store/slices/userProgressSlice';
@@ -19,6 +20,7 @@ interface FeatureGateProps {
  */
 export const FeatureGate: React.FC<FeatureGateProps> = ({ feature, children, fallback }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { hasAccess, requiredLevel } = useFeatureAccess(feature);
   const credits = useAppSelector(selectCredits);
 
@@ -73,11 +75,13 @@ export const FeatureGate: React.FC<FeatureGateProps> = ({ feature, children, fal
         </div>
 
         {/* Title */}
-        <h2 className="text-xl font-bold text-ink-900 dark:text-white mb-2">Feature Vergrendeld</h2>
+        <h2 className="text-xl font-bold text-ink-900 dark:text-white mb-2">
+          {t('compCommon.featureLocked')}
+        </h2>
 
         {/* Description */}
         <p className="text-ink-600 dark:text-ink-400 mb-4">
-          Deze functie is beschikbaar vanaf niveau{' '}
+          {t('compCommon.featureAvailableFromLevel')}{' '}
           <span className="font-semibold">{levelConfig?.name}</span> ({levelConfig?.slopeName}).
         </p>
 
@@ -108,8 +112,13 @@ export const FeatureGate: React.FC<FeatureGateProps> = ({ feature, children, fal
             <p className="text-sm text-ink-600 dark:text-ink-400">
               {levelConfig.creditsRequired > 0 && (
                 <>
-                  <span className="font-medium">{levelConfig.creditsRequired} credits</span> nodig
-                  {credits > 0 && <span className="text-ink-500"> (je hebt {credits})</span>}
+                  <span className="font-medium">
+                    {t('compCommon.creditsNeeded', { n: levelConfig.creditsRequired })}
+                  </span>
+                  {t('compCommon.needed')}
+                  {credits > 0 && (
+                    <span className="text-ink-500">{t('compCommon.youHave', { credits })}</span>
+                  )}
                 </>
               )}
             </p>
@@ -123,14 +132,14 @@ export const FeatureGate: React.FC<FeatureGateProps> = ({ feature, children, fal
             className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors"
           >
             <Mountain className="w-5 h-5" />
-            Bekijk Je Progressie
+            {t('compCommon.viewYourProgress')}
             <ArrowRight className="w-4 h-4" />
           </button>
 
           {levelConfig?.priceEUR && levelConfig.priceEUR > 0 && (
             <button className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-ink-200 dark:border-trading-dark-500 hover:bg-surface dark:hover:bg-trading-dark-700 rounded-lg font-medium transition-colors text-ink-700 dark:text-ink-300">
               <Star className="w-5 h-5" />
-              Direct Ontgrendelen voor €{levelConfig.priceEUR}
+              {t('compCommon.unlockNow', { price: levelConfig.priceEUR })}
             </button>
           )}
         </div>

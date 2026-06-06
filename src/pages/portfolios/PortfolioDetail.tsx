@@ -280,10 +280,10 @@ export const PortfolioDetail: React.FC = () => {
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-ink-900 dark:text-white mb-2">
-            Portfolio niet gevonden
+            {t('pagesB.portfolioDetail.notFoundTitle')}
           </h2>
           <p className="text-ink-600 dark:text-ink-400">
-            De portfolio "{portfolioName}" kon niet worden gevonden.
+            {t('pagesB.portfolioDetail.notFoundDescription', { name: portfolioName })}
           </p>
         </div>
       </div>
@@ -295,20 +295,22 @@ export const PortfolioDetail: React.FC = () => {
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 flex-shrink-0">
         <StatCard
-          title="Portfolio waarde"
+          title={t('pagesB.portfolioDetail.statPortfolioValue')}
           description={
             <>
-              Cash:{' '}
-              {formatCurrency(
-                portfolioStats.cashValue,
-                getCurrencySymbol(portfolio?.currency ?? 'USD')
-              )}
+              {t('pagesB.portfolioDetail.cashLabel', {
+                value: formatCurrency(
+                  portfolioStats.cashValue,
+                  getCurrencySymbol(portfolio?.currency ?? 'USD')
+                ),
+              })}
               <br />
-              Assets (long-short):{' '}
-              {formatCurrency(
-                portfolioStats.longValue - portfolioStats.shortValue,
-                getCurrencySymbol(portfolio?.currency ?? 'USD')
-              )}
+              {t('pagesB.portfolioDetail.assetsLabel', {
+                value: formatCurrency(
+                  portfolioStats.longValue - portfolioStats.shortValue,
+                  getCurrencySymbol(portfolio?.currency ?? 'USD')
+                ),
+              })}
             </>
           }
           value={formatCurrency(
@@ -316,11 +318,13 @@ export const PortfolioDetail: React.FC = () => {
             getCurrencySymbol(portfolio?.currency ?? 'USD')
           )}
           icon={<DollarSign className="w-6 h-6" />}
-          tooltip="De totale waarde van je portfolio bestaande uit: Cash + Aandelen + ETF's + Opties (long) - Opties (short)"
+          tooltip={t('pagesB.portfolioDetail.portfolioValueTooltip')}
         />
         <StatCard
-          title="Long posities"
-          description={`${portfolioStats.longCount} actieve long posities`}
+          title={t('pagesB.portfolioDetail.statLongPositions')}
+          description={t('pagesB.portfolioDetail.activeLongPositions', {
+            count: portfolioStats.longCount,
+          })}
           value={formatCurrency(
             portfolioStats.longValue,
             getCurrencySymbol(portfolio?.currency ?? 'USD')
@@ -328,8 +332,10 @@ export const PortfolioDetail: React.FC = () => {
           icon={<TrendingUp className="w-6 h-6" />}
         />
         <StatCard
-          title="Short posities"
-          description={`${portfolioStats.shortCount} actieve short posities`}
+          title={t('pagesB.portfolioDetail.statShortPositions')}
+          description={t('pagesB.portfolioDetail.activeShortPositions', {
+            count: portfolioStats.shortCount,
+          })}
           value={formatCurrency(
             portfolioStats.shortValue,
             getCurrencySymbol(portfolio?.currency ?? 'USD')
@@ -337,20 +343,22 @@ export const PortfolioDetail: React.FC = () => {
           icon={<TrendingDown className="w-6 h-6" />}
         />
         <StatCard
-          title="Cash"
+          title={t('pagesB.portfolioDetail.statCash')}
           description={
             <>
-              Gealloceerd:{' '}
-              {formatCurrency(
-                portfolioStats.allocatedCash || 0,
-                getCurrencySymbol(portfolio?.currency ?? 'USD')
-              )}
+              {t('pagesB.portfolioDetail.allocatedLabel', {
+                value: formatCurrency(
+                  portfolioStats.allocatedCash || 0,
+                  getCurrencySymbol(portfolio?.currency ?? 'USD')
+                ),
+              })}
               <br />
-              Vrij:{' '}
-              {formatCurrency(
-                portfolioStats.freeCash || portfolioStats.cashValue,
-                getCurrencySymbol(portfolio?.currency ?? 'USD')
-              )}
+              {t('pagesB.portfolioDetail.freeLabel', {
+                value: formatCurrency(
+                  portfolioStats.freeCash || portfolioStats.cashValue,
+                  getCurrencySymbol(portfolio?.currency ?? 'USD')
+                ),
+              })}
             </>
           }
           value={formatCurrency(
@@ -360,20 +368,22 @@ export const PortfolioDetail: React.FC = () => {
           icon={<Banknote className="w-6 h-6" />}
         />
         <StatCard
-          title="Vrije cash"
+          title={t('pagesB.portfolioDetail.statFreeCash')}
           description={
             <>
-              Cash:{' '}
-              {formatCurrency(
-                portfolioStats.cashValue,
-                getCurrencySymbol(portfolio?.currency ?? 'USD')
-              )}
+              {t('pagesB.portfolioDetail.cashLabel', {
+                value: formatCurrency(
+                  portfolioStats.cashValue,
+                  getCurrencySymbol(portfolio?.currency ?? 'USD')
+                ),
+              })}
               <br />
-              Gealloceerd:{' '}
-              {formatCurrency(
-                portfolioStats.allocatedCash || 0,
-                getCurrencySymbol(portfolio?.currency ?? 'USD')
-              )}
+              {t('pagesB.portfolioDetail.allocatedLabel', {
+                value: formatCurrency(
+                  portfolioStats.allocatedCash || 0,
+                  getCurrencySymbol(portfolio?.currency ?? 'USD')
+                ),
+              })}
             </>
           }
           value={formatCurrency(
@@ -381,14 +391,14 @@ export const PortfolioDetail: React.FC = () => {
             getCurrencySymbol(portfolio?.currency ?? 'USD')
           )}
           icon={<Wallet className="w-6 h-6" />}
-          tooltip="Cash die niet gereserveerd is als collateral voor short posities"
+          tooltip={t('pagesB.portfolioDetail.freeCashTooltip')}
           valueClassName={
             (portfolioStats.freeCash || portfolioStats.cashValue) < 0
               ? 'text-negative-600 dark:text-negative-500'
               : undefined
           }
           showAlert={(portfolioStats.freeCash || portfolioStats.cashValue) < 0}
-          alertMessage="Je vrije cash is negatief. Dit betekent dat je meer collateral nodig hebt dan je beschikbare cash. Overweeg posities te sluiten of extra kapitaal toe te voegen."
+          alertMessage={t('pagesB.portfolioDetail.freeCashAlert')}
         />
       </div>
 
@@ -419,7 +429,7 @@ export const PortfolioDetail: React.FC = () => {
                   }`}
                 >
                   <Layers className="w-4 h-4" />
-                  Campagnes
+                  {t('pagesB.portfolioDetail.tabCampaigns')}
                 </button>
               )}
               {hasOptionsAccess && (
@@ -444,7 +454,7 @@ export const PortfolioDetail: React.FC = () => {
                 }`}
               >
                 <TrendingUp className="w-4 h-4" />
-                Evolutie
+                {t('pagesB.portfolioDetail.tabEvolution')}
               </button>
               <button
                 onClick={() => setActiveTab('transactions')}
@@ -480,7 +490,7 @@ export const PortfolioDetail: React.FC = () => {
                   }`}
                 >
                   <BarChart3 className="w-4 h-4" />
-                  Virtueel portfolio
+                  {t('pagesB.portfolioDetail.tabVirtualPortfolio')}
                 </button>
               )}
               {hasOptionsAccess && (
@@ -517,7 +527,7 @@ export const PortfolioDetail: React.FC = () => {
                 >
                   <Plus className="w-4 h-4 text-primary-700 dark:text-primary-300 flex-shrink-0" />
                   <span className="text-sm font-medium text-primary-700 dark:text-primary-300 truncate">
-                    Aandeel/ETF
+                    {t('pagesB.portfolioDetail.actionStockEtf')}
                   </span>
                 </button>
 
@@ -532,7 +542,7 @@ export const PortfolioDetail: React.FC = () => {
                   >
                     <Plus className="w-4 h-4 text-positive-600 dark:text-positive-500 flex-shrink-0" />
                     <span className="text-sm font-medium text-positive-700 dark:text-positive-500 truncate">
-                      Call Optie
+                      {t('pagesB.portfolioDetail.actionCallOption')}
                     </span>
                   </button>
                 )}
@@ -544,7 +554,7 @@ export const PortfolioDetail: React.FC = () => {
                   >
                     <Plus className="w-4 h-4 text-ink-600 dark:text-ink-300 flex-shrink-0" />
                     <span className="text-sm font-medium text-ink-700 dark:text-ink-300 truncate">
-                      Put Optie
+                      {t('pagesB.portfolioDetail.actionPutOption')}
                     </span>
                   </button>
                 )}
@@ -555,7 +565,7 @@ export const PortfolioDetail: React.FC = () => {
                 >
                   <Plus className="w-4 h-4 text-caution-600 dark:text-caution-500 flex-shrink-0" />
                   <span className="text-sm font-medium text-caution-600 dark:text-caution-500 truncate">
-                    Transactie
+                    {t('pagesB.portfolioDetail.actionTransaction')}
                   </span>
                 </button>
               </div>
@@ -586,7 +596,13 @@ export const PortfolioDetail: React.FC = () => {
           )}
 
           {activeTab === 'transactions' && (
-            <TransactionLog transactions={transactions} currency={portfolio?.currency ?? 'USD'} />
+            <div className="h-full">
+              <TransactionLog
+                transactions={transactions}
+                currency={portfolio?.currency ?? 'USD'}
+                className="h-full border-0 rounded-none"
+              />
+            </div>
           )}
 
           {activeTab === 'freecash' && (
@@ -600,7 +616,7 @@ export const PortfolioDetail: React.FC = () => {
                       <div className="flex items-center gap-3">
                         <Banknote className="w-5 h-5 text-ink-600 dark:text-ink-400" />
                         <span className="text-sm font-medium text-ink-900 dark:text-white">
-                          Totale Beschikbare Cash
+                          {t('pagesB.portfolioDetail.totalAvailableCash')}
                         </span>
                       </div>
                       <span className="text-sm font-semibold text-ink-900 dark:text-white">
@@ -748,7 +764,7 @@ export const PortfolioDetail: React.FC = () => {
                         ) : (
                           <div className="py-4 text-center">
                             <p className="text-sm text-ink-500 dark:text-ink-400 italic">
-                              Geen posities met collateral vereisten
+                              {t('pagesB.portfolioDetail.noCollateralPositions')}
                             </p>
                           </div>
                         )}
@@ -760,7 +776,7 @@ export const PortfolioDetail: React.FC = () => {
                         <div className="py-6">
                           <div className="flex items-center justify-between">
                             <span className="text-base font-bold text-ink-900 dark:text-white">
-                              Vrije cash
+                              {t('pagesB.portfolioDetail.freeCash')}
                             </span>
                             <span
                               className={`text-xl font-bold ${
@@ -794,18 +810,20 @@ export const PortfolioDetail: React.FC = () => {
                 </h4>
                 <div className="space-y-2 text-sm text-ink-700 dark:text-ink-300">
                   <p>
-                    <strong>Wat:</strong> Koop een deep ITM call (LEAP) en verkoop korte termijn OTM
-                    calls ertegen.
+                    <strong>{t('pagesB.portfolioDetail.labelWhat')}</strong>{' '}
+                    {t('pagesB.portfolioDetail.pmccWhat')}
                   </p>
                   <p>
-                    <strong>LEAP selectie:</strong> Minimaal 70 delta, 1+ jaar tot expiratie, ITM
+                    <strong>{t('pagesB.portfolioDetail.labelLeapSelection')}</strong>{' '}
+                    {t('pagesB.portfolioDetail.pmccLeap')}
                   </p>
                   <p>
-                    <strong>Short call:</strong> 30-45 DTE, 0.30 delta, minimaal 1% ROI per week
+                    <strong>{t('pagesB.portfolioDetail.labelShortCall')}</strong>{' '}
+                    {t('pagesB.portfolioDetail.pmccShortCall')}
                   </p>
                   <p>
-                    <strong>Risico:</strong> Extrinsieke waarde LEAP moet groter zijn dan krediet
-                    short calls
+                    <strong>{t('pagesB.portfolioDetail.labelRisk')}</strong>{' '}
+                    {t('pagesB.portfolioDetail.pmccRisk')}
                   </p>
                 </div>
               </div>
@@ -818,17 +836,20 @@ export const PortfolioDetail: React.FC = () => {
                 </h4>
                 <div className="space-y-2 text-sm text-ink-700 dark:text-ink-300">
                   <p>
-                    <strong>Wat:</strong> Koop protective put (bescherming) en verkoop weekly puts
-                    voor inkomen.
+                    <strong>{t('pagesB.portfolioDetail.labelWhat')}</strong>{' '}
+                    {t('pagesB.portfolioDetail.kachingWhat')}
                   </p>
                   <p>
-                    <strong>Protective put:</strong> ATM of licht OTM, 60-90 dagen looptijd
+                    <strong>{t('pagesB.portfolioDetail.labelProtectivePut')}</strong>{' '}
+                    {t('pagesB.portfolioDetail.kachingProtectivePut')}
                   </p>
                   <p>
-                    <strong>Weekly puts:</strong> Verkoop 5-7 DTE, OTM, herhaal wekelijks
+                    <strong>{t('pagesB.portfolioDetail.labelWeeklyPuts')}</strong>{' '}
+                    {t('pagesB.portfolioDetail.kachingWeeklyPuts')}
                   </p>
                   <p>
-                    <strong>Doel:</strong> Verdien genoeg premium om protective put te betalen
+                    <strong>{t('pagesB.portfolioDetail.labelGoal')}</strong>{' '}
+                    {t('pagesB.portfolioDetail.kachingGoal')}
                   </p>
                 </div>
               </div>
@@ -841,17 +862,20 @@ export const PortfolioDetail: React.FC = () => {
                 </h4>
                 <div className="space-y-2 text-sm text-ink-700 dark:text-ink-300">
                   <p>
-                    <strong>Wat:</strong> Verkoop put op aandeel dat je wilt bezitten, met cash
-                    backup.
+                    <strong>{t('pagesB.portfolioDetail.labelWhat')}</strong>{' '}
+                    {t('pagesB.portfolioDetail.cspWhat')}
                   </p>
                   <p>
-                    <strong>Strike selectie:</strong> Op of onder gewenste aankoopprijs
+                    <strong>{t('pagesB.portfolioDetail.labelStrikeSelection')}</strong>{' '}
+                    {t('pagesB.portfolioDetail.cspStrike')}
                   </p>
                   <p>
-                    <strong>Tijdshorizon:</strong> 30-45 DTE voor beste theta decay
+                    <strong>{t('pagesB.portfolioDetail.labelTimeHorizon')}</strong>{' '}
+                    {t('pagesB.portfolioDetail.cspTimeHorizon')}
                   </p>
                   <p>
-                    <strong>Cash reserve:</strong> 100% van strike prijs × 100 × aantal contracten
+                    <strong>{t('pagesB.portfolioDetail.labelCashReserve')}</strong>{' '}
+                    {t('pagesB.portfolioDetail.cspCashReserve')}
                   </p>
                 </div>
               </div>
@@ -859,29 +883,29 @@ export const PortfolioDetail: React.FC = () => {
               {/* General Guidelines */}
               <div className="bg-surface dark:bg-trading-dark-900 rounded-lg p-5 border border-surface-line dark:border-trading-dark-600">
                 <h4 className="text-lg font-semibold text-ink-900 dark:text-white mb-3">
-                  Algemene Richtlijnen
+                  {t('pagesB.portfolioDetail.generalGuidelines')}
                 </h4>
                 <ul className="space-y-2 text-sm text-ink-700 dark:text-ink-300 list-disc list-inside">
-                  <li>Sluit posities bij 50% winst (kort lopend) of 21 DTE</li>
-                  <li>Roll posities wanneer ze ITM gaan met 21+ DTE</li>
-                  <li>Diversificeer over meerdere underlyings</li>
-                  <li>Track je trades nauwkeurig voor analyse</li>
-                  <li>Gebruik onderpand calculatie voor margin requirements</li>
-                  <li>Maximaal 30-40% van portfolio in options</li>
+                  <li>{t('pagesB.portfolioDetail.guideline1')}</li>
+                  <li>{t('pagesB.portfolioDetail.guideline2')}</li>
+                  <li>{t('pagesB.portfolioDetail.guideline3')}</li>
+                  <li>{t('pagesB.portfolioDetail.guideline4')}</li>
+                  <li>{t('pagesB.portfolioDetail.guideline5')}</li>
+                  <li>{t('pagesB.portfolioDetail.guideline6')}</li>
                 </ul>
               </div>
 
               {/* Risk Management */}
               <div className="bg-caution-50 dark:bg-caution-600/15 rounded-lg p-5 border border-caution-500/30 dark:border-caution-600/40">
                 <h4 className="text-lg font-semibold text-orange-900 dark:text-caution-500 mb-3">
-                  ⚠️ Risicobeheer
+                  ⚠️ {t('pagesB.portfolioDetail.riskManagement')}
                 </h4>
                 <ul className="space-y-2 text-sm text-ink-700 dark:text-ink-300 list-disc list-inside">
-                  <li>Gebruik altijd stop losses of protective puts</li>
-                  <li>Nooit meer dan 5% van portfolio in één trade</li>
-                  <li>Begrijp de Greeks: Delta, Gamma, Theta, Vega</li>
-                  <li>Let op earnings en ex-dividend dates</li>
-                  <li>Vermijd illiquide opties (lage volume/open interest)</li>
+                  <li>{t('pagesB.portfolioDetail.risk1')}</li>
+                  <li>{t('pagesB.portfolioDetail.risk2')}</li>
+                  <li>{t('pagesB.portfolioDetail.risk3')}</li>
+                  <li>{t('pagesB.portfolioDetail.risk4')}</li>
+                  <li>{t('pagesB.portfolioDetail.risk5')}</li>
                 </ul>
               </div>
 
@@ -919,10 +943,10 @@ export const PortfolioDetail: React.FC = () => {
                     <div className="bg-surface dark:bg-trading-dark-900 rounded-lg p-8 text-center">
                       <TrendingUp className="w-12 h-12 mx-auto mb-3 text-ink-400 dark:text-ink-500" />
                       <p className="text-ink-600 dark:text-ink-400">
-                        Geen call opties in portfolio
+                        {t('pagesB.portfolioDetail.noCallOptions')}
                       </p>
                       <p className="text-sm text-ink-500 dark:text-ink-500 mt-1">
-                        Voeg call opties toe om virtueel aandelen te beheren
+                        {t('pagesB.portfolioDetail.addCallOptionsHint')}
                       </p>
                     </div>
                   );
@@ -1015,11 +1039,13 @@ export const PortfolioDetail: React.FC = () => {
                                     {item.ticker}
                                   </h4>
                                   <p className="text-sm text-ink-600 dark:text-ink-400">
-                                    {formatNumber(item.shares)} aandelen @{' '}
-                                    {formatCurrency(
-                                      item.currentPrice,
-                                      getCurrencySymbol(portfolio?.currency ?? 'USD')
-                                    )}
+                                    {t('pagesB.portfolioDetail.sharesAt', {
+                                      shares: formatNumber(item.shares),
+                                      price: formatCurrency(
+                                        item.currentPrice,
+                                        getCurrencySymbol(portfolio?.currency ?? 'USD')
+                                      ),
+                                    })}
                                   </p>
                                 </div>
                               </div>
@@ -1038,7 +1064,9 @@ export const PortfolioDetail: React.FC = () => {
                               <div className="border-t border-surface-line dark:border-trading-dark-600 bg-surface dark:bg-trading-dark-900/50">
                                 <div className="p-4 space-y-3">
                                   <div className="text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider mb-2">
-                                    Posities ({item.positions.length})
+                                    {t('pagesB.portfolioDetail.positions', {
+                                      count: item.positions.length,
+                                    })}
                                   </div>
                                   {item.positions.map((pos: any) => {
                                     const expDate = new Date(pos.expiration);
@@ -1079,7 +1107,9 @@ export const PortfolioDetail: React.FC = () => {
                                               year: 'numeric',
                                             })}
                                             {' • '}
-                                            {posShares} aandelen
+                                            {t('pagesB.portfolioDetail.sharesSuffix', {
+                                              count: posShares,
+                                            })}
                                           </div>
                                         </div>
                                         <div className="text-right">
@@ -1104,7 +1134,7 @@ export const PortfolioDetail: React.FC = () => {
                       <div className="bg-primary-50 dark:bg-primary-900/20 rounded-lg p-4 border-2 border-primary-200 dark:border-primary-800">
                         <div className="flex items-center justify-between">
                           <h4 className="text-base font-bold text-ink-900 dark:text-white">
-                            Totaal Virtueel portfolio
+                            {t('pagesB.portfolioDetail.totalVirtualPortfolio')}
                           </h4>
                           <p className="text-xl font-bold text-primary-700 dark:text-primary-300">
                             {formatCurrency(
@@ -1145,7 +1175,7 @@ export const PortfolioDetail: React.FC = () => {
                           <AlertCircle className="w-6 h-6 text-caution-600 dark:text-caution-500" />
                         </div>
                         <p className="text-sm text-ink-600 dark:text-ink-400">
-                          Geen actieve alerts
+                          {t('pagesB.portfolioDetail.noActiveAlerts')}
                         </p>
                       </div>
                     ) : (
@@ -1201,7 +1231,7 @@ export const PortfolioDetail: React.FC = () => {
                           <Target className="w-6 h-6 text-positive-600 dark:text-positive-500" />
                         </div>
                         <p className="text-sm text-ink-600 dark:text-ink-400">
-                          Geen actieve opportunities
+                          {t('pagesB.portfolioDetail.noActiveOpportunities')}
                         </p>
                       </div>
                     ) : (

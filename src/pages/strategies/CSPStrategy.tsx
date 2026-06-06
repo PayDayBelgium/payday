@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { usePageTitle } from '../../contexts/PageTitleContext';
 import { useNavigation } from '../../contexts/NavigationContext';
 import {
@@ -19,6 +20,7 @@ import { useStrategyRules } from '../../hooks/useStrategyRules';
 
 export const CSPStrategy: React.FC = () => {
   const { portfolio } = useParams<{ portfolio: string }>();
+  const { t } = useTranslation();
   const { setPageTitle } = usePageTitle();
   const navigate = useNavigate();
   const { pushNavigation } = useNavigation();
@@ -37,8 +39,8 @@ export const CSPStrategy: React.FC = () => {
   } = useStrategyRules('csp', portfolio);
 
   useEffect(() => {
-    setPageTitle('Cash Secured Puts', `Beheer CSPs voor ${portfolio}`);
-  }, [setPageTitle, portfolio]);
+    setPageTitle('Cash Secured Puts', t('stratPages.cspSubtitle', { portfolio }));
+  }, [setPageTitle, portfolio, t]);
 
   return (
     <>
@@ -54,7 +56,7 @@ export const CSPStrategy: React.FC = () => {
                   : 'text-ink-600 dark:text-ink-400 hover:text-ink-900 dark:hover:text-white'
               }`}
             >
-              Posities
+              {t('stratPages.tabPositions')}
               <span className="px-2 py-0.5 rounded-full text-xs bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
                 0
               </span>
@@ -68,7 +70,7 @@ export const CSPStrategy: React.FC = () => {
               }`}
             >
               <ListTodo className="w-4 h-4" />
-              Regels
+              {t('stratPages.tabRules')}
               {strategyRules.length > 0 && (
                 <span className="px-2 py-0.5 rounded-full text-xs bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
                   {strategyRules.length}
@@ -84,7 +86,7 @@ export const CSPStrategy: React.FC = () => {
               }`}
             >
               <Info className="w-4 h-4" />
-              Informatie
+              {t('stratPages.tabInfo')}
             </button>
           </div>
           {(activeTab === 'positions' || activeTab === 'rules') && (
@@ -95,7 +97,7 @@ export const CSPStrategy: React.FC = () => {
               className="flex items-center gap-2 px-3 py-1.5 bg-primary-700 hover:bg-primary-800 text-white rounded-lg text-sm font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
-              {activeTab === 'positions' ? 'Put Toevoegen' : 'Regel Toevoegen'}
+              {activeTab === 'positions' ? t('stratPages.cspAddPut') : t('stratPages.addRule')}
             </button>
           )}
         </div>
@@ -106,29 +108,43 @@ export const CSPStrategy: React.FC = () => {
             {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
-                <p className="text-sm text-ink-600 dark:text-ink-400">Actieve Puts</p>
+                <p className="text-sm text-ink-600 dark:text-ink-400">
+                  {t('stratPages.cspActivePuts')}
+                </p>
                 <p className="text-2xl font-bold text-ink-900 dark:text-white mt-1">0</p>
-                <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">Open posities</p>
+                <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
+                  {t('stratPages.cspOpenPositions')}
+                </p>
               </div>
               <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
-                <p className="text-sm text-ink-600 dark:text-ink-400">Cash Reserved</p>
+                <p className="text-sm text-ink-600 dark:text-ink-400">
+                  {t('stratPages.cspCashReserved')}
+                </p>
                 <p className="text-2xl font-bold text-primary-700 dark:text-primary-300 mt-1">
                   $0.00
                 </p>
-                <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">Totaal onderpand</p>
+                <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
+                  {t('stratPages.cspTotalCollateral')}
+                </p>
               </div>
               <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
-                <p className="text-sm text-ink-600 dark:text-ink-400">Beschikbare Cash</p>
+                <p className="text-sm text-ink-600 dark:text-ink-400">
+                  {t('stratPages.cspAvailableCash')}
+                </p>
                 <p className="text-2xl font-bold text-ink-900 dark:text-white mt-1">$0.00</p>
-                <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">Voor nieuwe CSPs</p>
+                <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
+                  {t('stratPages.cspForNewCsps')}
+                </p>
               </div>
               <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
-                <p className="text-sm text-ink-600 dark:text-ink-400">Premie</p>
+                <p className="text-sm text-ink-600 dark:text-ink-400">
+                  {t('stratPages.cspPremium')}
+                </p>
                 <p className="text-2xl font-bold text-positive-600 dark:text-positive-500 mt-1">
                   $0.00 / $0.00
                 </p>
                 <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
-                  Verdient / Verwacht (0%)
+                  {t('stratPages.cspEarnedExpected', { percent: 0 })}
                 </p>
               </div>
             </div>
@@ -137,14 +153,13 @@ export const CSPStrategy: React.FC = () => {
             <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-12 text-center">
               <DollarSign className="w-16 h-16 text-ink-300 dark:text-ink-600 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
-                Geen Cash Secured Puts
+                {t('stratPages.cspNoPositionsTitle')}
               </h3>
               <p className="text-ink-600 dark:text-ink-400 mb-4">
-                Schrijf je eerste CSP om premie-inkomen te genereren terwijl je wacht op een goede
-                instapprijs
+                {t('stratPages.cspNoPositionsDesc')}
               </p>
               <button className="px-6 py-3 bg-primary-700 hover:bg-primary-800 text-white rounded-lg font-medium transition-colors">
-                Schrijf je Eerste CSP
+                {t('stratPages.cspWriteFirst')}
               </button>
             </div>
           </>
@@ -160,41 +175,48 @@ export const CSPStrategy: React.FC = () => {
                 <div className="flex-1 space-y-6">
                   <div>
                     <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
-                      Hoe werkt een Cash Secured Put?
+                      {t('stratPages.cspHowTitle')}
                     </h3>
                     <p className="text-sm text-ink-700 dark:text-ink-300 mb-3">
-                      Een Cash Secured Put is een strategie waarbij je een put optie{' '}
-                      <strong>schrijft (verkoopt)</strong> op een aandeel of ETF die je{' '}
-                      <strong>wilt kopen</strong>, maar aan een <strong>lagere prijs</strong> dan de
-                      huidige koers. Je ontvangt direct een <strong>premie</strong> en moet{' '}
-                      <strong>cash als onderpand</strong> aanhouden.
+                      {t('stratPages.cspHowIntro1')}
+                      <strong>{t('stratPages.cspHowIntroWrite')}</strong>
+                      {t('stratPages.cspHowIntro2')}
+                      <strong>{t('stratPages.cspHowIntroWant')}</strong>
+                      {t('stratPages.cspHowIntro3')}
+                      <strong>{t('stratPages.cspHowIntroLower')}</strong>
+                      {t('stratPages.cspHowIntro4')}
+                      <strong>{t('stratPages.cspHowIntroPremium')}</strong>
+                      {t('stratPages.cspHowIntro5')}
+                      <strong>{t('stratPages.cspHowIntroCash')}</strong>
+                      {t('stratPages.cspHowIntro6')}
                     </p>
                     <div className="space-y-2">
                       <div className="flex items-start gap-2">
                         <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                         <p className="text-sm text-ink-700 dark:text-ink-300">
-                          <strong>Scenario 1:</strong> Prijs blijft boven strike → Put verloopt
-                          waardeloos → Jij houdt de premie
+                          <strong>{t('stratPages.cspScenario1Label')}</strong>
+                          {t('stratPages.cspScenario1')}
                         </p>
                       </div>
                       <div className="flex items-start gap-2">
                         <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                         <p className="text-sm text-ink-700 dark:text-ink-300">
-                          <strong>Scenario 2:</strong> Prijs daalt onder strike → Je wordt
-                          "assigned" → Je koopt 100 aandelen aan de strike price
+                          <strong>{t('stratPages.cspScenario2Label')}</strong>
+                          {t('stratPages.cspScenario2')}
                         </p>
                       </div>
                       <div className="flex items-start gap-2">
                         <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                         <p className="text-sm text-ink-700 dark:text-ink-300">
-                          <strong>Voordeel:</strong> Je krijgt betaald (premie) om te wachten tot
-                          aandelen goedkoper worden
+                          <strong>{t('stratPages.cspAdvantageLabel')}</strong>
+                          {t('stratPages.cspAdvantage')}
                         </p>
                       </div>
                       <div className="flex items-start gap-2">
                         <ArrowRight className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                         <p className="text-sm text-ink-700 dark:text-ink-300">
-                          <strong>Vereiste:</strong> Cash onderpand = Strike price × 100 aandelen
+                          <strong>{t('stratPages.cspRequirementLabel')}</strong>
+                          {t('stratPages.cspRequirement')}
                         </p>
                       </div>
                     </div>
@@ -206,26 +228,28 @@ export const CSPStrategy: React.FC = () => {
                       <Wallet className="w-5 h-5 text-caution-600 dark:text-caution-500 mt-0.5 flex-shrink-0" />
                       <div className="flex-1">
                         <h4 className="font-semibold text-ink-900 dark:text-white mb-2">
-                          Waarom "Cash Secured"?
+                          {t('stratPages.cspWhyCashSecured')}
                         </h4>
                         <p className="text-sm text-ink-700 dark:text-ink-300 mb-3">
-                          Je moet voldoende <strong>cash (onderpand)</strong> hebben om de aandelen
-                          te kopen als je wordt "assigned".
+                          {t('stratPages.cspWhyCashSecuredDesc1')}
+                          <strong>{t('stratPages.cspWhyCashSecuredCash')}</strong>
+                          {t('stratPages.cspWhyCashSecuredDesc2')}
                         </p>
                         <div className="bg-white dark:bg-trading-dark-800 rounded-lg p-4 border border-caution-500/30 dark:border-caution-500/30">
                           <p className="text-sm font-medium text-ink-900 dark:text-white mb-2">
-                            Voorbeeld:
+                            {t('stratPages.cspExampleLabel')}
                           </p>
                           <ul className="text-sm text-ink-700 dark:text-ink-300 space-y-1">
-                            <li>• Je schrijft 1 put op AAPL met strike $150</li>
-                            <li>• Je ontvangt $200 premie</li>
+                            <li>• {t('stratPages.cspExample1')}</li>
+                            <li>• {t('stratPages.cspExample2')}</li>
                             <li>
-                              • <strong>Vereist onderpand: $15,000</strong> ($150 × 100)
+                              • <strong>{t('stratPages.cspExample3Label')}</strong>
+                              {t('stratPages.cspExample3')}
                             </li>
-                            <li>• Als AAPL onder $150 gaat → Je koopt 100 AAPL aan $150</li>
+                            <li>• {t('stratPages.cspExample4')}</li>
                             <li>
-                              • Effectieve kostprijs: $150 - $2 (premie) ={' '}
-                              <strong>$148 per aandeel</strong>
+                              • {t('stratPages.cspExample5')}
+                              <strong>{t('stratPages.cspExample5Bold')}</strong>
                             </li>
                           </ul>
                         </div>
@@ -236,29 +260,29 @@ export const CSPStrategy: React.FC = () => {
                   {/* Strategy Tips */}
                   <div>
                     <h4 className="text-lg font-semibold text-ink-900 dark:text-white mb-3">
-                      Wanneer gebruik je een CSP?
+                      {t('stratPages.cspWhenUse')}
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="bg-white dark:bg-trading-dark-800 rounded-lg p-4 border border-surface-line dark:border-trading-dark-600">
                         <h5 className="font-medium text-ink-900 dark:text-white mb-2">
-                          ✓ Goede Use Cases
+                          {t('stratPages.cspGoodUseCases')}
                         </h5>
                         <ul className="text-sm text-ink-700 dark:text-ink-300 space-y-1">
-                          <li>• Je wilt een aandeel/ETF kopen, maar vindt het nu te duur</li>
-                          <li>• Je hebt cash en wilt extra rendement terwijl je wacht</li>
-                          <li>• Je bent bullish op een aandeel op langere termijn</li>
-                          <li>• Je wilt je gemiddelde inkoopprijs verlagen</li>
+                          <li>• {t('stratPages.cspGood1')}</li>
+                          <li>• {t('stratPages.cspGood2')}</li>
+                          <li>• {t('stratPages.cspGood3')}</li>
+                          <li>• {t('stratPages.cspGood4')}</li>
                         </ul>
                       </div>
                       <div className="bg-white dark:bg-trading-dark-800 rounded-lg p-4 border border-surface-line dark:border-trading-dark-600">
                         <h5 className="font-medium text-ink-900 dark:text-white mb-2">
-                          ✗ Vermijd CSP wanneer
+                          {t('stratPages.cspAvoidWhen')}
                         </h5>
                         <ul className="text-sm text-ink-700 dark:text-ink-300 space-y-1">
-                          <li>• Je het aandeel niet wilt bezitten</li>
-                          <li>• Je onvoldoende cash hebt als onderpand</li>
-                          <li>• Je bearish bent op het aandeel</li>
-                          <li>• De premie is te laag voor het risico</li>
+                          <li>• {t('stratPages.cspAvoid1')}</li>
+                          <li>• {t('stratPages.cspAvoid2')}</li>
+                          <li>• {t('stratPages.cspAvoid3')}</li>
+                          <li>• {t('stratPages.cspAvoid4')}</li>
                         </ul>
                       </div>
                     </div>
@@ -273,10 +297,10 @@ export const CSPStrategy: React.FC = () => {
                 <GraduationCap className="w-5 h-5 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-3">
-                    De Complete Cyclus
+                    {t('stratPages.cspCompleteCycle')}
                   </h3>
                   <p className="text-sm text-ink-700 dark:text-ink-300 mb-4">
-                    CSPs en Covered Calls kunnen samen een krachtige income strategie vormen:
+                    {t('stratPages.cspCompleteCycleDesc')}
                   </p>
                   <div className="space-y-3">
                     <div className="flex items-center gap-3 p-3 bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600">
@@ -285,7 +309,7 @@ export const CSPStrategy: React.FC = () => {
                       </div>
                       <div className="flex-1">
                         <p className="text-sm font-medium text-ink-900 dark:text-white">
-                          Schrijf CSP → Ontvang premie
+                          {t('stratPages.cspCycle1')}
                         </p>
                       </div>
                     </div>
@@ -295,7 +319,7 @@ export const CSPStrategy: React.FC = () => {
                       </div>
                       <div className="flex-1">
                         <p className="text-sm font-medium text-ink-900 dark:text-white">
-                          Wordt assigned → Krijg 100 aandelen aan strike price
+                          {t('stratPages.cspCycle2')}
                         </p>
                       </div>
                     </div>
@@ -305,7 +329,7 @@ export const CSPStrategy: React.FC = () => {
                       </div>
                       <div className="flex-1">
                         <p className="text-sm font-medium text-ink-900 dark:text-white">
-                          Schrijf Covered Calls op die aandelen → Ontvang meer premie
+                          {t('stratPages.cspCycle3')}
                         </p>
                       </div>
                     </div>
@@ -315,7 +339,7 @@ export const CSPStrategy: React.FC = () => {
                       </div>
                       <div className="flex-1">
                         <p className="text-sm font-medium text-ink-900 dark:text-white">
-                          Aandelen worden called away → Verkoop met winst → Herhaal cyclus
+                          {t('stratPages.cspCycle4')}
                         </p>
                       </div>
                     </div>
@@ -325,32 +349,40 @@ export const CSPStrategy: React.FC = () => {
               <div className="space-y-3 mt-6">
                 <button
                   onClick={() => {
-                    pushNavigation(`/portfolio/${portfolio}/covered-calls`, 'Covered Calls');
+                    pushNavigation(
+                      `/portfolio/${portfolio}/covered-calls`,
+                      t('stratPages.navCoveredCalls')
+                    );
                     navigate(`/portfolio/${portfolio}/covered-calls`);
                   }}
                   className="w-full flex items-center justify-between p-4 bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 hover:border-primary-300 dark:hover:border-primary-500 transition-colors"
                 >
                   <div className="flex-1 text-left">
                     <p className="font-medium text-ink-900 dark:text-white">
-                      Covered Calls Strategie
+                      {t('stratPages.cspLinkCcTitle')}
                     </p>
                     <p className="text-sm text-ink-600 dark:text-ink-400">
-                      Leer hoe je premies verdient op je aandelen
+                      {t('stratPages.cspLinkCcDesc')}
                     </p>
                   </div>
                   <ArrowRight className="w-5 h-5 text-ink-400 flex-shrink-0 ml-3" />
                 </button>
                 <button
                   onClick={() => {
-                    pushNavigation(`/portfolio/${portfolio}/stocks-etfs`, 'Aandelen & ETFs');
+                    pushNavigation(
+                      `/portfolio/${portfolio}/stocks-etfs`,
+                      t('stratPages.navStocksEtfs')
+                    );
                     navigate(`/portfolio/${portfolio}/stocks-etfs`);
                   }}
                   className="w-full flex items-center justify-between p-4 bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 hover:border-primary-300 dark:hover:border-primary-500 transition-colors"
                 >
                   <div className="flex-1 text-left">
-                    <p className="font-medium text-ink-900 dark:text-white">Aandelen & ETFs</p>
+                    <p className="font-medium text-ink-900 dark:text-white">
+                      {t('stratPages.navStocksEtfs')}
+                    </p>
                     <p className="text-sm text-ink-600 dark:text-ink-400">
-                      Bekijk je huidige posities
+                      {t('stratPages.cspLinkStocksDesc')}
                     </p>
                   </div>
                   <ArrowRight className="w-5 h-5 text-ink-400 flex-shrink-0 ml-3" />

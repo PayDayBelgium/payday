@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import type { UserLevel } from '../../types';
 
 interface PaydayMountainProps {
@@ -7,17 +8,63 @@ interface PaydayMountainProps {
   onOpenCommunity?: () => void;
   onOpenQuant?: () => void;
   onOpenMentorship?: () => void;
+  onOpenLevel?: (level: UserLevel) => void;
   mentorshipRequested?: boolean;
+  communityUnlocked?: boolean;
+  mentorshipUnlocked?: boolean;
 }
+
+// Small "unlock" pill, reused for every locked element on the mountain.
+// The label is passed in so this stays a pure module-level component.
+const UnlockPill: React.FC<{ x: number; y: number; label: string; onClick?: () => void }> = ({
+  x,
+  y,
+  label,
+  onClick,
+}) => (
+  <g
+    transform={`translate(${x} ${y})`}
+    filter="url(#pm-soft)"
+    onClick={onClick}
+    style={{ cursor: onClick ? 'pointer' : 'default' }}
+  >
+    <rect
+      x="-39"
+      y="-7.5"
+      width="78"
+      height="15"
+      rx="7.5"
+      fill="#FFF7ED"
+      stroke="#F08C2E"
+      strokeWidth="0.9"
+    />
+    <text
+      x="0"
+      y="2.6"
+      fontSize="7.6"
+      fontWeight="700"
+      fill="#9A3412"
+      textAnchor="middle"
+      letterSpacing="0.04em"
+    >
+      {label}
+    </text>
+  </g>
+);
 
 export const PaydayMountain: React.FC<PaydayMountainProps> = ({
   unlockedLevels,
   onOpenCommunity,
   onOpenQuant,
   onOpenMentorship,
+  onOpenLevel,
   mentorshipRequested,
+  communityUnlocked = true,
+  mentorshipUnlocked = true,
 }) => {
+  const { t } = useTranslation();
   const offpisteUnlocked = unlockedLevels.includes('offpiste');
+  const isLevelUnlocked = (level: UserLevel) => unlockedLevels.includes(level);
 
   return (
     <div className="relative w-full rounded-xl overflow-hidden border border-[var(--line)]">
@@ -205,21 +252,61 @@ export const PaydayMountain: React.FC<PaydayMountainProps> = ({
 
         {/* uniform label pills */}
         <g fontSize="9.5" fontWeight="600" fill="#0F1E36">
-          <g transform="translate(150 300)" filter="url(#pm-soft)">
+          <g
+            transform="translate(150 300)"
+            filter="url(#pm-soft)"
+            onClick={() => onOpenLevel?.('beginner')}
+            style={{
+              cursor: onOpenLevel ? 'pointer' : 'default',
+              opacity: isLevelUnlocked('beginner') ? 1 : 0.55,
+            }}
+          >
             <rect x="-32" y="-9" width="64" height="18" rx="9" fill="#fff" stroke="#E3E8EF" />
             <circle cx="-19" cy="0" r="4.5" fill="#0F9D58" />
             <text x="6" y="3" textAnchor="middle">
-              GROEN
+              {t('mountain.green')}
             </text>
           </g>
-          <g transform="translate(300 224)" filter="url(#pm-soft)">
+          {!isLevelUnlocked('beginner') && (
+            <UnlockPill
+              x={150}
+              y={316}
+              label={t('mountain.unlock')}
+              onClick={() => onOpenLevel?.('beginner')}
+            />
+          )}
+          <g
+            transform="translate(300 224)"
+            filter="url(#pm-soft)"
+            onClick={() => onOpenLevel?.('medior')}
+            style={{
+              cursor: onOpenLevel ? 'pointer' : 'default',
+              opacity: isLevelUnlocked('medior') ? 1 : 0.55,
+            }}
+          >
             <rect x="-32" y="-9" width="64" height="18" rx="9" fill="#fff" stroke="#E3E8EF" />
             <rect x="-23.5" y="-4.5" width="9" height="9" fill="#2F6CAE" />
             <text x="6" y="3" textAnchor="middle">
-              BLAUW
+              {t('mountain.blue')}
             </text>
           </g>
-          <g transform="translate(431 164)" filter="url(#pm-soft)">
+          {!isLevelUnlocked('medior') && (
+            <UnlockPill
+              x={300}
+              y={240}
+              label={t('mountain.unlock')}
+              onClick={() => onOpenLevel?.('medior')}
+            />
+          )}
+          <g
+            transform="translate(431 164)"
+            filter="url(#pm-soft)"
+            onClick={() => onOpenLevel?.('senior')}
+            style={{
+              cursor: onOpenLevel ? 'pointer' : 'default',
+              opacity: isLevelUnlocked('senior') ? 1 : 0.55,
+            }}
+          >
             <rect x="-30" y="-9" width="60" height="18" rx="9" fill="#fff" stroke="#E3E8EF" />
             <rect
               x="-20"
@@ -230,10 +317,26 @@ export const PaydayMountain: React.FC<PaydayMountainProps> = ({
               transform="rotate(45 -15.5 0)"
             />
             <text x="6" y="3" textAnchor="middle">
-              ROOD
+              {t('mountain.red')}
             </text>
           </g>
-          <g transform="translate(560 104)" filter="url(#pm-soft)">
+          {!isLevelUnlocked('senior') && (
+            <UnlockPill
+              x={431}
+              y={180}
+              label={t('mountain.unlock')}
+              onClick={() => onOpenLevel?.('senior')}
+            />
+          )}
+          <g
+            transform="translate(560 104)"
+            filter="url(#pm-soft)"
+            onClick={() => onOpenLevel?.('expert')}
+            style={{
+              cursor: onOpenLevel ? 'pointer' : 'default',
+              opacity: isLevelUnlocked('expert') ? 1 : 0.55,
+            }}
+          >
             <rect x="-32" y="-9" width="64" height="18" rx="9" fill="#fff" stroke="#E3E8EF" />
             <g transform="translate(-21 0)">
               <rect
@@ -254,9 +357,17 @@ export const PaydayMountain: React.FC<PaydayMountainProps> = ({
               />
             </g>
             <text x="7" y="3" textAnchor="middle">
-              ZWART
+              {t('mountain.black')}
             </text>
           </g>
+          {!isLevelUnlocked('expert') && (
+            <UnlockPill
+              x={560}
+              y={120}
+              label={t('mountain.unlock')}
+              onClick={() => onOpenLevel?.('expert')}
+            />
+          )}
           <g
             transform="translate(692 171)"
             filter="url(#pm-soft)"
@@ -283,7 +394,7 @@ export const PaydayMountain: React.FC<PaydayMountainProps> = ({
               />
             </g>
             <text x="6" y="3" textAnchor="middle" fill="#9A3412">
-              OFF-PISTE
+              {t('mountain.offPiste')}
             </text>
           </g>
           {!offpisteUnlocked && (
@@ -312,7 +423,7 @@ export const PaydayMountain: React.FC<PaydayMountainProps> = ({
                 textAnchor="middle"
                 letterSpacing="0.04em"
               >
-                ONTGRENDELEN
+                {t('mountain.unlock')}
               </text>
             </g>
           )}
@@ -398,11 +509,13 @@ export const PaydayMountain: React.FC<PaydayMountainProps> = ({
           <g transform="translate(0 30)" filter="url(#pm-soft)">
             <rect x="-78" y="-9" width="156" height="18" rx="9" fill="#fff" stroke="#E3E8EF" />
             <text y="3" fontSize="9.5" fontWeight="700" fill="#9A3412" textAnchor="middle">
-              SKI-SCHOOL · MENTORSHIP
+              {t('mountain.mentorship')}
             </text>
           </g>
-          {/* status: requested */}
-          {mentorshipRequested && (
+          {/* status: locked → unlock, else requested */}
+          {!mentorshipUnlocked ? (
+            <UnlockPill x={0} y={45} label={t('mountain.unlock')} onClick={onOpenMentorship} />
+          ) : mentorshipRequested ? (
             <g transform="translate(0 45)" filter="url(#pm-soft)">
               <rect
                 x="-34"
@@ -422,10 +535,10 @@ export const PaydayMountain: React.FC<PaydayMountainProps> = ({
                 textAnchor="middle"
                 letterSpacing="0.04em"
               >
-                AANGEVRAAGD
+                {t('mountain.requested')}
               </text>
             </g>
-          )}
+          ) : null}
         </g>
 
         {/* après-ski bar = community (clickable) */}
@@ -496,9 +609,12 @@ export const PaydayMountain: React.FC<PaydayMountainProps> = ({
           <g transform="translate(0 76)" filter="url(#pm-soft)">
             <rect x="-72" y="-9" width="144" height="18" rx="9" fill="#fff" stroke="#E3E8EF" />
             <text y="3" fontSize="9.5" fontWeight="700" fill="#9A3412" textAnchor="middle">
-              APRÈS-SKI · COMMUNITY
+              {t('mountain.community')}
             </text>
           </g>
+          {!communityUnlocked && (
+            <UnlockPill x={0} y={94} label={t('mountain.unlock')} onClick={onOpenCommunity} />
+          )}
         </g>
       </svg>
     </div>

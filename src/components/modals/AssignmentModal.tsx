@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, ArrowDownLeft, ArrowUpRight, AlertTriangle, Info } from 'lucide-react';
 import type { CallOption, PutOption, CurrencyType } from '../../types';
 import { getCurrencySymbol } from '../../utils/currency';
@@ -23,6 +24,7 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
   position,
   currency,
 }) => {
+  const { t } = useTranslation();
   const currencySymbol = getCurrencySymbol(currency);
   const contractMultiplier = 100;
 
@@ -56,7 +58,11 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
         premiumReceived,
         effectiveCost,
         effectivePricePerShare,
-        description: `Je koopt ${shares} aandelen ${position.ticker} tegen $${position.strike} per aandeel`,
+        description: t('modalsA.putBuyDescription', {
+          shares,
+          ticker: position.ticker,
+          strike: position.strike,
+        }),
       };
     } else {
       // Short CALL assigned: you SELL shares at strike price
@@ -73,10 +79,14 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
         premiumReceived,
         totalIncome,
         effectivePricePerShare,
-        description: `Je verkoopt ${shares} aandelen ${position.ticker} tegen $${position.strike} per aandeel`,
+        description: t('modalsA.callSellDescription', {
+          shares,
+          ticker: position.ticker,
+          strike: position.strike,
+        }),
       };
     }
-  }, [assignmentPrice, position, isPut]);
+  }, [assignmentPrice, position, isPut, t]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -124,7 +134,9 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
               )}
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-ink-900 dark:text-white">Assignment</h2>
+              <h2 className="text-xl font-semibold text-ink-900 dark:text-white">
+                {t('modalsA.assignment')}
+              </h2>
               <p className="text-sm text-ink-500 dark:text-ink-400">
                 {position.ticker} Short {optionType} ${position.strike}
               </p>
@@ -173,8 +185,9 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
                       : 'text-positive-700 dark:text-positive-500'
                   }`}
                 >
-                  De optie wordt gesloten en de aandelen worden{' '}
-                  {isPut ? 'toegevoegd aan' : 'verwijderd uit'} je portfolio.
+                  {t('modalsA.optionClosedAddedRemoved', {
+                    action: isPut ? t('modalsA.addedTo') : t('modalsA.removedFrom'),
+                  })}
                 </p>
               </div>
             </div>
@@ -183,29 +196,33 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
           {/* Current Position Info */}
           <div className="p-4 bg-surface dark:bg-trading-dark-700/50 rounded-lg">
             <h3 className="text-sm font-semibold text-ink-700 dark:text-ink-300 mb-2">
-              Positie Details
+              {t('modalsA.positionDetails')}
             </h3>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="text-ink-500 dark:text-ink-400">Strike:</span>
+                <span className="text-ink-500 dark:text-ink-400">{t('modalsA.strikeLabel')}</span>
                 <span className="ml-2 font-medium text-ink-900 dark:text-white">
                   ${position.strike}
                 </span>
               </div>
               <div>
-                <span className="text-ink-500 dark:text-ink-400">Contracts:</span>
+                <span className="text-ink-500 dark:text-ink-400">
+                  {t('modalsA.contractsLabel')}
+                </span>
                 <span className="ml-2 font-medium text-ink-900 dark:text-white">
                   {position.contracts}
                 </span>
               </div>
               <div>
-                <span className="text-ink-500 dark:text-ink-400">Premie ontvangen:</span>
+                <span className="text-ink-500 dark:text-ink-400">
+                  {t('modalsA.premiumReceivedLabel')}
+                </span>
                 <span className="ml-2 font-medium text-positive-600 dark:text-positive-500">
                   +{formatCurrency(Math.abs(position.costBasis), currencySymbol)}
                 </span>
               </div>
               <div>
-                <span className="text-ink-500 dark:text-ink-400">Aandelen:</span>
+                <span className="text-ink-500 dark:text-ink-400">{t('modalsA.sharesLabel')}</span>
                 <span className="ml-2 font-medium text-ink-900 dark:text-white">
                   {position.contracts * contractMultiplier}
                 </span>
@@ -217,7 +234,7 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
-                Assignment datum
+                {t('modalsA.assignmentDate')}
               </label>
               <input
                 type="date"
@@ -230,7 +247,7 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
 
             <div>
               <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
-                Effectieve Prijs per Aandeel
+                {t('modalsA.effectivePricePerShare')}
               </label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-500">$</span>
@@ -244,7 +261,7 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
                 />
               </div>
               <p className="mt-1 text-xs text-ink-500 dark:text-ink-400">
-                Normaal gelijk aan de strike prijs (${position.strike})
+                {t('modalsA.normallyEqualToStrike', { strike: position.strike })}
               </p>
             </div>
           </div>
@@ -252,35 +269,40 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
           {/* Notes */}
           <div>
             <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
-              Notities (optioneel)
+              {t('modalsA.notesOptional')}
             </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               className="w-full px-4 py-2 border border-ink-200 dark:border-trading-dark-500 rounded-lg bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white focus:ring-2 focus:ring-primary-500"
               rows={2}
-              placeholder="Bijv. vroege assignment, ex-dividend, etc."
+              placeholder={t('modalsA.notesPlaceholderAssignment')}
             />
           </div>
 
           {/* Calculation Summary */}
           <div className="p-4 bg-surface dark:bg-trading-dark-700/50 rounded-lg">
             <h3 className="text-sm font-semibold text-ink-700 dark:text-ink-300 mb-3">
-              Berekening
+              {t('modalsA.calculation')}
             </h3>
             <div className="space-y-2 text-sm">
               {isPut ? (
                 <>
                   <div className="flex justify-between">
                     <span className="text-ink-600 dark:text-ink-400">
-                      Aankoopkosten ({assignmentCalculation.shares} x ${position.strike}):
+                      {t('modalsA.purchaseCost', {
+                        shares: assignmentCalculation.shares,
+                        strike: position.strike,
+                      })}
                     </span>
                     <span className="font-medium text-negative-600 dark:text-negative-500">
                       -{formatCurrency(assignmentCalculation.totalCost ?? 0, currencySymbol)}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-ink-600 dark:text-ink-400">Premie ontvangen:</span>
+                    <span className="text-ink-600 dark:text-ink-400">
+                      {t('modalsA.premiumReceivedPlain')}
+                    </span>
                     <span className="font-medium text-positive-600 dark:text-positive-500">
                       +{formatCurrency(assignmentCalculation.premiumReceived, currencySymbol)}
                     </span>
@@ -288,14 +310,16 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
                   <div className="border-t border-surface-line dark:border-trading-dark-500 pt-2 mt-2">
                     <div className="flex justify-between items-center">
                       <span className="font-semibold text-ink-700 dark:text-ink-300">
-                        Effectieve kost:
+                        {t('modalsA.effectiveCost')}
                       </span>
                       <span className="text-lg font-bold text-ink-900 dark:text-white">
                         {formatCurrency(assignmentCalculation.effectiveCost ?? 0, currencySymbol)}
                       </span>
                     </div>
                     <div className="flex justify-between items-center mt-1">
-                      <span className="text-ink-600 dark:text-ink-400">Per aandeel:</span>
+                      <span className="text-ink-600 dark:text-ink-400">
+                        {t('modalsA.perShareLabel')}
+                      </span>
                       <span className="font-medium text-ink-900 dark:text-white">
                         {formatCurrency(
                           assignmentCalculation.effectivePricePerShare,
@@ -309,14 +333,19 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
                 <>
                   <div className="flex justify-between">
                     <span className="text-ink-600 dark:text-ink-400">
-                      Verkoopopbrengst ({assignmentCalculation.shares} x ${position.strike}):
+                      {t('modalsA.saleProceeds', {
+                        shares: assignmentCalculation.shares,
+                        strike: position.strike,
+                      })}
                     </span>
                     <span className="font-medium text-positive-600 dark:text-positive-500">
                       +{formatCurrency(assignmentCalculation.totalProceeds ?? 0, currencySymbol)}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-ink-600 dark:text-ink-400">Premie ontvangen:</span>
+                    <span className="text-ink-600 dark:text-ink-400">
+                      {t('modalsA.premiumReceivedPlain')}
+                    </span>
                     <span className="font-medium text-positive-600 dark:text-positive-500">
                       +{formatCurrency(assignmentCalculation.premiumReceived, currencySymbol)}
                     </span>
@@ -324,14 +353,16 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
                   <div className="border-t border-surface-line dark:border-trading-dark-500 pt-2 mt-2">
                     <div className="flex justify-between items-center">
                       <span className="font-semibold text-ink-700 dark:text-ink-300">
-                        Totale opbrengst:
+                        {t('modalsA.totalProceeds')}
                       </span>
                       <span className="text-lg font-bold text-positive-600 dark:text-positive-500">
                         +{formatCurrency(assignmentCalculation.totalIncome ?? 0, currencySymbol)}
                       </span>
                     </div>
                     <div className="flex justify-between items-center mt-1">
-                      <span className="text-ink-600 dark:text-ink-400">Per aandeel:</span>
+                      <span className="text-ink-600 dark:text-ink-400">
+                        {t('modalsA.perShareLabel')}
+                      </span>
                       <span className="font-medium text-positive-600 dark:text-positive-500">
                         {formatCurrency(
                           assignmentCalculation.effectivePricePerShare,
@@ -351,11 +382,11 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
               <div className="flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 text-caution-600 dark:text-caution-500 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="font-medium text-amber-900 dark:text-amber-100">Wheel campagne</p>
+                  <p className="font-medium text-amber-900 dark:text-amber-100">
+                    {t('modalsA.wheelCampaign')}
+                  </p>
                   <p className="text-sm text-caution-600 dark:text-caution-500">
-                    {isPut
-                      ? 'Na assignment gaat de Wheel naar de Stock fase. Je kunt dan covered calls schrijven.'
-                      : 'Na assignment is de Wheel cycle voltooid. Je kunt een nieuwe CSP schrijven om opnieuw te beginnen.'}
+                    {isPut ? t('modalsA.wheelPutMessage') : t('modalsA.wheelCallMessage')}
                   </p>
                 </div>
               </div>
@@ -369,7 +400,7 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
               onClick={onClose}
               className="px-4 py-2 text-ink-700 dark:text-ink-300 hover:bg-surface-subtle dark:hover:bg-trading-dark-700 rounded-lg transition-colors"
             >
-              Annuleren
+              {t('modalsA.cancel')}
             </button>
             <button
               type="submit"
@@ -378,7 +409,7 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
               }`}
             >
               {isPut ? <ArrowDownLeft className="w-4 h-4" /> : <ArrowUpRight className="w-4 h-4" />}
-              Assignment Bevestigen
+              {t('modalsA.confirmAssignment')}
             </button>
           </div>
         </form>

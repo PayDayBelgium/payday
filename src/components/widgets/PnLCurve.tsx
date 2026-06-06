@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useRef } from 'react';
 import { TrendingUp, TrendingDown } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { getCurrencySymbol } from '../../utils/currency';
 import { formatNumber } from '../../utils/numberFormat';
 import type { CurrencyType } from '../../types';
@@ -49,6 +50,7 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
   currency,
   className = '',
 }) => {
+  const { t } = useTranslation();
   const currencySymbol = getCurrencySymbol(currency);
   const svgRef = useRef<SVGSVGElement>(null);
   const [hoverPoint, setHoverPoint] = useState<{
@@ -271,7 +273,7 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
       <div
         className={`p-8 text-center bg-surface dark:bg-trading-dark-900 rounded-lg ${className}`}
       >
-        <p className="text-ink-500 dark:text-ink-400">Vul alle velden in om de P&L curve te zien</p>
+        <p className="text-ink-500 dark:text-ink-400">{t('widgetsB.fillFieldsForCurve')}</p>
       </div>
     );
   }
@@ -354,12 +356,12 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
       {/* Header */}
       <div className="mb-4">
         <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
-          Profit & Loss curve
+          {t('widgetsB.profitLossCurve')}
         </h3>
         <div className="flex items-center gap-4 text-sm">
           {breakEven !== null && !Array.isArray(breakEven) && (
             <div className="flex items-center gap-1">
-              <span className="text-ink-600 dark:text-ink-400">Break-even:</span>
+              <span className="text-ink-600 dark:text-ink-400">{t('widgetsB.breakEven')}</span>
               <span className="font-semibold text-ink-900 dark:text-white">
                 {currencySymbol}
                 {formatNumber(breakEven, 2)}
@@ -369,7 +371,7 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
           {maxProfit !== null && maxProfit !== Infinity && (
             <div className="flex items-center gap-1">
               <TrendingUp className="w-4 h-4 text-positive-600 dark:text-positive-500" />
-              <span className="text-ink-600 dark:text-ink-400">Max:</span>
+              <span className="text-ink-600 dark:text-ink-400">{t('widgetsB.max')}</span>
               <span className="font-semibold text-positive-600 dark:text-positive-500">
                 +{currencySymbol}
                 {formatNumber(maxProfit, 2)}
@@ -379,7 +381,7 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
           {maxLoss !== null && maxLoss !== -Infinity && (
             <div className="flex items-center gap-1">
               <TrendingDown className="w-4 h-4 text-negative-600 dark:text-negative-500" />
-              <span className="text-ink-600 dark:text-ink-400">Max:</span>
+              <span className="text-ink-600 dark:text-ink-400">{t('widgetsB.max')}</span>
               <span className="font-semibold text-negative-600 dark:text-negative-500">
                 -{currencySymbol}
                 {formatNumber(Math.abs(maxLoss), 2)}
@@ -522,7 +524,7 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
             textAnchor="middle"
             className="text-xs fill-gray-600 dark:fill-gray-400"
           >
-            Aandelenprijs ({currencySymbol})
+            {t('widgetsB.stockPriceAxis', { currency: currencySymbol })}
           </text>
           <text
             x={15}
@@ -531,7 +533,7 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
             transform={`rotate(-90, 15, ${chartHeight / 2})`}
             className="text-xs fill-gray-600 dark:fill-gray-400"
           >
-            Winst/Verlies ({currencySymbol})
+            {t('widgetsB.profitLossAxis', { currency: currencySymbol })}
           </text>
 
           {/* Price labels */}
@@ -636,7 +638,8 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
                   y={hoverPoint.y - 22}
                   className="text-xs font-semibold fill-white dark:fill-gray-900"
                 >
-                  Prijs: {currencySymbol}
+                  {t('widgetsB.price')}
+                  {currencySymbol}
                   {formatNumber(hoverPoint.price, 2)}
                 </text>
                 <text
@@ -666,7 +669,7 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
               className="w-8 h-0.5 bg-ink-600 dark:bg-purple-400"
               style={{ borderTop: '2px dashed' }}
             />
-            <span className="text-ink-600 dark:text-ink-400">Huidige Prijs</span>
+            <span className="text-ink-600 dark:text-ink-400">{t('widgetsB.currentPriceLegend')}</span>
           </div>
         )}
         <div className="flex items-center gap-2">
@@ -674,7 +677,7 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
             className="w-8 h-0.5 bg-caution-500 dark:bg-caution-500"
             style={{ borderTop: '2px dashed' }}
           />
-          <span className="text-ink-600 dark:text-ink-400">Break-even</span>
+          <span className="text-ink-600 dark:text-ink-400">{t('widgetsB.breakEvenLegend')}</span>
         </div>
         <div className="flex items-center gap-2">
           <div
