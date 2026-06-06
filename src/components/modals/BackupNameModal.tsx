@@ -65,9 +65,7 @@ export const BackupNameModal: React.FC<BackupNameModalProps> = ({
             <div className="p-2 bg-primary-50 dark:bg-primary-900/30 rounded-lg">
               <Download className="w-5 h-5 text-primary-700 dark:text-primary-300" />
             </div>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-              Backup Opslaan
-            </h2>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">Backup Opslaan</h2>
           </div>
           <button
             onClick={onClose}

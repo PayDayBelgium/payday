@@ -9,14 +9,17 @@ export { getCurrencySymbol };
  * Check if there are multiple currencies across portfolios
  */
 export const hasMixedCurrencies = (portfolios: Portfolio[]): boolean => {
-  const currencies = new Set(portfolios.map(b => b.currency));
+  const currencies = new Set(portfolios.map((b) => b.currency));
   return currencies.size > 1;
 };
 
 /**
  * Get currency symbol for display, returns empty string if mixed currencies
  */
-export const getCurrencyForDisplay = (portfolios: Portfolio[], specificCurrency?: CurrencyType): string => {
+export const getCurrencyForDisplay = (
+  portfolios: Portfolio[],
+  specificCurrency?: CurrencyType
+): string => {
   if (specificCurrency) {
     return getCurrencySymbol(specificCurrency);
   }

@@ -10,8 +10,14 @@ type TabType = 'account' | 'connectivity' | 'rules' | 'ai';
 
 const TAB_TITLES: Record<TabType, { title: string; description: string }> = {
   account: { title: 'Instellingen - Account', description: 'Beheer je accountgegevens' },
-  connectivity: { title: 'Instellingen - Connectivity', description: 'WebSocket verbinding configureren' },
-  rules: { title: 'Instellingen - Trading Rules', description: 'Beheer regels voor alerts en opportunities' },
+  connectivity: {
+    title: 'Instellingen - Connectivity',
+    description: 'WebSocket verbinding configureren',
+  },
+  rules: {
+    title: 'Instellingen - Trading Rules',
+    description: 'Beheer regels voor alerts en opportunities',
+  },
   ai: { title: 'Instellingen - AI-assistent', description: 'AI-assistent configureren' },
 };
 
@@ -34,9 +40,10 @@ export const Settings: React.FC = () => {
             onClick={() => setActiveTab('account')}
             className={`
               whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2
-              ${activeTab === 'account'
-                ? 'border-primary-500 text-primary-700 dark:text-primary-300'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+              ${
+                activeTab === 'account'
+                  ? 'border-primary-500 text-primary-700 dark:text-primary-300'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
               }
             `}
           >
@@ -47,9 +54,10 @@ export const Settings: React.FC = () => {
             onClick={() => setActiveTab('connectivity')}
             className={`
               whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2
-              ${activeTab === 'connectivity'
-                ? 'border-primary-500 text-primary-700 dark:text-primary-300'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+              ${
+                activeTab === 'connectivity'
+                  ? 'border-primary-500 text-primary-700 dark:text-primary-300'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
               }
             `}
           >
@@ -60,9 +68,10 @@ export const Settings: React.FC = () => {
             onClick={() => setActiveTab('rules')}
             className={`
               whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2
-              ${activeTab === 'rules'
-                ? 'border-primary-500 text-primary-700 dark:text-primary-300'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+              ${
+                activeTab === 'rules'
+                  ? 'border-primary-500 text-primary-700 dark:text-primary-300'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
               }
             `}
           >
@@ -73,9 +82,10 @@ export const Settings: React.FC = () => {
             onClick={() => setActiveTab('ai')}
             className={`
               whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2
-              ${activeTab === 'ai'
-                ? 'border-primary-500 text-primary-700 dark:text-primary-300'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+              ${
+                activeTab === 'ai'
+                  ? 'border-primary-500 text-primary-700 dark:text-primary-300'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
               }
             `}
           >

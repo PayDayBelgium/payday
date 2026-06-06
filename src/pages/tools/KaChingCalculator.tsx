@@ -39,7 +39,10 @@ interface KaChingResults {
 export const KaChingCalculator: React.FC = () => {
   const { setPageTitle } = usePageTitle();
   useEffect(() => {
-    setPageTitle('KaChing Strategy Calculator', 'Calculate returns from selling weekly puts against a protective put');
+    setPageTitle(
+      'KaChing Strategy Calculator',
+      'Calculate returns from selling weekly puts against a protective put'
+    );
   }, [setPageTitle]);
   const [inputs, setInputs] = useState<KaChingInputs>({
     ticker: '',
@@ -61,7 +64,7 @@ export const KaChingCalculator: React.FC = () => {
   }, [inputs]);
 
   const handleInputChange = (field: keyof KaChingInputs, value: string | number) => {
-    setInputs(prev => ({
+    setInputs((prev) => ({
       ...prev,
       [field]: value,
     }));
@@ -69,15 +72,27 @@ export const KaChingCalculator: React.FC = () => {
 
   const calculateResults = () => {
     const {
-      ticker, underlyingPrice, protectivePutStrike, protectivePutPremium,
-      protectivePutPurchaseDate, protectivePutExpiration,
-      weeklyPutStrike, weeklyPutPremium
+      ticker,
+      underlyingPrice,
+      protectivePutStrike,
+      protectivePutPremium,
+      protectivePutPurchaseDate,
+      protectivePutExpiration,
+      weeklyPutStrike,
+      weeklyPutPremium,
     } = inputs;
 
     // Check if all required fields are filled
-    if (!ticker || !underlyingPrice || !protectivePutStrike || !protectivePutPremium ||
-        !protectivePutPurchaseDate || !protectivePutExpiration ||
-        !weeklyPutStrike || !weeklyPutPremium) {
+    if (
+      !ticker ||
+      !underlyingPrice ||
+      !protectivePutStrike ||
+      !protectivePutPremium ||
+      !protectivePutPurchaseDate ||
+      !protectivePutExpiration ||
+      !weeklyPutStrike ||
+      !weeklyPutPremium
+    ) {
       setResults(null);
       return;
     }
@@ -114,16 +129,17 @@ export const KaChingCalculator: React.FC = () => {
     const annualizedROI = totalDays > 0 ? (roi / totalDays) * 365 : 0;
 
     // Calculate break-even weeks (weeks needed to recover protective put cost)
-    const breakevenWeeks = weeklyPutPremium > 0
-      ? Math.ceil(protectivePutPremium / weeklyPutPremium)
-      : 0;
+    const breakevenWeeks =
+      weeklyPutPremium > 0 ? Math.ceil(protectivePutPremium / weeklyPutPremium) : 0;
 
     // Calculate weeks after break-even (pure profit weeks)
     const weeksAfterBreakeven = Math.max(0, totalWeeks - breakevenWeeks);
 
     // Warnings
     if (weeklyPutStrike > protectivePutStrike) {
-      newWarnings.push('Weekly put strike is above protective put strike. This increases assignment risk.');
+      newWarnings.push(
+        'Weekly put strike is above protective put strike. This increases assignment risk.'
+      );
     }
 
     if (protectivePutStrike > underlyingPrice) {
@@ -131,11 +147,15 @@ export const KaChingCalculator: React.FC = () => {
     }
 
     if (totalWeeks < 6) {
-      newWarnings.push('Less than 6 weeks available. Consider using a longer-dated protective put.');
+      newWarnings.push(
+        'Less than 6 weeks available. Consider using a longer-dated protective put.'
+      );
     }
 
     if (breakevenWeeks > totalWeeks) {
-      newWarnings.push(`You need ${breakevenWeeks} weeks to break even, but only have ${totalWeeks} weeks available.`);
+      newWarnings.push(
+        `You need ${breakevenWeeks} weeks to break even, but only have ${totalWeeks} weeks available.`
+      );
     }
 
     if (weeklyPutPremium < 0.05) {
@@ -204,7 +224,9 @@ export const KaChingCalculator: React.FC = () => {
                 <input
                   type="number"
                   value={inputs.underlyingPrice || ''}
-                  onChange={(e) => handleInputChange('underlyingPrice', parseFloat(e.target.value) || 0)}
+                  onChange={(e) =>
+                    handleInputChange('underlyingPrice', parseFloat(e.target.value) || 0)
+                  }
                   placeholder="450,00"
                   className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
                 />
@@ -223,7 +245,8 @@ export const KaChingCalculator: React.FC = () => {
                   <span className="text-white text-xs font-bold">i</span>
                 </div>
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 z-10">
-                  This is your insurance - a longer-dated put (6-12 weeks) that protects your position.
+                  This is your insurance - a longer-dated put (6-12 weeks) that protects your
+                  position.
                 </div>
               </div>
             </div>
@@ -236,7 +259,9 @@ export const KaChingCalculator: React.FC = () => {
                   <input
                     type="number"
                     value={inputs.protectivePutStrike || ''}
-                    onChange={(e) => handleInputChange('protectivePutStrike', parseFloat(e.target.value) || 0)}
+                    onChange={(e) =>
+                      handleInputChange('protectivePutStrike', parseFloat(e.target.value) || 0)
+                    }
                     placeholder="440,00"
                     className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
                   />
@@ -248,7 +273,9 @@ export const KaChingCalculator: React.FC = () => {
                   <input
                     type="number"
                     value={inputs.protectivePutPremium || ''}
-                    onChange={(e) => handleInputChange('protectivePutPremium', parseFloat(e.target.value) || 0)}
+                    onChange={(e) =>
+                      handleInputChange('protectivePutPremium', parseFloat(e.target.value) || 0)
+                    }
                     placeholder="5,00"
                     className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
                   />
@@ -291,7 +318,8 @@ export const KaChingCalculator: React.FC = () => {
                   <span className="text-white text-xs font-bold">i</span>
                 </div>
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 z-10">
-                  These are the weekly puts you sell to collect premium. Strike should be at or slightly below your protective put.
+                  These are the weekly puts you sell to collect premium. Strike should be at or
+                  slightly below your protective put.
                 </div>
               </div>
             </div>
@@ -304,7 +332,9 @@ export const KaChingCalculator: React.FC = () => {
                   <input
                     type="number"
                     value={inputs.weeklyPutStrike || ''}
-                    onChange={(e) => handleInputChange('weeklyPutStrike', parseFloat(e.target.value) || 0)}
+                    onChange={(e) =>
+                      handleInputChange('weeklyPutStrike', parseFloat(e.target.value) || 0)
+                    }
                     placeholder="438,00"
                     className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
                   />
@@ -316,7 +346,9 @@ export const KaChingCalculator: React.FC = () => {
                   <input
                     type="number"
                     value={inputs.weeklyPutPremium || ''}
-                    onChange={(e) => handleInputChange('weeklyPutPremium', parseFloat(e.target.value) || 0)}
+                    onChange={(e) =>
+                      handleInputChange('weeklyPutPremium', parseFloat(e.target.value) || 0)
+                    }
                     placeholder="0,75"
                     className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
                   />
@@ -345,25 +377,33 @@ export const KaChingCalculator: React.FC = () => {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Initial Investment</p>
+                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Initial Investment
+                      </p>
                       <p className="text-xl font-bold text-gray-900 dark:text-white">
                         {formatCurrency(results.initialInvestment)}
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Total Weeks</p>
+                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Total Weeks
+                      </p>
                       <p className="text-xl font-bold text-gray-900 dark:text-white">
                         {results.totalWeeks} weeks
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Weekly Premium</p>
+                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Weekly Premium
+                      </p>
                       <p className="text-xl font-bold text-positive-600 dark:text-positive-500">
                         {formatCurrency(results.weeklyPremiumCollected)}
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Break-Even</p>
+                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Break-Even
+                      </p>
                       <p className="text-xl font-bold text-gray-900 dark:text-white">
                         {results.breakevenWeeks} weeks
                       </p>
@@ -399,7 +439,9 @@ export const KaChingCalculator: React.FC = () => {
                       <span className="text-base font-bold text-gray-900 dark:text-gray-100">
                         Net Cost
                       </span>
-                      <span className={`text-xl font-bold ${results.netCost <= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-caution-600 dark:text-caution-500'}`}>
+                      <span
+                        className={`text-xl font-bold ${results.netCost <= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-caution-600 dark:text-caution-500'}`}
+                      >
                         {formatCurrency(Math.abs(results.netCost))}
                         {results.netCost <= 0 && ' profit'}
                       </span>
@@ -416,7 +458,9 @@ export const KaChingCalculator: React.FC = () => {
                       <span className="text-base font-bold text-gray-900 dark:text-gray-100">
                         Net Profit / Loss
                       </span>
-                      <span className={`text-2xl font-bold ${results.netPnL >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
+                      <span
+                        className={`text-2xl font-bold ${results.netPnL >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
+                      >
                         {formatCurrency(results.netPnL)}
                       </span>
                     </div>
@@ -427,7 +471,9 @@ export const KaChingCalculator: React.FC = () => {
                       <span className="text-base font-bold text-gray-900 dark:text-gray-100">
                         ROI
                       </span>
-                      <span className={`text-2xl font-bold ${results.roi >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
+                      <span
+                        className={`text-2xl font-bold ${results.roi >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
+                      >
                         {formatPercentage(results.roi)}
                       </span>
                     </div>
@@ -441,7 +487,9 @@ export const KaChingCalculator: React.FC = () => {
                           Annualized ROI
                         </span>
                       </div>
-                      <span className={`text-2xl font-bold ${results.annualizedROI >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
+                      <span
+                        className={`text-2xl font-bold ${results.annualizedROI >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
+                      >
                         {formatPercentage(results.annualizedROI)}
                       </span>
                     </div>

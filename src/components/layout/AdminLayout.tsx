@@ -41,7 +41,7 @@ const AdminLayoutContent: React.FC = () => {
     setIsLoggingOut(true);
     setShowUserMenu(false);
 
-    await new Promise(resolve => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
     dispatch(logoutAdmin());
 
@@ -87,7 +87,9 @@ const AdminLayoutContent: React.FC = () => {
       <header className="fixed top-0 left-0 right-0 h-16 bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 z-50 shadow-sm">
         <div className="h-full flex items-center justify-between">
           {/* Logo Section - Fixed width to match sidebar */}
-          <div className={`${isSidebarCollapsed ? 'w-16' : 'w-64'} relative flex items-center ${isSidebarCollapsed ? 'justify-center' : 'pl-4'} transition-all duration-300`}>
+          <div
+            className={`${isSidebarCollapsed ? 'w-16' : 'w-64'} relative flex items-center ${isSidebarCollapsed ? 'justify-center' : 'pl-4'} transition-all duration-300`}
+          >
             {!isSidebarCollapsed && (
               <div className="flex items-center gap-3">
                 <img src={logo} alt="PayDay" className="w-10 h-10 rounded-lg shadow-md" />
@@ -106,7 +108,11 @@ const AdminLayoutContent: React.FC = () => {
               className="absolute bottom-0 right-1 p-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors shadow-sm"
               title={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             >
-              {isSidebarCollapsed ? <Menu className="w-3 h-3" /> : <ChevronLeft className="w-3 h-3" />}
+              {isSidebarCollapsed ? (
+                <Menu className="w-3 h-3" />
+              ) : (
+                <ChevronLeft className="w-3 h-3" />
+              )}
             </button>
           </div>
 
@@ -151,7 +157,9 @@ const AdminLayoutContent: React.FC = () => {
                         <User className="w-5 h-5" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-gray-900 dark:text-white truncate">{adminUsername || 'Admin'}</p>
+                        <p className="font-semibold text-gray-900 dark:text-white truncate">
+                          {adminUsername || 'Admin'}
+                        </p>
                         <p className="text-sm text-gray-500 dark:text-gray-400">Administrator</p>
                       </div>
                     </div>
@@ -204,7 +212,9 @@ const AdminLayoutContent: React.FC = () => {
       </aside>
 
       {/* Main Content */}
-      <main className={`flex-1 ${isSidebarCollapsed ? 'ml-16' : 'ml-64'} mt-16 p-6 bg-gray-50 dark:bg-slate-900 transition-all duration-300`}>
+      <main
+        className={`flex-1 ${isSidebarCollapsed ? 'ml-16' : 'ml-64'} mt-16 p-6 bg-gray-50 dark:bg-slate-900 transition-all duration-300`}
+      >
         <Outlet />
       </main>
 

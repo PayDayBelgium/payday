@@ -12,7 +12,7 @@ export const RestoreConfirmModal: React.FC<RestoreConfirmModalProps> = ({
   isOpen,
   onClose,
   onConfirm,
-  timestamp
+  timestamp,
 }) => {
   if (!isOpen) return null;
 
@@ -25,9 +25,7 @@ export const RestoreConfirmModal: React.FC<RestoreConfirmModalProps> = ({
             <div className="p-2 bg-caution-50 dark:bg-caution-600/25 rounded-lg">
               <Upload className="w-6 h-6 text-caution-600 dark:text-caution-500" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-              Herstel backup
-            </h2>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Herstel backup</h2>
           </div>
           <button
             onClick={onClose}
@@ -44,12 +42,10 @@ export const RestoreConfirmModal: React.FC<RestoreConfirmModalProps> = ({
             <div className="flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-caution-600 dark:text-caution-500 mt-0.5 flex-shrink-0" />
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                  Let op!
-                </h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Let op!</h3>
                 <p className="text-sm text-gray-700 dark:text-gray-300">
-                  Deze actie zal <strong>alle huidige data vervangen</strong> met de data uit de backup.
-                  Deze wijziging kan niet ongedaan worden gemaakt.
+                  Deze actie zal <strong>alle huidige data vervangen</strong> met de data uit de
+                  backup. Deze wijziging kan niet ongedaan worden gemaakt.
                 </p>
               </div>
             </div>
@@ -64,7 +60,7 @@ export const RestoreConfirmModal: React.FC<RestoreConfirmModalProps> = ({
                   {new Date(timestamp).toLocaleDateString('nl-NL', {
                     year: 'numeric',
                     month: 'long',
-                    day: 'numeric'
+                    day: 'numeric',
                   })}
                 </span>
               </div>
@@ -74,7 +70,7 @@ export const RestoreConfirmModal: React.FC<RestoreConfirmModalProps> = ({
                   {new Date(timestamp).toLocaleTimeString('nl-NL', {
                     hour: '2-digit',
                     minute: '2-digit',
-                    second: '2-digit'
+                    second: '2-digit',
                   })}
                 </span>
               </div>

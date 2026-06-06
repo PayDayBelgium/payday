@@ -81,8 +81,8 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
     setNavigationStack([]);
   }, []);
 
-  const canGoBack = navigationStack.length > 1 ||
-    (navigationStack.length === 1 && !navigationStack[0].fromMenu);
+  const canGoBack =
+    navigationStack.length > 1 || (navigationStack.length === 1 && !navigationStack[0].fromMenu);
 
   const value: NavigationContextType = {
     navigationStack,
@@ -93,9 +93,5 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
     setMenuNavigation,
   };
 
-  return (
-    <NavigationContext.Provider value={value}>
-      {children}
-    </NavigationContext.Provider>
-  );
+  return <NavigationContext.Provider value={value}>{children}</NavigationContext.Provider>;
 };

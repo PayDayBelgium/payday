@@ -128,9 +128,7 @@ export const RollOptionModal: React.FC<RollOptionModalProps> = ({
               <Redo2 className="w-5 h-5 text-primary-700 dark:text-primary-300" />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                Roll Optie
-              </h2>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Roll Optie</h2>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 {position.ticker} {actionType} {optionType} ${position.strike}
               </p>
@@ -156,33 +154,40 @@ export const RollOptionModal: React.FC<RollOptionModalProps> = ({
         {/* Help Section */}
         {showHelp && (
           <div className="p-4 bg-primary-50 dark:bg-primary-900/20 border-b border-primary-200 dark:border-primary-800">
-            <h3 className="font-semibold text-primary-900 dark:text-blue-100 mb-2">Wat is een optie roll?</h3>
+            <h3 className="font-semibold text-primary-900 dark:text-blue-100 mb-2">
+              Wat is een optie roll?
+            </h3>
             <p className="text-sm text-primary-700 dark:text-primary-200 mb-2">
-              Een roll is het gelijktijdig <strong>sluiten</strong> van je huidige optie positie en het <strong>openen</strong> van een nieuwe positie.
-              Dit lijkt misschien een nieuwe term, maar het is eigenlijk gewoon sluiten en openen in één beweging.
+              Een roll is het gelijktijdig <strong>sluiten</strong> van je huidige optie positie en
+              het <strong>openen</strong> van een nieuwe positie. Dit lijkt misschien een nieuwe
+              term, maar het is eigenlijk gewoon sluiten en openen in één beweging.
             </p>
             <div className="mt-3 space-y-2">
               <div className="flex items-start gap-2">
                 <Calendar className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                 <p className="text-sm text-primary-700 dark:text-primary-200">
-                  <strong>Rollen in de tijd:</strong> Verplaats naar een latere expiratie om meer tijd te kopen (bijv. van november naar december).
+                  <strong>Rollen in de tijd:</strong> Verplaats naar een latere expiratie om meer
+                  tijd te kopen (bijv. van november naar december).
                 </p>
               </div>
               <div className="flex items-start gap-2">
                 <DollarSign className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                 <p className="text-sm text-primary-700 dark:text-primary-200">
-                  <strong>Rollen voor premie:</strong> Open een nieuwe positie met dezelfde of andere strike voor extra premie (kan voor credit of debit).
+                  <strong>Rollen voor premie:</strong> Open een nieuwe positie met dezelfde of
+                  andere strike voor extra premie (kan voor credit of debit).
                 </p>
               </div>
               <div className="flex items-start gap-2">
                 <TrendingUp className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
                 <p className="text-sm text-primary-700 dark:text-primary-200">
-                  <strong>Rollen up/down:</strong> Verander de strike prijs om je positie aan te passen aan de markt.
+                  <strong>Rollen up/down:</strong> Verander de strike prijs om je positie aan te
+                  passen aan de markt.
                 </p>
               </div>
             </div>
             <p className="text-xs text-primary-700 dark:text-primary-300 mt-3 italic">
-              Tip: Een credit roll betekent dat je geld ontvangt, een debit roll betekent dat je betaalt.
+              Tip: Een credit roll betekent dat je geld ontvangt, een debit roll betekent dat je
+              betaalt.
             </p>
           </div>
         )}
@@ -191,11 +196,15 @@ export const RollOptionModal: React.FC<RollOptionModalProps> = ({
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Current Position Info */}
           <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Huidige Positie</h3>
+            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              Huidige Positie
+            </h3>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <span className="text-gray-500 dark:text-gray-400">Strike:</span>
-                <span className="ml-2 font-medium text-gray-900 dark:text-white">${position.strike}</span>
+                <span className="ml-2 font-medium text-gray-900 dark:text-white">
+                  ${position.strike}
+                </span>
               </div>
               <div>
                 <span className="text-gray-500 dark:text-gray-400">Expiratie:</span>
@@ -205,7 +214,9 @@ export const RollOptionModal: React.FC<RollOptionModalProps> = ({
               </div>
               <div>
                 <span className="text-gray-500 dark:text-gray-400">Contracts:</span>
-                <span className="ml-2 font-medium text-gray-900 dark:text-white">{position.contracts}</span>
+                <span className="ml-2 font-medium text-gray-900 dark:text-white">
+                  {position.contracts}
+                </span>
               </div>
               <div>
                 <span className="text-gray-500 dark:text-gray-400">Premie:</span>
@@ -219,7 +230,9 @@ export const RollOptionModal: React.FC<RollOptionModalProps> = ({
           {/* Close Position Section */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2">
-              <span className="flex items-center justify-center w-5 h-5 bg-negative-50 dark:bg-negative-700/25 text-negative-600 dark:text-negative-500 rounded-full text-xs font-bold">1</span>
+              <span className="flex items-center justify-center w-5 h-5 bg-negative-50 dark:bg-negative-700/25 text-negative-600 dark:text-negative-500 rounded-full text-xs font-bold">
+                1
+              </span>
               Sluit huidige positie
             </h3>
 
@@ -229,7 +242,9 @@ export const RollOptionModal: React.FC<RollOptionModalProps> = ({
                   Sluit Premie (per contract)
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">{currencySymbol}</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                    {currencySymbol}
+                  </span>
                   <input
                     type="number"
                     value={closePremium}
@@ -259,7 +274,9 @@ export const RollOptionModal: React.FC<RollOptionModalProps> = ({
           {/* New Position Section */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2">
-              <span className="flex items-center justify-center w-5 h-5 bg-positive-50 dark:bg-positive-700/25 text-positive-600 dark:text-positive-500 rounded-full text-xs font-bold">2</span>
+              <span className="flex items-center justify-center w-5 h-5 bg-positive-50 dark:bg-positive-700/25 text-positive-600 dark:text-positive-500 rounded-full text-xs font-bold">
+                2
+              </span>
               Open nieuwe positie
             </h3>
 
@@ -303,7 +320,9 @@ export const RollOptionModal: React.FC<RollOptionModalProps> = ({
                   Nieuwe Premie (per contract)
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">{currencySymbol}</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                    {currencySymbol}
+                  </span>
                   <input
                     type="number"
                     value={newPremium}
@@ -333,44 +352,63 @@ export const RollOptionModal: React.FC<RollOptionModalProps> = ({
           </div>
 
           {/* Calculation Summary */}
-          <div className={`p-4 rounded-lg ${
-            rollCalculation.isCredit
-              ? 'bg-positive-50 dark:bg-positive-700/15 border border-positive-500/20 dark:border-positive-700/30'
-              : rollCalculation.isDebit
-                ? 'bg-negative-50 dark:bg-negative-700/15 border border-negative-500/20 dark:border-negative-700/30'
-                : 'bg-gray-50 dark:bg-gray-700/50'
-          }`}>
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Berekening</h3>
+          <div
+            className={`p-4 rounded-lg ${
+              rollCalculation.isCredit
+                ? 'bg-positive-50 dark:bg-positive-700/15 border border-positive-500/20 dark:border-positive-700/30'
+                : rollCalculation.isDebit
+                  ? 'bg-negative-50 dark:bg-negative-700/15 border border-negative-500/20 dark:border-negative-700/30'
+                  : 'bg-gray-50 dark:bg-gray-700/50'
+            }`}
+          >
+            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+              Berekening
+            </h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-600 dark:text-gray-400">
                   Sluiten ({position.action === 'sell' ? 'terugkopen' : 'verkopen'}):
                 </span>
-                <span className={`font-medium ${rollCalculation.closeValue >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
-                  {rollCalculation.closeValue >= 0 ? '+' : ''}{formatCurrency(rollCalculation.closeValue, currencySymbol)}
+                <span
+                  className={`font-medium ${rollCalculation.closeValue >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
+                >
+                  {rollCalculation.closeValue >= 0 ? '+' : ''}
+                  {formatCurrency(rollCalculation.closeValue, currencySymbol)}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600 dark:text-gray-400">
                   Openen ({position.action === 'sell' ? 'verkopen' : 'kopen'}):
                 </span>
-                <span className={`font-medium ${rollCalculation.openValue >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
-                  {rollCalculation.openValue >= 0 ? '+' : ''}{formatCurrency(rollCalculation.openValue, currencySymbol)}
+                <span
+                  className={`font-medium ${rollCalculation.openValue >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
+                >
+                  {rollCalculation.openValue >= 0 ? '+' : ''}
+                  {formatCurrency(rollCalculation.openValue, currencySymbol)}
                 </span>
               </div>
               <div className="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2">
                 <div className="flex justify-between items-center">
                   <span className="font-semibold text-gray-700 dark:text-gray-300">
-                    Netto {rollCalculation.isCredit ? 'Credit' : rollCalculation.isDebit ? 'Debit' : 'Resultaat'}:
-                  </span>
-                  <span className={`text-lg font-bold ${
-                    rollCalculation.isCredit
-                      ? 'text-positive-600 dark:text-positive-500'
+                    Netto{' '}
+                    {rollCalculation.isCredit
+                      ? 'Credit'
                       : rollCalculation.isDebit
-                        ? 'text-negative-600 dark:text-negative-500'
-                        : 'text-gray-900 dark:text-white'
-                  }`}>
-                    {rollCalculation.netCredit >= 0 ? '+' : ''}{formatCurrency(rollCalculation.netCredit, currencySymbol)}
+                        ? 'Debit'
+                        : 'Resultaat'}
+                    :
+                  </span>
+                  <span
+                    className={`text-lg font-bold ${
+                      rollCalculation.isCredit
+                        ? 'text-positive-600 dark:text-positive-500'
+                        : rollCalculation.isDebit
+                          ? 'text-negative-600 dark:text-negative-500'
+                          : 'text-gray-900 dark:text-white'
+                    }`}
+                  >
+                    {rollCalculation.netCredit >= 0 ? '+' : ''}
+                    {formatCurrency(rollCalculation.netCredit, currencySymbol)}
                   </span>
                 </div>
               </div>

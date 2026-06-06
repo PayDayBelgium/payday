@@ -20,7 +20,11 @@ import {
 import type { FeatureId } from '../../types';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useNavigation } from '../../contexts/NavigationContext';
-import { selectUnlockedLevels, isFeatureAvailable, selectActivatedModules } from '../../store/slices/userProgressSlice';
+import {
+  selectUnlockedLevels,
+  isFeatureAvailable,
+  selectActivatedModules,
+} from '../../store/slices/userProgressSlice';
 
 // Map routes to required features - only routes that need gating
 const ROUTE_FEATURE_MAP: Record<string, FeatureId> = {
@@ -48,7 +52,10 @@ const navClass = (isActive: boolean, isCollapsed: boolean) =>
 
 const ActiveBar: React.FC<{ active: boolean }> = ({ active }) =>
   active ? (
-    <span className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full bg-primary-700" aria-hidden />
+    <span
+      className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full bg-primary-700"
+      aria-hidden
+    />
   ) : null;
 
 export const Sidebar: React.FC<SidebarProps> = ({ className = '', isCollapsed }) => {
@@ -72,11 +79,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '', isCollapsed })
     <aside
       className={`fixed left-0 top-16 h-[calc(100vh-4rem)] ${isCollapsed ? 'w-16' : 'w-64'} bg-white dark:bg-trading-dark-800 border-r border-[var(--line)] dark:border-trading-dark-700 flex flex-col transition-all duration-300 ${className}`}
     >
-      <nav className={`flex-1 overflow-y-auto scrollbar-thin ${isCollapsed ? 'p-2 pt-3' : 'px-3 pt-4 pb-3'}`}>
+      <nav
+        className={`flex-1 overflow-y-auto scrollbar-thin ${isCollapsed ? 'p-2 pt-3' : 'px-3 pt-4 pb-3'}`}
+      >
         {/* Primary */}
-        {!isCollapsed && (
-          <p className="eyebrow px-3 mb-2">Overzicht</p>
-        )}
+        {!isCollapsed && <p className="eyebrow px-3 mb-2">Overzicht</p>}
 
         <NavLink
           to="/"
@@ -178,57 +185,55 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '', isCollapsed })
         {/* Portfolios */}
         {portfolios.length > 0 && (
           <div className="mt-6">
-            {!isCollapsed && (
-              <p className="eyebrow px-3 mb-2">Portefeuilles</p>
-            )}
-            {!isCollapsed && portfolios.map((portfolio) => (
-              <NavLink
-                key={portfolio.id}
-                to={`/portfolio/${portfolio.name}`}
-                onClick={() => handleMenuClick(`/portfolio/${portfolio.name}`, portfolio.name)}
-                className={({ isActive }) => navClass(isActive, isCollapsed)}
-              >
-                {({ isActive }) => (
-                  <>
-                    <ActiveBar active={isActive} />
-                    <img
-                      src={portfolio.logo}
-                      alt={portfolio.name}
-                      className="w-5 h-5 rounded-sm object-contain ring-1 ring-[var(--line)] bg-white"
-                    />
-                    <span className="truncate">{portfolio.name}</span>
-                  </>
-                )}
-              </NavLink>
-            ))}
+            {!isCollapsed && <p className="eyebrow px-3 mb-2">Portefeuilles</p>}
+            {!isCollapsed &&
+              portfolios.map((portfolio) => (
+                <NavLink
+                  key={portfolio.id}
+                  to={`/portfolio/${portfolio.name}`}
+                  onClick={() => handleMenuClick(`/portfolio/${portfolio.name}`, portfolio.name)}
+                  className={({ isActive }) => navClass(isActive, isCollapsed)}
+                >
+                  {({ isActive }) => (
+                    <>
+                      <ActiveBar active={isActive} />
+                      <img
+                        src={portfolio.logo}
+                        alt={portfolio.name}
+                        className="w-5 h-5 rounded-sm object-contain ring-1 ring-[var(--line)] bg-white"
+                      />
+                      <span className="truncate">{portfolio.name}</span>
+                    </>
+                  )}
+                </NavLink>
+              ))}
 
-            {isCollapsed && portfolios.map((portfolio) => (
-              <NavLink
-                key={portfolio.id}
-                to={`/portfolio/${portfolio.name}`}
-                className={({ isActive }) => navClass(isActive, isCollapsed)}
-                title={portfolio.name}
-              >
-                {({ isActive }) => (
-                  <>
-                    <ActiveBar active={isActive} />
-                    <img
-                      src={portfolio.logo}
-                      alt={portfolio.name}
-                      className="w-5 h-5 rounded-sm object-contain ring-1 ring-[var(--line)] bg-white"
-                    />
-                  </>
-                )}
-              </NavLink>
-            ))}
+            {isCollapsed &&
+              portfolios.map((portfolio) => (
+                <NavLink
+                  key={portfolio.id}
+                  to={`/portfolio/${portfolio.name}`}
+                  className={({ isActive }) => navClass(isActive, isCollapsed)}
+                  title={portfolio.name}
+                >
+                  {({ isActive }) => (
+                    <>
+                      <ActiveBar active={isActive} />
+                      <img
+                        src={portfolio.logo}
+                        alt={portfolio.name}
+                        className="w-5 h-5 rounded-sm object-contain ring-1 ring-[var(--line)] bg-white"
+                      />
+                    </>
+                  )}
+                </NavLink>
+              ))}
           </div>
         )}
 
         {/* Tools */}
         <div className="mt-6">
-          {!isCollapsed && (
-            <p className="eyebrow px-3 mb-2">Tools</p>
-          )}
+          {!isCollapsed && <p className="eyebrow px-3 mb-2">Tools</p>}
 
           <NavLink
             to="/tickers"
@@ -296,7 +301,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '', isCollapsed })
           {hasAccess('/tools/covered-call-simulator') && (
             <NavLink
               to="/tools/covered-call-simulator"
-              onClick={() => handleMenuClick('/tools/covered-call-simulator', 'Covered Call Simulator')}
+              onClick={() =>
+                handleMenuClick('/tools/covered-call-simulator', 'Covered Call Simulator')
+              }
               className={({ isActive }) => navClass(isActive, isCollapsed)}
               title={isCollapsed ? 'Covered Call Simulator' : ''}
             >
@@ -362,9 +369,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '', isCollapsed })
       {/* Footer mark */}
       {!isCollapsed && (
         <div className="px-4 py-3 border-t border-[var(--line)] dark:border-trading-dark-700">
-          <p className="text-[10px] tracking-[0.16em] uppercase text-ink-400">
-            PayDay&nbsp;v2.0
-          </p>
+          <p className="text-[10px] tracking-[0.16em] uppercase text-ink-400">PayDay&nbsp;v2.0</p>
         </div>
       )}
     </aside>

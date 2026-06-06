@@ -8,7 +8,13 @@ import { getDecimalSeparator, getThousandSeparator } from '../../utils/numberFor
 
 // ============ TYPES ============
 
-export type OptionAction = 'buy' | 'sell' | 'credit-spread' | 'debit-spread' | 'covered-call' | 'spread';
+export type OptionAction =
+  | 'buy'
+  | 'sell'
+  | 'credit-spread'
+  | 'debit-spread'
+  | 'covered-call'
+  | 'spread';
 
 export interface OptionLegData {
   strike: number;
@@ -191,9 +197,14 @@ export const calculateCallValues = (
 
   if (action === 'credit-spread') {
     // Credit Spread: Sell lower strike, buy higher for protection
-    const creditReceived = (shortLeg.premium - longLeg.premium) * longLeg.contracts * contractMultiplier;
+    const creditReceived =
+      (shortLeg.premium - longLeg.premium) * longLeg.contracts * contractMultiplier;
     const costBasis = -creditReceived; // Negative = we received money
-    const collateral = calculateSpreadCollateral(longLeg.strike, shortLeg.strike, longLeg.contracts);
+    const collateral = calculateSpreadCollateral(
+      longLeg.strike,
+      shortLeg.strike,
+      longLeg.contracts
+    );
     return { costBasis, currentValue: costBasis, cashReserved: collateral };
   } else if (action === 'debit-spread') {
     // Debit Spread: Buy lower strike, sell higher
@@ -223,9 +234,14 @@ export const calculatePutValues = (
 
   if (action === 'credit-spread') {
     // Put Credit Spread: Sell higher strike, buy lower for protection
-    const creditReceived = (shortLeg.premium - longLeg.premium) * longLeg.contracts * contractMultiplier;
+    const creditReceived =
+      (shortLeg.premium - longLeg.premium) * longLeg.contracts * contractMultiplier;
     const costBasis = -creditReceived;
-    const collateral = calculateSpreadCollateral(shortLeg.strike, longLeg.strike, longLeg.contracts);
+    const collateral = calculateSpreadCollateral(
+      shortLeg.strike,
+      longLeg.strike,
+      longLeg.contracts
+    );
     return { costBasis, currentValue: costBasis, cashReserved: collateral };
   } else if (action === 'debit-spread') {
     // Put Debit Spread: Buy higher strike, sell lower
@@ -299,7 +315,7 @@ export const calculateCallSpreadSummary = (
     const spreadWidth = longLeg.strike - shortLeg.strike;
     const netPremium = (shortLeg.premium - longLeg.premium) * contracts * contractMultiplier;
     const maxProfit = netPremium;
-    const maxLoss = (spreadWidth * contracts * contractMultiplier) - netPremium;
+    const maxLoss = spreadWidth * contracts * contractMultiplier - netPremium;
     const breakEven = shortLeg.strike + (shortLeg.premium - longLeg.premium);
     const collateral = spreadWidth * contracts * contractMultiplier;
 
@@ -309,7 +325,7 @@ export const calculateCallSpreadSummary = (
     const spreadWidth = shortLeg.strike - longLeg.strike;
     const netPremium = (longLeg.premium - shortLeg.premium) * contracts * contractMultiplier;
     const maxLoss = netPremium;
-    const maxProfit = (spreadWidth * contracts * contractMultiplier) - netPremium;
+    const maxProfit = spreadWidth * contracts * contractMultiplier - netPremium;
     const breakEven = longLeg.strike + (longLeg.premium - shortLeg.premium);
 
     return { spreadWidth, netPremium, maxProfit, maxLoss, breakEven, collateral: 0 };
@@ -332,7 +348,7 @@ export const calculatePutSpreadSummary = (
     const spreadWidth = shortLeg.strike - longLeg.strike;
     const netPremium = (shortLeg.premium - longLeg.premium) * contracts * contractMultiplier;
     const maxProfit = netPremium;
-    const maxLoss = (spreadWidth * contracts * contractMultiplier) - netPremium;
+    const maxLoss = spreadWidth * contracts * contractMultiplier - netPremium;
     const breakEven = shortLeg.strike - (shortLeg.premium - longLeg.premium);
     const collateral = spreadWidth * contracts * contractMultiplier;
 
@@ -342,7 +358,7 @@ export const calculatePutSpreadSummary = (
     const spreadWidth = longLeg.strike - shortLeg.strike;
     const netPremium = (longLeg.premium - shortLeg.premium) * contracts * contractMultiplier;
     const maxLoss = netPremium;
-    const maxProfit = (spreadWidth * contracts * contractMultiplier) - netPremium;
+    const maxProfit = spreadWidth * contracts * contractMultiplier - netPremium;
     const breakEven = longLeg.strike - (longLeg.premium - shortLeg.premium);
 
     return { spreadWidth, netPremium, maxProfit, maxLoss, breakEven, collateral: 0 };

@@ -24,7 +24,16 @@ import {
   Shuffle,
   Settings,
 } from 'lucide-react';
-import type { Position, TradingStrategy, TradingStrategyType, PortfolioName, CallOption, PutOption, StockPosition, LEAP } from '../../types';
+import type {
+  Position,
+  TradingStrategy,
+  TradingStrategyType,
+  PortfolioName,
+  CallOption,
+  PutOption,
+  StockPosition,
+  LEAP,
+} from '../../types';
 import { formatCurrency } from '../../utils/numberFormat';
 import { getCurrencySymbol } from '../../utils/currency';
 
@@ -34,44 +43,47 @@ interface StrategyViewProps {
 }
 
 // Strategy type configuration
-const strategyTypeConfig: Record<TradingStrategyType, { label: string; icon: React.ReactNode; color: string; bgColor: string }> = {
+const strategyTypeConfig: Record<
+  TradingStrategyType,
+  { label: string; icon: React.ReactNode; color: string; bgColor: string }
+> = {
   'covered-call': {
     label: 'Covered Call',
     icon: <TrendingUp className="w-4 h-4" />,
     color: 'text-primary-700 dark:text-primary-300',
     bgColor: 'bg-primary-50 dark:bg-primary-900/30',
   },
-  'pmcc': {
-    label: 'Poor Man\'s Covered Call',
+  pmcc: {
+    label: "Poor Man's Covered Call",
     icon: <Layers className="w-4 h-4" />,
     color: 'text-ink-600 dark:text-ink-300',
     bgColor: 'bg-surface-muted dark:bg-trading-dark-600',
   },
-  'kaching': {
+  kaching: {
     label: 'KaChing',
     icon: <Zap className="w-4 h-4" />,
     color: 'text-caution-600 dark:text-caution-500',
     bgColor: 'bg-caution-50 dark:bg-caution-600/25',
   },
-  'csp': {
+  csp: {
     label: 'Cash Secured Put',
     icon: <ShieldCheck className="w-4 h-4" />,
     color: 'text-positive-600 dark:text-positive-500',
     bgColor: 'bg-positive-50 dark:bg-positive-700/25',
   },
-  'spread': {
+  spread: {
     label: 'Spread',
     icon: <LayoutGrid className="w-4 h-4" />,
     color: 'text-caution-600 dark:text-caution-500',
     bgColor: 'bg-caution-50 dark:bg-caution-600/25',
   },
-  'wheel': {
+  wheel: {
     label: 'Wheel',
     icon: <Shuffle className="w-4 h-4" />,
     color: 'text-cyan-600 dark:text-cyan-400',
     bgColor: 'bg-cyan-100 dark:bg-cyan-900/30',
   },
-  'custom': {
+  custom: {
     label: 'Custom',
     icon: <Settings className="w-4 h-4" />,
     color: 'text-gray-600 dark:text-gray-400',
@@ -86,7 +98,7 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
 
   // Filter positions for this portfolio
   const portfolioPositions = useMemo(() => {
-    return allPositions.filter(p => p.portfolio === portfolioName && p.status === 'open');
+    return allPositions.filter((p) => p.portfolio === portfolioName && p.status === 'open');
   }, [allPositions, portfolioName]);
 
   // State
@@ -99,13 +111,13 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
 
   // Get positions that are not in any strategy
   const unassignedPositions = useMemo(() => {
-    const assignedIds = new Set(strategies.flatMap(s => s.positionIds));
-    return portfolioPositions.filter(p => !assignedIds.has(p.id));
+    const assignedIds = new Set(strategies.flatMap((s) => s.positionIds));
+    return portfolioPositions.filter((p) => !assignedIds.has(p.id));
   }, [portfolioPositions, strategies]);
 
   // Toggle strategy expansion
   const toggleStrategy = (strategyId: string) => {
-    setExpandedStrategies(prev => {
+    setExpandedStrategies((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(strategyId)) {
         newSet.delete(strategyId);
@@ -190,12 +202,16 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
   // Calculate strategy value
   const getStrategyValue = (strategy: TradingStrategy) => {
     return strategy.positionIds.reduce((sum, posId) => {
-      const pos = portfolioPositions.find(p => p.id === posId);
+      const pos = portfolioPositions.find((p) => p.id === posId);
       if (!pos) return sum;
 
       if ('currentValue' in pos) {
         // For sold options, value is negative
-        if ((pos.type === 'call' || pos.type === 'put') && 'action' in pos && pos.action === 'sell') {
+        if (
+          (pos.type === 'call' || pos.type === 'put') &&
+          'action' in pos &&
+          pos.action === 'sell'
+        ) {
           return sum - Math.abs(pos.currentValue);
         }
         return sum + pos.currentValue;
@@ -298,9 +314,7 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
         {strategies.length === 0 && !isCreating ? (
           <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
             <Layers className="w-12 h-12 mx-auto mb-3 text-gray-400 dark:text-gray-500" />
-            <p className="text-gray-600 dark:text-gray-400 mb-2">
-              Geen strategieën geconfigureerd
-            </p>
+            <p className="text-gray-600 dark:text-gray-400 mb-2">Geen strategieën geconfigureerd</p>
             <p className="text-sm text-gray-500 dark:text-gray-500 mb-4">
               Maak strategieën aan om posities te groeperen
             </p>
@@ -317,7 +331,7 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
             const config = strategyTypeConfig[strategy.type];
             const isExpanded = expandedStrategies.has(strategy.id);
             const strategyPositions = strategy.positionIds
-              .map(id => portfolioPositions.find(p => p.id === id))
+              .map((id) => portfolioPositions.find((p) => p.id === id))
               .filter(Boolean) as Position[];
             const strategyValue = getStrategyValue(strategy);
             const isLinking = selectedStrategyForLinking === strategy.id;
@@ -346,7 +360,8 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
                         {strategy.name}
                       </h4>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {config.label} • {strategyPositions.length} positie{strategyPositions.length !== 1 ? 's' : ''}
+                        {config.label} • {strategyPositions.length} positie
+                        {strategyPositions.length !== 1 ? 's' : ''}
                       </p>
                     </div>
                   </button>
@@ -407,7 +422,10 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
                               </div>
                               <div className="flex items-center gap-3">
                                 <span className="text-sm font-medium text-gray-900 dark:text-white">
-                                  {formatCurrency(value, getCurrencySymbol(currency as 'USD' | 'EUR'))}
+                                  {formatCurrency(
+                                    value,
+                                    getCurrencySymbol(currency as 'USD' | 'EUR')
+                                  )}
                                 </span>
                                 <button
                                   onClick={() => handleUnlinkPosition(strategy.id, pos.id)}
@@ -444,9 +462,7 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
                               <p className="text-sm font-medium text-gray-900 dark:text-white">
                                 {label}
                               </p>
-                              <p className="text-xs text-gray-500 dark:text-gray-400">
-                                {details}
-                              </p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">{details}</p>
                             </div>
                             <span className="text-sm text-gray-600 dark:text-gray-400">
                               {formatCurrency(value, getCurrencySymbol(currency as 'USD' | 'EUR'))}
@@ -480,12 +496,8 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
                     className="flex items-center justify-between p-3 bg-white dark:bg-gray-700 rounded-lg"
                   >
                     <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        {label}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {details}
-                      </p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">{label}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{details}</p>
                     </div>
                     <span className="text-sm font-medium text-gray-900 dark:text-white">
                       {formatCurrency(value, getCurrencySymbol(currency as 'USD' | 'EUR'))}

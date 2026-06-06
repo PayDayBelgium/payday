@@ -76,10 +76,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   if (style === 'icon') {
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-        <div
-          className="absolute inset-0"
-          onClick={handleClose}
-        />
+        <div className="absolute inset-0" onClick={handleClose} />
         <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full border border-gray-200 dark:border-gray-700">
           <div className="p-6">
             {/* Icon */}
@@ -88,14 +85,10 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             </div>
 
             {/* Title */}
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              {title}
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{title}</h3>
 
             {/* Message */}
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-              {message}
-            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">{message}</p>
 
             {/* Actions */}
             <div className="flex gap-3 justify-end">
@@ -122,10 +115,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={handleClose}
-      />
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={handleClose} />
 
       {/* Dialog */}
       <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-2xl max-w-md w-full mx-4 overflow-hidden border border-gray-200 dark:border-gray-700">
@@ -136,18 +126,14 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
               <AlertTriangle className="w-6 h-6" />
             </div>
             <div className="flex-1">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                {title}
-              </h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>
             </div>
           </div>
         </div>
 
         {/* Content */}
         <div className="p-6">
-          <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-            {message}
-          </p>
+          <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">{message}</p>
         </div>
 
         {/* Actions */}

@@ -27,7 +27,9 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
   const [borderSize, setBorderSize] = useState(initialMetadata?.borderSize ?? 10);
   const [borderColor, setBorderColor] = useState(initialMetadata?.borderColor ?? '#e5e7eb'); // gray-200
   const [borderRadius, setBorderRadius] = useState(initialMetadata?.borderRadius ?? 10);
-  const [backgroundColor, setBackgroundColor] = useState(initialMetadata?.backgroundColor ?? '#1f2937'); // gray-800
+  const [backgroundColor, setBackgroundColor] = useState(
+    initialMetadata?.backgroundColor ?? '#1f2937'
+  ); // gray-800
 
   const onCropChange = (location: { x: number; y: number }) => {
     setCrop(location);
@@ -37,12 +39,9 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
     setZoom(zoom);
   };
 
-  const onCropCompleteHandler = useCallback(
-    (croppedArea: Area, croppedAreaPixels: Area) => {
-      setCroppedAreaPixels(croppedAreaPixels);
-    },
-    []
-  );
+  const onCropCompleteHandler = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
 
   const createImage = (url: string): Promise<HTMLImageElement> =>
     new Promise((resolve, reject) => {
@@ -73,8 +72,10 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
     const rotRad = (rotation * Math.PI) / 180;
 
     // Calculate bounding box of the rotated image
-    const bBoxWidth = Math.abs(Math.cos(rotRad) * image.width) + Math.abs(Math.sin(rotRad) * image.height);
-    const bBoxHeight = Math.abs(Math.sin(rotRad) * image.width) + Math.abs(Math.cos(rotRad) * image.height);
+    const bBoxWidth =
+      Math.abs(Math.cos(rotRad) * image.width) + Math.abs(Math.sin(rotRad) * image.height);
+    const bBoxHeight =
+      Math.abs(Math.sin(rotRad) * image.width) + Math.abs(Math.cos(rotRad) * image.height);
 
     // Set canvas size to the bounding box
     canvas.width = bBoxWidth;
@@ -124,7 +125,7 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
 
     // Calculate final size with optional border
     const finalSize = pixelCrop.width;
-    const finalSizeWithBorder = addBorder ? finalSize + (borderSize * 2) : finalSize;
+    const finalSizeWithBorder = addBorder ? finalSize + borderSize * 2 : finalSize;
 
     finalCanvas.width = finalSizeWithBorder;
     finalCanvas.height = finalSizeWithBorder;
@@ -134,7 +135,14 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
     const offsetY = addBorder ? borderSize : 0;
 
     // Create rounded rectangle path helper
-    const roundedRectPath = (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number) => {
+    const roundedRectPath = (
+      ctx: CanvasRenderingContext2D,
+      x: number,
+      y: number,
+      width: number,
+      height: number,
+      radius: number
+    ) => {
       ctx.beginPath();
       ctx.moveTo(x + radius, y);
       ctx.lineTo(x + width - radius, y);
@@ -205,7 +213,16 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
     if (!croppedAreaPixels) return;
 
     try {
-      const croppedImage = await getCroppedImg(image, croppedAreaPixels, rotation, addBorder, borderSize, borderColor, borderRadius, backgroundColor);
+      const croppedImage = await getCroppedImg(
+        image,
+        croppedAreaPixels,
+        rotation,
+        addBorder,
+        borderSize,
+        borderColor,
+        borderRadius,
+        backgroundColor
+      );
       const metadata: ImageMetadata = {
         backgroundColor,
         rotation,
@@ -240,15 +257,19 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
 
         {/* Crop Area */}
         <div className="relative flex-1" style={{ minHeight: '400px', backgroundColor }}>
-          <style dangerouslySetInnerHTML={{
-            __html: addBorder ? `
+          <style
+            dangerouslySetInnerHTML={{
+              __html: addBorder
+                ? `
               .reactEasyCrop_CropArea {
                 border: ${borderSize}px solid ${borderColor} !important;
                 border-radius: ${borderRadius}px !important;
                 box-sizing: border-box !important;
               }
-            ` : ''
-          }} />
+            `
+                : '',
+            }}
+          />
           <Cropper
             image={image}
             crop={crop}

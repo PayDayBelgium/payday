@@ -9,19 +9,10 @@ import {
   toggleTodo,
   deleteTodo,
   editTodo,
-  reopenTodo
+  reopenTodo,
 } from '../../store/slices/todosSlice';
 import { usePageTitle } from '../../contexts/PageTitleContext';
-import {
-  CheckCircle2,
-  Circle,
-  Plus,
-  Trash2,
-  Edit2,
-  RotateCcw,
-  X,
-  Save
-} from 'lucide-react';
+import { CheckCircle2, Circle, Plus, Trash2, Edit2, RotateCcw, X, Save } from 'lucide-react';
 
 export const Todos: React.FC = () => {
   const { t } = useTranslation();
@@ -85,7 +76,7 @@ export const Todos: React.FC = () => {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -125,9 +116,7 @@ export const Todos: React.FC = () => {
         {activeTodos.length === 0 ? (
           <div className="text-center py-12">
             <Circle className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-            <p className="text-gray-500 dark:text-gray-400">
-              {t('todos.noActiveTodos')}
-            </p>
+            <p className="text-gray-500 dark:text-gray-400">{t('todos.noActiveTodos')}</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -168,9 +157,7 @@ export const Todos: React.FC = () => {
                 ) : (
                   <>
                     <div className="flex-1">
-                      <p className="text-gray-900 dark:text-white">
-                        {todo.text}
-                      </p>
+                      <p className="text-gray-900 dark:text-white">{todo.text}</p>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         {t('todos.created')}: {formatDate(todo.createdAt)}
                       </p>
@@ -228,9 +215,7 @@ export const Todos: React.FC = () => {
                   >
                     <CheckCircle2 className="w-6 h-6 flex-shrink-0 text-positive-600 dark:text-positive-500 mt-0.5" />
                     <div className="flex-1">
-                      <p className="text-gray-500 dark:text-gray-400 line-through">
-                        {todo.text}
-                      </p>
+                      <p className="text-gray-500 dark:text-gray-400 line-through">{todo.text}</p>
                       <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                         {t('todos.completedAt')}: {todo.completedAt && formatDate(todo.completedAt)}
                       </p>

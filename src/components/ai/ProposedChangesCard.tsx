@@ -14,7 +14,9 @@ export const ProposedChangesCard: React.FC = () => {
 
   return (
     <div className="mx-3 mb-2 rounded-lg border border-primary-300 dark:border-primary-700 bg-primary-50 dark:bg-trading-dark-800 p-3">
-      <p className="text-sm font-medium text-ink-800 dark:text-ink-100 mb-2">{t('ai.proposalTitle')}</p>
+      <p className="text-sm font-medium text-ink-800 dark:text-ink-100 mb-2">
+        {t('ai.proposalTitle')}
+      </p>
       <ul className="space-y-1 mb-3 max-h-48 overflow-y-auto">
         {pendingChanges.map((c, i) => (
           <li key={i} className="text-sm text-ink-700 dark:text-ink-200">

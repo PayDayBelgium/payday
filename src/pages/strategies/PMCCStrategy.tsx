@@ -1,6 +1,15 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Plus, AlertTriangle, CheckCircle, Clock, Calculator, WalletMinimal, Shield, X } from 'lucide-react';
+import {
+  Plus,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Calculator,
+  WalletMinimal,
+  Shield,
+  X,
+} from 'lucide-react';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { usePageTitle } from '../../contexts/PageTitleContext';
 import { useNavigation } from '../../contexts/NavigationContext';
@@ -94,7 +103,10 @@ export const PMCCStrategy: React.FC = () => {
     return 'safe';
   };
 
-  const getProfitStatus = (premiumCollected: number, currentValue: number): 'take-profit' | 'normal' => {
+  const getProfitStatus = (
+    premiumCollected: number,
+    currentValue: number
+  ): 'take-profit' | 'normal' => {
     const profitCaptured = ((premiumCollected - currentValue) / premiumCollected) * 100;
     return profitCaptured >= PROFIT_THRESHOLDS.TAKE_PROFIT ? 'take-profit' : 'normal';
   };
@@ -147,7 +159,10 @@ export const PMCCStrategy: React.FC = () => {
               <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
                 <li className="flex items-start gap-2">
                   <span className="icon-text-primary mt-0.5">•</span>
-                  <span>Buy a deep ITM LEAP (Long-term Equity Anticipation Security) as a stock replacement</span>
+                  <span>
+                    Buy a deep ITM LEAP (Long-term Equity Anticipation Security) as a stock
+                    replacement
+                  </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="icon-text-primary mt-0.5">•</span>
@@ -204,14 +219,16 @@ export const PMCCStrategy: React.FC = () => {
                   expirationWarning === 'critical'
                     ? 'bg-negative-50 dark:bg-negative-700/15'
                     : expirationWarning === 'warning'
-                    ? 'bg-caution-50 dark:bg-caution-600/15'
-                    : ''
+                      ? 'bg-caution-50 dark:bg-caution-600/15'
+                      : ''
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-xl font-bold text-gray-900 dark:text-white">{item.underlying.ticker}</h3>
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                        {item.underlying.ticker}
+                      </h3>
                       <span className="px-2 py-1 bg-gray-100 dark:bg-trading-dark-700 rounded text-xs text-gray-600 dark:text-gray-400">
                         {isLeap ? 'LEAP' : 'STOCK'}
                       </span>
@@ -254,12 +271,12 @@ export const PMCCStrategy: React.FC = () => {
                       )}
                       <span
                         className={`text-lg font-semibold ${
-                          item.uncovered > 0 ? 'text-caution-600 dark:text-caution-500' : 'text-positive-600 dark:text-positive-500'
+                          item.uncovered > 0
+                            ? 'text-caution-600 dark:text-caution-500'
+                            : 'text-positive-600 dark:text-positive-500'
                         }`}
                       >
-                        {item.uncovered === 0
-                          ? 'Fully Covered'
-                          : `${item.uncovered} Uncovered`}
+                        {item.uncovered === 0 ? 'Fully Covered' : `${item.uncovered} Uncovered`}
                       </span>
                     </div>
                   </div>
@@ -275,17 +292,24 @@ export const PMCCStrategy: React.FC = () => {
                   <div className="space-y-3">
                     {item.coveredCalls.map((call) => {
                       const expiryWarning = getExpirationWarning(call.expiration);
-                      const profitStatus = getProfitStatus(call.premiumCollected, call.currentValue);
+                      const profitStatus = getProfitStatus(
+                        call.premiumCollected,
+                        call.currentValue
+                      );
                       // A short call is in-the-money when the underlying trades above its strike.
-                      const underlyingPrice = priceBySymbol.get(item.underlying.ticker.toUpperCase()) ?? 0;
+                      const underlyingPrice =
+                        priceBySymbol.get(item.underlying.ticker.toUpperCase()) ?? 0;
                       const isITM = underlyingPrice > 0 && underlyingPrice > call.strike;
                       const daysToExpiry = getDaysToExpiration(call.expiration);
 
                       let bgClass = 'bg-gray-50 dark:bg-trading-dark-700';
-                      if (profitStatus === 'take-profit') bgClass = 'bg-positive-50 dark:bg-positive-700/15';
+                      if (profitStatus === 'take-profit')
+                        bgClass = 'bg-positive-50 dark:bg-positive-700/15';
                       else if (isITM) bgClass = 'bg-negative-50 dark:bg-negative-700/15';
-                      else if (expiryWarning === 'critical') bgClass = 'bg-negative-50 dark:bg-negative-700/15';
-                      else if (expiryWarning === 'warning') bgClass = 'bg-caution-50 dark:bg-caution-600/15';
+                      else if (expiryWarning === 'critical')
+                        bgClass = 'bg-negative-50 dark:bg-negative-700/15';
+                      else if (expiryWarning === 'warning')
+                        bgClass = 'bg-caution-50 dark:bg-caution-600/15';
 
                       return (
                         <div
@@ -328,8 +352,7 @@ export const PMCCStrategy: React.FC = () => {
                                       : 'text-negative-600 dark:text-negative-500'
                                   }`}
                                 >
-                                  P/L: $
-                                  {formatNumber(call.premiumCollected - call.currentValue, 2)}
+                                  P/L: ${formatNumber(call.premiumCollected - call.currentValue, 2)}
                                 </span>
                               </div>
                             </div>
@@ -347,7 +370,9 @@ export const PMCCStrategy: React.FC = () => {
               {/* No Covered Calls */}
               {item.coveredCalls.length === 0 && (
                 <div className="p-6 text-center">
-                  <p className="text-gray-600 dark:text-gray-400 mb-4">No covered calls on this position</p>
+                  <p className="text-gray-600 dark:text-gray-400 mb-4">
+                    No covered calls on this position
+                  </p>
                   <button
                     onClick={() => {
                       setSelectedLeapId(item.underlying.id);

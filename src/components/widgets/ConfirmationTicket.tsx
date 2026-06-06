@@ -1,5 +1,12 @@
 import React from 'react';
-import { CheckCircle, DollarSign, Calendar, TrendingUp, TrendingDown, AlertCircle } from 'lucide-react';
+import {
+  CheckCircle,
+  DollarSign,
+  Calendar,
+  TrendingUp,
+  TrendingDown,
+  AlertCircle,
+} from 'lucide-react';
 import { getCurrencySymbol } from '../../utils/currency';
 import { formatNumber } from '../../utils/numberFormat';
 import type { CurrencyType } from '../../types';
@@ -112,9 +119,13 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
   const color = getTypeColor();
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg border-2 border-${color}-200 dark:border-${color}-800 shadow-lg ${className}`}>
+    <div
+      className={`bg-white dark:bg-gray-800 rounded-lg border-2 border-${color}-200 dark:border-${color}-800 shadow-lg ${className}`}
+    >
       {/* Header */}
-      <div className={`bg-${color}-50 dark:bg-${color}-900/20 px-6 py-4 border-b border-${color}-200 dark:border-${color}-800`}>
+      <div
+        className={`bg-${color}-50 dark:bg-${color}-900/20 px-6 py-4 border-b border-${color}-200 dark:border-${color}-800`}
+      >
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-3">
@@ -124,15 +135,15 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
                   {ticker}
                 </h3>
                 {tickerName && (
-                  <p className={`text-sm text-${color}-700 dark:text-${color}-400`}>
-                    {tickerName}
-                  </p>
+                  <p className={`text-sm text-${color}-700 dark:text-${color}-400`}>{tickerName}</p>
                 )}
               </div>
             </div>
           </div>
           <div className="text-right">
-            <span className={`inline-block px-3 py-1 rounded-full text-sm font-semibold bg-${color}-100 dark:bg-${color}-900/30 text-${color}-800 dark:text-${color}-300`}>
+            <span
+              className={`inline-block px-3 py-1 rounded-full text-sm font-semibold bg-${color}-100 dark:bg-${color}-900/30 text-${color}-800 dark:text-${color}-300`}
+            >
               {getTypeLabel()}
             </span>
           </div>
@@ -153,7 +164,8 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Koopprijs per Aandeel</p>
               <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                {currencySymbol}{purchasePrice !== undefined ? formatNumber(purchasePrice, 2) : ''}
+                {currencySymbol}
+                {purchasePrice !== undefined ? formatNumber(purchasePrice, 2) : ''}
               </p>
             </div>
           </div>
@@ -165,13 +177,15 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Strike prijs</p>
               <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                {currencySymbol}{strike !== undefined ? formatNumber(strike, 2) : ''}
+                {currencySymbol}
+                {strike !== undefined ? formatNumber(strike, 2) : ''}
               </p>
             </div>
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Premium</p>
               <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                {currencySymbol}{premium !== undefined ? formatNumber(premium, 2) : ''}
+                {currencySymbol}
+                {premium !== undefined ? formatNumber(premium, 2) : ''}
               </p>
             </div>
             <div>
@@ -187,9 +201,7 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
             </div>
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Contracten</p>
-              <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                {contracts}
-              </p>
+              <p className="text-lg font-semibold text-gray-900 dark:text-white">{contracts}</p>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 = {(contracts || 0) * 100} aandelen
               </p>
@@ -209,13 +221,15 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
               <div>
                 <p className="text-xs text-gray-600 dark:text-gray-400">Strike</p>
                 <p className="text-base font-semibold text-gray-900 dark:text-white">
-                  {currencySymbol}{formatNumber(longStrike, 2)}
+                  {currencySymbol}
+                  {formatNumber(longStrike, 2)}
                 </p>
               </div>
               <div>
                 <p className="text-xs text-gray-600 dark:text-gray-400">Premium</p>
                 <p className="text-base font-semibold text-gray-900 dark:text-white">
-                  {currencySymbol}{longPremium !== undefined ? formatNumber(longPremium, 2) : ''}
+                  {currencySymbol}
+                  {longPremium !== undefined ? formatNumber(longPremium, 2) : ''}
                 </p>
               </div>
             </div>
@@ -229,13 +243,15 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
               <div>
                 <p className="text-xs text-gray-600 dark:text-gray-400">Strike</p>
                 <p className="text-base font-semibold text-gray-900 dark:text-white">
-                  {currencySymbol}{formatNumber(shortStrike, 2)}
+                  {currencySymbol}
+                  {formatNumber(shortStrike, 2)}
                 </p>
               </div>
               <div>
                 <p className="text-xs text-gray-600 dark:text-gray-400">Premium</p>
                 <p className="text-base font-semibold text-gray-900 dark:text-white">
-                  {currencySymbol}{shortPremium !== undefined ? formatNumber(shortPremium, 2) : ''}
+                  {currencySymbol}
+                  {shortPremium !== undefined ? formatNumber(shortPremium, 2) : ''}
                 </p>
               </div>
             </div>
@@ -254,9 +270,7 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
               </div>
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Contracten</p>
-                <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                  {contracts}
-                </p>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">{contracts}</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   = {(contracts || 0) * 100} aandelen per leg
                 </p>
@@ -280,14 +294,18 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
                   {isDebit ? 'Netto Debit' : isCredit ? 'Netto Credit' : 'Totale kost'}
                 </span>
               </div>
-              <span className={`text-lg font-bold ${
-                isDebit
-                  ? 'text-negative-600 dark:text-negative-500'
-                  : isCredit
-                  ? 'text-positive-600 dark:text-positive-500'
-                  : 'text-gray-900 dark:text-white'
-              }`}>
-                {isCredit ? '+' : ''}{currencySymbol}{formatNumber(Math.abs(costBasis), 2)}
+              <span
+                className={`text-lg font-bold ${
+                  isDebit
+                    ? 'text-negative-600 dark:text-negative-500'
+                    : isCredit
+                      ? 'text-positive-600 dark:text-positive-500'
+                      : 'text-gray-900 dark:text-white'
+                }`}
+              >
+                {isCredit ? '+' : ''}
+                {currencySymbol}
+                {formatNumber(Math.abs(costBasis), 2)}
               </span>
             </div>
 
@@ -298,7 +316,8 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
                   Break-even prijs
                 </span>
                 <span className="text-lg font-bold text-gray-900 dark:text-white">
-                  {currencySymbol}{formatNumber(breakEven, 2)}
+                  {currencySymbol}
+                  {formatNumber(breakEven, 2)}
                 </span>
               </div>
             )}
@@ -343,7 +362,8 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
                   </span>
                 </div>
                 <span className="text-lg font-bold text-caution-600 dark:text-caution-500">
-                  {currencySymbol}{formatNumber(cashReserved, 2)}
+                  {currencySymbol}
+                  {formatNumber(cashReserved, 2)}
                 </span>
               </div>
             )}
@@ -359,12 +379,8 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
         {/* Notes */}
         {notes && (
           <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
-            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Notities
-            </p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              {notes}
-            </p>
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notities</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{notes}</p>
           </div>
         )}
       </div>
@@ -374,7 +390,8 @@ export const ConfirmationTicket: React.FC<ConfirmationTicketProps> = ({
         <div className="flex items-start gap-2">
           <AlertCircle className="w-5 h-5 text-caution-600 dark:text-caution-500 flex-shrink-0 mt-0.5" />
           <p className="text-xs text-gray-600 dark:text-gray-400">
-            Controleer alle details voordat je deze positie opent. Deze actie kan niet ongedaan worden gemaakt.
+            Controleer alle details voordat je deze positie opent. Deze actie kan niet ongedaan
+            worden gemaakt.
           </p>
         </div>
       </div>

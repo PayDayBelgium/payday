@@ -13,7 +13,7 @@ export const buildSystemPrompt = (ctx: SystemPromptContext): string => {
   const unlocked =
     ctx.unlockedLevels && ctx.unlockedLevels.length > 0 ? ctx.unlockedLevels : [ctx.userLevel];
   const unlockedFeatures = LEVEL_CONFIGS.filter((c) => unlocked.includes(c.level)).flatMap(
-    (c) => c.features,
+    (c) => c.features
   );
   const isTop = ctx.userLevel === 'offpiste' || ctx.userLevel === 'expert';
   const rules = AGENT_RULES.map((r, i) => `${i + 1}. ${r}`).join('\n');

@@ -27,8 +27,14 @@ export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
   const [activeTab, setActiveTab] = useState<'overview' | 'pnl'>('overview');
 
   // State for both legs
-  const longLeg = legs.find(leg => (leg as CallOption | PutOption).action === 'buy') as CallOption | PutOption | undefined;
-  const shortLeg = legs.find(leg => (leg as CallOption | PutOption).action === 'sell') as CallOption | PutOption | undefined;
+  const longLeg = legs.find((leg) => (leg as CallOption | PutOption).action === 'buy') as
+    | CallOption
+    | PutOption
+    | undefined;
+  const shortLeg = legs.find((leg) => (leg as CallOption | PutOption).action === 'sell') as
+    | CallOption
+    | PutOption
+    | undefined;
 
   const [longCurrentPremium, setLongCurrentPremium] = useState('');
   const [shortCurrentPremium, setShortCurrentPremium] = useState('');
@@ -131,16 +137,19 @@ export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
               <span className="px-2 py-1 text-xs font-semibold rounded bg-surface-muted dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300">
                 {longLeg.type.toUpperCase()} SPREAD
               </span>
-              <span className={`px-2 py-1 text-xs font-semibold rounded ${
-                spreadType === 'credit'
-                  ? 'bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500'
-                  : 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-              }`}>
+              <span
+                className={`px-2 py-1 text-xs font-semibold rounded ${
+                  spreadType === 'credit'
+                    ? 'bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500'
+                    : 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                }`}
+              >
                 {spreadType === 'credit' ? 'CREDIT' : 'DEBIT'}
               </span>
             </h2>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              {contracts}x {ticker} ${Math.min(longLeg.strike, shortLeg.strike)}-${Math.max(longLeg.strike, shortLeg.strike)}
+              {contracts}x {ticker} ${Math.min(longLeg.strike, shortLeg.strike)}-$
+              {Math.max(longLeg.strike, shortLeg.strike)}
             </p>
           </div>
           <button
@@ -182,11 +191,13 @@ export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
           {activeTab === 'overview' ? (
             <div className="space-y-6">
               {/* Spread Summary */}
-              <div className={`p-4 rounded-lg border-2 ${
-                isProfitable
-                  ? 'bg-positive-50 dark:bg-positive-700/15 border-positive-500/20 dark:border-positive-700/30'
-                  : 'bg-negative-50 dark:bg-negative-700/15 border-negative-500/20 dark:border-negative-700/30'
-              }`}>
+              <div
+                className={`p-4 rounded-lg border-2 ${
+                  isProfitable
+                    ? 'bg-positive-50 dark:bg-positive-700/15 border-positive-500/20 dark:border-positive-700/30'
+                    : 'bg-negative-50 dark:bg-negative-700/15 border-negative-500/20 dark:border-negative-700/30'
+                }`}
+              >
                 <div className="flex items-center gap-3 mb-4">
                   {isProfitable ? (
                     <TrendingUp className="w-8 h-8 text-positive-600 dark:text-positive-500" />
@@ -197,22 +208,28 @@ export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
                     <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       Totale Winst/Verlies
                     </p>
-                    <p className={`text-2xl font-bold ${
-                      isProfitable
-                        ? 'text-positive-600 dark:text-positive-500'
-                        : 'text-negative-600 dark:text-negative-500'
-                    }`}>
-                      {isProfitable ? '+' : ''}{formatCurrency(totalPnL, currencySymbol)}
+                    <p
+                      className={`text-2xl font-bold ${
+                        isProfitable
+                          ? 'text-positive-600 dark:text-positive-500'
+                          : 'text-negative-600 dark:text-negative-500'
+                      }`}
+                    >
+                      {isProfitable ? '+' : ''}
+                      {formatCurrency(totalPnL, currencySymbol)}
                     </p>
                   </div>
                   <div className="text-right">
                     <p className="text-xs text-gray-500 dark:text-gray-400">Return %</p>
-                    <p className={`text-lg font-semibold ${
-                      isProfitable
-                        ? 'text-positive-600 dark:text-positive-500'
-                        : 'text-negative-600 dark:text-negative-500'
-                    }`}>
-                      {isProfitable ? '+' : ''}{formatNumber((totalPnL / Math.abs(totalCostBasis)) * 100)}%
+                    <p
+                      className={`text-lg font-semibold ${
+                        isProfitable
+                          ? 'text-positive-600 dark:text-positive-500'
+                          : 'text-negative-600 dark:text-negative-500'
+                      }`}
+                    >
+                      {isProfitable ? '+' : ''}
+                      {formatNumber((totalPnL / Math.abs(totalCostBasis)) * 100)}%
                     </p>
                   </div>
                 </div>
@@ -220,10 +237,15 @@ export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
                 <div className="grid grid-cols-4 gap-6 text-sm">
                   <div className="flex flex-col">
                     <p className="text-gray-500 dark:text-gray-400 mb-1">Net Premium</p>
-                    <p className={`font-semibold text-base ${
-                      isCredit ? 'text-positive-600 dark:text-positive-500' : 'text-primary-700 dark:text-primary-300'
-                    }`}>
-                      {isCredit ? '+' : '-'}{formatCurrency(Math.abs(netPremium), currencySymbol)}
+                    <p
+                      className={`font-semibold text-base ${
+                        isCredit
+                          ? 'text-positive-600 dark:text-positive-500'
+                          : 'text-primary-700 dark:text-primary-300'
+                      }`}
+                    >
+                      {isCredit ? '+' : '-'}
+                      {formatCurrency(Math.abs(netPremium), currencySymbol)}
                     </p>
                   </div>
                   <div className="flex flex-col">
@@ -253,7 +275,9 @@ export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
                 <div className="p-4 border-2 border-primary-200 dark:border-primary-800 rounded-lg bg-primary-50/50 dark:bg-primary-900/15">
                   <div className="flex items-center gap-2 mb-3">
                     <ArrowUpCircle className="w-5 h-5 text-primary-700 dark:text-primary-300" />
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Long Leg (KOPEN)</h3>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">
+                      Long Leg (KOPEN)
+                    </h3>
                   </div>
 
                   <div className="space-y-3 text-sm">
@@ -270,7 +294,9 @@ export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
                       </p>
                     </div>
                     <div>
-                      <p className="text-gray-500 dark:text-gray-400 mb-1">Huidige Premium (per aandeel)</p>
+                      <p className="text-gray-500 dark:text-gray-400 mb-1">
+                        Huidige Premium (per aandeel)
+                      </p>
                       <input
                         type="text"
                         value={longCurrentPremium}
@@ -292,7 +318,9 @@ export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
                 <div className="p-4 border-2 border-caution-500/30 dark:border-caution-600/40 rounded-lg bg-caution-50/50 dark:bg-caution-600/10">
                   <div className="flex items-center gap-2 mb-3">
                     <ArrowDownCircle className="w-5 h-5 text-caution-600 dark:text-caution-500" />
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Short Leg (VERKOPEN)</h3>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">
+                      Short Leg (VERKOPEN)
+                    </h3>
                   </div>
 
                   <div className="space-y-3 text-sm">
@@ -309,7 +337,9 @@ export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
                       </p>
                     </div>
                     <div>
-                      <p className="text-gray-500 dark:text-gray-400 mb-1">Huidige Premium (per aandeel)</p>
+                      <p className="text-gray-500 dark:text-gray-400 mb-1">
+                        Huidige Premium (per aandeel)
+                      </p>
                       <input
                         type="text"
                         value={shortCurrentPremium}
@@ -333,14 +363,20 @@ export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
                 <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                   <p className="text-gray-500 dark:text-gray-400">Expiratie</p>
                   <p className="font-semibold text-gray-900 dark:text-white">
-                    {longLeg.expiration ? new Date(longLeg.expiration).toLocaleDateString('nl-NL') : 'N/A'}
+                    {longLeg.expiration
+                      ? new Date(longLeg.expiration).toLocaleDateString('nl-NL')
+                      : 'N/A'}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{daysToExpiration} dagen</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    {daysToExpiration} dagen
+                  </p>
                 </div>
                 <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                   <p className="text-gray-500 dark:text-gray-400">Contracten</p>
                   <p className="font-semibold text-gray-900 dark:text-white">{contracts}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{contracts * 100} aandelen</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    {contracts * 100} aandelen
+                  </p>
                 </div>
                 {collateral > 0 && (
                   <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">

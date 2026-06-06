@@ -1,11 +1,26 @@
 import React, { useState, useMemo } from 'react';
-import { ChevronDown, ChevronRight, AlertCircle, CheckCircle, Search, Edit2, Check, X, TrendingDown, Target } from 'lucide-react';
+import {
+  ChevronDown,
+  ChevronRight,
+  AlertCircle,
+  CheckCircle,
+  Search,
+  Edit2,
+  Check,
+  X,
+  TrendingDown,
+  Target,
+} from 'lucide-react';
 import type { StockPosition, PriceAlert, Portfolio, CallOption } from '../../types';
 import { formatCurrency } from '../../utils/currencyHelpers';
 import { formatNumber } from '../../utils/numberFormat';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
-import { updatePosition, markPriceAlertAsRead, selectPositions } from '../../store/slices/positionsSlice';
+import {
+  updatePosition,
+  markPriceAlertAsRead,
+  selectPositions,
+} from '../../store/slices/positionsSlice';
 import { updateTickerPrice } from '../../store/slices/tickersSlice';
 import { computeCoveredCallCapacity } from '../../utils/coveredCallEligibility';
 // import { SellStockModal } from '../modals/SellStockModal';
@@ -64,11 +79,18 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [editingTicker, setEditingTicker] = useState<string | null>(null);
   const [editPrice, setEditPrice] = useState('');
-  const [dismissConfirm, setDismissConfirm] = useState<{ isOpen: boolean; alert: PriceAlert | null }>({
+  const [dismissConfirm, setDismissConfirm] = useState<{
+    isOpen: boolean;
+    alert: PriceAlert | null;
+  }>({
     isOpen: false,
     alert: null,
   });
-  const [dismissStrategyConfirm, setDismissStrategyConfirm] = useState<{ isOpen: boolean; alertId: string | null; message: string }>({
+  const [dismissStrategyConfirm, setDismissStrategyConfirm] = useState<{
+    isOpen: boolean;
+    alertId: string | null;
+    message: string;
+  }>({
     isOpen: false,
     alertId: null,
     message: '',
@@ -78,7 +100,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
   // this whole pipeline does NOT recompute on every search-box keystroke.
   const groupedPositions = useMemo(() => {
     const groups = positions
-      .filter(position => position.status === 'open')
+      .filter((position) => position.status === 'open')
       .reduce<Record<string, TickerGroup>>((acc, position) => {
         if (!acc[position.ticker]) {
           acc[position.ticker] = {
@@ -102,7 +124,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
         acc[position.ticker].totalCostBasis += position.costBasis;
 
         // Get alerts for this position
-        const positionAlerts = alerts.filter(a => a.positionId === position.id && !a.isRead);
+        const positionAlerts = alerts.filter((a) => a.positionId === position.id && !a.isRead);
         acc[position.ticker].alerts.push(...positionAlerts);
 
         // Get strategy alerts for this position
@@ -113,16 +135,15 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
       }, {});
 
     // Calculate GAK and P&L for each group
-    Object.values(groups).forEach(group => {
+    Object.values(groups).forEach((group) => {
       group.averageCost = group.totalCostBasis / group.totalShares;
       group.profitLoss = group.totalValue - group.totalCostBasis;
-      group.profitLossPercentage = group.totalCostBasis > 0
-        ? (group.profitLoss / group.totalCostBasis) * 100
-        : 0;
+      group.profitLossPercentage =
+        group.totalCostBasis > 0 ? (group.profitLoss / group.totalCostBasis) * 100 : 0;
 
       // Sort positions by date (oldest first)
-      group.positions.sort((a, b) =>
-        new Date(a.openDate).getTime() - new Date(b.openDate).getTime()
+      group.positions.sort(
+        (a, b) => new Date(a.openDate).getTime() - new Date(b.openDate).getTime()
       );
     });
 
@@ -133,12 +154,12 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
   const filteredGroups = useMemo(() => {
     const q = searchQuery.toLowerCase();
     return Object.values(groupedPositions)
-      .filter(group => group.ticker.toLowerCase().includes(q))
+      .filter((group) => group.ticker.toLowerCase().includes(q))
       .sort((a, b) => a.ticker.localeCompare(b.ticker));
   }, [groupedPositions, searchQuery]);
 
   const toggleExpanded = (ticker: string) => {
-    setExpandedTickers(prev => {
+    setExpandedTickers((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(ticker)) {
         newSet.delete(ticker);
@@ -175,7 +196,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
     // Also update positions directly for immediate UI feedback
     const group = groupedPositions[ticker];
     if (group) {
-      group.positions.forEach(position => {
+      group.positions.forEach((position) => {
         const updatedPosition = {
           ...position,
           currentPrice: newPrice,
@@ -235,12 +256,14 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
             const isExpanded = expandedTickers.has(group.ticker);
             const isProfit = group.profitLoss >= 0;
             const hasUnreadAlerts = group.alerts.length > 0;
-            const ruleAlerts = group.strategyAlerts.filter(a => a.category === 'alert');
-            const ruleOpportunities = group.strategyAlerts.filter(a => a.category === 'opportunity');
+            const ruleAlerts = group.strategyAlerts.filter((a) => a.category === 'alert');
+            const ruleOpportunities = group.strategyAlerts.filter(
+              (a) => a.category === 'opportunity'
+            );
 
             // Check if any position can write covered calls
             // First check if the portfolio supports options
-            const portfolio = allPortfolios.find(b => b.name === group.positions[0].portfolio);
+            const portfolio = allPortfolios.find((b) => b.name === group.positions[0].portfolio);
             const portfolioSupportsOptions = portfolio?.hasOptions ?? false;
 
             // Sold calls for this ticker+portfolio come from the full store (the
@@ -325,8 +348,8 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                               {ruleOpportunities.length}
                             </div>
                           )}
-                          {canWriteCoveredCalls && (
-                            onWriteCoveredCall ? (
+                          {canWriteCoveredCalls &&
+                            (onWriteCoveredCall ? (
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
@@ -346,34 +369,52 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                                 <CheckCircle className="w-3.5 h-3.5" />
                                 CC
                               </div>
-                            )
-                          )}
+                            ))}
                         </div>
 
                         {/* Data fields in a flex layout */}
                         <div className="flex items-end gap-6 text-sm">
                           <div className="w-24 flex-shrink-0">
-                            <p className="text-gray-500 dark:text-gray-400 text-xs mb-1">Eerste positie op</p>
+                            <p className="text-gray-500 dark:text-gray-400 text-xs mb-1">
+                              Eerste positie op
+                            </p>
                             <p className="text-gray-900 dark:text-white font-medium text-xs">
-                              {new Date(group.positions[0].openDate).toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                              {new Date(group.positions[0].openDate).toLocaleDateString('nl-NL', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                              })}
                             </p>
                           </div>
                           <div className="w-16 flex-shrink-0">
                             <p className="text-gray-500 dark:text-gray-400 text-xs mb-1">Aantal</p>
-                            <p className="text-gray-900 dark:text-white font-medium">{group.totalShares}</p>
+                            <p className="text-gray-900 dark:text-white font-medium">
+                              {group.totalShares}
+                            </p>
                           </div>
                           <div className="w-20 flex-shrink-0">
                             <p className="text-gray-500 dark:text-gray-400 text-xs mb-1">GAK</p>
-                            <p className="text-gray-900 dark:text-white font-medium">{formatCurrency(group.averageCost, allPortfolios)}</p>
+                            <p className="text-gray-900 dark:text-white font-medium">
+                              {formatCurrency(group.averageCost, allPortfolios)}
+                            </p>
                           </div>
                           <div className="w-28 flex-shrink-0">
-                            <p className="text-gray-500 dark:text-gray-400 text-xs mb-1">Aankoopwaarde</p>
-                            <p className="text-gray-900 dark:text-white font-medium">{formatCurrency(group.totalCostBasis, allPortfolios)}</p>
+                            <p className="text-gray-500 dark:text-gray-400 text-xs mb-1">
+                              Aankoopwaarde
+                            </p>
+                            <p className="text-gray-900 dark:text-white font-medium">
+                              {formatCurrency(group.totalCostBasis, allPortfolios)}
+                            </p>
                           </div>
                           <div className="w-24 flex-shrink-0">
-                            <p className="text-gray-500 dark:text-gray-400 text-xs mb-1">Huidige Prijs</p>
+                            <p className="text-gray-500 dark:text-gray-400 text-xs mb-1">
+                              Huidige Prijs
+                            </p>
                             {editingTicker === group.ticker ? (
-                              <div className="flex items-center" onClick={(e) => e.stopPropagation()}>
+                              <div
+                                className="flex items-center"
+                                onClick={(e) => e.stopPropagation()}
+                              >
                                 <input
                                   type="number"
                                   step="0.01"
@@ -387,7 +428,13 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                               </div>
                             ) : (
                               <p
-                                onClick={(e) => startEditingPrice(group.ticker, group.positions[0].currentPrice, e)}
+                                onClick={(e) =>
+                                  startEditingPrice(
+                                    group.ticker,
+                                    group.positions[0].currentPrice,
+                                    e
+                                  )
+                                }
                                 className="text-gray-900 dark:text-white font-bold text-base cursor-pointer hover:text-primary-700 dark:hover:text-primary-500 transition-colors"
                               >
                                 {formatCurrency(group.positions[0].currentPrice, allPortfolios)}
@@ -395,8 +442,12 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                             )}
                           </div>
                           <div className="w-28 flex-shrink-0">
-                            <p className="text-gray-500 dark:text-gray-400 text-xs mb-1">Huidige Waarde</p>
-                            <p className="text-gray-900 dark:text-white font-medium">{formatCurrency(group.totalValue, allPortfolios)}</p>
+                            <p className="text-gray-500 dark:text-gray-400 text-xs mb-1">
+                              Huidige Waarde
+                            </p>
+                            <p className="text-gray-900 dark:text-white font-medium">
+                              {formatCurrency(group.totalValue, allPortfolios)}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -409,17 +460,23 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                     <div className="text-center flex-shrink-0">
                       <p
                         className={`text-2xl font-bold ${
-                          isProfit ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'
+                          isProfit
+                            ? 'text-positive-600 dark:text-positive-500'
+                            : 'text-negative-600 dark:text-negative-500'
                         }`}
                       >
-                        {isProfit ? '+' : ''}{formatCurrency(Math.abs(group.profitLoss), allPortfolios)}
+                        {isProfit ? '+' : ''}
+                        {formatCurrency(Math.abs(group.profitLoss), allPortfolios)}
                       </p>
                       <p
                         className={`text-sm font-medium ${
-                          isProfit ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'
+                          isProfit
+                            ? 'text-positive-600 dark:text-positive-500'
+                            : 'text-negative-600 dark:text-negative-500'
                         }`}
                       >
-                        {isProfit ? '+' : ''}{formatNumber(group.profitLossPercentage, 2)}%
+                        {isProfit ? '+' : ''}
+                        {formatNumber(group.profitLossPercentage, 2)}%
                       </p>
                     </div>
 
@@ -433,11 +490,13 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                               onSellPosition(group.positions[0]);
                             } else {
                               // Multiple lots: expand so the user can sell a specific lot
-                              setExpandedTickers(prev => new Set(prev).add(group.ticker));
+                              setExpandedTickers((prev) => new Set(prev).add(group.ticker));
                             }
                           }}
                           className="w-8 h-8 flex items-center justify-center bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-200 rounded font-semibold text-sm transition-colors"
-                          title={group.positions.length === 1 ? 'Verkoop' : 'Verkoop een lot (klap uit)'}
+                          title={
+                            group.positions.length === 1 ? 'Verkoop' : 'Verkoop een lot (klap uit)'
+                          }
                         >
                           S
                         </button>
@@ -452,13 +511,14 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                     <div className="divide-y divide-gray-200 dark:divide-gray-700">
                       {group.positions.map((position) => {
                         const posProfit = position.currentValue - position.costBasis;
-                        const posProfitPct = position.costBasis > 0
-                          ? (posProfit / position.costBasis) * 100
-                          : 0;
+                        const posProfitPct =
+                          position.costBasis > 0 ? (posProfit / position.costBasis) * 100 : 0;
                         const isPosProfit = posProfit >= 0;
 
                         // Get alerts for this specific position
-                        const positionAlerts = alerts.filter(a => a.positionId === position.id && !a.isRead);
+                        const positionAlerts = alerts.filter(
+                          (a) => a.positionId === position.id && !a.isRead
+                        );
                         const positionStrategyAlerts = strategyAlertsMap.get(position.id) || [];
 
                         return (
@@ -473,15 +533,25 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                                   {/* Spacer for chevron alignment */}
                                   <div className="w-5 flex-shrink-0">
                                     {/* Alert/Opportunity indicators */}
-                                    {(positionAlerts.length > 0 || positionStrategyAlerts.length > 0) && (
+                                    {(positionAlerts.length > 0 ||
+                                      positionStrategyAlerts.length > 0) && (
                                       <div className="flex flex-col gap-0.5">
-                                        {positionAlerts.some(a => !a.category || a.category === 'alert') && (
+                                        {positionAlerts.some(
+                                          (a) => !a.category || a.category === 'alert'
+                                        ) && (
                                           <AlertCircle className="w-3.5 h-3.5 text-negative-600 dark:text-negative-500" />
                                         )}
-                                        {positionStrategyAlerts.some((a: StrategyAlert) => a.category === 'alert') && (
+                                        {positionStrategyAlerts.some(
+                                          (a: StrategyAlert) => a.category === 'alert'
+                                        ) && (
                                           <AlertCircle className="w-3.5 h-3.5 text-caution-600 dark:text-caution-500" />
                                         )}
-                                        {(positionAlerts.some((a: any) => a.category === 'opportunity') || positionStrategyAlerts.some((a: StrategyAlert) => a.category === 'opportunity')) && (
+                                        {(positionAlerts.some(
+                                          (a: any) => a.category === 'opportunity'
+                                        ) ||
+                                          positionStrategyAlerts.some(
+                                            (a: StrategyAlert) => a.category === 'opportunity'
+                                          )) && (
                                           <Target className="w-3.5 h-3.5 text-positive-600 dark:text-positive-500" />
                                         )}
                                       </div>
@@ -524,20 +594,29 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                                 </div>
 
                                 {/* P&L - right-aligned */}
-                                <div className="flex-shrink-0 text-right" style={{ width: '180px' }}>
+                                <div
+                                  className="flex-shrink-0 text-right"
+                                  style={{ width: '180px' }}
+                                >
                                   <p
                                     className={`text-lg font-bold ${
-                                      isPosProfit ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'
+                                      isPosProfit
+                                        ? 'text-positive-600 dark:text-positive-500'
+                                        : 'text-negative-600 dark:text-negative-500'
                                     }`}
                                   >
-                                    {isPosProfit ? '+' : ''}{formatCurrency(Math.abs(posProfit), allPortfolios)}
+                                    {isPosProfit ? '+' : ''}
+                                    {formatCurrency(Math.abs(posProfit), allPortfolios)}
                                   </p>
                                   <p
                                     className={`text-xs font-medium ${
-                                      isPosProfit ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'
+                                      isPosProfit
+                                        ? 'text-positive-600 dark:text-positive-500'
+                                        : 'text-negative-600 dark:text-negative-500'
                                     }`}
                                   >
-                                    {isPosProfit ? '+' : ''}{formatNumber(posProfitPct, 2)}%
+                                    {isPosProfit ? '+' : ''}
+                                    {formatNumber(posProfitPct, 2)}%
                                   </p>
                                 </div>
 
@@ -578,9 +657,13 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                                       className={`flex items-start gap-2 p-2 ml-8 ${bgColor} border rounded text-xs`}
                                     >
                                       {isOpportunity ? (
-                                        <Target className={`w-3.5 h-3.5 ${iconColor} mt-0.5 flex-shrink-0`} />
+                                        <Target
+                                          className={`w-3.5 h-3.5 ${iconColor} mt-0.5 flex-shrink-0`}
+                                        />
                                       ) : (
-                                        <AlertCircle className={`w-3.5 h-3.5 ${iconColor} mt-0.5 flex-shrink-0`} />
+                                        <AlertCircle
+                                          className={`w-3.5 h-3.5 ${iconColor} mt-0.5 flex-shrink-0`}
+                                        />
                                       )}
                                       <p className={`${textColor} flex-1`}>{alert.message}</p>
                                       <button
@@ -616,11 +699,15 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                                       key={alert.id}
                                       className={`flex items-start gap-2 p-2 ml-8 ${bgColor} border rounded text-xs`}
                                     >
-                                      <Icon className={`w-3.5 h-3.5 ${iconColor} mt-0.5 flex-shrink-0`} />
+                                      <Icon
+                                        className={`w-3.5 h-3.5 ${iconColor} mt-0.5 flex-shrink-0`}
+                                      />
                                       <p className={`${textColor} flex-1`}>{alert.message}</p>
                                       {onDismissStrategyAlert && (
                                         <button
-                                          onClick={(e) => handleDismissStrategyAlert(e, alert.id, alert.message)}
+                                          onClick={(e) =>
+                                            handleDismissStrategyAlert(e, alert.id, alert.message)
+                                          }
                                           className={`p-0.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors flex-shrink-0`}
                                           title="Alert sluiten"
                                         >
@@ -664,7 +751,9 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                             {isOpportunity ? (
                               <Target className={`w-3.5 h-3.5 ${iconColor} mt-0.5 flex-shrink-0`} />
                             ) : (
-                              <AlertCircle className={`w-3.5 h-3.5 ${iconColor} mt-0.5 flex-shrink-0`} />
+                              <AlertCircle
+                                className={`w-3.5 h-3.5 ${iconColor} mt-0.5 flex-shrink-0`}
+                              />
                             )}
                             <p className={`${textColor} flex-1`}>{alert.message}</p>
                             <button

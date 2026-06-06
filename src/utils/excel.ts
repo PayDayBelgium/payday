@@ -8,17 +8,17 @@ export const exportTableToExcel = (
   // Build header rows
   const headers: string[][] = [
     // First row: Date + Portfolio names (spanning 2 columns each) + Total (spanning 2 columns) + Comment
-    ['Date', ...portfolios.flatMap(b => [b.name, '']), 'Total', '', 'Comment'],
+    ['Date', ...portfolios.flatMap((b) => [b.name, '']), 'Total', '', 'Comment'],
     // Second row: Value/Cash sub-headers
     ['', ...portfolios.flatMap(() => ['Value', 'Cash']), 'Value', 'Cash', ''],
   ];
 
   // Build data rows
-  const dataRows = tableData.map(row => {
+  const dataRows = tableData.map((row) => {
     const cells: (string | number)[] = [row.date];
 
     // Add portfolio values and cash
-    portfolios.forEach(portfolio => {
+    portfolios.forEach((portfolio) => {
       cells.push(row[`${portfolio.name}_value`] || 0);
       cells.push(row[`${portfolio.name}_cash`] || 0);
     });
@@ -37,9 +37,7 @@ export const exportTableToExcel = (
   const allRows = [...headers, ...dataRows];
 
   // Convert to TSV format (tab-separated values)
-  const tsv = allRows
-    .map(row => row.map(cell => String(cell)).join('\t'))
-    .join('\n');
+  const tsv = allRows.map((row) => row.map((cell) => String(cell)).join('\t')).join('\n');
 
   // Copy to clipboard
   navigator.clipboard.writeText(tsv).then(

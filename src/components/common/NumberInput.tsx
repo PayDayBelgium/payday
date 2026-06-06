@@ -110,7 +110,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
     <input
       ref={inputRef}
       type="text"
-      inputMode={allowDecimals ? "decimal" : "numeric"}
+      inputMode={allowDecimals ? 'decimal' : 'numeric'}
       value={displayValue}
       onChange={handleChange}
       onBlur={handleBlur}

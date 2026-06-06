@@ -32,7 +32,7 @@ export const AddUser: React.FC = () => {
     } else {
       // Check if username already exists
       const existingUsers = getAllUsers();
-      if (existingUsers.some(u => u.username.toLowerCase() === username.toLowerCase())) {
+      if (existingUsers.some((u) => u.username.toLowerCase() === username.toLowerCase())) {
         newErrors.username = 'Username already exists';
       }
     }
@@ -110,7 +110,10 @@ export const AddUser: React.FC = () => {
           <div className="space-y-6">
             {/* Username */}
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label
+                htmlFor="username"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
                 Username *
               </label>
               <div className="relative">
@@ -128,13 +131,18 @@ export const AddUser: React.FC = () => {
                 />
               </div>
               {errors.username && (
-                <p className="mt-1 text-sm text-negative-600 dark:text-negative-500">{errors.username}</p>
+                <p className="mt-1 text-sm text-negative-600 dark:text-negative-500">
+                  {errors.username}
+                </p>
               )}
             </div>
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
                 Email *
               </label>
               <div className="relative">
@@ -151,13 +159,18 @@ export const AddUser: React.FC = () => {
                 />
               </div>
               {errors.email && (
-                <p className="mt-1 text-sm text-negative-600 dark:text-negative-500">{errors.email}</p>
+                <p className="mt-1 text-sm text-negative-600 dark:text-negative-500">
+                  {errors.email}
+                </p>
               )}
             </div>
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
                 Password *
               </label>
               <div className="relative">
@@ -174,13 +187,18 @@ export const AddUser: React.FC = () => {
                 />
               </div>
               {errors.password && (
-                <p className="mt-1 text-sm text-negative-600 dark:text-negative-500">{errors.password}</p>
+                <p className="mt-1 text-sm text-negative-600 dark:text-negative-500">
+                  {errors.password}
+                </p>
               )}
             </div>
 
             {/* Confirm Password */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
                 Confirm Password *
               </label>
               <div className="relative">
@@ -191,13 +209,17 @@ export const AddUser: React.FC = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   className={`w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-700 border ${
-                    errors.confirmPassword ? 'border-negative-500' : 'border-gray-300 dark:border-gray-600'
+                    errors.confirmPassword
+                      ? 'border-negative-500'
+                      : 'border-gray-300 dark:border-gray-600'
                   } rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500`}
                   placeholder="Confirm password"
                 />
               </div>
               {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-negative-600 dark:text-negative-500">{errors.confirmPassword}</p>
+                <p className="mt-1 text-sm text-negative-600 dark:text-negative-500">
+                  {errors.confirmPassword}
+                </p>
               )}
             </div>
           </div>

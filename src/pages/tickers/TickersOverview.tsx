@@ -3,7 +3,12 @@ import { Filter, Eye, Briefcase, ExternalLink, Plus, Trash2, Edit2, X, Check } f
 import { usePageTitle } from '../../contexts/PageTitleContext';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
-import { selectAllTickers, addToWatchlist, removeTicker, updateTicker } from '../../store/slices/tickersSlice';
+import {
+  selectAllTickers,
+  addToWatchlist,
+  removeTicker,
+  updateTicker,
+} from '../../store/slices/tickersSlice';
 import { ConfirmModal } from '../../components/modals/ConfirmModal';
 import type { PortfolioName, Ticker, Position } from '../../types';
 import { formatNumber } from '../../utils/numberFormat';
@@ -30,8 +35,15 @@ export const TickersOverview: React.FC = () => {
   const [isAddWatchlistOpen, setIsAddWatchlistOpen] = useState(false);
   const [newWatchlistTicker, setNewWatchlistTicker] = useState({ symbol: '', name: '', price: '' });
   const [editingTicker, setEditingTicker] = useState<string | null>(null);
-  const [editValues, setEditValues] = useState<{ name: string; price: string }>({ name: '', price: '' });
-  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; symbol: string; name: string }>({
+  const [editValues, setEditValues] = useState<{ name: string; price: string }>({
+    name: '',
+    price: '',
+  });
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    isOpen: boolean;
+    symbol: string;
+    name: string;
+  }>({
     isOpen: false,
     symbol: '',
     name: '',
@@ -51,7 +63,7 @@ export const TickersOverview: React.FC = () => {
     const tickerMap = new Map<string, TickerWithPositions>();
 
     // First, add all tickers from the store
-    tickers.forEach(ticker => {
+    tickers.forEach((ticker) => {
       tickerMap.set(ticker.symbol.toUpperCase(), {
         ...ticker,
         portfolios: [],
@@ -65,7 +77,7 @@ export const TickersOverview: React.FC = () => {
     });
 
     // Then, process positions to build portfolio data
-    const openPositions = positions.filter(p => p.status === 'open');
+    const openPositions = positions.filter((p) => p.status === 'open');
 
     openPositions.forEach((position: Position) => {
       const symbol = position.ticker.toUpperCase();
@@ -113,13 +125,14 @@ export const TickersOverview: React.FC = () => {
 
       // Update average price (weighted)
       const totalCost = tickerEntry.averagePrice * (tickerEntry.totalShares - shares) + costBasis;
-      tickerEntry.averagePrice = tickerEntry.totalShares > 0 ? totalCost / tickerEntry.totalShares : 0;
+      tickerEntry.averagePrice =
+        tickerEntry.totalShares > 0 ? totalCost / tickerEntry.totalShares : 0;
 
       tickerEntry.hasPositions = true;
     });
 
     // Calculate unrealized P&L for each ticker
-    tickerMap.forEach(ticker => {
+    tickerMap.forEach((ticker) => {
       if (ticker.totalShares > 0 && ticker.currentPrice) {
         const marketValue = ticker.totalShares * ticker.currentPrice;
         const costBasis = ticker.totalShares * ticker.averagePrice;
@@ -133,10 +146,8 @@ export const TickersOverview: React.FC = () => {
   }, [tickers, positions]);
 
   const togglePortfolioFilter = (portfolio: PortfolioName) => {
-    setSelectedPortfolios(prev =>
-      prev.includes(portfolio)
-        ? prev.filter(b => b !== portfolio)
-        : [...prev, portfolio]
+    setSelectedPortfolios((prev) =>
+      prev.includes(portfolio) ? prev.filter((b) => b !== portfolio) : [...prev, portfolio]
     );
   };
 
@@ -145,15 +156,16 @@ export const TickersOverview: React.FC = () => {
 
     // Filter by portfolios
     if (selectedPortfolios.length > 0) {
-      filtered = filtered.filter(ticker =>
-        ticker.portfolios.some(b => selectedPortfolios.includes(b)) ||
-        (ticker.isWatchlist && selectedPortfolios.length === 0)
+      filtered = filtered.filter(
+        (ticker) =>
+          ticker.portfolios.some((b) => selectedPortfolios.includes(b)) ||
+          (ticker.isWatchlist && selectedPortfolios.length === 0)
       );
     }
 
     // Filter by watchlist
     if (showWatchlistOnly) {
-      filtered = filtered.filter(ticker => ticker.isWatchlist);
+      filtered = filtered.filter((ticker) => ticker.isWatchlist);
     }
 
     return filtered;
@@ -196,11 +208,13 @@ export const TickersOverview: React.FC = () => {
   };
 
   const saveEdit = (symbol: string) => {
-    dispatch(updateTicker({
-      symbol,
-      name: editValues.name,
-      currentPrice: editValues.price ? parseFloat(editValues.price) : undefined,
-    }));
+    dispatch(
+      updateTicker({
+        symbol,
+        name: editValues.name,
+        currentPrice: editValues.price ? parseFloat(editValues.price) : undefined,
+      })
+    );
     setEditingTicker(null);
   };
 
@@ -231,7 +245,11 @@ export const TickersOverview: React.FC = () => {
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
-                  <img src={portfolio.logo} alt={portfolio.name} className="w-4 h-4 rounded object-contain" />
+                  <img
+                    src={portfolio.logo}
+                    alt={portfolio.name}
+                    className="w-4 h-4 rounded object-contain"
+                  />
                   {portfolio.name}
                 </button>
               ))}
@@ -308,7 +326,12 @@ export const TickersOverview: React.FC = () => {
                 <input
                   type="text"
                   value={newWatchlistTicker.symbol}
-                  onChange={(e) => setNewWatchlistTicker(prev => ({ ...prev, symbol: e.target.value.toUpperCase() }))}
+                  onChange={(e) =>
+                    setNewWatchlistTicker((prev) => ({
+                      ...prev,
+                      symbol: e.target.value.toUpperCase(),
+                    }))
+                  }
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   placeholder="AAPL"
                   autoFocus
@@ -321,7 +344,9 @@ export const TickersOverview: React.FC = () => {
                 <input
                   type="text"
                   value={newWatchlistTicker.name}
-                  onChange={(e) => setNewWatchlistTicker(prev => ({ ...prev, name: e.target.value }))}
+                  onChange={(e) =>
+                    setNewWatchlistTicker((prev) => ({ ...prev, name: e.target.value }))
+                  }
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   placeholder="Apple Inc."
                 />
@@ -334,7 +359,9 @@ export const TickersOverview: React.FC = () => {
                   type="number"
                   step="0.01"
                   value={newWatchlistTicker.price}
-                  onChange={(e) => setNewWatchlistTicker(prev => ({ ...prev, price: e.target.value }))}
+                  onChange={(e) =>
+                    setNewWatchlistTicker((prev) => ({ ...prev, price: e.target.value }))
+                  }
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   placeholder="150.00"
                 />
@@ -407,18 +434,20 @@ export const TickersOverview: React.FC = () => {
                     <input
                       type="text"
                       value={editValues.name}
-                      onChange={(e) => setEditValues(prev => ({ ...prev, name: e.target.value }))}
+                      onChange={(e) => setEditValues((prev) => ({ ...prev, name: e.target.value }))}
                       className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
                     />
                   ) : (
-                    <span className="text-sm text-gray-600 dark:text-gray-300 truncate block">{ticker.name}</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-300 truncate block">
+                      {ticker.name}
+                    </span>
                   )}
                 </div>
 
                 {/* Portfolios */}
                 <div className="flex items-center gap-1">
                   {ticker.portfolios.map((portfolio) => {
-                    const portfolioData = portfolios.find(b => b.name === portfolio);
+                    const portfolioData = portfolios.find((b) => b.name === portfolio);
                     return portfolioData ? (
                       <img
                         key={portfolio}
@@ -451,7 +480,9 @@ export const TickersOverview: React.FC = () => {
                       type="number"
                       step="0.01"
                       value={editValues.price}
-                      onChange={(e) => setEditValues(prev => ({ ...prev, price: e.target.value }))}
+                      onChange={(e) =>
+                        setEditValues((prev) => ({ ...prev, price: e.target.value }))
+                      }
                       className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs text-right"
                     />
                   ) : (
@@ -463,16 +494,27 @@ export const TickersOverview: React.FC = () => {
 
                 {/* Market Value */}
                 <div className="text-right text-sm font-medium text-gray-900 dark:text-white">
-                  {ticker.totalValue > 0 ? `$${ticker.totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '-'}
+                  {ticker.totalValue > 0
+                    ? `$${ticker.totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                    : '-'}
                 </div>
 
                 {/* Unrealized P&L */}
                 <div className="text-right">
                   {ticker.unrealizedPnL !== 0 ? (
-                    <div className={`text-sm font-semibold ${ticker.unrealizedPnL >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
-                      <div>{ticker.unrealizedPnL >= 0 ? '+' : ''}${Math.abs(ticker.unrealizedPnL).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                    <div
+                      className={`text-sm font-semibold ${ticker.unrealizedPnL >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
+                    >
+                      <div>
+                        {ticker.unrealizedPnL >= 0 ? '+' : ''}$
+                        {Math.abs(ticker.unrealizedPnL).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </div>
                       <div className="text-[10px]">
-                        {ticker.unrealizedPnLPercent >= 0 ? '+' : ''}{formatNumber(ticker.unrealizedPnLPercent, 2)}%
+                        {ticker.unrealizedPnLPercent >= 0 ? '+' : ''}
+                        {formatNumber(ticker.unrealizedPnLPercent, 2)}%
                       </div>
                     </div>
                   ) : (

@@ -46,10 +46,14 @@ const sleep = (ms: number, signal: AbortSignal): Promise<void> =>
   new Promise((resolve) => {
     if (signal.aborted) return resolve();
     const timer = setTimeout(resolve, ms);
-    signal.addEventListener('abort', () => {
-      clearTimeout(timer);
-      resolve();
-    }, { once: true });
+    signal.addEventListener(
+      'abort',
+      () => {
+        clearTimeout(timer);
+        resolve();
+      },
+      { once: true }
+    );
   });
 
 // Oplopende wachttijden vóór een nieuwe poging bij overbelasting/limiet.
@@ -76,7 +80,7 @@ export const createAnthropicProvider = (apiKey: string): AIProvider => {
                 ? { tools: input.tools as Anthropic.Tool[] }
                 : {}),
             },
-            { signal: input.signal },
+            { signal: input.signal }
           );
 
           for await (const event of stream) {

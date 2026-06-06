@@ -32,22 +32,44 @@ export const TradeIdeaCard: React.FC<{
       <div className="mt-2">
         <div className="flex items-center justify-between text-[11px] text-ink-500">
           <span>Juice (IV rank)</span>
-          <span><b className="text-ink-900 dark:text-white">{idea.ivRank}%</b> · {juiceLabel(idea.ivRank)}</span>
+          <span>
+            <b className="text-ink-900 dark:text-white">{idea.ivRank}%</b> ·{' '}
+            {juiceLabel(idea.ivRank)}
+          </span>
         </div>
         <div className="h-1.5 rounded bg-[var(--line)] overflow-hidden mt-1">
           <div
             className="h-full rounded"
-            style={{ width: `${Math.min(100, Math.max(0, idea.ivRank))}%`, background: 'linear-gradient(90deg,#0F9D58,#F0B429)' }}
+            style={{
+              width: `${Math.min(100, Math.max(0, idea.ivRank))}%`,
+              background: 'linear-gradient(90deg,#0F9D58,#F0B429)',
+            }}
           />
         </div>
       </div>
 
       {!compact && (
         <div className="flex gap-4 mt-2 text-[11px] text-ink-500">
-          {idea.strike != null && <span>Strike <b className="text-ink-900 dark:text-white">${idea.strike}</b></span>}
-          {idea.premium != null && <span>Premie <b className="text-ink-900 dark:text-white">${idea.premium}</b></span>}
-          {idea.returnPct != null && <span>Rend. <b className="text-ink-900 dark:text-white">{idea.returnPct}%</b></span>}
-          {idea.delta != null && <span>Δ <b className="text-ink-900 dark:text-white">{idea.delta}</b></span>}
+          {idea.strike != null && (
+            <span>
+              Strike <b className="text-ink-900 dark:text-white">${idea.strike}</b>
+            </span>
+          )}
+          {idea.premium != null && (
+            <span>
+              Premie <b className="text-ink-900 dark:text-white">${idea.premium}</b>
+            </span>
+          )}
+          {idea.returnPct != null && (
+            <span>
+              Rend. <b className="text-ink-900 dark:text-white">{idea.returnPct}%</b>
+            </span>
+          )}
+          {idea.delta != null && (
+            <span>
+              Δ <b className="text-ink-900 dark:text-white">{idea.delta}</b>
+            </span>
+          )}
         </div>
       )}
 

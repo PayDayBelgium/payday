@@ -21,11 +21,7 @@ interface StockETFWizardProps {
   };
 }
 
-export const StockETFWizard: React.FC<StockETFWizardProps> = ({
-  isOpen,
-  onClose,
-  portfolio,
-}) => {
+export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose, portfolio }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
@@ -54,7 +50,7 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({
   // Auto-fill purchase price when ticker is selected
   React.useEffect(() => {
     if (selectedTicker?.currentPrice && purchaseDetails.purchasePrice === 0) {
-      setPurchaseDetails(prev => ({
+      setPurchaseDetails((prev) => ({
         ...prev,
         purchasePrice: selectedTicker.currentPrice || 0,
       }));
@@ -115,14 +111,16 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({
     };
 
     // Ensure ticker exists in central store
-    dispatch(ensureTicker({
-      symbol: selectedTicker.symbol,
-      name: selectedTicker.name,
-      type: positionType,
-      optionsAvailable: selectedTicker.optionsAvailable,
-      miniContractsAvailable: selectedTicker.miniContractsAvailable,
-      currentPrice: purchaseDetails.purchasePrice,
-    }));
+    dispatch(
+      ensureTicker({
+        symbol: selectedTicker.symbol,
+        name: selectedTicker.name,
+        type: positionType,
+        optionsAvailable: selectedTicker.optionsAvailable,
+        miniContractsAvailable: selectedTicker.miniContractsAvailable,
+        currentPrice: purchaseDetails.purchasePrice,
+      })
+    );
 
     // Add position
     dispatch(addPosition(newPosition));
@@ -194,9 +192,13 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({
                     : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
                 }`}
               >
-                <TrendingUp className={`w-12 h-12 mx-auto mb-3 ${
-                  positionType === 'stock' ? 'text-primary-700 dark:text-primary-300' : 'text-gray-400'
-                }`} />
+                <TrendingUp
+                  className={`w-12 h-12 mx-auto mb-3 ${
+                    positionType === 'stock'
+                      ? 'text-primary-700 dark:text-primary-300'
+                      : 'text-gray-400'
+                  }`}
+                />
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                   {t('stockWizard.typeStep.stock')}
                 </h3>
@@ -213,9 +215,13 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({
                     : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
                 }`}
               >
-                <Building2 className={`w-12 h-12 mx-auto mb-3 ${
-                  positionType === 'etf' ? 'text-positive-600 dark:text-positive-500' : 'text-gray-400'
-                }`} />
+                <Building2
+                  className={`w-12 h-12 mx-auto mb-3 ${
+                    positionType === 'etf'
+                      ? 'text-positive-600 dark:text-positive-500'
+                      : 'text-gray-400'
+                  }`}
+                />
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                   {t('stockWizard.typeStep.etf')}
                 </h3>
@@ -234,7 +240,9 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({
       stepList.push({
         id: 'ticker',
         title: t('stockWizard.tickerStep.title'),
-        description: isCreatingTicker ? t('stockWizard.tickerStep.descriptionCreate') : t('stockWizard.tickerStep.description'),
+        description: isCreatingTicker
+          ? t('stockWizard.tickerStep.descriptionCreate')
+          : t('stockWizard.tickerStep.description'),
         isValid: selectedTicker !== null,
         component: isCreatingTicker ? (
           <div className="space-y-4">
@@ -259,7 +267,9 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({
                 value={newTickerData.name}
                 onChange={(e) => setNewTickerData({ ...newTickerData, name: e.target.value })}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                placeholder={t('stockWizard.tickerStep.namePlaceholder', { example: positionType === 'stock' ? 'Apple Inc.' : 'SPDR S&P 500 ETF' })}
+                placeholder={t('stockWizard.tickerStep.namePlaceholder', {
+                  example: positionType === 'stock' ? 'Apple Inc.' : 'SPDR S&P 500 ETF',
+                })}
                 required
                 autoFocus
               />
@@ -270,7 +280,9 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({
                 <input
                   type="checkbox"
                   checked={newTickerData.optionsAvailable}
-                  onChange={(e) => setNewTickerData({ ...newTickerData, optionsAvailable: e.target.checked })}
+                  onChange={(e) =>
+                    setNewTickerData({ ...newTickerData, optionsAvailable: e.target.checked })
+                  }
                   className="w-4 h-4 text-primary-700 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
                 />
                 <span className="text-sm font-medium text-gray-900 dark:text-white">
@@ -282,7 +294,9 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({
                 <input
                   type="checkbox"
                   checked={newTickerData.miniContractsAvailable}
-                  onChange={(e) => setNewTickerData({ ...newTickerData, miniContractsAvailable: e.target.checked })}
+                  onChange={(e) =>
+                    setNewTickerData({ ...newTickerData, miniContractsAvailable: e.target.checked })
+                  }
                   className="w-4 h-4 text-primary-700 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
                 />
                 <span className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
@@ -301,7 +315,13 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({
               <button
                 onClick={() => {
                   setIsCreatingTicker(false);
-                  setNewTickerData({ symbol: '', name: '', optionsAvailable: false, miniContractsAvailable: false, hasDividend: false });
+                  setNewTickerData({
+                    symbol: '',
+                    name: '',
+                    optionsAvailable: false,
+                    miniContractsAvailable: false,
+                    hasDividend: false,
+                  });
                 }}
                 className="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg font-medium transition-colors"
               >
@@ -325,7 +345,10 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({
               value={selectedTicker?.symbol || ''}
               onChange={setSelectedTicker}
               onCreateNew={handleCreateTicker}
-              placeholder={t('stockWizard.tickerStep.searchPlaceholder', { type: positionType === 'stock' ? t('stockWizard.typeStep.stock').toLowerCase() : 'ETF' })}
+              placeholder={t('stockWizard.tickerStep.searchPlaceholder', {
+                type:
+                  positionType === 'stock' ? t('stockWizard.typeStep.stock').toLowerCase() : 'ETF',
+              })}
               autoFocus
             />
 
@@ -335,11 +358,13 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({
                   {t('stockWizard.tickerStep.selected')}
                 </p>
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                    selectedTicker.type === 'stock'
-                      ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                      : 'bg-positive-50 dark:bg-positive-700/25 text-positive-600 dark:text-positive-500'
-                  }`}>
+                  <div
+                    className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      selectedTicker.type === 'stock'
+                        ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                        : 'bg-positive-50 dark:bg-positive-700/25 text-positive-600 dark:text-positive-500'
+                    }`}
+                  >
                     {selectedTicker.type === 'stock' ? (
                       <TrendingUp className="w-5 h-5" />
                     ) : (
@@ -382,7 +407,12 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({
                   min="1"
                   step="1"
                   value={purchaseDetails.shares || ''}
-                  onChange={(e) => setPurchaseDetails({ ...purchaseDetails, shares: parseInt(e.target.value) || 0 })}
+                  onChange={(e) =>
+                    setPurchaseDetails({
+                      ...purchaseDetails,
+                      shares: parseInt(e.target.value) || 0,
+                    })
+                  }
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   placeholder="100"
                   required
@@ -400,7 +430,12 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({
                   min="0.01"
                   step="0.01"
                   value={purchaseDetails.purchasePrice || ''}
-                  onChange={(e) => setPurchaseDetails({ ...purchaseDetails, purchasePrice: parseFloat(e.target.value) || 0 })}
+                  onChange={(e) =>
+                    setPurchaseDetails({
+                      ...purchaseDetails,
+                      purchasePrice: parseFloat(e.target.value) || 0,
+                    })
+                  }
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   placeholder="150,00"
                   required
@@ -416,7 +451,9 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({
               <input
                 type="date"
                 value={purchaseDetails.purchaseDate}
-                onChange={(e) => setPurchaseDetails({ ...purchaseDetails, purchaseDate: e.target.value })}
+                onChange={(e) =>
+                  setPurchaseDetails({ ...purchaseDetails, purchaseDate: e.target.value })
+                }
                 max={new Date().toISOString().split('T')[0]}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 required
@@ -444,21 +481,29 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({
                 </p>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-positive-700 dark:text-positive-500">{t('stockWizard.detailsStep.quantity')}</span>
+                    <span className="text-positive-700 dark:text-positive-500">
+                      {t('stockWizard.detailsStep.quantity')}
+                    </span>
                     <span className="font-medium text-positive-700 dark:text-positive-500">
                       {purchaseDetails.shares} {t('stockWizard.detailsStep.shares')}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-positive-700 dark:text-positive-500">{t('stockWizard.detailsStep.pricePerShareLabel')}</span>
+                    <span className="text-positive-700 dark:text-positive-500">
+                      {t('stockWizard.detailsStep.pricePerShareLabel')}
+                    </span>
                     <span className="font-medium text-positive-700 dark:text-positive-500">
-                      {currencySymbol}{formatNumber(purchaseDetails.purchasePrice, 2)}
+                      {currencySymbol}
+                      {formatNumber(purchaseDetails.purchasePrice, 2)}
                     </span>
                   </div>
                   <div className="flex justify-between pt-2 border-t border-positive-500/30 dark:border-positive-700">
-                    <span className="font-semibold text-positive-700 dark:text-positive-500">{t('stockWizard.detailsStep.totalCost')}</span>
+                    <span className="font-semibold text-positive-700 dark:text-positive-500">
+                      {t('stockWizard.detailsStep.totalCost')}
+                    </span>
                     <span className="font-bold text-positive-700 dark:text-positive-500">
-                      {currencySymbol}{formatNumber(totalCost)}
+                      {currencySymbol}
+                      {formatNumber(totalCost)}
                     </span>
                   </div>
                 </div>
@@ -470,7 +515,15 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({
     }
 
     return stepList;
-  }, [positionType, selectedTicker, isCreatingTicker, newTickerData, purchaseDetails, currencySymbol, totalCost]);
+  }, [
+    positionType,
+    selectedTicker,
+    isCreatingTicker,
+    newTickerData,
+    purchaseDetails,
+    currencySymbol,
+    totalCost,
+  ]);
 
   return (
     <WizardModal
@@ -479,7 +532,13 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({
         handleReset();
         onClose();
       }}
-      title={positionType === 'stock' ? t('stockWizard.titleStock') : positionType === 'etf' ? t('stockWizard.titleETF') : t('stockWizard.titlePosition')}
+      title={
+        positionType === 'stock'
+          ? t('stockWizard.titleStock')
+          : positionType === 'etf'
+            ? t('stockWizard.titleETF')
+            : t('stockWizard.titlePosition')
+      }
       steps={steps}
       onComplete={handleComplete}
       completeButtonLabel={t('stockWizard.completeButton')}

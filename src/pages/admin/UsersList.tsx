@@ -35,7 +35,7 @@ export const UsersList: React.FC = () => {
     }
   };
 
-  const filteredUsers = users.filter(user =>
+  const filteredUsers = users.filter((user) =>
     user.username.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -107,7 +107,10 @@ export const UsersList: React.FC = () => {
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                  <td
+                    colSpan={4}
+                    className="px-6 py-8 text-center text-gray-500 dark:text-gray-400"
+                  >
                     {searchTerm ? 'No users found matching your search' : 'No users yet'}
                   </td>
                 </tr>

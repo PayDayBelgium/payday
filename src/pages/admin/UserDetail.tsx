@@ -26,7 +26,7 @@ export const UserDetail: React.FC = () => {
 
   const loadUser = (username: string) => {
     const users = getAllUsers();
-    const foundUser = users.find(u => u.username === username);
+    const foundUser = users.find((u) => u.username === username);
     setUser(foundUser || null);
   };
 
@@ -36,7 +36,7 @@ export const UserDetail: React.FC = () => {
       if (userStore) {
         // Calculate size in KB
         const sizeInBytes = new Blob([userStore]).size;
-        setUserDataSize(Math.round(sizeInBytes / 1024 * 10) / 10); // Round to 1 decimal
+        setUserDataSize(Math.round((sizeInBytes / 1024) * 10) / 10); // Round to 1 decimal
       }
     } catch (error) {
       console.error('Failed to calculate user data size:', error);
@@ -67,7 +67,6 @@ export const UserDetail: React.FC = () => {
 
   return (
     <div className="space-y-6">
-
       {/* User Information */}
       <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-6">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Information</h2>
@@ -85,7 +84,9 @@ export const UserDetail: React.FC = () => {
             <div>
               <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Created</p>
               <p className="text-gray-900 dark:text-white">{formatDate(user.createdAt)}</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{new Date(user.createdAt).toLocaleString()}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {new Date(user.createdAt).toLocaleString()}
+              </p>
             </div>
           </div>
 
@@ -95,7 +96,9 @@ export const UserDetail: React.FC = () => {
               <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Last Login</p>
               <p className="text-gray-900 dark:text-white">{formatDate(user.lastLogin)}</p>
               {user.lastLogin && (
-                <p className="text-sm text-gray-600 dark:text-gray-400">{new Date(user.lastLogin).toLocaleString()}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {new Date(user.lastLogin).toLocaleString()}
+                </p>
               )}
             </div>
           </div>
@@ -113,11 +116,15 @@ export const UserDetail: React.FC = () => {
 
       {/* Danger zone */}
       <div className="bg-white dark:bg-gray-800 border border-negative-500/20 dark:border-negative-700/30 rounded-lg shadow-sm p-6">
-        <h2 className="text-xl font-semibold text-negative-600 dark:text-negative-500 mb-4">Danger zone</h2>
+        <h2 className="text-xl font-semibold text-negative-600 dark:text-negative-500 mb-4">
+          Danger zone
+        </h2>
         <div className="flex items-center justify-between p-4 bg-negative-50 dark:bg-negative-700/15 rounded-lg border border-negative-500/20 dark:border-negative-700/30">
           <div>
             <p className="font-medium text-gray-900 dark:text-white">Delete User</p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Permanently delete this user and all their data</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Permanently delete this user and all their data
+            </p>
           </div>
           {showDeleteConfirm ? (
             <div className="flex items-center gap-2">

@@ -67,9 +67,7 @@ const TodoListWidget: React.FC = () => {
               >
                 <Circle className="w-5 h-5" />
               </button>
-              <p className="flex-1 text-sm text-gray-700 dark:text-gray-300">
-                {todo.text}
-              </p>
+              <p className="flex-1 text-sm text-gray-700 dark:text-gray-300">{todo.text}</p>
             </div>
           ))
         )}

@@ -52,10 +52,22 @@ export const PortalTooltip: React.FC<PortalTooltipProps> = ({
       let top = 0;
       let left = 0;
       switch (placement) {
-        case 'top':    top = rect.top - 8;    left = rect.left + rect.width / 2; break;
-        case 'bottom': top = rect.bottom + 8; left = rect.left + rect.width / 2; break;
-        case 'left':   top = rect.top + rect.height / 2; left = rect.left - 8;   break;
-        case 'right':  top = rect.top + rect.height / 2; left = rect.right + 8;  break;
+        case 'top':
+          top = rect.top - 8;
+          left = rect.left + rect.width / 2;
+          break;
+        case 'bottom':
+          top = rect.bottom + 8;
+          left = rect.left + rect.width / 2;
+          break;
+        case 'left':
+          top = rect.top + rect.height / 2;
+          left = rect.left - 8;
+          break;
+        case 'right':
+          top = rect.top + rect.height / 2;
+          left = rect.right + 8;
+          break;
       }
       setPosition({ top, left });
     }
@@ -63,11 +75,16 @@ export const PortalTooltip: React.FC<PortalTooltipProps> = ({
 
   const getTransform = () => {
     switch (placement) {
-      case 'top':    return 'translate(-50%, -100%)';
-      case 'bottom': return 'translate(-50%, 0)';
-      case 'left':   return 'translate(-100%, -50%)';
-      case 'right':  return 'translate(0, -50%)';
-      default:       return 'translate(-50%, -100%)';
+      case 'top':
+        return 'translate(-50%, -100%)';
+      case 'bottom':
+        return 'translate(-50%, 0)';
+      case 'left':
+        return 'translate(-100%, -50%)';
+      case 'right':
+        return 'translate(0, -50%)';
+      default:
+        return 'translate(-50%, -100%)';
     }
   };
 

@@ -49,12 +49,20 @@ const positionsSlice = createSlice({
         if (updatedPosition.type === 'call' || updatedPosition.type === 'put') {
           const optionPos = updatedPosition as any;
           // For long options (buy), currentValue should be >= 0
-          if (optionPos.action === 'buy' && optionPos.currentValue !== undefined && optionPos.currentValue < 0) {
+          if (
+            optionPos.action === 'buy' &&
+            optionPos.currentValue !== undefined &&
+            optionPos.currentValue < 0
+          ) {
             optionPos.currentValue = 0;
           }
           // For short options (sell), currentValue is negative (liability)
           // Ensure it doesn't become positive (which would be incorrect)
-          if (optionPos.action === 'sell' && optionPos.currentValue !== undefined && optionPos.currentValue > 0) {
+          if (
+            optionPos.action === 'sell' &&
+            optionPos.currentValue !== undefined &&
+            optionPos.currentValue > 0
+          ) {
             optionPos.currentValue = 0;
           }
         }
@@ -65,19 +73,27 @@ const positionsSlice = createSlice({
     removePosition: (state, action: PayloadAction<string>) => {
       state.positions = state.positions.filter((p) => p.id !== action.payload);
     },
-    updatePositionValue: (state, action: PayloadAction<{
-      id: string;
-      currentValue: number;
-    }>) => {
+    updatePositionValue: (
+      state,
+      action: PayloadAction<{
+        id: string;
+        currentValue: number;
+      }>
+    ) => {
       const position = state.positions.find((p) => p.id === action.payload.id);
       if (position) {
         (position as any).currentValue = action.payload.currentValue;
       }
     },
-    updateMultiplePositionValues: (state, action: PayloadAction<Array<{
-      id: string;
-      currentValue: number;
-    }>>) => {
+    updateMultiplePositionValues: (
+      state,
+      action: PayloadAction<
+        Array<{
+          id: string;
+          currentValue: number;
+        }>
+      >
+    ) => {
       action.payload.forEach(({ id, currentValue }) => {
         const position = state.positions.find((p) => p.id === id);
         if (position) {
@@ -86,14 +102,17 @@ const positionsSlice = createSlice({
       });
     },
     // Update option premium and delta by matching symbol, strike, expiration, and optionType
-    updateOptionPremium: (state, action: PayloadAction<{
-      symbol: string;
-      strike: number;
-      expiration: string;
-      optionType: 'call' | 'put';
-      premium: number;
-      delta?: number;
-    }>) => {
+    updateOptionPremium: (
+      state,
+      action: PayloadAction<{
+        symbol: string;
+        strike: number;
+        expiration: string;
+        optionType: 'call' | 'put';
+        premium: number;
+        delta?: number;
+      }>
+    ) => {
       const { symbol, strike, expiration, optionType, premium, delta } = action.payload;
 
       // Find matching option positions
@@ -127,14 +146,17 @@ const positionsSlice = createSlice({
         }
       });
     },
-    closePosition: (state, action: PayloadAction<{
-      id: string;
-      closeDate: string;
-      closePrice?: number;
-      closePremium?: number;
-      realizedPnL?: number;
-      notes?: string;
-    }>) => {
+    closePosition: (
+      state,
+      action: PayloadAction<{
+        id: string;
+        closeDate: string;
+        closePrice?: number;
+        closePremium?: number;
+        realizedPnL?: number;
+        notes?: string;
+      }>
+    ) => {
       const position = state.positions.find((p) => p.id === action.payload.id);
       if (position) {
         position.status = 'closed';
@@ -243,9 +265,8 @@ export const selectPriceAlertRules = (state: RootState) => state.positions.price
 export const selectPriceAlerts = (state: RootState) => state.positions.priceAlerts;
 
 // Memoized selector for active positions only
-export const selectActivePositions = createSelector(
-  [selectPositions],
-  (positions) => positions.filter((p) => p.status === 'open')
+export const selectActivePositions = createSelector([selectPositions], (positions) =>
+  positions.filter((p) => p.status === 'open')
 );
 
 // Memoized selector for positions by portfolio (factory function)
@@ -257,72 +278,58 @@ export const makeSelectPositionsByPortfolio = () =>
 
 // Simple selector for positions by portfolio (for backward compatibility)
 export const selectPositionsByPortfolio = (portfolioName: PortfolioName) =>
-  createSelector(
-    [selectPositions],
-    (positions) => positions.filter((p) => p.portfolio === portfolioName)
+  createSelector([selectPositions], (positions) =>
+    positions.filter((p) => p.portfolio === portfolioName)
   );
 
 // Memoized selector for positions by type (factory function)
 export const makeSelectPositionsByType = () =>
-  createSelector(
-    [selectPositions, (_state: RootState, type: string) => type],
-    (positions, type) => positions.filter((p) => p.type === type)
+  createSelector([selectPositions, (_state: RootState, type: string) => type], (positions, type) =>
+    positions.filter((p) => p.type === type)
   );
 
 // Simple selector for positions by type (for backward compatibility)
 export const selectPositionsByType = (type: string) =>
-  createSelector(
-    [selectPositions],
-    (positions) => positions.filter((p) => p.type === type)
-  );
+  createSelector([selectPositions], (positions) => positions.filter((p) => p.type === type));
 
 // Memoized selector for positions by portfolio and type
 export const selectPositionsByPortfolioAndType = (portfolioName: PortfolioName, type: string) =>
-  createSelector(
-    [selectPositions],
-    (positions) => positions.filter((p) => p.portfolio === portfolioName && p.type === type)
+  createSelector([selectPositions], (positions) =>
+    positions.filter((p) => p.portfolio === portfolioName && p.type === type)
   );
 
 // Memoized selector for open positions by portfolio
 export const selectOpenPositionsByPortfolio = (portfolioName: PortfolioName) =>
-  createSelector(
-    [selectPositions],
-    (positions) => positions.filter((p) => p.portfolio === portfolioName && p.status === 'open')
+  createSelector([selectPositions], (positions) =>
+    positions.filter((p) => p.portfolio === portfolioName && p.status === 'open')
   );
 
 // Memoized selector: per-ticker Holdings (aggregated lots + covered-call capacity)
 export const selectHoldingsByPortfolio = (portfolioName: PortfolioName) =>
-  createSelector(
-    [selectPositions],
-    (positions) => groupHoldings(positions, portfolioName)
-  );
+  createSelector([selectPositions], (positions) => groupHoldings(positions, portfolioName));
 
 // Price Alert Rule selectors
 export const selectAllPriceAlertRules = (state: RootState) => state.positions.priceAlertRules;
 
 export const selectPriceAlertRulesByPosition = (positionId: string) =>
-  createSelector(
-    [selectPriceAlertRules],
-    (rules) => rules.filter((r) => r.positionId === positionId)
+  createSelector([selectPriceAlertRules], (rules) =>
+    rules.filter((r) => r.positionId === positionId)
   );
 
-export const selectActivePriceAlertRules = createSelector(
-  [selectPriceAlertRules],
-  (rules) => rules.filter((r) => r.isActive)
+export const selectActivePriceAlertRules = createSelector([selectPriceAlertRules], (rules) =>
+  rules.filter((r) => r.isActive)
 );
 
 // Price Alert selectors
 export const selectAllPriceAlerts = (state: RootState) => state.positions.priceAlerts;
 
 export const selectPriceAlertsByPosition = (positionId: string) =>
-  createSelector(
-    [selectPriceAlerts],
-    (alerts) => alerts.filter((a) => a.positionId === positionId)
+  createSelector([selectPriceAlerts], (alerts) =>
+    alerts.filter((a) => a.positionId === positionId)
   );
 
-export const selectUnreadPriceAlerts = createSelector(
-  [selectPriceAlerts],
-  (alerts) => alerts.filter((a) => !a.isRead)
+export const selectUnreadPriceAlerts = createSelector([selectPriceAlerts], (alerts) =>
+  alerts.filter((a) => !a.isRead)
 );
 
 export const selectUnreadPriceAlertsCount = createSelector(

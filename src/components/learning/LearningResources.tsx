@@ -12,39 +12,67 @@ import {
   ShoppingCart,
 } from 'lucide-react';
 import { useAppSelector } from '../../hooks/useAppSelector';
-import { selectUnlockedLevels, selectCurrentLevel, LEVEL_CONFIGS } from '../../store/slices/userProgressSlice';
-import { LEVEL_RESOURCES, getTipsUpToLevel, getBooksUpToLevel } from '../../config/learningResources';
-import type { UserLevel, TradingTip, RecommendedBook, VideoTutorial, ExternalResource } from '../../types';
+import {
+  selectUnlockedLevels,
+  selectCurrentLevel,
+  LEVEL_CONFIGS,
+} from '../../store/slices/userProgressSlice';
+import {
+  LEVEL_RESOURCES,
+  getTipsUpToLevel,
+  getBooksUpToLevel,
+} from '../../config/learningResources';
+import type {
+  UserLevel,
+  TradingTip,
+  RecommendedBook,
+  VideoTutorial,
+  ExternalResource,
+} from '../../types';
 
 // Tip Card Component
 const TipCard: React.FC<{ tip: TradingTip; isLocked?: boolean }> = ({ tip, isLocked }) => {
   const getCategoryColor = (category: TradingTip['category']) => {
     switch (category) {
-      case 'strategy': return 'bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300';
-      case 'risk': return 'bg-negative-50 text-negative-700 dark:bg-negative-700/25 dark:text-negative-500';
-      case 'psychology': return 'bg-surface-muted text-ink-700 dark:bg-trading-dark-600 dark:text-ink-300';
-      case 'tax': return 'bg-caution-50 text-caution-600 dark:bg-caution-600/25 dark:text-caution-500';
-      case 'tool': return 'bg-positive-50 text-positive-700 dark:bg-positive-700/25 dark:text-positive-500';
-      default: return 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300';
+      case 'strategy':
+        return 'bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300';
+      case 'risk':
+        return 'bg-negative-50 text-negative-700 dark:bg-negative-700/25 dark:text-negative-500';
+      case 'psychology':
+        return 'bg-surface-muted text-ink-700 dark:bg-trading-dark-600 dark:text-ink-300';
+      case 'tax':
+        return 'bg-caution-50 text-caution-600 dark:bg-caution-600/25 dark:text-caution-500';
+      case 'tool':
+        return 'bg-positive-50 text-positive-700 dark:bg-positive-700/25 dark:text-positive-500';
+      default:
+        return 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300';
     }
   };
 
   const getCategoryLabel = (category: TradingTip['category']) => {
     switch (category) {
-      case 'strategy': return 'Strategie';
-      case 'risk': return 'Risico';
-      case 'psychology': return 'Psychologie';
-      case 'tax': return 'Belasting';
-      case 'tool': return 'Tool';
-      default: return 'Algemeen';
+      case 'strategy':
+        return 'Strategie';
+      case 'risk':
+        return 'Risico';
+      case 'psychology':
+        return 'Psychologie';
+      case 'tax':
+        return 'Belasting';
+      case 'tool':
+        return 'Tool';
+      default:
+        return 'Algemeen';
     }
   };
 
   return (
-    <div className={`
+    <div
+      className={`
       relative p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700
       ${isLocked ? 'opacity-60' : 'hover:shadow-md'} transition-shadow
-    `}>
+    `}
+    >
       {isLocked && (
         <div className="absolute top-2 right-2">
           <Lock className="w-4 h-4 text-gray-400" />
@@ -54,14 +82,14 @@ const TipCard: React.FC<{ tip: TradingTip; isLocked?: boolean }> = ({ tip, isLoc
         <span className="text-2xl flex-shrink-0">{tip.icon || '💡'}</span>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <h4 className="font-semibold text-gray-900 dark:text-white text-sm">
-              {tip.title}
-            </h4>
+            <h4 className="font-semibold text-gray-900 dark:text-white text-sm">{tip.title}</h4>
             <span className={`text-xs px-2 py-0.5 rounded-full ${getCategoryColor(tip.category)}`}>
               {getCategoryLabel(tip.category)}
             </span>
           </div>
-          <p className={`text-sm ${isLocked ? 'blur-sm select-none' : ''} text-gray-600 dark:text-gray-400`}>
+          <p
+            className={`text-sm ${isLocked ? 'blur-sm select-none' : ''} text-gray-600 dark:text-gray-400`}
+          >
             {tip.content}
           </p>
         </div>
@@ -74,27 +102,37 @@ const TipCard: React.FC<{ tip: TradingTip; isLocked?: boolean }> = ({ tip, isLoc
 const BookCard: React.FC<{ book: RecommendedBook; isLocked?: boolean }> = ({ book, isLocked }) => {
   const getDifficultyColor = (difficulty: RecommendedBook['difficulty']) => {
     switch (difficulty) {
-      case 'easy': return 'text-positive-600 dark:text-positive-500';
-      case 'medium': return 'text-caution-600 dark:text-caution-500';
-      case 'advanced': return 'text-negative-600 dark:text-negative-500';
-      default: return 'text-gray-600';
+      case 'easy':
+        return 'text-positive-600 dark:text-positive-500';
+      case 'medium':
+        return 'text-caution-600 dark:text-caution-500';
+      case 'advanced':
+        return 'text-negative-600 dark:text-negative-500';
+      default:
+        return 'text-gray-600';
     }
   };
 
   const getDifficultyLabel = (difficulty: RecommendedBook['difficulty']) => {
     switch (difficulty) {
-      case 'easy': return 'Toegankelijk';
-      case 'medium': return 'Gemiddeld';
-      case 'advanced': return 'Gevorderd';
-      default: return difficulty;
+      case 'easy':
+        return 'Toegankelijk';
+      case 'medium':
+        return 'Gemiddeld';
+      case 'advanced':
+        return 'Gevorderd';
+      default:
+        return difficulty;
     }
   };
 
   return (
-    <div className={`
+    <div
+      className={`
       relative p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700
       ${isLocked ? 'opacity-60' : 'hover:shadow-md'} transition-shadow
-    `}>
+    `}
+    >
       {isLocked && (
         <div className="absolute top-2 right-2">
           <Lock className="w-4 h-4 text-gray-400" />
@@ -105,13 +143,11 @@ const BookCard: React.FC<{ book: RecommendedBook; isLocked?: boolean }> = ({ boo
           <BookOpen className="w-6 h-6 text-gray-400" />
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="font-semibold text-gray-900 dark:text-white text-sm mb-1">
-            {book.title}
-          </h4>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-            door {book.author}
-          </p>
-          <p className={`text-sm ${isLocked ? 'blur-sm select-none' : ''} text-gray-600 dark:text-gray-400 mb-3 line-clamp-2`}>
+          <h4 className="font-semibold text-gray-900 dark:text-white text-sm mb-1">{book.title}</h4>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">door {book.author}</p>
+          <p
+            className={`text-sm ${isLocked ? 'blur-sm select-none' : ''} text-gray-600 dark:text-gray-400 mb-3 line-clamp-2`}
+          >
             {book.description}
           </p>
           <div className="flex items-center justify-between">
@@ -164,10 +200,12 @@ const BookCard: React.FC<{ book: RecommendedBook; isLocked?: boolean }> = ({ boo
 // Video Card Component
 const VideoCard: React.FC<{ video: VideoTutorial; isLocked?: boolean }> = ({ video, isLocked }) => {
   return (
-    <div className={`
+    <div
+      className={`
       relative p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700
       ${isLocked ? 'opacity-60' : 'hover:shadow-md cursor-pointer'} transition-shadow
-    `}>
+    `}
+    >
       {isLocked && (
         <div className="absolute top-2 right-2">
           <Lock className="w-4 h-4 text-gray-400" />
@@ -181,17 +219,16 @@ const VideoCard: React.FC<{ video: VideoTutorial; isLocked?: boolean }> = ({ vid
           <h4 className="font-semibold text-gray-900 dark:text-white text-sm mb-1">
             {video.title}
           </h4>
-          <p className={`text-xs ${isLocked ? 'blur-sm select-none' : ''} text-gray-600 dark:text-gray-400 mb-2 line-clamp-2`}>
+          <p
+            className={`text-xs ${isLocked ? 'blur-sm select-none' : ''} text-gray-600 dark:text-gray-400 mb-2 line-clamp-2`}
+          >
             {video.description}
           </p>
           <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-500 dark:text-gray-400">
-              {video.duration}
-            </span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">{video.duration}</span>
             {video.creditsAwarded && (
               <span className="text-xs text-positive-600 dark:text-positive-500 flex items-center gap-1">
-                <Gift className="w-3 h-3" />
-                +{video.creditsAwarded} credits
+                <Gift className="w-3 h-3" />+{video.creditsAwarded} credits
               </span>
             )}
           </div>
@@ -202,14 +239,22 @@ const VideoCard: React.FC<{ video: VideoTutorial; isLocked?: boolean }> = ({ vid
 };
 
 // Resource Link Component
-const ResourceLink: React.FC<{ resource: ExternalResource; isLocked?: boolean }> = ({ resource, isLocked }) => {
+const ResourceLink: React.FC<{ resource: ExternalResource; isLocked?: boolean }> = ({
+  resource,
+  isLocked,
+}) => {
   const getTypeIcon = (type: ExternalResource['type']) => {
     switch (type) {
-      case 'broker': return '🏦';
-      case 'tool': return '🔧';
-      case 'calculator': return '🧮';
-      case 'community': return '👥';
-      default: return '🌐';
+      case 'broker':
+        return '🏦';
+      case 'tool':
+        return '🔧';
+      case 'calculator':
+        return '🧮';
+      case 'community':
+        return '👥';
+      default:
+        return '🌐';
     }
   };
 
@@ -227,18 +272,14 @@ const ResourceLink: React.FC<{ resource: ExternalResource; isLocked?: boolean }>
       <span className="text-xl">{getTypeIcon(resource.type)}</span>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <h4 className="font-medium text-gray-900 dark:text-white text-sm">
-            {resource.title}
-          </h4>
+          <h4 className="font-medium text-gray-900 dark:text-white text-sm">{resource.title}</h4>
           {resource.isFree && (
             <span className="text-xs px-1.5 py-0.5 bg-positive-50 text-positive-700 dark:bg-positive-700/25 dark:text-positive-500 rounded">
               Gratis
             </span>
           )}
         </div>
-        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-          {resource.description}
-        </p>
+        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{resource.description}</p>
       </div>
       {isLocked ? (
         <Lock className="w-4 h-4 text-gray-400 flex-shrink-0" />
@@ -282,11 +323,7 @@ const Section: React.FC<SectionProps> = ({ title, icon, children, defaultOpen = 
           <ChevronRight className="w-5 h-5 text-gray-400" />
         )}
       </button>
-      {isOpen && (
-        <div className="p-4 pt-0">
-          {children}
-        </div>
-      )}
+      {isOpen && <div className="p-4 pt-0">{children}</div>}
     </div>
   );
 };
@@ -307,18 +344,20 @@ export const LearningResources: React.FC<LearningResourcesProps> = ({ showAllLev
   const getResources = () => {
     if (activeLevel === 'all') {
       // Show all levels, marking locked ones
-      return levelOrder.map(level => ({
+      return levelOrder.map((level) => ({
         level,
         resources: LEVEL_RESOURCES[level],
         isLocked: !unlockedLevels.includes(level),
       }));
     } else {
       // Show single level
-      return [{
-        level: activeLevel,
-        resources: LEVEL_RESOURCES[activeLevel],
-        isLocked: !unlockedLevels.includes(activeLevel),
-      }];
+      return [
+        {
+          level: activeLevel,
+          resources: LEVEL_RESOURCES[activeLevel],
+          isLocked: !unlockedLevels.includes(activeLevel),
+        },
+      ];
     }
   };
 
@@ -338,8 +377,8 @@ export const LearningResources: React.FC<LearningResourcesProps> = ({ showAllLev
         >
           Alle Niveaus
         </button>
-        {levelOrder.map(level => {
-          const config = LEVEL_CONFIGS.find(c => c.level === level);
+        {levelOrder.map((level) => {
+          const config = LEVEL_CONFIGS.find((c) => c.level === level);
           const isLocked = !unlockedLevels.includes(level);
 
           return (
@@ -350,8 +389,8 @@ export const LearningResources: React.FC<LearningResourcesProps> = ({ showAllLev
                 activeLevel === level
                   ? 'bg-primary-600 text-white'
                   : isLocked
-                  ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
             >
               <span>{config?.icon}</span>
@@ -364,7 +403,7 @@ export const LearningResources: React.FC<LearningResourcesProps> = ({ showAllLev
 
       {/* Resources by Level */}
       {resourceGroups.map(({ level, resources, isLocked }) => {
-        const config = LEVEL_CONFIGS.find(c => c.level === level);
+        const config = LEVEL_CONFIGS.find((c) => c.level === level);
 
         return (
           <div key={level} className="space-y-4">
@@ -372,12 +411,8 @@ export const LearningResources: React.FC<LearningResourcesProps> = ({ showAllLev
               <div className="flex items-center gap-3 pb-2 border-b border-gray-200 dark:border-gray-700">
                 <span className="text-2xl">{config?.icon}</span>
                 <div>
-                  <h3 className="font-bold text-gray-900 dark:text-white">
-                    {config?.slopeName}
-                  </h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {config?.name} niveau
-                  </p>
+                  <h3 className="font-bold text-gray-900 dark:text-white">{config?.slopeName}</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{config?.name} niveau</p>
                 </div>
                 {isLocked && (
                   <span className="ml-auto flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
@@ -396,7 +431,7 @@ export const LearningResources: React.FC<LearningResourcesProps> = ({ showAllLev
                 count={resources.tips.length}
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {resources.tips.map(tip => (
+                  {resources.tips.map((tip) => (
                     <TipCard key={tip.id} tip={tip} isLocked={isLocked} />
                   ))}
                 </div>
@@ -411,7 +446,7 @@ export const LearningResources: React.FC<LearningResourcesProps> = ({ showAllLev
                 count={resources.books.length}
               >
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                  {resources.books.map(book => (
+                  {resources.books.map((book) => (
                     <BookCard key={book.id} book={book} isLocked={isLocked} />
                   ))}
                 </div>
@@ -427,7 +462,7 @@ export const LearningResources: React.FC<LearningResourcesProps> = ({ showAllLev
                 defaultOpen={false}
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {resources.videos.map(video => (
+                  {resources.videos.map((video) => (
                     <VideoCard key={video.id} video={video} isLocked={isLocked} />
                   ))}
                 </div>
@@ -443,7 +478,7 @@ export const LearningResources: React.FC<LearningResourcesProps> = ({ showAllLev
                 defaultOpen={false}
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  {resources.externalResources.map(resource => (
+                  {resources.externalResources.map((resource) => (
                     <ResourceLink key={resource.id} resource={resource} isLocked={isLocked} />
                   ))}
                 </div>
@@ -480,12 +515,8 @@ export const RandomTipWidget: React.FC = () => {
           <h4 className="font-semibold text-gray-900 dark:text-white text-sm mb-1">
             Tip van de Dag
           </h4>
-          <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 font-medium">
-            {tip.title}
-          </p>
-          <p className="text-sm text-gray-700 dark:text-gray-300">
-            {tip.content}
-          </p>
+          <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 font-medium">{tip.title}</p>
+          <p className="text-sm text-gray-700 dark:text-gray-300">{tip.content}</p>
         </div>
       </div>
     </div>

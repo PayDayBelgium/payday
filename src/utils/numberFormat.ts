@@ -8,9 +8,9 @@ export const getCurrentLocale = (): string => {
 
   // Map language codes to full locales
   const localeMap: Record<string, string> = {
-    'nl': 'nl-NL',
-    'en': 'en-US',
-    'fr': 'fr-FR',
+    nl: 'nl-NL',
+    en: 'en-US',
+    fr: 'fr-FR',
   };
 
   if (savedLanguage && localeMap[savedLanguage]) {
@@ -63,7 +63,11 @@ export const formatCompactNumber = (value: number, currencySymbol: string = ''):
  * @param useGrouping - Whether to use thousand separators (default: true)
  * @returns Formatted number string
  */
-export const formatNumber = (value: number, decimals: number = 2, useGrouping: boolean = true): string => {
+export const formatNumber = (
+  value: number,
+  decimals: number = 2,
+  useGrouping: boolean = true
+): string => {
   return new Intl.NumberFormat(getCurrentLocale(), {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
@@ -78,7 +82,11 @@ export const formatNumber = (value: number, decimals: number = 2, useGrouping: b
  * @param decimals - Number of decimal places (default: 2)
  * @returns Formatted currency string
  */
-export const formatCurrency = (value: number, currencySymbol: string = '€', decimals: number = 2): string => {
+export const formatCurrency = (
+  value: number,
+  currencySymbol: string = '€',
+  decimals: number = 2
+): string => {
   const formattedNumber = formatNumber(value, decimals);
   return `${currencySymbol}${formattedNumber}`;
 };

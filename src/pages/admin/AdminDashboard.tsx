@@ -8,7 +8,11 @@ import { useAdminNavigation } from '../../contexts/AdminNavigationContext';
 export const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { setPageTitle } = useAdminNavigation();
-  const [stats, setStats] = React.useState<UserStats>({ totalUsers: 0, activeToday: 0, activeThisWeek: 0 });
+  const [stats, setStats] = React.useState<UserStats>({
+    totalUsers: 0,
+    activeToday: 0,
+    activeThisWeek: 0,
+  });
 
   useEffect(() => {
     setPageTitle('Dashboard', 'Welcome to the PayDay administration portal');
@@ -17,7 +21,6 @@ export const AdminDashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
-
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-6">
@@ -39,7 +42,9 @@ export const AdminDashboard: React.FC = () => {
             </div>
             <div>
               <p className="text-gray-600 dark:text-gray-400 text-sm">Active Today</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.activeToday}</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                {stats.activeToday}
+              </p>
             </div>
           </div>
         </div>
@@ -51,7 +56,9 @@ export const AdminDashboard: React.FC = () => {
             </div>
             <div>
               <p className="text-gray-600 dark:text-gray-400 text-sm">Active This Week</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.activeThisWeek}</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                {stats.activeThisWeek}
+              </p>
             </div>
           </div>
         </div>
@@ -69,7 +76,9 @@ export const AdminDashboard: React.FC = () => {
               <Users className="w-5 h-5 text-primary-700 dark:text-primary-300" />
               <div className="text-left">
                 <p className="font-medium text-gray-900 dark:text-white">Manage Users</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">View, create, and manage user accounts</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  View, create, and manage user accounts
+                </p>
               </div>
             </div>
             <ArrowRight className="w-5 h-5 text-gray-400" />

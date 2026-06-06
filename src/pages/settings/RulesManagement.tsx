@@ -1,8 +1,24 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Plus, Trash2, AlertCircle, Target, Lightbulb, TrendingUp, TrendingDown, Calendar, Banknote, Settings } from 'lucide-react';
+import {
+  Plus,
+  Trash2,
+  AlertCircle,
+  Target,
+  Lightbulb,
+  TrendingUp,
+  TrendingDown,
+  Calendar,
+  Banknote,
+  Settings,
+} from 'lucide-react';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { ConfirmModal } from '../../components/modals/ConfirmModal';
-import type { StrategyRule, StrategyType, StrategyRuleCategory, StrategyRuleTrigger } from '../../types';
+import type {
+  StrategyRule,
+  StrategyType,
+  StrategyRuleCategory,
+  StrategyRuleTrigger,
+} from '../../types';
 
 type WizardStep = 'asset-type' | 'configure';
 type AssetType = 'stocks-etfs' | 'options' | 'general';
@@ -32,7 +48,8 @@ const DEFAULT_RULES: Omit<StrategyRule, 'id' | 'portfolio' | 'createdAt'>[] = [
   {
     strategyType: 'stocks-etfs',
     name: 'Synthetische Positie Mogelijk',
-    description: 'Idea: Vervang aandelen door een deep ITM call (delta 0.9+) om kapitaal vrij te maken met dezelfde exposure',
+    description:
+      'Idea: Vervang aandelen door een deep ITM call (delta 0.9+) om kapitaal vrij te maken met dezelfde exposure',
     category: 'idea',
     trigger: 'price_increase',
     enabled: true,
@@ -83,7 +100,11 @@ export const RulesManagement: React.FC = () => {
   });
 
   // Delete confirmation modal
-  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; ruleId: string | null; ruleName: string }>({
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    isOpen: boolean;
+    ruleId: string | null;
+    ruleName: string;
+  }>({
     isOpen: false,
     ruleId: null,
     ruleName: '',
@@ -95,7 +116,7 @@ export const RulesManagement: React.FC = () => {
 
     // Load rules for each strategy type
     const strategyTypes: StrategyType[] = ['stocks-etfs', 'options', 'general'];
-    strategyTypes.forEach(strategyType => {
+    strategyTypes.forEach((strategyType) => {
       const storageKey = `strategy-rules-${strategyType}`;
       const saved = localStorage.getItem(storageKey);
       if (saved) {
@@ -127,7 +148,7 @@ export const RulesManagement: React.FC = () => {
   const saveRulesToStorage = (rulesToSave: StrategyRule[]) => {
     // Group rules by strategy type
     const rulesByStrategy: Record<string, StrategyRule[]> = {};
-    rulesToSave.forEach(rule => {
+    rulesToSave.forEach((rule) => {
       if (!rulesByStrategy[rule.strategyType]) {
         rulesByStrategy[rule.strategyType] = [];
       }
@@ -159,20 +180,20 @@ export const RulesManagement: React.FC = () => {
 
     // Pre-fill default trigger based on asset type
     if (assetType === 'stocks-etfs') {
-      setWizardFormData(prev => ({
+      setWizardFormData((prev) => ({
         ...prev,
         trigger: 'price_increase',
         percentage: 10,
       }));
     } else if (assetType === 'options') {
-      setWizardFormData(prev => ({
+      setWizardFormData((prev) => ({
         ...prev,
         trigger: 'time_based',
         threshold: 7,
       }));
     } else {
       // general
-      setWizardFormData(prev => ({
+      setWizardFormData((prev) => ({
         ...prev,
         trigger: 'price_decrease',
         percentage: undefined,
@@ -185,8 +206,8 @@ export const RulesManagement: React.FC = () => {
 
     const strategyTypeMap: Record<AssetType, StrategyType> = {
       'stocks-etfs': 'stocks-etfs',
-      'options': 'options',
-      'general': 'general',
+      options: 'options',
+      general: 'general',
     };
 
     const newRule: StrategyRule = {
@@ -213,16 +234,14 @@ export const RulesManagement: React.FC = () => {
   };
 
   const handleDeleteRule = (ruleId: string) => {
-    const updatedRules = rules.filter(r => r.id !== ruleId);
+    const updatedRules = rules.filter((r) => r.id !== ruleId);
     setRules(updatedRules);
     saveRulesToStorage(updatedRules);
     setDeleteConfirm({ isOpen: false, ruleId: null, ruleName: '' });
   };
 
   const handleToggleEnabled = (ruleId: string) => {
-    const updatedRules = rules.map(r =>
-      r.id === ruleId ? { ...r, enabled: !r.enabled } : r
-    );
+    const updatedRules = rules.map((r) => (r.id === ruleId ? { ...r, enabled: !r.enabled } : r));
     setRules(updatedRules);
     saveRulesToStorage(updatedRules);
   };
@@ -262,26 +281,26 @@ export const RulesManagement: React.FC = () => {
   const getStrategyTypeName = (strategyType: StrategyType): string => {
     const names: Record<StrategyType, string> = {
       'stocks-etfs': 'Aandelen & ETFs',
-      'leaps': 'LEAPS',
+      leaps: 'LEAPS',
       'covered-calls': 'Covered Calls',
-      'csp': 'Cash Secured Puts',
-      'pmcc': 'PMCC',
-      'spreads': 'Spreads',
-      'kaching': 'KaChing',
-      'options': 'Opties',
-      'general': 'Algemeen',
+      csp: 'Cash Secured Puts',
+      pmcc: 'PMCC',
+      spreads: 'Spreads',
+      kaching: 'KaChing',
+      options: 'Opties',
+      general: 'Algemeen',
     };
     return names[strategyType] || strategyType;
   };
 
   const getTriggerName = (trigger: StrategyRuleTrigger): string => {
     const names: Record<StrategyRuleTrigger, string> = {
-      'price_increase': 'Prijs Stijging',
-      'price_decrease': 'Prijs Daling',
-      'profit_target': 'Winstdoel',
-      'loss_limit': 'Stoploss',
-      'time_based': 'Tijd Gebaseerd',
-      'volatility': 'Volatiliteit',
+      price_increase: 'Prijs Stijging',
+      price_decrease: 'Prijs Daling',
+      profit_target: 'Winstdoel',
+      loss_limit: 'Stoploss',
+      time_based: 'Tijd Gebaseerd',
+      volatility: 'Volatiliteit',
     };
     return names[trigger] || trigger;
   };
@@ -300,8 +319,8 @@ export const RulesManagement: React.FC = () => {
   const getAssetTypeName = (assetType: AssetType): string => {
     const names: Record<AssetType, string> = {
       'stocks-etfs': 'Aandelen & ETFs',
-      'options': 'Opties',
-      'general': 'Algemeen',
+      options: 'Opties',
+      general: 'Algemeen',
     };
     return names[assetType];
   };
@@ -309,16 +328,16 @@ export const RulesManagement: React.FC = () => {
   const groupedRules = useMemo(() => {
     const groups: Record<StrategyType, StrategyRule[]> = {
       'stocks-etfs': [],
-      'leaps': [],
+      leaps: [],
       'covered-calls': [],
-      'csp': [],
-      'pmcc': [],
-      'spreads': [],
-      'kaching': [],
-      'options': [],
-      'general': [],
+      csp: [],
+      pmcc: [],
+      spreads: [],
+      kaching: [],
+      options: [],
+      general: [],
     };
-    rules.forEach(rule => {
+    rules.forEach((rule) => {
       if (groups[rule.strategyType]) {
         groups[rule.strategyType].push(rule);
       }
@@ -390,9 +409,7 @@ export const RulesManagement: React.FC = () => {
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Trading Rules
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Trading Rules</h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
               Deze regels worden toegepast op alle portfolios
             </p>
@@ -514,7 +531,9 @@ export const RulesManagement: React.FC = () => {
                     <input
                       type="text"
                       value={wizardFormData.name}
-                      onChange={(e) => setWizardFormData({ ...wizardFormData, name: e.target.value })}
+                      onChange={(e) =>
+                        setWizardFormData({ ...wizardFormData, name: e.target.value })
+                      }
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                       placeholder="bv. Aandeel Gedaald 10%"
                     />
@@ -527,7 +546,9 @@ export const RulesManagement: React.FC = () => {
                     <input
                       type="text"
                       value={wizardFormData.description}
-                      onChange={(e) => setWizardFormData({ ...wizardFormData, description: e.target.value })}
+                      onChange={(e) =>
+                        setWizardFormData({ ...wizardFormData, description: e.target.value })
+                      }
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                       placeholder="bv. Alert wanneer een aandeel 10% gedaald is"
                     />
@@ -539,7 +560,12 @@ export const RulesManagement: React.FC = () => {
                     </label>
                     <select
                       value={wizardFormData.category}
-                      onChange={(e) => setWizardFormData({ ...wizardFormData, category: e.target.value as StrategyRuleCategory })}
+                      onChange={(e) =>
+                        setWizardFormData({
+                          ...wizardFormData,
+                          category: e.target.value as StrategyRuleCategory,
+                        })
+                      }
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     >
                       <option value="alert">Alert (waarschuwing)</option>
@@ -556,7 +582,12 @@ export const RulesManagement: React.FC = () => {
                         </label>
                         <select
                           value={wizardFormData.trigger}
-                          onChange={(e) => setWizardFormData({ ...wizardFormData, trigger: e.target.value as StrategyRuleTrigger })}
+                          onChange={(e) =>
+                            setWizardFormData({
+                              ...wizardFormData,
+                              trigger: e.target.value as StrategyRuleTrigger,
+                            })
+                          }
                           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                         >
                           <option value="price_increase">Prijs Stijging</option>
@@ -571,7 +602,12 @@ export const RulesManagement: React.FC = () => {
                         <input
                           type="number"
                           value={wizardFormData.percentage || ''}
-                          onChange={(e) => setWizardFormData({ ...wizardFormData, percentage: parseFloat(e.target.value) })}
+                          onChange={(e) =>
+                            setWizardFormData({
+                              ...wizardFormData,
+                              percentage: parseFloat(e.target.value),
+                            })
+                          }
                           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                           placeholder="10"
                           min="0"
@@ -590,11 +626,18 @@ export const RulesManagement: React.FC = () => {
                         </label>
                         <select
                           value={wizardFormData.trigger}
-                          onChange={(e) => setWizardFormData({ ...wizardFormData, trigger: e.target.value as StrategyRuleTrigger })}
+                          onChange={(e) =>
+                            setWizardFormData({
+                              ...wizardFormData,
+                              trigger: e.target.value as StrategyRuleTrigger,
+                            })
+                          }
                           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                         >
                           <option value="time_based">Tijd tot Expiratie</option>
-                          <option value="price_decrease">Waarde Daling (positief bij verkochte opties)</option>
+                          <option value="price_decrease">
+                            Waarde Daling (positief bij verkochte opties)
+                          </option>
                           <option value="price_increase">Waarde Stijging</option>
                         </select>
                       </div>
@@ -607,7 +650,12 @@ export const RulesManagement: React.FC = () => {
                           <input
                             type="number"
                             value={wizardFormData.threshold || ''}
-                            onChange={(e) => setWizardFormData({ ...wizardFormData, threshold: parseFloat(e.target.value) })}
+                            onChange={(e) =>
+                              setWizardFormData({
+                                ...wizardFormData,
+                                threshold: parseFloat(e.target.value),
+                              })
+                            }
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                             placeholder="7"
                             min="1"
@@ -617,7 +665,8 @@ export const RulesManagement: React.FC = () => {
                         </div>
                       )}
 
-                      {(wizardFormData.trigger === 'price_decrease' || wizardFormData.trigger === 'price_increase') && (
+                      {(wizardFormData.trigger === 'price_decrease' ||
+                        wizardFormData.trigger === 'price_increase') && (
                         <div>
                           <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Percentage (%)
@@ -625,7 +674,12 @@ export const RulesManagement: React.FC = () => {
                           <input
                             type="number"
                             value={wizardFormData.percentage || ''}
-                            onChange={(e) => setWizardFormData({ ...wizardFormData, percentage: parseFloat(e.target.value) })}
+                            onChange={(e) =>
+                              setWizardFormData({
+                                ...wizardFormData,
+                                percentage: parseFloat(e.target.value),
+                              })
+                            }
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                             placeholder="80"
                             min="0"
@@ -685,9 +739,7 @@ export const RulesManagement: React.FC = () => {
       {/* System Rules - Always Active */}
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-            Systeem Regels
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Systeem Regels</h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Deze regels zijn altijd actief en worden automatisch geëvalueerd
           </p>
@@ -737,7 +789,10 @@ export const RulesManagement: React.FC = () => {
           if (strategyRules.length === 0) return null;
 
           return (
-            <div key={strategyType} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+            <div
+              key={strategyType}
+              className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
+            >
               <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                   {getStrategyTypeName(strategyType as StrategyType)}
@@ -797,7 +852,9 @@ export const RulesManagement: React.FC = () => {
                           {rule.enabled ? 'Actief' : 'Inactief'}
                         </button>
                         <button
-                          onClick={() => setDeleteConfirm({ isOpen: true, ruleId: rule.id, ruleName: rule.name })}
+                          onClick={() =>
+                            setDeleteConfirm({ isOpen: true, ruleId: rule.id, ruleName: rule.name })
+                          }
                           className="p-2 text-negative-600 dark:text-negative-500 hover:bg-negative-50 dark:hover:bg-negative-700/25 rounded transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -815,9 +872,7 @@ export const RulesManagement: React.FC = () => {
       {rules.length === 0 && (
         <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-12 text-center">
           <AlertCircle className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-            Geen Regels
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Geen Regels</h3>
           <p className="text-gray-600 dark:text-gray-400 mb-4">
             Begin door je eerste regel toe te voegen
           </p>

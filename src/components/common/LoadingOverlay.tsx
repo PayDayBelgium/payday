@@ -20,14 +20,8 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ message, subtitl
 
           {/* Messages */}
           <div className="text-center space-y-2">
-            <p className="text-xl font-bold text-gray-900 dark:text-white">
-              {message}
-            </p>
-            {subtitle && (
-              <p className="text-base text-gray-600 dark:text-gray-400">
-                {subtitle}
-              </p>
-            )}
+            <p className="text-xl font-bold text-gray-900 dark:text-white">{message}</p>
+            {subtitle && <p className="text-base text-gray-600 dark:text-gray-400">{subtitle}</p>}
           </div>
         </div>
       </div>

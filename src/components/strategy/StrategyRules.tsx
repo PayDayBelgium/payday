@@ -22,13 +22,20 @@ export const StrategyRules: React.FC<StrategyRulesProps> = ({
   onDeleteRule,
   onToggleRule,
 }) => {
-  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; rule: StrategyRule | null }>({
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    isOpen: boolean;
+    rule: StrategyRule | null;
+  }>({
     isOpen: false,
     rule: null,
   });
 
   const getCategoryIcon = (category: string) => {
-    return category === 'alert' ? <AlertCircle className="w-5 h-5" /> : <Target className="w-5 h-5" />;
+    return category === 'alert' ? (
+      <AlertCircle className="w-5 h-5" />
+    ) : (
+      <Target className="w-5 h-5" />
+    );
   };
 
   const getCategoryColor = (category: string) => {
@@ -60,7 +67,7 @@ export const StrategyRules: React.FC<StrategyRulesProps> = ({
             </button>
           </div>
         ) : (
-          rules.map(rule => (
+          rules.map((rule) => (
             <div
               key={rule.id}
               className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:border-primary-300 dark:hover:border-primary-700 transition-all ${
@@ -74,10 +81,7 @@ export const StrategyRules: React.FC<StrategyRulesProps> = ({
                 </div>
 
                 {/* Content - Clickable area */}
-                <div
-                  className="flex-1 min-w-0 cursor-pointer"
-                  onClick={() => onEditRule(rule)}
-                >
+                <div className="flex-1 min-w-0 cursor-pointer" onClick={() => onEditRule(rule)}>
                   <div className="flex items-start justify-between mb-2">
                     <div>
                       <h4 className="text-base font-semibold text-gray-900 dark:text-white">
@@ -138,7 +142,7 @@ export const StrategyRules: React.FC<StrategyRulesProps> = ({
                         ? 'bg-primary-700 dark:bg-primary-500'
                         : 'bg-gray-200 dark:bg-gray-700'
                     }`}
-                    title={rule.enabled ? "Deactiveren" : "Activeren"}
+                    title={rule.enabled ? 'Deactiveren' : 'Activeren'}
                   >
                     <span
                       className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${

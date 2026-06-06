@@ -38,17 +38,46 @@ import { ConfirmDialog } from '../../components/modals/ConfirmDialog';
 
 const GOAL_TYPES: { id: GoalType; label: string; icon: React.ReactNode }[] = [
   { id: 'total-value', label: 'Total portfolio Value', icon: <TrendingUp className="w-4 h-4" /> },
-  { id: 'assets-under-management', label: 'Assets Under Management', icon: <DollarSign className="w-4 h-4" /> },
+  {
+    id: 'assets-under-management',
+    label: 'Assets Under Management',
+    icon: <DollarSign className="w-4 h-4" />,
+  },
   { id: 'monthly-premium', label: 'Monthly Premium Income', icon: <Coins className="w-4 h-4" /> },
   { id: 'custom', label: 'Custom Goal', icon: <Target className="w-4 h-4" /> },
 ];
 
 const MOOD_OPTIONS = [
-  { id: 'great', label: 'Great', icon: <Smile className="w-5 h-5 text-positive-600" />, color: 'bg-positive-50 text-positive-600' },
-  { id: 'good', label: 'Good', icon: <Smile className="w-5 h-5 text-primary-700" />, color: 'bg-primary-50 text-primary-700' },
-  { id: 'neutral', label: 'Neutral', icon: <Meh className="w-5 h-5 text-gray-600" />, color: 'bg-gray-100 text-gray-600' },
-  { id: 'bad', label: 'Bad', icon: <Frown className="w-5 h-5 text-caution-600" />, color: 'bg-caution-50 text-caution-600' },
-  { id: 'terrible', label: 'Terrible', icon: <Frown className="w-5 h-5 text-negative-600" />, color: 'bg-negative-50 text-negative-600' },
+  {
+    id: 'great',
+    label: 'Great',
+    icon: <Smile className="w-5 h-5 text-positive-600" />,
+    color: 'bg-positive-50 text-positive-600',
+  },
+  {
+    id: 'good',
+    label: 'Good',
+    icon: <Smile className="w-5 h-5 text-primary-700" />,
+    color: 'bg-primary-50 text-primary-700',
+  },
+  {
+    id: 'neutral',
+    label: 'Neutral',
+    icon: <Meh className="w-5 h-5 text-gray-600" />,
+    color: 'bg-gray-100 text-gray-600',
+  },
+  {
+    id: 'bad',
+    label: 'Bad',
+    icon: <Frown className="w-5 h-5 text-caution-600" />,
+    color: 'bg-caution-50 text-caution-600',
+  },
+  {
+    id: 'terrible',
+    label: 'Terrible',
+    icon: <Frown className="w-5 h-5 text-negative-600" />,
+    color: 'bg-negative-50 text-negative-600',
+  },
 ];
 
 export const Journal: React.FC = () => {
@@ -350,7 +379,9 @@ export const Journal: React.FC = () => {
                     </label>
                     <select
                       value={entryForm.mood}
-                      onChange={(e) => setEntryForm({ ...entryForm, mood: e.target.value as JournalEntry['mood'] })}
+                      onChange={(e) =>
+                        setEntryForm({ ...entryForm, mood: e.target.value as JournalEntry['mood'] })
+                      }
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                     >
                       {MOOD_OPTIONS.map((mood) => (
@@ -369,7 +400,12 @@ export const Journal: React.FC = () => {
                       type="number"
                       step="0.01"
                       value={entryForm.pnl || ''}
-                      onChange={(e) => setEntryForm({ ...entryForm, pnl: e.target.value ? parseFloat(e.target.value) : undefined })}
+                      onChange={(e) =>
+                        setEntryForm({
+                          ...entryForm,
+                          pnl: e.target.value ? parseFloat(e.target.value) : undefined,
+                        })
+                      }
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                       placeholder="0.00"
                     />
@@ -465,7 +501,9 @@ export const Journal: React.FC = () => {
                           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                             {entry.title}
                           </h3>
-                          <div className={`px-2 py-1 rounded-full text-xs font-medium ${moodOption.color}`}>
+                          <div
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${moodOption.color}`}
+                          >
                             {moodOption.label}
                           </div>
                         </div>
@@ -481,7 +519,9 @@ export const Journal: React.FC = () => {
                             </div>
                           )}
                           {entry.pnl !== undefined && (
-                            <div className={`flex items-center gap-1 font-medium ${entry.pnl >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
+                            <div
+                              className={`flex items-center gap-1 font-medium ${entry.pnl >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
+                            >
                               <DollarSign className="w-4 h-4" />
                               {entry.pnl >= 0 ? '+' : ''}${formatNumber(entry.pnl, 2)}
                             </div>
@@ -547,7 +587,9 @@ export const Journal: React.FC = () => {
                     </label>
                     <select
                       value={goalForm.type}
-                      onChange={(e) => setGoalForm({ ...goalForm, type: e.target.value as GoalType })}
+                      onChange={(e) =>
+                        setGoalForm({ ...goalForm, type: e.target.value as GoalType })
+                      }
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                     >
                       {GOAL_TYPES.map((type) => (
@@ -566,7 +608,9 @@ export const Journal: React.FC = () => {
                       type="number"
                       step="1"
                       value={goalForm.targetValue}
-                      onChange={(e) => setGoalForm({ ...goalForm, targetValue: parseFloat(e.target.value) || 0 })}
+                      onChange={(e) =>
+                        setGoalForm({ ...goalForm, targetValue: parseFloat(e.target.value) || 0 })
+                      }
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                       placeholder="500000"
                     />
@@ -671,9 +715,7 @@ export const Journal: React.FC = () => {
                     >
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
-                          <div className="icon-bg-primary p-3 rounded-lg">
-                            {goalType?.icon}
-                          </div>
+                          <div className="icon-bg-primary p-3 rounded-lg">{goalType?.icon}</div>
                           <div>
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                               {goal.title}
@@ -769,7 +811,10 @@ export const Journal: React.FC = () => {
                                     {goal.title}
                                   </h3>
                                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                                    Completed on {goal.completedAt ? new Date(goal.completedAt).toLocaleDateString() : ''}
+                                    Completed on{' '}
+                                    {goal.completedAt
+                                      ? new Date(goal.completedAt).toLocaleDateString()
+                                      : ''}
                                   </p>
                                 </div>
                               </div>
@@ -794,7 +839,11 @@ export const Journal: React.FC = () => {
       <ConfirmDialog
         isOpen={entryToDelete !== null}
         title="Delete Journal Entry"
-        message={entryToDelete ? `Are you sure you want to delete "${entryToDelete.title}"? This action cannot be undone.` : ''}
+        message={
+          entryToDelete
+            ? `Are you sure you want to delete "${entryToDelete.title}"? This action cannot be undone.`
+            : ''
+        }
         confirmText="Delete"
         cancelText="Cancel"
         onConfirm={handleDeleteEntry}
@@ -805,7 +854,11 @@ export const Journal: React.FC = () => {
       <ConfirmDialog
         isOpen={goalToDelete !== null}
         title="Delete Goal"
-        message={goalToDelete ? `Are you sure you want to delete "${goalToDelete.title}"? This action cannot be undone.` : ''}
+        message={
+          goalToDelete
+            ? `Are you sure you want to delete "${goalToDelete.title}"? This action cannot be undone.`
+            : ''
+        }
         confirmText="Delete"
         cancelText="Cancel"
         onConfirm={handleDeleteGoal}

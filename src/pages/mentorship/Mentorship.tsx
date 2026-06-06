@@ -59,8 +59,8 @@ export const Mentorship: React.FC = () => {
   return (
     <div className="space-y-6">
       <p className="text-sm text-ink-600 dark:text-ink-300 leading-relaxed max-w-3xl">
-        Vraag persoonlijke begeleiding aan. Een ervaren mentor helpt je groeien in de
-        strategieën en thema's die jij kiest — los van credits en niveaus.
+        Vraag persoonlijke begeleiding aan. Een ervaren mentor helpt je groeien in de strategieën en
+        thema's die jij kiest — los van credits en niveaus.
       </p>
 
       {latest && latest.status === 'pending' ? (
@@ -73,13 +73,27 @@ export const Mentorship: React.FC = () => {
             We hebben je mentorship-aanvraag ontvangen. Een mentor neemt contact met je op.
           </p>
           <dl className="text-sm divide-y divide-[var(--line)]">
-            <div className="flex justify-between py-2"><dt className="text-ink-400">Focus</dt><dd className="text-ink-900 dark:text-white">{FOCUS_LABEL(latest.focus)}</dd></div>
-            <div className="flex justify-between py-2"><dt className="text-ink-400">Niveau</dt><dd className="text-ink-900 dark:text-white">{LEVEL_LABEL(latest.level)}</dd></div>
-            <div className="flex justify-between py-2"><dt className="text-ink-400">Stijl</dt><dd className="text-ink-900 dark:text-white">{STYLE_LABEL(latest.style)}</dd></div>
-            <div className="flex justify-between py-2"><dt className="text-ink-400">Beschikbaarheid</dt><dd className="text-ink-900 dark:text-white">{latest.availability || '—'}</dd></div>
+            <div className="flex justify-between py-2">
+              <dt className="text-ink-400">Focus</dt>
+              <dd className="text-ink-900 dark:text-white">{FOCUS_LABEL(latest.focus)}</dd>
+            </div>
+            <div className="flex justify-between py-2">
+              <dt className="text-ink-400">Niveau</dt>
+              <dd className="text-ink-900 dark:text-white">{LEVEL_LABEL(latest.level)}</dd>
+            </div>
+            <div className="flex justify-between py-2">
+              <dt className="text-ink-400">Stijl</dt>
+              <dd className="text-ink-900 dark:text-white">{STYLE_LABEL(latest.style)}</dd>
+            </div>
+            <div className="flex justify-between py-2">
+              <dt className="text-ink-400">Beschikbaarheid</dt>
+              <dd className="text-ink-900 dark:text-white">{latest.availability || '—'}</dd>
+            </div>
             <div className="py-2">
               <dt className="text-ink-400 mb-1">Bericht</dt>
-              <dd className="text-ink-900 dark:text-white whitespace-pre-wrap">{latest.message || '—'}</dd>
+              <dd className="text-ink-900 dark:text-white whitespace-pre-wrap">
+                {latest.message || '—'}
+              </dd>
             </div>
           </dl>
         </div>
@@ -87,31 +101,96 @@ export const Mentorship: React.FC = () => {
         <form onSubmit={handleSubmit} className="surface-card p-6 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="mentor-focus" className="block text-xs font-semibold text-ink-500 mb-1.5">Focusgebied</label>
-              <select id="mentor-focus" className={fieldClass} value={focus} onChange={(e) => setFocus(e.target.value as MentorshipFocus)}>
-                {FOCUS_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+              <label
+                htmlFor="mentor-focus"
+                className="block text-xs font-semibold text-ink-500 mb-1.5"
+              >
+                Focusgebied
+              </label>
+              <select
+                id="mentor-focus"
+                className={fieldClass}
+                value={focus}
+                onChange={(e) => setFocus(e.target.value as MentorshipFocus)}
+              >
+                {FOCUS_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
-              <label htmlFor="mentor-level" className="block text-xs font-semibold text-ink-500 mb-1.5">Huidig niveau</label>
-              <select id="mentor-level" className={fieldClass} value={level} onChange={(e) => setLevel(e.target.value as UserLevel)}>
-                {LEVEL_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+              <label
+                htmlFor="mentor-level"
+                className="block text-xs font-semibold text-ink-500 mb-1.5"
+              >
+                Huidig niveau
+              </label>
+              <select
+                id="mentor-level"
+                className={fieldClass}
+                value={level}
+                onChange={(e) => setLevel(e.target.value as UserLevel)}
+              >
+                {LEVEL_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
-              <label htmlFor="mentor-style" className="block text-xs font-semibold text-ink-500 mb-1.5">Voorkeur mentor-stijl</label>
-              <select id="mentor-style" className={fieldClass} value={style} onChange={(e) => setStyle(e.target.value as MentorStyle)}>
-                {STYLE_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+              <label
+                htmlFor="mentor-style"
+                className="block text-xs font-semibold text-ink-500 mb-1.5"
+              >
+                Voorkeur mentor-stijl
+              </label>
+              <select
+                id="mentor-style"
+                className={fieldClass}
+                value={style}
+                onChange={(e) => setStyle(e.target.value as MentorStyle)}
+              >
+                {STYLE_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
-              <label htmlFor="mentor-availability" className="block text-xs font-semibold text-ink-500 mb-1.5">Beschikbaarheid</label>
-              <input id="mentor-availability" className={fieldClass} type="text" placeholder="bv. weekends, 2u per week" value={availability} onChange={(e) => setAvailability(e.target.value)} />
+              <label
+                htmlFor="mentor-availability"
+                className="block text-xs font-semibold text-ink-500 mb-1.5"
+              >
+                Beschikbaarheid
+              </label>
+              <input
+                id="mentor-availability"
+                className={fieldClass}
+                type="text"
+                placeholder="bv. weekends, 2u per week"
+                value={availability}
+                onChange={(e) => setAvailability(e.target.value)}
+              />
             </div>
           </div>
           <div>
-            <label htmlFor="mentor-message" className="block text-xs font-semibold text-ink-500 mb-1.5">Bericht / motivatie</label>
-            <textarea id="mentor-message" className={`${fieldClass} min-h-[120px] resize-y`} placeholder="Waar wil je in groeien?" value={message} onChange={(e) => setMessage(e.target.value)} />
+            <label
+              htmlFor="mentor-message"
+              className="block text-xs font-semibold text-ink-500 mb-1.5"
+            >
+              Bericht / motivatie
+            </label>
+            <textarea
+              id="mentor-message"
+              className={`${fieldClass} min-h-[120px] resize-y`}
+              placeholder="Waar wil je in groeien?"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            />
           </div>
           <button
             type="submit"

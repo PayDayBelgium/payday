@@ -14,20 +14,28 @@ import {
 describe('pnlCalculations', () => {
   describe('calculateOptionUnrealizedPnL', () => {
     it('long option: profit when current value exceeds cost basis', () => {
-      expect(calculateOptionUnrealizedPnL({ action: 'buy', costBasis: 500, currentValue: 800 })).toBe(300);
+      expect(
+        calculateOptionUnrealizedPnL({ action: 'buy', costBasis: 500, currentValue: 800 })
+      ).toBe(300);
     });
 
     it('long option: loss when current value drops below cost basis', () => {
-      expect(calculateOptionUnrealizedPnL({ action: 'buy', costBasis: 500, currentValue: 200 })).toBe(-300);
+      expect(
+        calculateOptionUnrealizedPnL({ action: 'buy', costBasis: 500, currentValue: 200 })
+      ).toBe(-300);
     });
 
     it('short option: profit when current liability is smaller than premium received', () => {
       // premium received 500 (costBasis -500), current liability 200 (currentValue -200) -> +300
-      expect(calculateOptionUnrealizedPnL({ action: 'sell', costBasis: -500, currentValue: -200 })).toBe(300);
+      expect(
+        calculateOptionUnrealizedPnL({ action: 'sell', costBasis: -500, currentValue: -200 })
+      ).toBe(300);
     });
 
     it('short option: loss when liability grows beyond premium received', () => {
-      expect(calculateOptionUnrealizedPnL({ action: 'sell', costBasis: -500, currentValue: -800 })).toBe(-300);
+      expect(
+        calculateOptionUnrealizedPnL({ action: 'sell', costBasis: -500, currentValue: -800 })
+      ).toBe(-300);
     });
   });
 
@@ -42,7 +50,12 @@ describe('pnlCalculations', () => {
     it('short option bought back to close returns premium received minus close cost', () => {
       // premium received 300 (costBasis -300), buy back 1.00 * 2 * 100 = 200 -> +100
       expect(
-        calculateOptionRealizedPnL({ action: 'sell', costBasis: -300, closePremium: 1, contracts: 2 })
+        calculateOptionRealizedPnL({
+          action: 'sell',
+          costBasis: -300,
+          closePremium: 1,
+          contracts: 2,
+        })
       ).toBe(100);
     });
   });

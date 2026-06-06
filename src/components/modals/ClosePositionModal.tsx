@@ -20,11 +20,14 @@ interface ClosePositionModalProps {
   position: Position;
   currency: CurrencyType;
   allPositions?: Position[]; // All positions to detect spread legs
-  onConfirmSpread?: (spreadLegs: Position[], closeData: {
-    closePremium: number;
-    closeDate: string;
-    notes?: string;
-  }) => void;
+  onConfirmSpread?: (
+    spreadLegs: Position[],
+    closeData: {
+      closePremium: number;
+      closeDate: string;
+      notes?: string;
+    }
+  ) => void;
 }
 
 export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
@@ -46,14 +49,16 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
   const [contractsToClose, setContractsToClose] = useState<string>('');
 
   // Get total shares for stock/ETF positions
-  const totalShares = (position.type === 'stock' || position.type === 'etf') && 'shares' in position
-    ? position.shares
-    : 0;
+  const totalShares =
+    (position.type === 'stock' || position.type === 'etf') && 'shares' in position
+      ? position.shares
+      : 0;
 
   // Get total contracts for option positions
-  const totalContracts = (position.type === 'call' || position.type === 'put') && 'contracts' in position
-    ? position.contracts
-    : 0;
+  const totalContracts =
+    (position.type === 'call' || position.type === 'put') && 'contracts' in position
+      ? position.contracts
+      : 0;
 
   // Quantity to close (defaults to all)
   const quantityToClose = quantity ? parseInt(quantity) : totalShares;
@@ -101,7 +106,7 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
   // Check if this position is part of a spread
   const spreadId = getSpreadId(position);
   const spreadLegs = spreadId
-    ? allPositions.filter(p => p.status === 'open' && getSpreadId(p) === spreadId)
+    ? allPositions.filter((p) => p.status === 'open' && getSpreadId(p) === spreadId)
     : [];
   const isSpread = spreadLegs.length === 2;
 
@@ -113,11 +118,14 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
     if (isSpread && spreadLegs.length === 2) {
       // For spreads, calculate combined P&L
       const contractMultiplier = 100;
-      const totalCostBasis = spreadLegs.reduce((sum, leg) => sum + (leg as CallOption | PutOption).costBasis, 0);
+      const totalCostBasis = spreadLegs.reduce(
+        (sum, leg) => sum + (leg as CallOption | PutOption).costBasis,
+        0
+      );
 
       // Both legs close at the same premium (spread closes to zero width)
       let totalCloseValue = 0;
-      spreadLegs.forEach(leg => {
+      spreadLegs.forEach((leg) => {
         const option = leg as CallOption | PutOption;
         if (option.action === 'buy') {
           // Sell the long leg
@@ -129,7 +137,12 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
       });
 
       return totalCloseValue - totalCostBasis;
-    } else if (isStockOrETF && 'shares' in position && 'purchasePrice' in position && 'costBasis' in position) {
+    } else if (
+      isStockOrETF &&
+      'shares' in position &&
+      'purchasePrice' in position &&
+      'costBasis' in position
+    ) {
       // Calculate cost basis for the quantity being closed
       const costBasisForQuantity = (position.costBasis / position.shares) * quantityToClose;
       return calculateStockRealizedPnL({
@@ -137,7 +150,12 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
         closePrice: closePriceNum,
         shares: quantityToClose,
       });
-    } else if (isOption && 'contracts' in position && 'premium' in position && 'costBasis' in position) {
+    } else if (
+      isOption &&
+      'contracts' in position &&
+      'premium' in position &&
+      'costBasis' in position
+    ) {
       // Calculate cost basis for the contracts being closed
       const costBasisPerContract = position.costBasis / position.contracts;
       const costBasisForQuantity = costBasisPerContract * contractsToCloseNum;
@@ -177,7 +195,7 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
         closePremium: isOption ? parseFloat(closePremium) : undefined,
         closeDate,
         notes,
-        quantity: isStockOrETF ? quantityToClose : (isOption ? contractsToCloseNum : undefined),
+        quantity: isStockOrETF ? quantityToClose : isOption ? contractsToCloseNum : undefined,
         realizedPnL,
       });
     }
@@ -212,12 +230,8 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
         {/* Header */}
         <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-              Positie sluiten
-            </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              {getPositionTitle()}
-            </p>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Positie sluiten</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{getPositionTitle()}</p>
           </div>
           <button
             onClick={onClose}
@@ -321,7 +335,9 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                       {isSpread
                         ? 'Sluit Premuim per aandeel *'
-                        : (position as { action?: string }).action === 'buy' ? 'Verkoop Premuim per aandeel *' : 'Terugkoop Premuim per aandeel *'}
+                        : (position as { action?: string }).action === 'buy'
+                          ? 'Verkoop Premuim per aandeel *'
+                          : 'Terugkoop Premuim per aandeel *'}
                     </label>
                     <button
                       type="button"
@@ -345,8 +361,8 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
                     {isSpread
                       ? 'Premium voor sluiten van spread (beide legs)'
                       : (position as { action?: string }).action === 'buy'
-                      ? 'Premium ontvangen bij verkoop van de optie'
-                      : 'Premium betaald om de optie terug te kopen'}
+                        ? 'Premium ontvangen bij verkoop van de optie'
+                        : 'Premium betaald om de optie terug te kopen'}
                   </p>
                 </div>
               </>
@@ -382,11 +398,13 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
 
           {/* Realized P&L Preview */}
           {((isStockOrETF && closePrice !== '') || (isOption && closePremium !== '')) && (
-            <div className={`p-4 rounded-lg border-2 ${
-              isProfitable
-                ? 'bg-positive-50 dark:bg-positive-700/15 border-positive-500/20 dark:border-positive-700/30'
-                : 'bg-negative-50 dark:bg-negative-700/15 border-negative-500/20 dark:border-negative-700/30'
-            }`}>
+            <div
+              className={`p-4 rounded-lg border-2 ${
+                isProfitable
+                  ? 'bg-positive-50 dark:bg-positive-700/15 border-positive-500/20 dark:border-positive-700/30'
+                  : 'bg-negative-50 dark:bg-negative-700/15 border-negative-500/20 dark:border-negative-700/30'
+              }`}
+            >
               <div className="flex items-center gap-3">
                 {isProfitable ? (
                   <TrendingUp className="w-8 h-8 text-positive-600 dark:text-positive-500" />
@@ -397,23 +415,29 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
                   <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Gerealiseerde Winst/Verlies
                   </p>
-                  <p className={`text-2xl font-bold ${
-                    isProfitable
-                      ? 'text-positive-600 dark:text-positive-500'
-                      : 'text-negative-600 dark:text-negative-500'
-                  }`}>
-                    {isProfitable ? '+' : ''}{formatCurrency(realizedPnL, currencySymbol)}
+                  <p
+                    className={`text-2xl font-bold ${
+                      isProfitable
+                        ? 'text-positive-600 dark:text-positive-500'
+                        : 'text-negative-600 dark:text-negative-500'
+                    }`}
+                  >
+                    {isProfitable ? '+' : ''}
+                    {formatCurrency(realizedPnL, currencySymbol)}
                   </p>
                 </div>
                 {isStockOrETF && 'shares' in position && 'purchasePrice' in position && (
                   <div className="text-right">
                     <p className="text-xs text-gray-500 dark:text-gray-400">Per aandeel</p>
-                    <p className={`text-lg font-semibold ${
-                      isProfitable
-                        ? 'text-positive-600 dark:text-positive-500'
-                        : 'text-negative-600 dark:text-negative-500'
-                    }`}>
-                      {isProfitable ? '+' : ''}{formatCurrency(realizedPnL / quantityToClose, currencySymbol)}
+                    <p
+                      className={`text-lg font-semibold ${
+                        isProfitable
+                          ? 'text-positive-600 dark:text-positive-500'
+                          : 'text-negative-600 dark:text-negative-500'
+                      }`}
+                    >
+                      {isProfitable ? '+' : ''}
+                      {formatCurrency(realizedPnL / quantityToClose, currencySymbol)}
                     </p>
                   </div>
                 )}
@@ -428,8 +452,10 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
                         isStockOrETF && 'costBasis' in position && 'shares' in position
                           ? (position.costBasis / position.shares) * quantityToClose
                           : isOption && 'costBasis' in position && 'contracts' in position
-                          ? Math.abs((position.costBasis / position.contracts) * contractsToCloseNum)
-                          : Math.abs('costBasis' in position ? position.costBasis : 0),
+                            ? Math.abs(
+                                (position.costBasis / position.contracts) * contractsToCloseNum
+                              )
+                            : Math.abs('costBasis' in position ? position.costBasis : 0),
                         currencySymbol
                       )}
                     </p>
@@ -441,25 +467,30 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
                         isStockOrETF
                           ? parseFloat(closePrice || '0') * quantityToClose
                           : isOption
-                          ? parseFloat(closePremium || '0') * contractsToCloseNum * 100
-                          : 0,
+                            ? parseFloat(closePremium || '0') * contractsToCloseNum * 100
+                            : 0,
                         currencySymbol
                       )}
                     </p>
                   </div>
                   <div>
                     <p className="text-gray-500 dark:text-gray-400">Return %</p>
-                    <p className={`font-semibold ${
-                      isProfitable
-                        ? 'text-positive-600 dark:text-positive-500'
-                        : 'text-negative-600 dark:text-negative-500'
-                    }`}>
+                    <p
+                      className={`font-semibold ${
+                        isProfitable
+                          ? 'text-positive-600 dark:text-positive-500'
+                          : 'text-negative-600 dark:text-negative-500'
+                      }`}
+                    >
                       {(() => {
-                        const costBasisForCalc = isStockOrETF && 'costBasis' in position && 'shares' in position
-                          ? (position.costBasis / position.shares) * quantityToClose
-                          : isOption && 'costBasis' in position && 'contracts' in position
-                          ? Math.abs((position.costBasis / position.contracts) * contractsToCloseNum)
-                          : Math.abs('costBasis' in position ? position.costBasis : 1);
+                        const costBasisForCalc =
+                          isStockOrETF && 'costBasis' in position && 'shares' in position
+                            ? (position.costBasis / position.shares) * quantityToClose
+                            : isOption && 'costBasis' in position && 'contracts' in position
+                              ? Math.abs(
+                                  (position.costBasis / position.contracts) * contractsToCloseNum
+                                )
+                              : Math.abs('costBasis' in position ? position.costBasis : 1);
                         return `${isProfitable ? '+' : ''}${formatNumber((realizedPnL / costBasisForCalc) * 100)}%`;
                       })()}
                     </p>

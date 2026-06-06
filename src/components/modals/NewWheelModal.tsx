@@ -1,12 +1,30 @@
 import React, { useState, useMemo } from 'react';
-import { X, RefreshCw, Info, ArrowLeft, TrendingUp, Building2, ArrowDownCircle, ArrowUpCircle, Plus, Check } from 'lucide-react';
+import {
+  X,
+  RefreshCw,
+  Info,
+  ArrowLeft,
+  TrendingUp,
+  Building2,
+  ArrowDownCircle,
+  ArrowUpCircle,
+  Plus,
+  Check,
+} from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { addWheel, updateWheelPremium } from '../../store/slices/wheelsSlice';
 import { addPosition, selectPositions, updatePosition } from '../../store/slices/positionsSlice';
 import { ensureTicker } from '../../store/slices/tickersSlice';
 import { TickerSelector } from '../widgets/TickerSelector';
-import type { Ticker, PortfolioName, WheelCampaign, StockPosition, PutOption, Position } from '../../types';
+import type {
+  Ticker,
+  PortfolioName,
+  WheelCampaign,
+  StockPosition,
+  PutOption,
+  Position,
+} from '../../types';
 import { formatNumber } from '../../utils/numberFormat';
 
 interface NewWheelModalProps {
@@ -15,11 +33,7 @@ interface NewWheelModalProps {
   portfolioName: PortfolioName;
 }
 
-export const NewWheelModal: React.FC<NewWheelModalProps> = ({
-  isOpen,
-  onClose,
-  portfolioName,
-}) => {
+export const NewWheelModal: React.FC<NewWheelModalProps> = ({ isOpen, onClose, portfolioName }) => {
   const dispatch = useAppDispatch();
   const allPositions = useAppSelector(selectPositions);
 
@@ -28,12 +42,16 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
   const [notes, setNotes] = useState('');
 
   // Start position selection - what to link to the wheel
-  const [startOption, setStartOption] = useState<'new-csp' | 'existing-csp' | 'new-stock' | 'existing-stock' | null>(null);
+  const [startOption, setStartOption] = useState<
+    'new-csp' | 'existing-csp' | 'new-stock' | 'existing-stock' | null
+  >(null);
   const [selectedPositionId, setSelectedPositionId] = useState<string | null>(null);
 
   // New stock creation
   const [stockPurchasePrice, setStockPurchasePrice] = useState('');
-  const [stockPurchaseDate, setStockPurchaseDate] = useState(new Date().toISOString().split('T')[0]);
+  const [stockPurchaseDate, setStockPurchaseDate] = useState(
+    new Date().toISOString().split('T')[0]
+  );
 
   // New ticker creation state
   const [isCreatingTicker, setIsCreatingTicker] = useState(false);
@@ -51,18 +69,19 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
     if (!selectedTicker) return { csps: [], stocks: [] };
 
     const openPositions = allPositions.filter(
-      p => p.status === 'open' &&
-      p.ticker.toUpperCase() === selectedTicker.symbol.toUpperCase() &&
-      p.portfolio === portfolioName &&
-      !(p as { wheelId?: string }).wheelId // Not already linked to a wheel
+      (p) =>
+        p.status === 'open' &&
+        p.ticker.toUpperCase() === selectedTicker.symbol.toUpperCase() &&
+        p.portfolio === portfolioName &&
+        !(p as { wheelId?: string }).wheelId // Not already linked to a wheel
     );
 
     const csps = openPositions.filter(
-      p => p.type === 'put' && (p as PutOption).action === 'sell'
+      (p) => p.type === 'put' && (p as PutOption).action === 'sell'
     ) as PutOption[];
 
     const stocks = openPositions.filter(
-      p => p.type === 'stock' || p.type === 'etf'
+      (p) => p.type === 'stock' || p.type === 'etf'
     ) as StockPosition[];
 
     return { csps, stocks };
@@ -83,7 +102,7 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
     // Calculate initial premium if linking to existing CSP
     let initialPremium = 0;
     if (startOption === 'existing-csp' && selectedPositionId) {
-      const csp = existingPositions.csps.find(p => p.id === selectedPositionId);
+      const csp = existingPositions.csps.find((p) => p.id === selectedPositionId);
       if (csp) {
         initialPremium = csp.premium * csp.contracts * 100;
       }
@@ -134,21 +153,25 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
       dispatch(addPosition(stockPosition));
     } else if (startOption === 'existing-stock' && selectedPositionId) {
       // Link existing stock to wheel
-      const stock = existingPositions.stocks.find(p => p.id === selectedPositionId);
+      const stock = existingPositions.stocks.find((p) => p.id === selectedPositionId);
       if (stock) {
-        dispatch(updatePosition({
-          ...stock,
-          wheelId,
-        } as Position));
+        dispatch(
+          updatePosition({
+            ...stock,
+            wheelId,
+          } as Position)
+        );
       }
     } else if (startOption === 'existing-csp' && selectedPositionId) {
       // Link existing CSP to wheel
-      const csp = existingPositions.csps.find(p => p.id === selectedPositionId);
+      const csp = existingPositions.csps.find((p) => p.id === selectedPositionId);
       if (csp) {
-        dispatch(updatePosition({
-          ...csp,
-          wheelId,
-        } as Position));
+        dispatch(
+          updatePosition({
+            ...csp,
+            wheelId,
+          } as Position)
+        );
       }
     }
     // For 'new-csp', user will create the CSP manually after
@@ -230,10 +253,7 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex min-h-full items-center justify-center p-4">
         {/* Backdrop */}
-        <div
-          className="fixed inset-0 bg-black/50 transition-opacity"
-          onClick={handleClose}
-        />
+        <div className="fixed inset-0 bg-black/50 transition-opacity" onClick={handleClose} />
 
         {/* Modal */}
         <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-2xl transform transition-all">
@@ -262,7 +282,8 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
               <div className="flex items-start gap-2">
                 <Info className="w-4 h-4 text-teal-600 dark:text-teal-400 mt-0.5 flex-shrink-0" />
                 <p className="text-sm text-teal-700 dark:text-teal-300">
-                  Een Wheel is een cyclische strategie: verkoop CSP's tot assignment, schrijf dan covered calls tot verkoop, en herhaal.
+                  Een Wheel is een cyclische strategie: verkoop CSP's tot assignment, schrijf dan
+                  covered calls tot verkoop, en herhaal.
                 </p>
               </div>
             </div>
@@ -336,19 +357,30 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
                     <input
                       type="checkbox"
                       checked={newTickerData.optionsAvailable}
-                      onChange={(e) => setNewTickerData({ ...newTickerData, optionsAvailable: e.target.checked })}
+                      onChange={(e) =>
+                        setNewTickerData({ ...newTickerData, optionsAvailable: e.target.checked })
+                      }
                       className="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 rounded focus:ring-teal-500 dark:bg-gray-700 dark:border-gray-600"
                     />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">Opties beschikbaar</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">
+                      Opties beschikbaar
+                    </span>
                   </label>
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={newTickerData.miniContractsAvailable}
-                      onChange={(e) => setNewTickerData({ ...newTickerData, miniContractsAvailable: e.target.checked })}
+                      onChange={(e) =>
+                        setNewTickerData({
+                          ...newTickerData,
+                          miniContractsAvailable: e.target.checked,
+                        })
+                      }
                       className="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 rounded focus:ring-teal-500 dark:bg-gray-700 dark:border-gray-600"
                     />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">Mini contracten beschikbaar</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">
+                      Mini contracten beschikbaar
+                    </span>
                   </label>
                 </div>
 
@@ -416,7 +448,8 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
                             {csp.contracts}x ${csp.strike} Put
                           </p>
                           <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
-                            {new Date(csp.expiration).toLocaleDateString('nl-NL')} • ${formatNumber(csp.premium * csp.contracts * 100, 0)}
+                            {new Date(csp.expiration).toLocaleDateString('nl-NL')} • $
+                            {formatNumber(csp.premium * csp.contracts * 100, 0)}
                           </p>
                         </div>
                       </label>
@@ -445,9 +478,7 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
                           <Plus className="w-3 h-3" />
                           Nieuwe CSP
                         </p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                          Later toevoegen
-                        </p>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">Later toevoegen</p>
                       </div>
                     </label>
                   </div>
@@ -471,7 +502,9 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
                         <input
                           type="radio"
                           name="start-option"
-                          checked={startOption === 'existing-stock' && selectedPositionId === stock.id}
+                          checked={
+                            startOption === 'existing-stock' && selectedPositionId === stock.id
+                          }
                           onChange={() => {
                             setStartOption('existing-stock');
                             setSelectedPositionId(stock.id);
@@ -513,9 +546,7 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
                           <Plus className="w-3 h-3" />
                           Nieuwe aandelen
                         </p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                          Invoeren
-                        </p>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">Invoeren</p>
                       </div>
                     </label>
                   </div>
@@ -562,7 +593,9 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
                       Aankoopprijs per aandeel
                     </label>
                     <div className="relative">
-                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500 text-sm">$</span>
+                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500 text-sm">
+                        $
+                      </span>
                       <input
                         type="number"
                         step="0.01"
@@ -588,7 +621,8 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
                 </div>
                 {stockPurchasePrice && (
                   <p className="text-xs text-teal-600 dark:text-teal-400">
-                    Totale waarde: ${formatNumber(parseFloat(stockPurchasePrice) * targetContracts * 100, 2)}
+                    Totale waarde: $
+                    {formatNumber(parseFloat(stockPurchasePrice) * targetContracts * 100, 2)}
                   </p>
                 )}
               </div>
@@ -622,7 +656,13 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
                 </button>
                 <button
                   type="submit"
-                  disabled={!selectedTicker || !startOption || (startOption === 'new-stock' && !stockPurchasePrice) || ((startOption === 'existing-csp' || startOption === 'existing-stock') && !selectedPositionId)}
+                  disabled={
+                    !selectedTicker ||
+                    !startOption ||
+                    (startOption === 'new-stock' && !stockPurchasePrice) ||
+                    ((startOption === 'existing-csp' || startOption === 'existing-stock') &&
+                      !selectedPositionId)
+                  }
                   className="px-4 py-2 text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 disabled:bg-gray-400 disabled:cursor-not-allowed rounded-lg transition-colors"
                 >
                   Wheel Starten

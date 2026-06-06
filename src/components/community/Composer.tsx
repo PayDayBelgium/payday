@@ -15,7 +15,10 @@ export const Composer: React.FC<{
   };
   return (
     <div className="flex gap-2.5 bg-white dark:bg-trading-dark-800 border border-[var(--line)] rounded-lg p-2.5">
-      <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ background: color }}>
+      <div
+        className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
+        style={{ background: color }}
+      >
         {initials}
       </div>
       <input

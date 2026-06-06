@@ -1,7 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import { X, AlertCircle, Target } from 'lucide-react';
 import { useFormData } from '../../hooks/useFormData';
-import type { StrategyRule, StrategyType, PortfolioName, StrategyRuleCategory, StrategyRuleTrigger } from '../../types';
+import type {
+  StrategyRule,
+  StrategyType,
+  PortfolioName,
+  StrategyRuleCategory,
+  StrategyRuleTrigger,
+} from '../../types';
 
 interface StrategyRuleModalProps {
   isOpen: boolean;
@@ -13,13 +19,48 @@ interface StrategyRuleModalProps {
   activeCategory?: StrategyRuleCategory;
 }
 
-const allTriggerOptions: { value: StrategyRuleTrigger; label: string; category: StrategyRuleCategory; strategies: StrategyType[] }[] = [
-  { value: 'price_increase', label: 'Prijs Stijging', category: 'opportunity', strategies: ['stocks-etfs', 'leaps', 'covered-calls', 'csp', 'pmcc', 'spreads', 'kaching'] },
-  { value: 'price_decrease', label: 'Prijs Daling', category: 'alert', strategies: ['stocks-etfs', 'leaps', 'covered-calls', 'csp', 'pmcc', 'spreads', 'kaching'] },
-  { value: 'profit_target', label: 'Winst Doelstelling', category: 'opportunity', strategies: ['stocks-etfs', 'leaps', 'covered-calls', 'csp', 'pmcc', 'spreads', 'kaching'] },
-  { value: 'loss_limit', label: 'Verlies Limiet', category: 'alert', strategies: ['stocks-etfs', 'leaps', 'covered-calls', 'csp', 'pmcc', 'spreads', 'kaching'] },
-  { value: 'time_based', label: 'Tijd Gebaseerd', category: 'opportunity', strategies: ['covered-calls', 'csp', 'pmcc', 'spreads'] },
-  { value: 'volatility', label: 'Volatiliteit', category: 'opportunity', strategies: ['covered-calls', 'csp', 'pmcc', 'spreads'] },
+const allTriggerOptions: {
+  value: StrategyRuleTrigger;
+  label: string;
+  category: StrategyRuleCategory;
+  strategies: StrategyType[];
+}[] = [
+  {
+    value: 'price_increase',
+    label: 'Prijs Stijging',
+    category: 'opportunity',
+    strategies: ['stocks-etfs', 'leaps', 'covered-calls', 'csp', 'pmcc', 'spreads', 'kaching'],
+  },
+  {
+    value: 'price_decrease',
+    label: 'Prijs Daling',
+    category: 'alert',
+    strategies: ['stocks-etfs', 'leaps', 'covered-calls', 'csp', 'pmcc', 'spreads', 'kaching'],
+  },
+  {
+    value: 'profit_target',
+    label: 'Winst Doelstelling',
+    category: 'opportunity',
+    strategies: ['stocks-etfs', 'leaps', 'covered-calls', 'csp', 'pmcc', 'spreads', 'kaching'],
+  },
+  {
+    value: 'loss_limit',
+    label: 'Verlies Limiet',
+    category: 'alert',
+    strategies: ['stocks-etfs', 'leaps', 'covered-calls', 'csp', 'pmcc', 'spreads', 'kaching'],
+  },
+  {
+    value: 'time_based',
+    label: 'Tijd Gebaseerd',
+    category: 'opportunity',
+    strategies: ['covered-calls', 'csp', 'pmcc', 'spreads'],
+  },
+  {
+    value: 'volatility',
+    label: 'Volatiliteit',
+    category: 'opportunity',
+    strategies: ['covered-calls', 'csp', 'pmcc', 'spreads'],
+  },
 ];
 
 export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
@@ -32,7 +73,7 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
   activeCategory,
 }) => {
   // Filter trigger options based on strategy type only (show all categories)
-  const triggerOptions = allTriggerOptions.filter(option => {
+  const triggerOptions = allTriggerOptions.filter((option) => {
     return option.strategies.includes(strategyType);
   });
 
@@ -104,7 +145,7 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
 
   // Update category when trigger changes
   const handleTriggerChange = (trigger: StrategyRuleTrigger) => {
-    const option = triggerOptions.find(opt => opt.value === trigger);
+    const option = triggerOptions.find((opt) => opt.value === trigger);
     if (option) {
       updateFields({
         trigger: trigger,
@@ -122,9 +163,13 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
     }
 
     // Validate percentage for price-based triggers
-    if ((formData.trigger === 'price_increase' || formData.trigger === 'price_decrease' ||
-         formData.trigger === 'profit_target' || formData.trigger === 'loss_limit') &&
-        (!formData.percentage || parseFloat(formData.percentage) <= 0)) {
+    if (
+      (formData.trigger === 'price_increase' ||
+        formData.trigger === 'price_decrease' ||
+        formData.trigger === 'profit_target' ||
+        formData.trigger === 'loss_limit') &&
+      (!formData.percentage || parseFloat(formData.percentage) <= 0)
+    ) {
       alert('Vul een geldig percentage in (groter dan 0)');
       return;
     }
@@ -161,7 +206,7 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
   if (!isOpen) return null;
 
   const isEditing = !!existingRule;
-  const selectedTrigger = triggerOptions.find(opt => opt.value === formData.trigger);
+  const selectedTrigger = triggerOptions.find((opt) => opt.value === formData.trigger);
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -231,23 +276,29 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
                   }`}
                 >
                   {option.category === 'alert' ? (
-                    <AlertCircle className={`w-5 h-5 ${
-                      formData.trigger === option.value
-                        ? 'text-caution-600 dark:text-caution-500'
-                        : 'text-gray-400'
-                    }`} />
+                    <AlertCircle
+                      className={`w-5 h-5 ${
+                        formData.trigger === option.value
+                          ? 'text-caution-600 dark:text-caution-500'
+                          : 'text-gray-400'
+                      }`}
+                    />
                   ) : (
-                    <Target className={`w-5 h-5 ${
-                      formData.trigger === option.value
-                        ? 'text-positive-600 dark:text-positive-500'
-                        : 'text-gray-400'
-                    }`} />
+                    <Target
+                      className={`w-5 h-5 ${
+                        formData.trigger === option.value
+                          ? 'text-positive-600 dark:text-positive-500'
+                          : 'text-gray-400'
+                      }`}
+                    />
                   )}
-                  <span className={`text-sm font-medium ${
-                    formData.trigger === option.value
-                      ? 'text-gray-900 dark:text-white'
-                      : 'text-gray-600 dark:text-gray-400'
-                  }`}>
+                  <span
+                    className={`text-sm font-medium ${
+                      formData.trigger === option.value
+                        ? 'text-gray-900 dark:text-white'
+                        : 'text-gray-600 dark:text-gray-400'
+                    }`}
+                  >
                     {option.label}
                   </span>
                 </button>
@@ -278,7 +329,9 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
                     placeholder="10"
                     required
                   />
-                  <span className="absolute right-3 top-2.5 text-gray-500 dark:text-gray-400 pointer-events-none">%</span>
+                  <span className="absolute right-3 top-2.5 text-gray-500 dark:text-gray-400 pointer-events-none">
+                    %
+                  </span>
                 </div>
               </div>
             )}
@@ -365,11 +418,13 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
 
           {/* Preview */}
           {formData.name && formData.description && (
-            <div className={`border-2 rounded-lg p-4 ${
-              selectedTrigger?.category === 'alert'
-                ? 'border-caution-500/30 dark:border-caution-600/40 bg-caution-50 dark:bg-caution-600/15'
-                : 'border-positive-500/20 dark:border-positive-700/30 bg-positive-50 dark:bg-positive-700/15'
-            }`}>
+            <div
+              className={`border-2 rounded-lg p-4 ${
+                selectedTrigger?.category === 'alert'
+                  ? 'border-caution-500/30 dark:border-caution-600/40 bg-caution-50 dark:bg-caution-600/15'
+                  : 'border-positive-500/20 dark:border-positive-700/30 bg-positive-50 dark:bg-positive-700/15'
+              }`}
+            >
               <div className="flex items-start gap-3">
                 {selectedTrigger?.category === 'alert' ? (
                   <AlertCircle className="w-5 h-5 text-caution-600 dark:text-caution-500 mt-0.5 flex-shrink-0" />
@@ -380,9 +435,7 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
                   <h4 className="font-semibold text-gray-900 dark:text-white mb-1">
                     {formData.name}
                   </h4>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">
-                    {formData.description}
-                  </p>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">{formData.description}</p>
                   {formData.percentage && (
                     <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
                       Percentage: {formData.percentage}%

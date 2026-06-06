@@ -50,7 +50,22 @@ export const createAppStore = (username?: string) => {
   const persistConfig = {
     key: username ? `payday-${username}` : 'payday-root',
     storage,
-    whitelist: ['auth', 'adminAuth', 'portfolios', 'positions', 'trades', 'rules', 'journal', 'todos', 'tickers', 'strategies', 'wheels', 'userProgress', 'community', 'mentorship'], // Persist auth and adminAuth to remember sessions
+    whitelist: [
+      'auth',
+      'adminAuth',
+      'portfolios',
+      'positions',
+      'trades',
+      'rules',
+      'journal',
+      'todos',
+      'tickers',
+      'strategies',
+      'wheels',
+      'userProgress',
+      'community',
+      'mentorship',
+    ], // Persist auth and adminAuth to remember sessions
     // blacklist: ['alerts', 'ibConnection'], // Don't persist these
     version: 1,
     migrate: (state: any) => {
@@ -75,7 +90,12 @@ export const createAppStore = (username?: string) => {
       getDefaultMiddleware({
         serializableCheck: {
           // Ignore these action types and paths for redux-persist
-          ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE', 'positions/addPosition', 'trades/addTrade'],
+          ignoredActions: [
+            'persist/PERSIST',
+            'persist/REHYDRATE',
+            'positions/addPosition',
+            'trades/addTrade',
+          ],
           ignoredPaths: ['register', 'rehydrate'],
         },
       }).concat(tickerPriceMiddleware, tradeMiddleware, positionValueMiddleware),

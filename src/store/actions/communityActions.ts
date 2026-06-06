@@ -12,7 +12,12 @@ import { addCredits } from '../slices/userProgressSlice';
 const makeId = (prefix: string) => `${prefix}-${Math.random().toString(36).slice(2, 9)}`;
 
 export const submitPost =
-  (args: { author: CommunityAuthor; channel: CommunityChannel; text: string; tradeIdea?: TradeIdea }) =>
+  (args: {
+    author: CommunityAuthor;
+    channel: CommunityChannel;
+    text: string;
+    tradeIdea?: TradeIdea;
+  }) =>
   (dispatch: Dispatch) => {
     dispatch(
       addPost({
@@ -31,8 +36,7 @@ export const submitPost =
   };
 
 export const submitReply =
-  (args: { postId: string; author: CommunityAuthor; text: string }) =>
-  (dispatch: Dispatch) => {
+  (args: { postId: string; author: CommunityAuthor; text: string }) => (dispatch: Dispatch) => {
     dispatch(
       addReply({
         postId: args.postId,

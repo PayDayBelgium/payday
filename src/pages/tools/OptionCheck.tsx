@@ -84,7 +84,10 @@ export const OptionCheck: React.FC = () => {
       {/* Disclaimer */}
       <div className="flex items-start gap-2 rounded-md border border-caution-500/40 bg-caution-50 dark:bg-caution-600/10 px-3 py-2 text-xs text-caution-700 dark:text-caution-300 max-w-3xl">
         <Info className="w-4 h-4 mt-0.5 flex-shrink-0" strokeWidth={1.75} />
-        <span>De optie-cijfers hieronder zijn <strong>gesimuleerd</strong> (de app heeft geen live optie-feed) en dienen enkel ter illustratie.</span>
+        <span>
+          De optie-cijfers hieronder zijn <strong>gesimuleerd</strong> (de app heeft geen live
+          optie-feed) en dienen enkel ter illustratie.
+        </span>
       </div>
 
       {/* Ticker keuze / toevoegen */}
@@ -96,7 +99,9 @@ export const OptionCheck: React.FC = () => {
               className={fieldClass}
               type="text"
               value={newTicker.symbol}
-              onChange={(e) => setNewTicker((p) => ({ ...p, symbol: e.target.value.toUpperCase() }))}
+              onChange={(e) =>
+                setNewTicker((p) => ({ ...p, symbol: e.target.value.toUpperCase() }))
+              }
               placeholder="Symbool (bv. AAPL)"
             />
             <input
@@ -110,7 +115,9 @@ export const OptionCheck: React.FC = () => {
               <select
                 className={`${fieldClass} w-auto`}
                 value={newTicker.type}
-                onChange={(e) => setNewTicker((p) => ({ ...p, type: e.target.value as 'stock' | 'etf' }))}
+                onChange={(e) =>
+                  setNewTicker((p) => ({ ...p, type: e.target.value as 'stock' | 'etf' }))
+                }
               >
                 <option value="stock">Aandeel</option>
                 <option value="etf">ETF</option>
@@ -119,7 +126,9 @@ export const OptionCheck: React.FC = () => {
                 <input
                   type="checkbox"
                   checked={newTicker.optionsAvailable}
-                  onChange={(e) => setNewTicker((p) => ({ ...p, optionsAvailable: e.target.checked }))}
+                  onChange={(e) =>
+                    setNewTicker((p) => ({ ...p, optionsAvailable: e.target.checked }))
+                  }
                   className="rounded border-[var(--line)]"
                 />
                 Opties beschikbaar
@@ -159,9 +168,14 @@ export const OptionCheck: React.FC = () => {
             <div className="surface-card p-6">
               <div className="flex items-center justify-between mb-3">
                 <p className="eyebrow">Verdict — {selected!.symbol}</p>
-                <span className="text-2xl font-bold tabular-nums text-ink-900 dark:text-white">{assessment.result.totalScore}<span className="text-sm text-ink-400">/100</span></span>
+                <span className="text-2xl font-bold tabular-nums text-ink-900 dark:text-white">
+                  {assessment.result.totalScore}
+                  <span className="text-sm text-ink-400">/100</span>
+                </span>
               </div>
-              <p className={`text-lg font-semibold tracking-tight ${VERDICT_META[assessment.result.verdict].cls}`}>
+              <p
+                className={`text-lg font-semibold tracking-tight ${VERDICT_META[assessment.result.verdict].cls}`}
+              >
                 {VERDICT_META[assessment.result.verdict].label}
               </p>
               <div
@@ -183,20 +197,30 @@ export const OptionCheck: React.FC = () => {
             <div className="surface-card p-5">
               <div className="flex items-center justify-between mb-3">
                 <p className="eyebrow">Optie-cijfers</p>
-                <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-caution-600 bg-caution-50 dark:bg-caution-600/15 px-2 py-0.5 rounded-full">Gesimuleerd</span>
+                <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-caution-600 bg-caution-50 dark:bg-caution-600/15 px-2 py-0.5 rounded-full">
+                  Gesimuleerd
+                </span>
               </div>
               <dl className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-3">
                 {[
                   { label: 'IV-rank', value: `${assessment.data.ivRank}/100` },
-                  { label: 'Open interest', value: assessment.data.openInterest.toLocaleString('nl-NL') },
-                  { label: 'Volume/dag', value: assessment.data.optionVolume.toLocaleString('nl-NL') },
+                  {
+                    label: 'Open interest',
+                    value: assessment.data.openInterest.toLocaleString('nl-NL'),
+                  },
+                  {
+                    label: 'Volume/dag',
+                    value: assessment.data.optionVolume.toLocaleString('nl-NL'),
+                  },
                   { label: 'Bid-ask spread', value: `${assessment.data.bidAskSpreadPct}%` },
                   { label: 'Premie (gean.)', value: `${assessment.data.annualizedPremiumPct}%` },
                   { label: 'Earnings over', value: `${assessment.data.daysToEarnings} d` },
                 ].map((f) => (
                   <div key={f.label}>
                     <dt className="text-xs text-ink-400">{f.label}</dt>
-                    <dd className="text-sm font-semibold tabular-nums text-ink-900 dark:text-white mt-0.5">{f.value}</dd>
+                    <dd className="text-sm font-semibold tabular-nums text-ink-900 dark:text-white mt-0.5">
+                      {f.value}
+                    </dd>
                   </div>
                 ))}
               </dl>
@@ -211,7 +235,9 @@ export const OptionCheck: React.FC = () => {
                   <p className="text-sm font-semibold text-ink-900 dark:text-white">{c.label}</p>
                   <p className="text-xs text-ink-500 dark:text-ink-400 mt-0.5">{c.detail}</p>
                 </div>
-                <span className={`flex-shrink-0 text-xs font-semibold px-2 py-1 rounded-full ${STATUS_BADGE[c.status]}`}>
+                <span
+                  className={`flex-shrink-0 text-xs font-semibold px-2 py-1 rounded-full ${STATUS_BADGE[c.status]}`}
+                >
                   {STATUS_LABEL[c.status]}
                 </span>
               </div>

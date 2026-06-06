@@ -70,7 +70,10 @@ class IBWebSocketService {
   private reconnectTimeout: NodeJS.Timeout | null = null;
   private heartbeatInterval: NodeJS.Timeout | null = null;
   private messageHandlers: Map<string, (data: any) => void> = new Map();
-  private pendingRequests: Map<number, { resolve: (value: any) => void; reject: (reason: any) => void }> = new Map();
+  private pendingRequests: Map<
+    number,
+    { resolve: (value: any) => void; reject: (reason: any) => void }
+  > = new Map();
   private requestId = 0;
 
   constructor(config?: Partial<IBConfig>) {
@@ -125,7 +128,8 @@ class IBWebSocketService {
 
         this.ws.onerror = (error) => {
           console.error('WebSocket error:', error);
-          const errorMsg = 'Failed to connect to IB TWS. Make sure TWS is running and WebSocket API is enabled.';
+          const errorMsg =
+            'Failed to connect to IB TWS. Make sure TWS is running and WebSocket API is enabled.';
           store.dispatch(setError(errorMsg));
           reject(new Error(errorMsg));
         };
@@ -257,7 +261,10 @@ class IBWebSocketService {
   /**
    * Subscribe to real-time updates for a ticker
    */
-  public subscribeMarketData(ticker: string, callback: (data: IBMarketDataResponse) => void): () => void {
+  public subscribeMarketData(
+    ticker: string,
+    callback: (data: IBMarketDataResponse) => void
+  ): () => void {
     const key = `marketData_${ticker}`;
     this.messageHandlers.set(key, callback);
 
@@ -337,7 +344,9 @@ class IBWebSocketService {
     // Exponential backoff: 2^attempt * 1000ms (max 30 seconds)
     const delay = Math.min(Math.pow(2, state.reconnectAttempts) * 1000, 30000);
 
-    console.log(`Reconnecting in ${delay}ms (attempt ${state.reconnectAttempts}/${state.maxReconnectAttempts})`);
+    console.log(
+      `Reconnecting in ${delay}ms (attempt ${state.reconnectAttempts}/${state.maxReconnectAttempts})`
+    );
 
     this.reconnectTimeout = setTimeout(() => {
       this.connect().catch(console.error);

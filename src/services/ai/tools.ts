@@ -40,7 +40,8 @@ export const TOOL_SCHEMAS: ToolSchema[] = [
         currency: { type: 'string', enum: ['USD', 'EUR'], description: 'Valuta' },
         availableCash: {
           type: 'number',
-          description: 'De nog beschikbare (niet-belegde) cash bij de broker, zoals op het scherm getoond.',
+          description:
+            'De nog beschikbare (niet-belegde) cash bij de broker, zoals op het scherm getoond.',
         },
       },
       required: ['name', 'currency', 'availableCash'],
@@ -53,17 +54,28 @@ export const TOOL_SCHEMAS: ToolSchema[] = [
     input_schema: {
       type: 'object',
       properties: {
-        portfolio: { type: 'string', description: 'Naam van de portefeuille waar de positie in komt' },
+        portfolio: {
+          type: 'string',
+          description: 'Naam van de portefeuille waar de positie in komt',
+        },
         ticker: { type: 'string', description: 'Ticker-symbool, bv. AAPL' },
-        name: { type: 'string', description: 'Naam van het bedrijf/de ETF. Vraag dit aan de gebruiker als je het niet kent.' },
+        name: {
+          type: 'string',
+          description:
+            'Naam van het bedrijf/de ETF. Vraag dit aan de gebruiker als je het niet kent.',
+        },
         assetType: { type: 'string', enum: ['stock', 'etf'] },
         shares: { type: 'number', description: 'Aantal aandelen' },
         purchasePrice: { type: 'number', description: 'Aankoopprijs (open-prijs) per aandeel' },
         currentPrice: {
           type: 'number',
-          description: 'Huidige koers per aandeel, zoals op het scherm getoond. Laat weg als niet zichtbaar.',
+          description:
+            'Huidige koers per aandeel, zoals op het scherm getoond. Laat weg als niet zichtbaar.',
         },
-        openDate: { type: 'string', description: 'Aankoopdatum (YYYY-MM-DD). Laat weg als onbekend.' },
+        openDate: {
+          type: 'string',
+          description: 'Aankoopdatum (YYYY-MM-DD). Laat weg als onbekend.',
+        },
       },
       required: ['portfolio', 'ticker', 'name', 'assetType', 'shares', 'purchasePrice'],
     },
@@ -79,21 +91,38 @@ export const TOOL_SCHEMAS: ToolSchema[] = [
         ticker: { type: 'string', description: 'Ticker-symbool van de onderliggende waarde' },
         tickerName: {
           type: 'string',
-          description: 'Naam van de onderliggende waarde. Vraag dit aan de gebruiker als je het niet kent.',
+          description:
+            'Naam van de onderliggende waarde. Vraag dit aan de gebruiker als je het niet kent.',
         },
         optionType: { type: 'string', enum: ['call', 'put'] },
         action: { type: 'string', enum: ['buy', 'sell'], description: 'Gekocht of verkocht' },
         strike: { type: 'number' },
         expiration: { type: 'string', description: 'Expiratiedatum (YYYY-MM-DD)' },
         contracts: { type: 'number' },
-        premium: { type: 'number', description: 'Premie per contract bij opening (open-prijs/aankoopprijs)' },
+        premium: {
+          type: 'number',
+          description: 'Premie per contract bij opening (open-prijs/aankoopprijs)',
+        },
         currentPremium: {
           type: 'number',
-          description: 'Huidige premie per contract (de "last price" / huidige koers van de optie), zoals op het scherm getoond. Laat weg als niet zichtbaar.',
+          description:
+            'Huidige premie per contract (de "last price" / huidige koers van de optie), zoals op het scherm getoond. Laat weg als niet zichtbaar.',
         },
-        openDate: { type: 'string', description: 'Openingsdatum (YYYY-MM-DD). Laat weg als onbekend.' },
+        openDate: {
+          type: 'string',
+          description: 'Openingsdatum (YYYY-MM-DD). Laat weg als onbekend.',
+        },
       },
-      required: ['portfolio', 'ticker', 'optionType', 'action', 'strike', 'expiration', 'contracts', 'premium'],
+      required: [
+        'portfolio',
+        'ticker',
+        'optionType',
+        'action',
+        'strike',
+        'expiration',
+        'contracts',
+        'premium',
+      ],
     },
   },
 ];
@@ -108,7 +137,13 @@ export const DEFAULT_PORTFOLIO_LOGO = PaydayLogo;
 // Voorgestelde wijzigingen (verzameld tot de gebruiker bevestigt).
 // ---------------------------------------------------------------------------
 export type ProposedChange =
-  | { kind: 'portfolio'; toolUseId: string; name: string; currency: CurrencyType; availableCash: number }
+  | {
+      kind: 'portfolio';
+      toolUseId: string;
+      name: string;
+      currency: CurrencyType;
+      availableCash: number;
+    }
   | {
       kind: 'stock';
       toolUseId: string;
@@ -157,7 +192,7 @@ const asOptionalString = (v: unknown): string | undefined =>
 export const parseProposedChange = (
   name: string,
   input: unknown,
-  toolUseId: string,
+  toolUseId: string
 ): ProposedChange | null => {
   const o = (input ?? {}) as Record<string, unknown>;
   switch (name) {
@@ -247,10 +282,10 @@ const ensureTicker = (
   symbol: string,
   name: string,
   type: 'stock' | 'etf',
-  price?: number,
+  price?: number
 ): void => {
   const exists = selectAllTickers(getState()).some(
-    (t) => t.symbol.toUpperCase() === symbol.toUpperCase(),
+    (t) => t.symbol.toUpperCase() === symbol.toUpperCase()
   );
   if (exists) return;
   const ticker: Ticker = {
@@ -279,7 +314,7 @@ const positionValue = (c: ProposedChange): number => {
 const createPortfolio = (
   c: Extract<ProposedChange, { kind: 'portfolio' }>,
   deposit: number,
-  dispatch: AppDispatch,
+  dispatch: AppDispatch
 ): void => {
   const portfolio: Portfolio = {
     id: uid('pf'),
@@ -315,7 +350,7 @@ const createPortfolio = (
 const applyStock = (
   c: Extract<ProposedChange, { kind: 'stock' }>,
   getState: () => RootState,
-  dispatch: AppDispatch,
+  dispatch: AppDispatch
 ): void => {
   const price = c.currentPrice ?? c.purchasePrice;
   ensureTicker(getState, dispatch, c.ticker, c.name, c.assetType, price);
@@ -361,7 +396,7 @@ const applyStock = (
 const applyOption = (
   c: Extract<ProposedChange, { kind: 'option' }>,
   getState: () => RootState,
-  dispatch: AppDispatch,
+  dispatch: AppDispatch
 ): void => {
   // Onderliggende ticker aanmaken indien nodig (naam vragen gebeurt door de agent).
   ensureTicker(getState, dispatch, c.ticker, c.tickerName ?? c.ticker, 'stock');
@@ -418,7 +453,7 @@ const applyOption = (
 export const applyChanges = (
   changes: ProposedChange[],
   getState: () => RootState,
-  dispatch: AppDispatch,
+  dispatch: AppDispatch
 ): void => {
   // Totale storting per nieuw aangemaakte portefeuille bepalen.
   const deposits = new Map<string, number>();
@@ -432,7 +467,8 @@ export const applyChanges = (
   }
 
   for (const c of changes) {
-    if (c.kind === 'portfolio') createPortfolio(c, deposits.get(c.name) ?? c.availableCash, dispatch);
+    if (c.kind === 'portfolio')
+      createPortfolio(c, deposits.get(c.name) ?? c.availableCash, dispatch);
   }
   for (const c of changes) {
     if (c.kind === 'stock') applyStock(c, getState, dispatch);

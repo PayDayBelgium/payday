@@ -79,9 +79,7 @@ export const TickerAutocomplete: React.FC<TickerAutocompleteProps> = ({
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
-        setSelectedIndex((prev) =>
-          prev < filteredSuggestions.length - 1 ? prev + 1 : prev
-        );
+        setSelectedIndex((prev) => (prev < filteredSuggestions.length - 1 ? prev + 1 : prev));
         break;
       case 'ArrowUp':
         e.preventDefault();
@@ -137,15 +135,13 @@ export const TickerAutocomplete: React.FC<TickerAutocompleteProps> = ({
                 onClick={() => handleSelectSuggestion(suggestion)}
                 onMouseEnter={() => setSelectedIndex(index)}
                 className={`w-full text-left px-4 py-2 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors ${
-                  index === selectedIndex
-                    ? 'bg-primary-50 dark:bg-primary-900/20'
-                    : ''
+                  index === selectedIndex ? 'bg-primary-50 dark:bg-primary-900/20' : ''
                 } ${
                   index === 0
                     ? 'rounded-t-lg'
                     : index === filteredSuggestions.length - 1
-                    ? 'rounded-b-lg'
-                    : ''
+                      ? 'rounded-b-lg'
+                      : ''
                 }`}
               >
                 <div className="flex items-center justify-between">

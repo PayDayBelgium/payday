@@ -27,7 +27,7 @@ export interface ImageAttachment {
 export interface ChatMessage extends AIMessage {
   id: string;
   pending?: boolean; // antwoord is nog aan het streamen
-  error?: string;    // foutmelding i.p.v. inhoud
+  error?: string; // foutmelding i.p.v. inhoud
 }
 
 interface AIAssistantContextValue {
@@ -130,7 +130,7 @@ export const AIAssistantProvider: React.FC<{ children: React.ReactNode }> = ({ c
             if (m.id !== id) return m;
             const prevText = m.content[0]?.kind === 'text' ? m.content[0].text : '';
             return { ...m, ...patch(prevText) };
-          }),
+          })
         );
       const removeBubble = (id: string) => setMessages((prev) => prev.filter((m) => m.id !== id));
 
@@ -164,7 +164,10 @@ export const AIAssistantProvider: React.FC<{ children: React.ReactNode }> = ({ c
             } else if (event.type === 'tool_use') {
               toolUses.push({ id: event.id, name: event.name, input: event.input });
             } else if (event.type === 'error') {
-              updateBubble(bubbleId, () => ({ pending: false, error: errorToMessage(event.message) }));
+              updateBubble(bubbleId, () => ({
+                pending: false,
+                error: errorToMessage(event.message),
+              }));
               errored = true;
             }
           }
@@ -224,7 +227,12 @@ export const AIAssistantProvider: React.FC<{ children: React.ReactNode }> = ({ c
         const code = err instanceof Error ? err.message : 'ERROR';
         setMessages((prev) => [
           ...prev,
-          { id: nextId(), role: 'assistant', content: [{ kind: 'text', text: '' }], error: errorToMessage(code) },
+          {
+            id: nextId(),
+            role: 'assistant',
+            content: [{ kind: 'text', text: '' }],
+            error: errorToMessage(code),
+          },
         ]);
       } finally {
         if (collected.length > 0) setPendingChanges(collected);
@@ -232,7 +240,7 @@ export const AIAssistantProvider: React.FC<{ children: React.ReactNode }> = ({ c
         abortRef.current = null;
       }
     },
-    [isStreaming, userLevel, unlockedLevels, addAssistantBubble, store],
+    [isStreaming, userLevel, unlockedLevels, addAssistantBubble, store]
   );
 
   const confirmChanges = useCallback(() => {
@@ -250,7 +258,12 @@ export const AIAssistantProvider: React.FC<{ children: React.ReactNode }> = ({ c
     // Houd de gesprekscontext op de hoogte voor een volgende beurt.
     convoRef.current.push({
       role: 'user',
-      content: [{ kind: 'text', text: 'Ik heb de voorgestelde wijzigingen bevestigd; ze zijn nu aangemaakt.' }],
+      content: [
+        {
+          kind: 'text',
+          text: 'Ik heb de voorgestelde wijzigingen bevestigd; ze zijn nu aangemaakt.',
+        },
+      ],
     });
     setPendingChanges([]);
   }, [pendingChanges, dispatch, store]);
@@ -259,11 +272,17 @@ export const AIAssistantProvider: React.FC<{ children: React.ReactNode }> = ({ c
     if (pendingChanges.length === 0) return;
     setMessages((prev) => [
       ...prev,
-      { id: nextId(), role: 'assistant', content: [{ kind: 'text', text: i18n.t('ai.cancelled') }] },
+      {
+        id: nextId(),
+        role: 'assistant',
+        content: [{ kind: 'text', text: i18n.t('ai.cancelled') }],
+      },
     ]);
     convoRef.current.push({
       role: 'user',
-      content: [{ kind: 'text', text: 'Ik heb de voorgestelde wijzigingen geannuleerd; maak ze niet aan.' }],
+      content: [
+        { kind: 'text', text: 'Ik heb de voorgestelde wijzigingen geannuleerd; maak ze niet aan.' },
+      ],
     });
     setPendingChanges([]);
   }, [pendingChanges]);
@@ -296,7 +315,7 @@ export const AIAssistantProvider: React.FC<{ children: React.ReactNode }> = ({ c
       cancelChanges,
       abort,
       clear,
-    ],
+    ]
   );
 
   return <AIAssistantContext.Provider value={value}>{children}</AIAssistantContext.Provider>;

@@ -1,6 +1,25 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts';
-import { TrendingUp, Plus, Trash2, RotateCcw, Target, DollarSign, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  ReferenceLine,
+} from 'recharts';
+import {
+  TrendingUp,
+  Plus,
+  Trash2,
+  RotateCcw,
+  Target,
+  DollarSign,
+  ArrowUpCircle,
+  ArrowDownCircle,
+} from 'lucide-react';
 import { usePageTitle } from '../../contexts/PageTitleContext';
 import { formatCurrency, formatNumber } from '../../utils/numberFormat';
 import { TickerSelector } from '../../components/widgets/TickerSelector';
@@ -34,10 +53,7 @@ const MULTIPLIER = 100;
 // Utility functions
 const generateId = () => `leg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-const calculateOptionPnL = (
-  leg: OptionLeg,
-  stockPrice: number
-): number => {
+const calculateOptionPnL = (leg: OptionLeg, stockPrice: number): number => {
   const { type, action, strike, premium, contracts } = leg;
   const multiplier = MULTIPLIER * contracts;
 
@@ -103,7 +119,7 @@ export const PnLSimulator: React.FC = () => {
   // Update strike when ticker/price changes
   useEffect(() => {
     if (currentPrice > 0 && newLeg.strike === 0) {
-      setNewLeg(prev => ({ ...prev, strike: Math.round(currentPrice) }));
+      setNewLeg((prev) => ({ ...prev, strike: Math.round(currentPrice) }));
     }
   }, [currentPrice]);
 
@@ -124,10 +140,10 @@ export const PnLSimulator: React.FC = () => {
       id: generateId(),
     };
 
-    setLegs(prev => [...prev, leg]);
+    setLegs((prev) => [...prev, leg]);
 
     // Reset form with smart defaults
-    setNewLeg(prev => ({
+    setNewLeg((prev) => ({
       ...prev,
       strike: Math.round(currentPrice),
       premium: 0,
@@ -136,7 +152,7 @@ export const PnLSimulator: React.FC = () => {
 
   // Remove leg
   const removeLeg = useCallback((id: string) => {
-    setLegs(prev => prev.filter(leg => leg.id !== id));
+    setLegs((prev) => prev.filter((leg) => leg.id !== id));
   }, []);
 
   // Clear all legs
@@ -154,7 +170,7 @@ export const PnLSimulator: React.FC = () => {
 
     // Collect all strike prices to ensure we have data points exactly at strikes
     const strikePoints = new Set<number>();
-    legs.forEach(leg => strikePoints.add(leg.strike));
+    legs.forEach((leg) => strikePoints.add(leg.strike));
 
     // Build data with exact prices (no rounding during generation)
     const pricePoints: number[] = [];
@@ -164,7 +180,7 @@ export const PnLSimulator: React.FC = () => {
     }
 
     // Add exact strike price points
-    strikePoints.forEach(strike => {
+    strikePoints.forEach((strike) => {
       if (strike >= minPrice && strike <= maxPrice) {
         pricePoints.push(strike);
       }
@@ -174,7 +190,7 @@ export const PnLSimulator: React.FC = () => {
     pricePoints.sort((a, b) => a - b);
 
     // Generate data points with P&L calculated at exact prices
-    const rawData = pricePoints.map(price => ({
+    const rawData = pricePoints.map((price) => ({
       price,
       pnl: calculateTotalPnL(legs, price),
     }));
@@ -186,7 +202,7 @@ export const PnLSimulator: React.FC = () => {
       const curr = rawData[i];
       if ((prev.pnl < 0 && curr.pnl > 0) || (prev.pnl > 0 && curr.pnl < 0)) {
         zeroCrossingIndices.add(i - 1); // Point before crossing
-        zeroCrossingIndices.add(i);     // Point after crossing
+        zeroCrossingIndices.add(i); // Point after crossing
       }
     }
 
@@ -241,7 +257,7 @@ export const PnLSimulator: React.FC = () => {
     let longPutContracts = 0;
     let shortPutContracts = 0;
 
-    legs.forEach(leg => {
+    legs.forEach((leg) => {
       if (leg.type === 'call' && leg.action === 'buy') {
         hasLongCall = true;
         longCallContracts += leg.contracts;
@@ -274,7 +290,7 @@ export const PnLSimulator: React.FC = () => {
     let maxProfitFromChart = -Infinity;
     let maxLossFromChart = Infinity;
 
-    chartData.forEach(point => {
+    chartData.forEach((point) => {
       if (point.pnl > maxProfitFromChart) maxProfitFromChart = point.pnl;
       if (point.pnl < maxLossFromChart) maxLossFromChart = point.pnl;
     });
@@ -318,7 +334,7 @@ export const PnLSimulator: React.FC = () => {
 
     // Calculate total premium (net credit/debit)
     let totalPremium = 0;
-    legs.forEach(leg => {
+    legs.forEach((leg) => {
       const legPremium = leg.premium * leg.contracts * MULTIPLIER;
       if (leg.action === 'buy') {
         totalPremium -= legPremium; // Debit
@@ -355,17 +371,22 @@ export const PnLSimulator: React.FC = () => {
         <p className="font-medium text-gray-900 dark:text-white">
           Prijs: ${formatNumber(label, 2)}
         </p>
-        <p className={`font-bold ${pnl >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
-          P&L: {pnl >= 0 ? '+' : ''}{formatCurrency(pnl, '$')}
+        <p
+          className={`font-bold ${pnl >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
+        >
+          P&L: {pnl >= 0 ? '+' : ''}
+          {formatCurrency(pnl, '$')}
         </p>
-        {showIndividualLegs && legs.map((leg, i) => {
-          const legPnl = calculateOptionPnL(leg, price);
-          return (
-            <p key={i} className="text-xs" style={{ color: LEG_COLORS[i % LEG_COLORS.length] }}>
-              {leg.type.toUpperCase()} {leg.strike}: {legPnl >= 0 ? '+' : ''}{formatCurrency(legPnl, '$')}
-            </p>
-          );
-        })}
+        {showIndividualLegs &&
+          legs.map((leg, i) => {
+            const legPnl = calculateOptionPnL(leg, price);
+            return (
+              <p key={i} className="text-xs" style={{ color: LEG_COLORS[i % LEG_COLORS.length] }}>
+                {leg.type.toUpperCase()} {leg.strike}: {legPnl >= 0 ? '+' : ''}
+                {formatCurrency(legPnl, '$')}
+              </p>
+            );
+          })}
       </div>
     );
   };
@@ -434,7 +455,7 @@ export const PnLSimulator: React.FC = () => {
               {/* Type Selection */}
               <div className="grid grid-cols-2 gap-2">
                 <button
-                  onClick={() => setNewLeg(prev => ({ ...prev, type: 'call' }))}
+                  onClick={() => setNewLeg((prev) => ({ ...prev, type: 'call' }))}
                   className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
                     newLeg.type === 'call'
                       ? 'bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 border-2 border-positive-500'
@@ -445,7 +466,7 @@ export const PnLSimulator: React.FC = () => {
                   Call
                 </button>
                 <button
-                  onClick={() => setNewLeg(prev => ({ ...prev, type: 'put' }))}
+                  onClick={() => setNewLeg((prev) => ({ ...prev, type: 'put' }))}
                   className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
                     newLeg.type === 'put'
                       ? 'bg-surface-muted dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300 border-2 border-ink-600'
@@ -460,7 +481,7 @@ export const PnLSimulator: React.FC = () => {
               {/* Action Selection */}
               <div className="grid grid-cols-2 gap-2">
                 <button
-                  onClick={() => setNewLeg(prev => ({ ...prev, action: 'buy' }))}
+                  onClick={() => setNewLeg((prev) => ({ ...prev, action: 'buy' }))}
                   className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                     newLeg.action === 'buy'
                       ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 border-2 border-primary-500'
@@ -470,7 +491,7 @@ export const PnLSimulator: React.FC = () => {
                   Long (Kopen)
                 </button>
                 <button
-                  onClick={() => setNewLeg(prev => ({ ...prev, action: 'sell' }))}
+                  onClick={() => setNewLeg((prev) => ({ ...prev, action: 'sell' }))}
                   className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                     newLeg.action === 'sell'
                       ? 'bg-caution-50 dark:bg-caution-600/25 text-caution-600 dark:text-caution-500 border-2 border-caution-500'
@@ -490,7 +511,9 @@ export const PnLSimulator: React.FC = () => {
                   <input
                     type="number"
                     value={newLeg.strike || ''}
-                    onChange={(e) => setNewLeg(prev => ({ ...prev, strike: parseFloat(e.target.value) || 0 }))}
+                    onChange={(e) =>
+                      setNewLeg((prev) => ({ ...prev, strike: parseFloat(e.target.value) || 0 }))
+                    }
                     placeholder="100"
                     step="0.5"
                     className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 text-sm"
@@ -503,7 +526,9 @@ export const PnLSimulator: React.FC = () => {
                   <input
                     type="number"
                     value={newLeg.premium || ''}
-                    onChange={(e) => setNewLeg(prev => ({ ...prev, premium: parseFloat(e.target.value) || 0 }))}
+                    onChange={(e) =>
+                      setNewLeg((prev) => ({ ...prev, premium: parseFloat(e.target.value) || 0 }))
+                    }
                     placeholder="2.50"
                     step="0.01"
                     className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 text-sm"
@@ -516,7 +541,12 @@ export const PnLSimulator: React.FC = () => {
                   <input
                     type="number"
                     value={newLeg.contracts}
-                    onChange={(e) => setNewLeg(prev => ({ ...prev, contracts: Math.max(1, parseInt(e.target.value) || 1) }))}
+                    onChange={(e) =>
+                      setNewLeg((prev) => ({
+                        ...prev,
+                        contracts: Math.max(1, parseInt(e.target.value) || 1),
+                      }))
+                    }
                     min="1"
                     className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 text-sm"
                   />
@@ -531,7 +561,7 @@ export const PnLSimulator: React.FC = () => {
                 <input
                   type="date"
                   value={newLeg.expiration || ''}
-                  onChange={(e) => setNewLeg(prev => ({ ...prev, expiration: e.target.value }))}
+                  onChange={(e) => setNewLeg((prev) => ({ ...prev, expiration: e.target.value }))}
                   className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 text-sm"
                 />
               </div>
@@ -575,15 +605,23 @@ export const PnLSimulator: React.FC = () => {
                       />
                       <div>
                         <p className="text-sm font-medium text-gray-900 dark:text-white">
-                          {leg.contracts}x {leg.action === 'buy' ? 'Long' : 'Short'} {leg.type.toUpperCase()} ${leg.strike}
+                          {leg.contracts}x {leg.action === 'buy' ? 'Long' : 'Short'}{' '}
+                          {leg.type.toUpperCase()} ${leg.strike}
                           {leg.expiration && (
                             <span className="ml-2 text-xs font-normal text-gray-500 dark:text-gray-400">
-                              ({new Date(leg.expiration).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })})
+                              (
+                              {new Date(leg.expiration).toLocaleDateString('nl-NL', {
+                                day: 'numeric',
+                                month: 'short',
+                              })}
+                              )
                             </span>
                           )}
                         </p>
                         <p className="text-xs text-gray-500 dark:text-gray-400">
-                          Premium: ${formatNumber(leg.premium, 2)} ({leg.action === 'buy' ? '-' : '+'}{formatCurrency(leg.premium * leg.contracts * MULTIPLIER, '$')})
+                          Premium: ${formatNumber(leg.premium, 2)} (
+                          {leg.action === 'buy' ? '-' : '+'}
+                          {formatCurrency(leg.premium * leg.contracts * MULTIPLIER, '$')})
                         </p>
                       </div>
                     </div>
@@ -618,28 +656,43 @@ export const PnLSimulator: React.FC = () => {
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3">
               <div className="flex items-center gap-1.5 mb-1">
                 <Target className="w-3.5 h-3.5 text-positive-600" />
-                <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Max Winst</span>
+                <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                  Max Winst
+                </span>
               </div>
-              <p className={`text-lg font-bold ${metrics.maxProfitUnlimited || metrics.maxProfit >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
-                {metrics.maxProfitUnlimited ? '∞ Onbeperkt' : formatCurrency(metrics.maxProfit, '$')}
+              <p
+                className={`text-lg font-bold ${metrics.maxProfitUnlimited || metrics.maxProfit >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
+              >
+                {metrics.maxProfitUnlimited
+                  ? '∞ Onbeperkt'
+                  : formatCurrency(metrics.maxProfit, '$')}
               </p>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3">
               <div className="flex items-center gap-1.5 mb-1">
                 <Target className="w-3.5 h-3.5 text-negative-600" />
-                <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Max Verlies</span>
+                <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                  Max Verlies
+                </span>
               </div>
-              <p className={`text-lg font-bold ${metrics.maxLossUnlimited ? 'text-negative-600 dark:text-negative-500' : metrics.maxLoss >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
+              <p
+                className={`text-lg font-bold ${metrics.maxLossUnlimited ? 'text-negative-600 dark:text-negative-500' : metrics.maxLoss >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
+              >
                 {metrics.maxLossUnlimited ? '∞ Onbeperkt' : formatCurrency(metrics.maxLoss, '$')}
               </p>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3">
               <div className="flex items-center gap-1.5 mb-1">
                 <DollarSign className="w-3.5 h-3.5 text-indigo-500" />
-                <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Netto Premium</span>
+                <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                  Netto Premium
+                </span>
               </div>
-              <p className={`text-lg font-bold ${metrics.totalPremium >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
-                {metrics.totalPremium >= 0 ? '+' : ''}{formatCurrency(metrics.totalPremium, '$')}
+              <p
+                className={`text-lg font-bold ${metrics.totalPremium >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
+              >
+                {metrics.totalPremium >= 0 ? '+' : ''}
+                {formatCurrency(metrics.totalPremium, '$')}
               </p>
               <p className="text-[10px] text-gray-500 dark:text-gray-400">
                 {metrics.totalPremium >= 0 ? 'Credit' : 'Debit'}
@@ -648,16 +701,23 @@ export const PnLSimulator: React.FC = () => {
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3">
               <div className="flex items-center gap-1.5 mb-1">
                 <TrendingUp className="w-3.5 h-3.5 text-primary-600" />
-                <span className="text-xs font-medium text-gray-500 dark:text-gray-400">P&L @ ${formatNumber(currentPrice, 0)}</span>
+                <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                  P&L @ ${formatNumber(currentPrice, 0)}
+                </span>
               </div>
-              <p className={`text-lg font-bold ${metrics.pnlAtCurrentPrice >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
-                {metrics.pnlAtCurrentPrice >= 0 ? '+' : ''}{formatCurrency(metrics.pnlAtCurrentPrice, '$')}
+              <p
+                className={`text-lg font-bold ${metrics.pnlAtCurrentPrice >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
+              >
+                {metrics.pnlAtCurrentPrice >= 0 ? '+' : ''}
+                {formatCurrency(metrics.pnlAtCurrentPrice, '$')}
               </p>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3">
               <div className="flex items-center gap-1.5 mb-1">
                 <div className="w-3.5 h-3.5 rounded-full bg-caution-500" />
-                <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Break-even</span>
+                <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                  Break-even
+                </span>
               </div>
               {metrics.breakEvenPoints.length > 0 ? (
                 <div className="flex flex-wrap gap-1">
@@ -666,7 +726,8 @@ export const PnLSimulator: React.FC = () => {
                       key={index}
                       className="text-lg font-bold text-caution-600 dark:text-caution-500"
                     >
-                      ${formatNumber(be, 0)}{index < metrics.breakEvenPoints.length - 1 ? ',' : ''}
+                      ${formatNumber(be, 0)}
+                      {index < metrics.breakEvenPoints.length - 1 ? ',' : ''}
                     </span>
                   ))}
                 </div>
@@ -744,19 +805,20 @@ export const PnLSimulator: React.FC = () => {
                     ))}
 
                     {/* Individual leg lines */}
-                    {showIndividualLegs && legs.map((leg, index) => (
-                      <Line
-                        key={leg.id}
-                        type="monotone"
-                        dataKey={`leg${index}`}
-                        stroke={LEG_COLORS[index % LEG_COLORS.length]}
-                        strokeWidth={1}
-                        strokeDasharray="3 3"
-                        dot={false}
-                        connectNulls={false}
-                        name={`${leg.action === 'buy' ? 'Long' : 'Short'} ${leg.type.toUpperCase()} $${leg.strike}`}
-                      />
-                    ))}
+                    {showIndividualLegs &&
+                      legs.map((leg, index) => (
+                        <Line
+                          key={leg.id}
+                          type="monotone"
+                          dataKey={`leg${index}`}
+                          stroke={LEG_COLORS[index % LEG_COLORS.length]}
+                          strokeWidth={1}
+                          strokeDasharray="3 3"
+                          dot={false}
+                          connectNulls={false}
+                          name={`${leg.action === 'buy' ? 'Long' : 'Short'} ${leg.type.toUpperCase()} $${leg.strike}`}
+                        />
+                      ))}
 
                     {/* Positive P&L line (green) */}
                     <Line
@@ -800,7 +862,14 @@ export const PnLSimulator: React.FC = () => {
                   clearAllLegs();
                   // Covered Call: Short Call above current price
                   setLegs([
-                    { id: generateId(), type: 'call', action: 'sell', strike: Math.round(currentPrice * 1.05), premium: 2, contracts: 1 },
+                    {
+                      id: generateId(),
+                      type: 'call',
+                      action: 'sell',
+                      strike: Math.round(currentPrice * 1.05),
+                      premium: 2,
+                      contracts: 1,
+                    },
                   ]);
                 }}
                 className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left"
@@ -813,8 +882,22 @@ export const PnLSimulator: React.FC = () => {
                   clearAllLegs();
                   // Bull Call Spread
                   setLegs([
-                    { id: generateId(), type: 'call', action: 'buy', strike: Math.round(currentPrice * 0.95), premium: 5, contracts: 1 },
-                    { id: generateId(), type: 'call', action: 'sell', strike: Math.round(currentPrice * 1.05), premium: 2, contracts: 1 },
+                    {
+                      id: generateId(),
+                      type: 'call',
+                      action: 'buy',
+                      strike: Math.round(currentPrice * 0.95),
+                      premium: 5,
+                      contracts: 1,
+                    },
+                    {
+                      id: generateId(),
+                      type: 'call',
+                      action: 'sell',
+                      strike: Math.round(currentPrice * 1.05),
+                      premium: 2,
+                      contracts: 1,
+                    },
                   ]);
                 }}
                 className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left"
@@ -828,10 +911,38 @@ export const PnLSimulator: React.FC = () => {
                   // Iron Condor
                   const strike = Math.round(currentPrice);
                   setLegs([
-                    { id: generateId(), type: 'put', action: 'buy', strike: strike - 10, premium: 1, contracts: 1 },
-                    { id: generateId(), type: 'put', action: 'sell', strike: strike - 5, premium: 2, contracts: 1 },
-                    { id: generateId(), type: 'call', action: 'sell', strike: strike + 5, premium: 2, contracts: 1 },
-                    { id: generateId(), type: 'call', action: 'buy', strike: strike + 10, premium: 1, contracts: 1 },
+                    {
+                      id: generateId(),
+                      type: 'put',
+                      action: 'buy',
+                      strike: strike - 10,
+                      premium: 1,
+                      contracts: 1,
+                    },
+                    {
+                      id: generateId(),
+                      type: 'put',
+                      action: 'sell',
+                      strike: strike - 5,
+                      premium: 2,
+                      contracts: 1,
+                    },
+                    {
+                      id: generateId(),
+                      type: 'call',
+                      action: 'sell',
+                      strike: strike + 5,
+                      premium: 2,
+                      contracts: 1,
+                    },
+                    {
+                      id: generateId(),
+                      type: 'call',
+                      action: 'buy',
+                      strike: strike + 10,
+                      premium: 1,
+                      contracts: 1,
+                    },
                   ]);
                 }}
                 className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left"
@@ -845,8 +956,22 @@ export const PnLSimulator: React.FC = () => {
                   // Straddle
                   const strike = Math.round(currentPrice);
                   setLegs([
-                    { id: generateId(), type: 'call', action: 'buy', strike, premium: 3, contracts: 1 },
-                    { id: generateId(), type: 'put', action: 'buy', strike, premium: 3, contracts: 1 },
+                    {
+                      id: generateId(),
+                      type: 'call',
+                      action: 'buy',
+                      strike,
+                      premium: 3,
+                      contracts: 1,
+                    },
+                    {
+                      id: generateId(),
+                      type: 'put',
+                      action: 'buy',
+                      strike,
+                      premium: 3,
+                      contracts: 1,
+                    },
                   ]);
                 }}
                 className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left"

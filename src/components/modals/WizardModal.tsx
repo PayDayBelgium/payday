@@ -101,9 +101,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
         {/* Header */}
         <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-              {title}
-            </h2>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">{title}</h2>
             {currentStep.description && (
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                 {currentStep.description}
@@ -141,8 +139,8 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                           isCompleted
                             ? 'bg-positive-600 text-white'
                             : isActive
-                            ? 'bg-primary-700 text-white'
-                            : 'bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-400'
+                              ? 'bg-primary-700 text-white'
+                              : 'bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-400'
                         }`}
                       >
                         {isCompleted ? <Check className="w-4 h-4" /> : index + 1}
@@ -153,8 +151,8 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                             isActive
                               ? 'text-primary-700 dark:text-primary-300'
                               : isCompleted
-                              ? 'text-positive-600 dark:text-positive-500'
-                              : 'text-gray-500 dark:text-gray-400'
+                                ? 'text-positive-600 dark:text-positive-500'
+                                : 'text-gray-500 dark:text-gray-400'
                           }`}
                         >
                           {step.title}
@@ -179,9 +177,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
 
         {/* Step Content */}
         <div className="flex-1 overflow-y-auto p-6">
-          <div className="max-w-3xl mx-auto">
-            {currentStep.component}
-          </div>
+          <div className="max-w-3xl mx-auto">{currentStep.component}</div>
         </div>
 
         {/* Footer with Navigation */}

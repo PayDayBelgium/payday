@@ -3,10 +3,26 @@
 // Portfolio types
 export type PortfolioName = string;
 
-export type StrategyType = 'stocks-etfs' | 'leaps' | 'covered-calls' | 'csp' | 'pmcc' | 'spreads' | 'kaching' | 'options' | 'general';
+export type StrategyType =
+  | 'stocks-etfs'
+  | 'leaps'
+  | 'covered-calls'
+  | 'csp'
+  | 'pmcc'
+  | 'spreads'
+  | 'kaching'
+  | 'options'
+  | 'general';
 
 // Trading Strategy for grouping positions
-export type TradingStrategyType = 'covered-call' | 'pmcc' | 'kaching' | 'csp' | 'spread' | 'wheel' | 'custom';
+export type TradingStrategyType =
+  | 'covered-call'
+  | 'pmcc'
+  | 'kaching'
+  | 'csp'
+  | 'spread'
+  | 'wheel'
+  | 'custom';
 
 export interface TradingStrategy {
   id: string;
@@ -427,16 +443,16 @@ export interface JournalEntry {
 
 // Portfolio Transaction Types (nieuwe structuur)
 export type TransactionType =
-  | 'deposit'           // Cash storting
-  | 'withdrawal'        // Cash opname
-  | 'position_buy'      // Positie gekocht (aandelen/opties)
-  | 'position_sell'     // Positie verkocht
+  | 'deposit' // Cash storting
+  | 'withdrawal' // Cash opname
+  | 'position_buy' // Positie gekocht (aandelen/opties)
+  | 'position_sell' // Positie verkocht
   | 'premium_collected' // Premie ontvangen (verkochte optie)
-  | 'premium_paid'      // Premie betaald (gekochte optie)
-  | 'dividend'          // Dividend ontvangen
-  | 'fee'               // Kosten (transactiekosten, etc.)
-  | 'adjustment'        // Handmatige correctie portfolio waarde
-  | 'option_roll';      // Optie roll (sluiten + nieuwe openen)
+  | 'premium_paid' // Premie betaald (gekochte optie)
+  | 'dividend' // Dividend ontvangen
+  | 'fee' // Kosten (transactiekosten, etc.)
+  | 'adjustment' // Handmatige correctie portfolio waarde
+  | 'option_roll'; // Optie roll (sluiten + nieuwe openen)
 
 export interface PortfolioTransaction {
   id: string;
@@ -511,14 +527,14 @@ export type UserLevel = 'beginner' | 'medior' | 'senior' | 'expert' | 'offpiste'
 // Level configuration with ski slope names
 export interface LevelConfig {
   level: UserLevel;
-  name: string;          // Display name (e.g., "Beginner")
-  slopeName: string;     // Ski slope analogy (e.g., "Baby Slope")
-  slopeColor: string;    // Ski slope color (green, blue, red, black)
-  icon: string;          // Emoji or icon identifier
-  description: string;   // What this level includes
+  name: string; // Display name (e.g., "Beginner")
+  slopeName: string; // Ski slope analogy (e.g., "Baby Slope")
+  slopeColor: string; // Ski slope color (green, blue, red, black)
+  icon: string; // Emoji or icon identifier
+  description: string; // What this level includes
   features: FeatureId[]; // Features unlocked at this level
   creditsRequired: number; // Credits needed to unlock (0 for beginner)
-  priceEUR?: number;     // Optional price to unlock immediately
+  priceEUR?: number; // Optional price to unlock immediately
 }
 
 // Feature identifiers for gating
@@ -595,7 +611,7 @@ export interface Lesson {
   level: UserLevel;
   title: string;
   description: string;
-  duration: string;      // e.g., "15 min"
+  duration: string; // e.g., "15 min"
   contentType: 'video' | 'article' | 'interactive' | 'quiz';
   creditsAwarded: number;
   order: number;
@@ -626,9 +642,9 @@ export interface RecommendedBook {
   description: string;
   coverImage?: string;
   amazonUrl?: string;
-  bolUrl?: string;       // Bol.com for Belgian/Dutch users
+  bolUrl?: string; // Bol.com for Belgian/Dutch users
   category: 'beginner' | 'options' | 'leaps' | 'income' | 'psychology' | 'tax';
-  rating?: number;       // 1-5 stars
+  rating?: number; // 1-5 stars
   difficulty: 'easy' | 'medium' | 'advanced';
 }
 
@@ -638,9 +654,9 @@ export interface VideoTutorial {
   level: UserLevel;
   title: string;
   description: string;
-  duration: string;      // e.g., "15:30"
+  duration: string; // e.g., "15:30"
   thumbnailUrl?: string;
-  videoUrl?: string;     // YouTube, Vimeo, etc.
+  videoUrl?: string; // YouTube, Vimeo, etc.
   platform: 'youtube' | 'vimeo' | 'internal' | 'external';
   category: 'basics' | 'strategy' | 'platform' | 'analysis';
   creditsAwarded?: number;
@@ -696,36 +712,36 @@ export interface EducationLesson {
 
 // Content block types for lessons
 export type EducationContentType =
-  | 'text'           // Regular text paragraph
-  | 'heading'        // Section heading
-  | 'callout'        // Important info box (info, warning, tip)
-  | 'definition'     // Term definition box
-  | 'comparison'     // Side-by-side comparison
-  | 'diagram'        // Visual diagram/image
-  | 'example'        // Practical example with numbers
-  | 'formula'        // Mathematical formula
-  | 'list'           // Bulleted or numbered list
-  | 'table'          // Data table
-  | 'analogy'        // Real-world analogy box
-  | 'video';         // Embedded video
+  | 'text' // Regular text paragraph
+  | 'heading' // Section heading
+  | 'callout' // Important info box (info, warning, tip)
+  | 'definition' // Term definition box
+  | 'comparison' // Side-by-side comparison
+  | 'diagram' // Visual diagram/image
+  | 'example' // Practical example with numbers
+  | 'formula' // Mathematical formula
+  | 'list' // Bulleted or numbered list
+  | 'table' // Data table
+  | 'analogy' // Real-world analogy box
+  | 'video'; // Embedded video
 
 export interface EducationContent {
   type: EducationContentType;
   content: string;
   // Optional properties based on type
   variant?: 'info' | 'warning' | 'tip' | 'success'; // For callout
-  term?: string;           // For definition
-  items?: string[];        // For list
-  leftTitle?: string;      // For comparison
-  rightTitle?: string;     // For comparison
-  leftItems?: string[];    // For comparison
-  rightItems?: string[];   // For comparison
-  columns?: string[];      // For table
-  rows?: string[][];       // For table
-  imageUrl?: string;       // For diagram
-  caption?: string;        // For diagram/example
-  videoUrl?: string;       // For video
-  duration?: string;       // For video
+  term?: string; // For definition
+  items?: string[]; // For list
+  leftTitle?: string; // For comparison
+  rightTitle?: string; // For comparison
+  leftItems?: string[]; // For comparison
+  rightItems?: string[]; // For comparison
+  columns?: string[]; // For table
+  rows?: string[][]; // For table
+  imageUrl?: string; // For diagram
+  caption?: string; // For diagram/example
+  videoUrl?: string; // For video
+  duration?: string; // For video
 }
 
 // Quiz for lesson completion
@@ -760,19 +776,19 @@ export type CommunityChannel = 'ideas' | 'general' | 'quant';
 export interface CommunityAuthor {
   name: string;
   initials: string;
-  color: string;        // avatar-achtergrondkleur (hex)
-  level: UserLevel;     // bepaalt de piste-badge
+  color: string; // avatar-achtergrondkleur (hex)
+  level: UserLevel; // bepaalt de piste-badge
 }
 
 export interface TradeIdea {
   ticker: string;
-  strategy: FeatureId;  // bv. 'cash_secured_puts' | 'covered_calls'
+  strategy: FeatureId; // bv. 'cash_secured_puts' | 'covered_calls'
   expiry: string;
   strike?: number;
   premium?: number;
   returnPct?: number;
   delta?: number;
-  ivRank: number;       // 0–100, de "juice"
+  ivRank: number; // 0–100, de "juice"
 }
 
 export interface CommunityReply {
@@ -796,27 +812,26 @@ export interface CommunityPost {
 
 // Mentorship (ski-school) — losgekoppeld van credits/levels.
 export type MentorshipFocus =
-  | 'options'      // optiestrategieën
-  | 'risk'         // risicobeheer
-  | 'psychology'   // trading-psychologie
-  | 'portfolio'    // portefeuille-opbouw
-  | 'quant';       // kwantitatief / off-piste
+  | 'options' // optiestrategieën
+  | 'risk' // risicobeheer
+  | 'psychology' // trading-psychologie
+  | 'portfolio' // portefeuille-opbouw
+  | 'quant'; // kwantitatief / off-piste
 
 export type MentorStyle =
-  | 'hands_on'     // intensief, samen traden
-  | 'coaching'     // periodieke coaching/reviews
-  | 'async';       // asynchroon (berichten/feedback)
+  | 'hands_on' // intensief, samen traden
+  | 'coaching' // periodieke coaching/reviews
+  | 'async'; // asynchroon (berichten/feedback)
 
 export type MentorshipStatus = 'pending';
 
 export interface MentorshipRequest {
   id: string;
   focus: MentorshipFocus;
-  level: UserLevel;        // huidig niveau van de aanvrager
+  level: UserLevel; // huidig niveau van de aanvrager
   style: MentorStyle;
-  availability: string;    // vrije tekst, bv. "weekends, 2u/week"
-  message: string;         // motivatie / context
-  createdAt: string;       // ISO
+  availability: string; // vrije tekst, bv. "weekends, 2u/week"
+  message: string; // motivatie / context
+  createdAt: string; // ISO
   status: MentorshipStatus;
 }
-

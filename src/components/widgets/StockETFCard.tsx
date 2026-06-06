@@ -33,7 +33,11 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
   onDismissStrategyAlert,
   canWriteCoveredCallsOverride,
 }) => {
-  const [confirmDismiss, setConfirmDismiss] = useState<{ isOpen: boolean; alertId: string | null; message: string }>({
+  const [confirmDismiss, setConfirmDismiss] = useState<{
+    isOpen: boolean;
+    alertId: string | null;
+    message: string;
+  }>({
     isOpen: false,
     alertId: null,
     message: '',
@@ -47,13 +51,12 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
   // Determine if covered calls can be written
   const minShares = position.miniContractsSupported ? 10 : 100;
   const canWriteCoveredCalls =
-    canWriteCoveredCallsOverride ??
-    (position.shares >= minShares && position.optionsSupported);
+    canWriteCoveredCallsOverride ?? (position.shares >= minShares && position.optionsSupported);
 
   // Count unread alerts and separate by type
-  const unreadAlerts = alerts.filter(a => !a.isRead);
-  const ruleAlerts = strategyAlerts.filter(a => a.category === 'alert');
-  const ruleOpportunities = strategyAlerts.filter(a => a.category === 'opportunity');
+  const unreadAlerts = alerts.filter((a) => !a.isRead);
+  const ruleAlerts = strategyAlerts.filter((a) => a.category === 'alert');
+  const ruleOpportunities = strategyAlerts.filter((a) => a.category === 'opportunity');
 
   const handleDismissAlert = (e: React.MouseEvent, alertId: string, message: string) => {
     e.stopPropagation();
@@ -71,7 +74,9 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
     <div
       onClick={onEdit ? () => onEdit(position) : onCardClick}
       className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-5 hover:shadow-md transition-all ${
-        onEdit || onCardClick ? 'cursor-pointer hover:border-primary-400 dark:hover:border-primary-500' : ''
+        onEdit || onCardClick
+          ? 'cursor-pointer hover:border-primary-400 dark:hover:border-primary-500'
+          : ''
       }`}
     >
       {/* Header with P&L on the right */}
@@ -98,17 +103,23 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
         <div className="text-right">
           <p
             className={`text-lg font-bold ${
-              isProfit ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'
+              isProfit
+                ? 'text-positive-600 dark:text-positive-500'
+                : 'text-negative-600 dark:text-negative-500'
             }`}
           >
-            {isProfit ? '+' : ''}{formatCurrency(Math.abs(profitLoss), allPortfolios)}
+            {isProfit ? '+' : ''}
+            {formatCurrency(Math.abs(profitLoss), allPortfolios)}
           </p>
           <p
             className={`text-sm font-medium ${
-              isProfit ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'
+              isProfit
+                ? 'text-positive-600 dark:text-positive-500'
+                : 'text-negative-600 dark:text-negative-500'
             }`}
           >
-            {isProfit ? '+' : ''}{formatNumber(profitLossPercentage, 2)}%
+            {isProfit ? '+' : ''}
+            {formatNumber(profitLossPercentage, 2)}%
           </p>
         </div>
       </div>
@@ -141,7 +152,10 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
       </div>
 
       {/* Badges at Bottom */}
-      {(unreadAlerts.length > 0 || ruleAlerts.length > 0 || ruleOpportunities.length > 0 || canWriteCoveredCalls) && (
+      {(unreadAlerts.length > 0 ||
+        ruleAlerts.length > 0 ||
+        ruleOpportunities.length > 0 ||
+        canWriteCoveredCalls) && (
         <div className="flex items-center gap-2 pt-3 border-t border-gray-200 dark:border-gray-700">
           {/* Price Alerts Indicator */}
           {unreadAlerts.length > 0 && (

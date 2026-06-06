@@ -21,19 +21,19 @@ export interface CoveredCallCapacity {
  */
 export function computeCoveredCallCapacity(
   lots: StockPosition[],
-  soldCalls: CallOption[],
+  soldCalls: CallOption[]
 ): CoveredCallCapacity {
   const totalShares = lots.reduce((sum, lot) => sum + lot.shares, 0);
 
   // Derived from the ticker; lots of the same ticker are consistent.
   const miniSupported = lots[0]?.miniContractsSupported ?? false;
-  const optionsSupported = lots.length > 0 && lots.every(lot => lot.optionsSupported);
+  const optionsSupported = lots.length > 0 && lots.every((lot) => lot.optionsSupported);
   const sharesPerContract = miniSupported ? 10 : 100;
 
   const maxContracts = Math.floor(totalShares / sharesPerContract);
 
   const coveredContracts = soldCalls
-    .filter(call => !isSpreadLeg(call))
+    .filter((call) => !isSpreadLeg(call))
     .reduce((sum, call) => sum + (call.contracts || 0), 0);
 
   const freeContracts = Math.max(0, maxContracts - coveredContracts);

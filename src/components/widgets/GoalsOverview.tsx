@@ -32,10 +32,12 @@ export const GoalsOverview: React.FC = () => {
 
       // Only update if value has changed significantly (> $1)
       if (Math.abs((goal.currentValue || 0) - newCurrentValue) > 1) {
-        dispatch(updateGoalProgress({
-          id: goal.id,
-          currentValue: newCurrentValue,
-        }));
+        dispatch(
+          updateGoalProgress({
+            id: goal.id,
+            currentValue: newCurrentValue,
+          })
+        );
       }
     });
   }, [activeGoals, totalPortfolioValue, dispatch]);
@@ -152,9 +154,7 @@ export const GoalsOverview: React.FC = () => {
                       </span>
                     )}
                   </div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white">
-                    {goal.title}
-                  </h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">{goal.title}</h3>
                   {goal.description && (
                     <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
                       {goal.description}
@@ -179,10 +179,10 @@ export const GoalsOverview: React.FC = () => {
                       progress >= 100
                         ? 'bg-positive-500'
                         : progress >= 75
-                        ? 'bg-primary-500'
-                        : progress >= 50
-                        ? 'bg-caution-500'
-                        : 'bg-caution-500'
+                          ? 'bg-primary-500'
+                          : progress >= 50
+                            ? 'bg-caution-500'
+                            : 'bg-caution-500'
                     }`}
                     style={{ width: `${progress}%` }}
                   />
@@ -202,16 +202,18 @@ export const GoalsOverview: React.FC = () => {
                   </div>
                   {goal.deadline && (
                     <div className="flex items-center gap-1.5">
-                      <Calendar className={`w-4 h-4 ${overdue ? 'text-negative-600' : 'text-gray-500 dark:text-gray-400'}`} />
-                      <span className={`${overdue ? 'text-negative-600 dark:text-negative-500 font-medium' : 'text-gray-700 dark:text-gray-300'}`}>
+                      <Calendar
+                        className={`w-4 h-4 ${overdue ? 'text-negative-600' : 'text-gray-500 dark:text-gray-400'}`}
+                      />
+                      <span
+                        className={`${overdue ? 'text-negative-600 dark:text-negative-500 font-medium' : 'text-gray-700 dark:text-gray-300'}`}
+                      >
                         {formatDate(goal.deadline)}
                       </span>
                     </div>
                   )}
                 </div>
-                {progress >= 100 && (
-                  <CheckCircle2 className="w-5 h-5 text-positive-600" />
-                )}
+                {progress >= 100 && <CheckCircle2 className="w-5 h-5 text-positive-600" />}
               </div>
             </div>
           );

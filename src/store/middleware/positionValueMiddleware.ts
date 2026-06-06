@@ -25,28 +25,25 @@ const isTransactionMutation = (action: any): boolean => {
 };
 
 // Calculate portfolio value from positions
-const calculatePortfolioValue = (
-  state: RootState,
-  portfolioName: string
-): number => {
-  const portfolio = state.portfolios.portfolios.find(p => p.name === portfolioName);
+const calculatePortfolioValue = (state: RootState, portfolioName: string): number => {
+  const portfolio = state.portfolios.portfolios.find((p) => p.name === portfolioName);
   if (!portfolio) return 0;
 
   // Get all open positions for this portfolio
   const portfolioPositions = state.positions.positions.filter(
-    p => p.portfolio === portfolioName && p.status === 'open'
+    (p) => p.portfolio === portfolioName && p.status === 'open'
   );
 
   // Calculate total position value and cost basis
   let totalCurrentValue = 0;
   let totalCostBasis = 0;
 
-  portfolioPositions.forEach(pos => {
+  portfolioPositions.forEach((pos) => {
     if (pos.type === 'stock' || pos.type === 'etf') {
       const stockPos = pos as StockPosition;
       // Get the latest price from tickers or position
       const ticker = state.tickers.tickers.find(
-        t => t.symbol.toUpperCase() === stockPos.ticker.toUpperCase()
+        (t) => t.symbol.toUpperCase() === stockPos.ticker.toUpperCase()
       );
       const currentPrice = ticker?.currentPrice || stockPos.currentPrice || stockPos.purchasePrice;
       totalCurrentValue += stockPos.shares * currentPrice;
@@ -61,7 +58,7 @@ const calculatePortfolioValue = (
         // Short options: negative cost basis (money received)
         // Current value is also negative (liability)
         // Add the negative value directly (which subtracts the liability from total)
-        totalCurrentValue += (option.currentValue ?? option.costBasis);
+        totalCurrentValue += option.currentValue ?? option.costBasis;
         totalCostBasis += option.costBasis; // Already negative
       }
     }
@@ -72,9 +69,9 @@ const calculatePortfolioValue = (
   let cashBalance = portfolio.initialCapital;
 
   const transactions = state.portfolios.transactions || [];
-  const portfolioTransactions = transactions.filter(t => t.portfolio === portfolioName);
+  const portfolioTransactions = transactions.filter((t) => t.portfolio === portfolioName);
 
-  portfolioTransactions.forEach(transaction => {
+  portfolioTransactions.forEach((transaction) => {
     if (transaction.type === 'deposit') {
       cashBalance += transaction.amount;
     } else if (transaction.type === 'withdrawal') {
@@ -103,7 +100,11 @@ const calculatePortfolioValue = (
 // Get affected portfolios from the action. Some actions (a batched value update or
 // an option-premium tick matched by symbol/strike/expiration) can affect positions
 // across multiple portfolios, so this always returns a (de-duplicated) list.
-const getAffectedPortfolios = (action: any, stateBefore: RootState, stateAfter: RootState): string[] => {
+const getAffectedPortfolios = (
+  action: any,
+  stateBefore: RootState,
+  stateAfter: RootState
+): string[] => {
   const dedupe = (names: (string | null | undefined)[]): string[] =>
     Array.from(new Set(names.filter((n): n is string => !!n)));
 
@@ -113,24 +114,24 @@ const getAffectedPortfolios = (action: any, stateBefore: RootState, stateAfter: 
       return dedupe([action.payload.portfolio]);
 
     case 'positions/closePosition': {
-      const position = stateBefore.positions.positions.find(p => p.id === action.payload.id);
+      const position = stateBefore.positions.positions.find((p) => p.id === action.payload.id);
       return dedupe([position?.portfolio]);
     }
 
     case 'positions/removePosition': {
-      const position = stateBefore.positions.positions.find(p => p.id === action.payload);
+      const position = stateBefore.positions.positions.find((p) => p.id === action.payload);
       return dedupe([position?.portfolio]);
     }
 
     case 'positions/updatePositionValue': {
-      const position = stateAfter.positions.positions.find(p => p.id === action.payload.id);
+      const position = stateAfter.positions.positions.find((p) => p.id === action.payload.id);
       return dedupe([position?.portfolio]);
     }
 
     case 'positions/updateMultiplePositionValues': {
-      const ids = new Set((action.payload as Array<{ id: string }>).map(p => p.id));
+      const ids = new Set((action.payload as Array<{ id: string }>).map((p) => p.id));
       return dedupe(
-        stateAfter.positions.positions.filter(p => ids.has(p.id)).map(p => p.portfolio)
+        stateAfter.positions.positions.filter((p) => ids.has(p.id)).map((p) => p.portfolio)
       );
     }
 
@@ -138,15 +139,16 @@ const getAffectedPortfolios = (action: any, stateBefore: RootState, stateAfter: 
       const { symbol, strike, expiration, optionType } = action.payload;
       return dedupe(
         stateAfter.positions.positions
-          .filter((p): p is Extract<Position, { strike: number; expiration: string }> =>
-            (p.type === 'call' || p.type === 'put') &&
-            p.type === optionType &&
-            p.status === 'open' &&
-            p.ticker.toUpperCase() === String(symbol).toUpperCase() &&
-            (p as any).strike === strike &&
-            (p as any).expiration === expiration
+          .filter(
+            (p): p is Extract<Position, { strike: number; expiration: string }> =>
+              (p.type === 'call' || p.type === 'put') &&
+              p.type === optionType &&
+              p.status === 'open' &&
+              p.ticker.toUpperCase() === String(symbol).toUpperCase() &&
+              (p as any).strike === strike &&
+              (p as any).expiration === expiration
           )
-          .map(p => p.portfolio)
+          .map((p) => p.portfolio)
       );
     }
 
@@ -178,10 +180,12 @@ export const positionValueMiddleware: Middleware = (store) => (next) => (action)
 
   portfolioNames.forEach((portfolioName) => {
     const newPortfolioValue = calculatePortfolioValue(stateAfter, portfolioName);
-    store.dispatch(updatePortfolioValue({
-      portfolio: portfolioName,
-      value: Math.round(newPortfolioValue * 100) / 100, // Round to 2 decimals
-    }));
+    store.dispatch(
+      updatePortfolioValue({
+        portfolio: portfolioName,
+        value: Math.round(newPortfolioValue * 100) / 100, // Round to 2 decimals
+      })
+    );
   });
 
   return result;

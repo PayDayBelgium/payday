@@ -8,12 +8,14 @@ export const restoreFromBackup = (backup: BackupData) => {
   return (dispatch: Dispatch) => {
     try {
       // Restore portfolios data (including transactions)
-      dispatch(loadMockData({
-        portfolios: backup.data.portfolios.portfolios,
-        summaries: backup.data.portfolios.summaries,
-        dailyData: backup.data.portfolios.dailyData,
-        transactions: backup.data.portfolios.transactions,
-      }));
+      dispatch(
+        loadMockData({
+          portfolios: backup.data.portfolios.portfolios,
+          summaries: backup.data.portfolios.summaries,
+          dailyData: backup.data.portfolios.dailyData,
+          transactions: backup.data.portfolios.transactions,
+        })
+      );
 
       // Restore positions
       if (backup.data.positions) {

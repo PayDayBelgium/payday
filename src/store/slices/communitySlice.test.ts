@@ -54,7 +54,11 @@ describe('communitySlice', () => {
   });
 
   it('selectPostsByChannel filters by channel', () => {
-    const root: any = { community: { posts: [basePost({ id: 'a', channel: 'ideas' }), basePost({ id: 'b', channel: 'general' })] } };
+    const root: any = {
+      community: {
+        posts: [basePost({ id: 'a', channel: 'ideas' }), basePost({ id: 'b', channel: 'general' })],
+      },
+    };
     expect(selectPostsByChannel('ideas')(root).map((p) => p.id)).toEqual(['a']);
   });
 
@@ -62,8 +66,16 @@ describe('communitySlice', () => {
     const root: any = {
       community: {
         posts: [
-          basePost({ id: 'low', channel: 'ideas', tradeIdea: { ticker: 'X', strategy: 'cash_secured_puts', expiry: '', ivRank: 40 } }),
-          basePost({ id: 'high', channel: 'ideas', tradeIdea: { ticker: 'Y', strategy: 'cash_secured_puts', expiry: '', ivRank: 90 } }),
+          basePost({
+            id: 'low',
+            channel: 'ideas',
+            tradeIdea: { ticker: 'X', strategy: 'cash_secured_puts', expiry: '', ivRank: 40 },
+          }),
+          basePost({
+            id: 'high',
+            channel: 'ideas',
+            tradeIdea: { ticker: 'Y', strategy: 'cash_secured_puts', expiry: '', ivRank: 90 },
+          }),
           basePost({ id: 'none', channel: 'general' }),
         ],
       },
@@ -72,7 +84,9 @@ describe('communitySlice', () => {
   });
 
   it('selectRecentPosts limits the count', () => {
-    const root: any = { community: { posts: [basePost({ id: '1' }), basePost({ id: '2' }), basePost({ id: '3' })] } };
+    const root: any = {
+      community: { posts: [basePost({ id: '1' }), basePost({ id: '2' }), basePost({ id: '3' })] },
+    };
     expect(selectRecentPosts(2)(root)).toHaveLength(2);
   });
 });

@@ -9,7 +9,9 @@ const DailyRoutineForm: React.FC = () => {
   const portfolios = useAppSelector((state) => state.portfolios.summaries);
 
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [selectedPortfolio, setSelectedPortfolio] = useState<PortfolioName>(portfolios[0]?.portfolio || 'Lynx');
+  const [selectedPortfolio, setSelectedPortfolio] = useState<PortfolioName>(
+    portfolios[0]?.portfolio || 'Lynx'
+  );
   const [totalValue, setTotalValue] = useState('');
   const [cash, setCash] = useState('');
 
@@ -39,11 +41,16 @@ const DailyRoutineForm: React.FC = () => {
 
   return (
     <div className="p-4 border rounded-lg shadow-md bg-white dark:bg-gray-800">
-      <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Daily Portfolio Update</h2>
+      <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">
+        Daily Portfolio Update
+      </h2>
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
-            <label htmlFor="date" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label
+              htmlFor="date"
+              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >
               Date
             </label>
             <input
@@ -56,7 +63,10 @@ const DailyRoutineForm: React.FC = () => {
             />
           </div>
           <div>
-            <label htmlFor="portfolio" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label
+              htmlFor="portfolio"
+              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >
               Portfolio
             </label>
             <select
@@ -73,7 +83,10 @@ const DailyRoutineForm: React.FC = () => {
             </select>
           </div>
           <div>
-            <label htmlFor="totalValue" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label
+              htmlFor="totalValue"
+              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >
               Total Value
             </label>
             <input
@@ -87,7 +100,10 @@ const DailyRoutineForm: React.FC = () => {
             />
           </div>
           <div>
-            <label htmlFor="cash" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label
+              htmlFor="cash"
+              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >
               Cash
             </label>
             <input

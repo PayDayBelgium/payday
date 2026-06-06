@@ -50,14 +50,22 @@ interface CCResults {
 
 // Tooltip explanations for each calculation
 const TOOLTIPS = {
-  totalPremium: 'Totale premium = Premium per contract × Aantal contracten × 100\n\nDit is het bedrag dat je direct ontvangt bij het verkopen van de covered calls.',
-  premiumReturn: 'Premium Return = (Totale Premium / Totaal Geïnvesteerd) × 100%\n\nDit is het rendement dat je behaalt puur door de premium, ongeacht wat er met de koers gebeurt.',
-  annualizedPremiumReturn: 'Annualized Return = Premium Return × (365 / Dagen tot Expiratie)\n\nDit toont wat je zou verdienen als je dit rendement het hele jaar zou herhalen. Let op: dit is theoretisch.',
-  distanceToStrike: 'Verschil Strike - Huidige Koers\n\nDit is hoeveel het aandeel moet stijgen voordat je aandelen worden weggeroepen (assigned).',
-  breakEvenDown: 'Break-even = Huidige Koers - Premium per Aandeel\n\nTot dit punt ben je beschermd door de ontvangen premium. Onder dit punt begin je verlies te maken.',
-  returnIfCalled: 'Return If Called = (Totale Winst / Kostprijs) × 100%\n\nTotale winst = Premium + (Strike - Kostprijs) × Aandelen\n\nDit is je totale rendement als de optie wordt uitgeoefend en je aandelen verkoopt.',
-  newCostBasis: 'Nieuwe Kostprijs = Originele Kostprijs - Premium per Aandeel\n\nDoor de ontvangen premium daalt effectief je aankoopprijs.',
-  contracts: 'Aantal Contracten = Aantal Aandelen / 100\n\nElk optiecontract vertegenwoordigt 100 aandelen.',
+  totalPremium:
+    'Totale premium = Premium per contract × Aantal contracten × 100\n\nDit is het bedrag dat je direct ontvangt bij het verkopen van de covered calls.',
+  premiumReturn:
+    'Premium Return = (Totale Premium / Totaal Geïnvesteerd) × 100%\n\nDit is het rendement dat je behaalt puur door de premium, ongeacht wat er met de koers gebeurt.',
+  annualizedPremiumReturn:
+    'Annualized Return = Premium Return × (365 / Dagen tot Expiratie)\n\nDit toont wat je zou verdienen als je dit rendement het hele jaar zou herhalen. Let op: dit is theoretisch.',
+  distanceToStrike:
+    'Verschil Strike - Huidige Koers\n\nDit is hoeveel het aandeel moet stijgen voordat je aandelen worden weggeroepen (assigned).',
+  breakEvenDown:
+    'Break-even = Huidige Koers - Premium per Aandeel\n\nTot dit punt ben je beschermd door de ontvangen premium. Onder dit punt begin je verlies te maken.',
+  returnIfCalled:
+    'Return If Called = (Totale Winst / Kostprijs) × 100%\n\nTotale winst = Premium + (Strike - Kostprijs) × Aandelen\n\nDit is je totale rendement als de optie wordt uitgeoefend en je aandelen verkoopt.',
+  newCostBasis:
+    'Nieuwe Kostprijs = Originele Kostprijs - Premium per Aandeel\n\nDoor de ontvangen premium daalt effectief je aankoopprijs.',
+  contracts:
+    'Aantal Contracten = Aantal Aandelen / 100\n\nElk optiecontract vertegenwoordigt 100 aandelen.',
 };
 
 const MULTIPLIER = 100;
@@ -97,7 +105,7 @@ export const CoveredCallSimulator: React.FC = () => {
   }, [inputs]);
 
   const handleInputChange = (field: keyof CCInputs, value: string | number) => {
-    setInputs(prev => ({
+    setInputs((prev) => ({
       ...prev,
       [field]: value,
     }));
@@ -126,7 +134,7 @@ export const CoveredCallSimulator: React.FC = () => {
   };
 
   const handleOpenCreateTicker = (symbol: string) => {
-    setNewTickerData(prev => ({
+    setNewTickerData((prev) => ({
       ...prev,
       symbol: symbol.toUpperCase(),
     }));
@@ -152,7 +160,9 @@ export const CoveredCallSimulator: React.FC = () => {
     // Calculate days to expiration
     const today = new Date();
     const expDate = new Date(expirationDate);
-    const daysToExpiration = Math.ceil((expDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    const daysToExpiration = Math.ceil(
+      (expDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+    );
 
     if (daysToExpiration <= 0) {
       setResults(null);
@@ -226,17 +236,13 @@ export const CoveredCallSimulator: React.FC = () => {
           {label}
           {tooltip && (
             <PortalTooltip
-              content={
-                <pre className="whitespace-pre-wrap text-xs max-w-xs">{tooltip}</pre>
-              }
+              content={<pre className="whitespace-pre-wrap text-xs max-w-xs">{tooltip}</pre>}
             >
               <Info className="w-3.5 h-3.5 text-gray-400 hover:text-primary-500 cursor-help" />
             </PortalTooltip>
           )}
         </span>
-        <span className={`font-semibold ${highlightClasses[highlight]}`}>
-          {value}
-        </span>
+        <span className={`font-semibold ${highlightClasses[highlight]}`}>{value}</span>
       </div>
     );
   };
@@ -246,8 +252,9 @@ export const CoveredCallSimulator: React.FC = () => {
       {/* Explanatory note — title is provided by the global header */}
       <div className="bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 rounded-lg p-4">
         <p className="text-sm text-primary-700 dark:text-primary-200">
-          <strong>Wat is een Covered Call?</strong> Je verkoopt een call optie op aandelen die je bezit.
-          Je ontvangt premium als inkomen, maar als de koers boven de strike komt, worden je aandelen mogelijk weggeroepen.
+          <strong>Wat is een Covered Call?</strong> Je verkoopt een call optie op aandelen die je
+          bezit. Je ontvangt premium als inkomen, maar als de koers boven de strike komt, worden je
+          aandelen mogelijk weggeroepen.
         </p>
       </div>
 
@@ -269,14 +276,21 @@ export const CoveredCallSimulator: React.FC = () => {
                   <input
                     type="text"
                     value={newTickerData.symbol}
-                    onChange={(e) => setNewTickerData(prev => ({ ...prev, symbol: e.target.value.toUpperCase() }))}
+                    onChange={(e) =>
+                      setNewTickerData((prev) => ({
+                        ...prev,
+                        symbol: e.target.value.toUpperCase(),
+                      }))
+                    }
                     placeholder="Ticker symbol (bijv. AAPL)"
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                   <input
                     type="text"
                     value={newTickerData.name}
-                    onChange={(e) => setNewTickerData(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={(e) =>
+                      setNewTickerData((prev) => ({ ...prev, name: e.target.value }))
+                    }
                     placeholder="Bedrijfsnaam"
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
@@ -333,7 +347,9 @@ export const CoveredCallSimulator: React.FC = () => {
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
               <p className="text-xs text-gray-500 mt-1">
-                {inputs.shares ? `${Math.floor(inputs.shares / 100)} contract(en)` : 'Minimaal 100 aandelen voor 1 contract'}
+                {inputs.shares
+                  ? `${Math.floor(inputs.shares / 100)} contract(en)`
+                  : 'Minimaal 100 aandelen voor 1 contract'}
               </p>
             </div>
 
@@ -371,11 +387,12 @@ export const CoveredCallSimulator: React.FC = () => {
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
               {inputs.stockPrice > 0 && inputs.strikePrice > 0 && (
-                <p className={`text-xs mt-1 ${inputs.strikePrice >= inputs.stockPrice ? 'text-positive-600' : 'text-caution-600'}`}>
+                <p
+                  className={`text-xs mt-1 ${inputs.strikePrice >= inputs.stockPrice ? 'text-positive-600' : 'text-caution-600'}`}
+                >
                   {inputs.strikePrice >= inputs.stockPrice
-                    ? `${((inputs.strikePrice - inputs.stockPrice) / inputs.stockPrice * 100).toFixed(1)}% boven huidige prijs (OTM)`
-                    : `${((inputs.stockPrice - inputs.strikePrice) / inputs.stockPrice * 100).toFixed(1)}% onder huidige prijs (ITM)`
-                  }
+                    ? `${(((inputs.strikePrice - inputs.stockPrice) / inputs.stockPrice) * 100).toFixed(1)}% boven huidige prijs (OTM)`
+                    : `${(((inputs.stockPrice - inputs.strikePrice) / inputs.stockPrice) * 100).toFixed(1)}% onder huidige prijs (ITM)`}
                 </p>
               )}
             </div>
@@ -417,7 +434,9 @@ export const CoveredCallSimulator: React.FC = () => {
                 <div className="bg-positive-50 dark:bg-positive-700/15 rounded-xl p-4 border border-positive-500/20 dark:border-positive-700/30">
                   <div className="flex items-center gap-2 mb-2">
                     <DollarSign className="w-5 h-5 text-positive-600 dark:text-positive-500" />
-                    <span className="text-sm text-positive-700 dark:text-positive-500">Premium Inkomen</span>
+                    <span className="text-sm text-positive-700 dark:text-positive-500">
+                      Premium Inkomen
+                    </span>
                   </div>
                   <p className="text-2xl font-bold text-positive-700 dark:text-positive-500">
                     ${formatNumber(results.totalPremium)}
@@ -430,7 +449,9 @@ export const CoveredCallSimulator: React.FC = () => {
                 <div className="bg-primary-50 dark:bg-primary-900/20 rounded-xl p-4 border border-primary-200 dark:border-primary-800">
                   <div className="flex items-center gap-2 mb-2">
                     <Percent className="w-5 h-5 text-primary-700 dark:text-primary-300" />
-                    <span className="text-sm text-primary-700 dark:text-primary-300">Rendement</span>
+                    <span className="text-sm text-primary-700 dark:text-primary-300">
+                      Rendement
+                    </span>
                   </div>
                   <p className="text-2xl font-bold text-primary-700 dark:text-primary-300">
                     {results.premiumReturn.toFixed(2)}%

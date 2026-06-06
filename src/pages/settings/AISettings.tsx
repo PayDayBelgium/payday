@@ -2,7 +2,12 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/common/Button';
-import { loadAIConfig, saveAIConfig, withApiKey, isProviderConfigured } from '../../services/ai/config';
+import {
+  loadAIConfig,
+  saveAIConfig,
+  withApiKey,
+  isProviderConfigured,
+} from '../../services/ai/config';
 
 export const AISettings: React.FC = () => {
   const { t } = useTranslation();
@@ -23,7 +28,9 @@ export const AISettings: React.FC = () => {
 
   return (
     <div className="max-w-xl space-y-6">
-      <h2 className="text-lg font-semibold text-ink-800 dark:text-ink-100">{t('ai.settingsHeading')}</h2>
+      <h2 className="text-lg font-semibold text-ink-800 dark:text-ink-100">
+        {t('ai.settingsHeading')}
+      </h2>
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-ink-700 dark:text-ink-200">
@@ -34,7 +41,8 @@ export const AISettings: React.FC = () => {
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-ink-700 dark:text-ink-200">
-          {t('ai.apiKey')} {configured && <span className="text-positive-600">{t('ai.apiKeySet')}</span>}
+          {t('ai.apiKey')}{' '}
+          {configured && <span className="text-positive-600">{t('ai.apiKeySet')}</span>}
         </label>
         <input
           type="password"

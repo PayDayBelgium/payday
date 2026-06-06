@@ -6,7 +6,13 @@ import { selectPositions } from '../../store/slices/positionsSlice';
 import { formatCurrency } from '../../utils/currencyHelpers';
 import { formatNumber } from '../../utils/numberFormat';
 import { getSpreadId } from '../../utils/spreadHelpers';
-import type { Position, PortfolioName, CashSecuredPut, CreditSpread, IronCondor } from '../../types';
+import type {
+  Position,
+  PortfolioName,
+  CashSecuredPut,
+  CreditSpread,
+  IronCondor,
+} from '../../types';
 
 interface OnderpandPosition {
   id: string;
@@ -63,11 +69,11 @@ export const CashOnderpandAnalysis: React.FC = () => {
     const portfolioMap = new Map<PortfolioName, PortfolioCashAnalysis>();
 
     // Initialize portfolios with options support
-    portfolios.forEach(portfolio => {
+    portfolios.forEach((portfolio) => {
       if (portfolio.hasOptions) {
         // Real available cash for the portfolio (derived in selectPortfolioSummaries),
         // not a hardcoded placeholder. freeCash = totalCash - reserved collateral.
-        const totalCash = summaries.find(s => s.portfolio === portfolio.name)?.cash ?? 0;
+        const totalCash = summaries.find((s) => s.portfolio === portfolio.name)?.cash ?? 0;
         portfolioMap.set(portfolio.name, {
           portfolio: portfolio.name,
           totalCash,
@@ -83,9 +89,11 @@ export const CashOnderpandAnalysis: React.FC = () => {
     // Track processed spreads to avoid double-counting
     const processedSpreads = new Set<string>();
 
-    positions.forEach(position => {
+    positions.forEach((position) => {
       // Skip non-option positions
-      if (!['cash-secured-put', 'credit-spread', 'iron-condor', 'put', 'call'].includes(position.type)) {
+      if (
+        !['cash-secured-put', 'credit-spread', 'iron-condor', 'put', 'call'].includes(position.type)
+      ) {
         return;
       }
 
@@ -158,7 +166,7 @@ export const CashOnderpandAnalysis: React.FC = () => {
     });
 
     // Calculate free cash
-    portfolioMap.forEach(analysis => {
+    portfolioMap.forEach((analysis) => {
       analysis.freeCash = analysis.totalCash - analysis.totalOnderpand;
     });
 
@@ -173,7 +181,7 @@ export const CashOnderpandAnalysis: React.FC = () => {
       positionsCount: 0,
     };
 
-    cashAnalysis.forEach(portfolio => {
+    cashAnalysis.forEach((portfolio) => {
       total.totalCash += portfolio.totalCash;
       total.totalOnderpand += portfolio.totalOnderpand;
       total.freeCash += portfolio.freeCash;
@@ -187,7 +195,8 @@ export const CashOnderpandAnalysis: React.FC = () => {
     return (
       <div className="bg-caution-50 dark:bg-caution-600/15 border border-caution-500/30 dark:border-caution-500/30 rounded-lg p-4">
         <p className="text-sm text-caution-600 dark:text-amber-200">
-          Geen portfolios met opties gevonden. Deze analyse is alleen beschikbaar voor portfolios die opties ondersteunen.
+          Geen portfolios met opties gevonden. Deze analyse is alleen beschikbaar voor portfolios
+          die opties ondersteunen.
         </p>
       </div>
     );
@@ -244,16 +253,15 @@ export const CashOnderpandAnalysis: React.FC = () => {
           <p className="text-2xl font-bold text-gray-900 dark:text-white">
             {totalAnalysis.totalCash > 0
               ? formatNumber((totalAnalysis.totalOnderpand / totalAnalysis.totalCash) * 100, 1)
-              : 0}%
+              : 0}
+            %
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            Van totale cash
-          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Van totale cash</p>
         </div>
       </div>
 
       {/* Per Portfolio Analysis */}
-      {cashAnalysis.map(portfolio => (
+      {cashAnalysis.map((portfolio) => (
         <div
           key={portfolio.portfolio}
           className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
@@ -261,7 +269,9 @@ export const CashOnderpandAnalysis: React.FC = () => {
           {/* Portfolio Header */}
           <div className="bg-gradient-to-r from-primary-50 to-primary-50 dark:from-gray-700 dark:to-gray-750 p-4 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white">{portfolio.portfolio}</h3>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                {portfolio.portfolio}
+              </h3>
               <div className="flex gap-4 text-sm">
                 <div className="text-right">
                   <p className="text-gray-600 dark:text-gray-400">Cash</p>
@@ -315,7 +325,7 @@ export const CashOnderpandAnalysis: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {portfolio.positions.map(position => (
+                  {portfolio.positions.map((position) => (
                     <tr key={position.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                       <td className="px-4 py-3 whitespace-nowrap">
                         <span className="font-medium text-gray-900 dark:text-white">
@@ -323,14 +333,20 @@ export const CashOnderpandAnalysis: React.FC = () => {
                         </span>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <span className={`px-2 py-1 text-xs rounded-full ${
-                          position.type === 'cash-secured-put'
-                            ? 'bg-surface-muted dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300'
+                        <span
+                          className={`px-2 py-1 text-xs rounded-full ${
+                            position.type === 'cash-secured-put'
+                              ? 'bg-surface-muted dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300'
+                              : position.type === 'credit-spread'
+                                ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                                : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400'
+                          }`}
+                        >
+                          {position.type === 'cash-secured-put'
+                            ? 'Cash Secured Put'
                             : position.type === 'credit-spread'
-                            ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                            : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400'
-                        }`}>
-                          {position.type === 'cash-secured-put' ? 'Cash Secured Put' : position.type === 'credit-spread' ? 'Spread' : 'IC'}
+                              ? 'Spread'
+                              : 'IC'}
                         </span>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-right">
@@ -339,27 +355,34 @@ export const CashOnderpandAnalysis: React.FC = () => {
                         </span>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-center text-sm text-gray-600 dark:text-gray-400">
-                        {new Date(position.expiration).toLocaleDateString('nl-NL', { month: 'short', day: 'numeric' })}
+                        {new Date(position.expiration).toLocaleDateString('nl-NL', {
+                          month: 'short',
+                          day: 'numeric',
+                        })}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-center">
-                        <span className={`font-medium ${
-                          position.daysToExpiration < 7
-                            ? 'text-caution-600 dark:text-caution-500'
-                            : position.daysToExpiration < 14
-                            ? 'text-caution-600 dark:text-caution-500'
-                            : 'text-gray-600 dark:text-gray-400'
-                        }`}>
+                        <span
+                          className={`font-medium ${
+                            position.daysToExpiration < 7
+                              ? 'text-caution-600 dark:text-caution-500'
+                              : position.daysToExpiration < 14
+                                ? 'text-caution-600 dark:text-caution-500'
+                                : 'text-gray-600 dark:text-gray-400'
+                          }`}
+                        >
                           {position.daysToExpiration}d
                         </span>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-center">
-                        <span className={`font-medium ${
-                          (position.delta || 0) > 0.5
-                            ? 'text-negative-600 dark:text-negative-500'
-                            : (position.delta || 0) > 0.3
-                            ? 'text-caution-600 dark:text-caution-500'
-                            : 'text-positive-600 dark:text-positive-500'
-                        }`}>
+                        <span
+                          className={`font-medium ${
+                            (position.delta || 0) > 0.5
+                              ? 'text-negative-600 dark:text-negative-500'
+                              : (position.delta || 0) > 0.3
+                                ? 'text-caution-600 dark:text-caution-500'
+                                : 'text-positive-600 dark:text-positive-500'
+                          }`}
+                        >
                           {position.delta ? formatNumber(position.delta, 2) : 'N/A'}
                         </span>
                       </td>
@@ -372,7 +395,9 @@ export const CashOnderpandAnalysis: React.FC = () => {
                             </span>
                           </div>
                         ) : (
-                          <span className="text-xs text-gray-500 dark:text-gray-400">Aanhouden</span>
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            Aanhouden
+                          </span>
                         )}
                       </td>
                     </tr>
@@ -397,10 +422,22 @@ export const CashOnderpandAnalysis: React.FC = () => {
               Hoe gebruik je deze analyse?
             </h4>
             <ul className="text-sm text-primary-700 dark:text-primary-200 space-y-1">
-              <li>• <strong>Vrije cash</strong>: Dit is het bedrag dat je kunt gebruiken voor nieuwe Cash Secured Puts of spreads</li>
-              <li>• <strong>DTE (Days To Expiration)</strong>: Oranje (&lt;7 dagen) = expireert binnenkort, overweeg vroeg sluiten als winstgevend</li>
-              <li>• <strong>Delta</strong>: Hoe dichtbij de strike price. Groen (&lt;0.3) = veilig, Oranje (0.3-0.5) = let op, Rood (&gt;0.5) = ITM risk</li>
-              <li>• <strong>Actie</strong>: "Overweeg sluiten" = positie is &lt;7 DTE én winstgevend, onderpand kan vrijkomen voor nieuwe trades</li>
+              <li>
+                • <strong>Vrije cash</strong>: Dit is het bedrag dat je kunt gebruiken voor nieuwe
+                Cash Secured Puts of spreads
+              </li>
+              <li>
+                • <strong>DTE (Days To Expiration)</strong>: Oranje (&lt;7 dagen) = expireert
+                binnenkort, overweeg vroeg sluiten als winstgevend
+              </li>
+              <li>
+                • <strong>Delta</strong>: Hoe dichtbij de strike price. Groen (&lt;0.3) = veilig,
+                Oranje (0.3-0.5) = let op, Rood (&gt;0.5) = ITM risk
+              </li>
+              <li>
+                • <strong>Actie</strong>: "Overweeg sluiten" = positie is &lt;7 DTE én winstgevend,
+                onderpand kan vrijkomen voor nieuwe trades
+              </li>
             </ul>
           </div>
         </div>

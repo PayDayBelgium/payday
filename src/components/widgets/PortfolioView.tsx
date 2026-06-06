@@ -1,9 +1,30 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { TrendingUp, Building2, X as XIcon, ArrowUpCircle, ArrowDownCircle, MessageSquare, ChevronDown, ChevronUp, ChevronRight, Target, AlertCircle, Lightbulb, Filter, Redo2, Layers, ArrowDownLeft } from 'lucide-react';
+import {
+  TrendingUp,
+  Building2,
+  X as XIcon,
+  ArrowUpCircle,
+  ArrowDownCircle,
+  MessageSquare,
+  ChevronDown,
+  ChevronUp,
+  ChevronRight,
+  Target,
+  AlertCircle,
+  Lightbulb,
+  Filter,
+  Redo2,
+  Layers,
+  ArrowDownLeft,
+} from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
-import { closePosition, updatePosition, selectAllPriceAlerts } from '../../store/slices/positionsSlice';
+import {
+  closePosition,
+  updatePosition,
+  selectAllPriceAlerts,
+} from '../../store/slices/positionsSlice';
 import { selectUnlockedLevels, isFeatureAvailable } from '../../store/slices/userProgressSlice';
 import { addTransaction } from '../../store/slices/portfoliosSlice';
 import { selectAllTickers } from '../../store/slices/tickersSlice';
@@ -17,7 +38,11 @@ import { RollOptionModal } from '../modals/RollOptionModal';
 import { SpreadRollModal } from '../modals/SpreadRollModal';
 import { AssignmentModal } from '../modals/AssignmentModal';
 import { addPosition } from '../../store/slices/positionsSlice';
-import { updateWheelPhase, incrementWheelCycle, updateWheelPremium } from '../../store/slices/wheelsSlice';
+import {
+  updateWheelPhase,
+  incrementWheelCycle,
+  updateWheelPremium,
+} from '../../store/slices/wheelsSlice';
 import type { StockPosition } from '../../types';
 import type { Position, CurrencyType, CallOption, PutOption } from '../../types';
 import { getCurrencySymbol } from '../../utils/currency';
@@ -85,7 +110,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   // Create a map of position IDs to their opportunities for quick lookup
   const positionOpportunities = useMemo(() => {
     const map = new Map<string, AlertItem[]>();
-    positions.forEach(pos => {
+    positions.forEach((pos) => {
       const opps = getOpportunitiesForPosition(pos.id);
       if (opps.length > 0) {
         map.set(pos.id, opps);
@@ -97,7 +122,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   // Create a map of position IDs to their alerts for quick lookup
   const positionAlerts = useMemo(() => {
     const map = new Map<string, AlertItem[]>();
-    positions.forEach(pos => {
+    positions.forEach((pos) => {
       const alerts = getAlertsForPosition(pos.id);
       if (alerts.length > 0) {
         map.set(pos.id, alerts);
@@ -108,9 +133,15 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   const [positionToClose, setPositionToClose] = useState<Position | null>(null);
   const [positionToRoll, setPositionToRoll] = useState<(CallOption | PutOption) | null>(null);
   const [positionToAssign, setPositionToAssign] = useState<(CallOption | PutOption) | null>(null);
-  const [spreadToRoll, setSpreadToRoll] = useState<{ longLeg: CallOption | PutOption; shortLeg: CallOption | PutOption } | null>(null);
+  const [spreadToRoll, setSpreadToRoll] = useState<{
+    longLeg: CallOption | PutOption;
+    shortLeg: CallOption | PutOption;
+  } | null>(null);
   const [positionToView, setPositionToView] = useState<Position | null>(null);
-  const [spreadToView, setSpreadToView] = useState<{ legs: Position[]; currentStockPrice: number } | null>(null);
+  const [spreadToView, setSpreadToView] = useState<{
+    legs: Position[];
+    currentStockPrice: number;
+  } | null>(null);
   const [sortField, setSortField] = useState<SortField>('expiration');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
   const [groupBy, setGroupBy] = useState<GroupBy>('none');
@@ -127,12 +158,17 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   const [expandedSpreads, setExpandedSpreads] = useState<Set<string>>(new Set());
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
   const [groupFilterPopup, setGroupFilterPopup] = useState<string | null>(null);
-  const [groupFilters, setGroupFilters] = useState<Record<string, {
-    expiration: string;
-    opportunities: boolean;
-    alerts: boolean;
-    ideas: boolean;
-  }>>({});
+  const [groupFilters, setGroupFilters] = useState<
+    Record<
+      string,
+      {
+        expiration: string;
+        opportunities: boolean;
+        alerts: boolean;
+        ideas: boolean;
+      }
+    >
+  >({});
 
   // Helper to get or create ref for tooltip
   const getTooltipRef = (id: string) => {
@@ -144,7 +180,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
   // Helper to toggle spread expansion
   const toggleSpread = (spreadId: string) => {
-    setExpandedSpreads(prev => {
+    setExpandedSpreads((prev) => {
       const next = new Set(prev);
       if (next.has(spreadId)) {
         next.delete(spreadId);
@@ -156,7 +192,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   };
 
   const toggleGroup = (groupName: string) => {
-    setCollapsedGroups(prev => {
+    setCollapsedGroups((prev) => {
       const next = new Set(prev);
       if (next.has(groupName)) {
         next.delete(groupName);
@@ -169,22 +205,27 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
   // Helper to get group filter
   const getGroupFilter = (groupName: string) => {
-    return groupFilters[groupName] || {
-      expiration: 'all',
-      opportunities: false,
-      alerts: false,
-      ideas: false,
-    };
+    return (
+      groupFilters[groupName] || {
+        expiration: 'all',
+        opportunities: false,
+        alerts: false,
+        ideas: false,
+      }
+    );
   };
 
   // Helper to update group filter
-  const updateGroupFilter = (groupName: string, updates: Partial<{
-    expiration: string;
-    opportunities: boolean;
-    alerts: boolean;
-    ideas: boolean;
-  }>) => {
-    setGroupFilters(prev => ({
+  const updateGroupFilter = (
+    groupName: string,
+    updates: Partial<{
+      expiration: string;
+      opportunities: boolean;
+      alerts: boolean;
+      ideas: boolean;
+    }>
+  ) => {
+    setGroupFilters((prev) => ({
       ...prev,
       [groupName]: {
         ...getGroupFilter(groupName),
@@ -195,7 +236,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
   // Helper to reset group filter
   const resetGroupFilter = (groupName: string) => {
-    setGroupFilters(prev => {
+    setGroupFilters((prev) => {
       const next = { ...prev };
       delete next[groupName];
       return next;
@@ -227,8 +268,8 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
     if (legs.length !== 2) return null;
 
     const options = legs as (CallOption | PutOption)[];
-    const longLeg = options.find(o => o.action === 'buy');
-    const shortLeg = options.find(o => o.action === 'sell');
+    const longLeg = options.find((o) => o.action === 'buy');
+    const shortLeg = options.find((o) => o.action === 'sell');
 
     if (!longLeg || !shortLeg) return null;
 
@@ -241,7 +282,9 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
     const maxProfit = isCredit
       ? netPremium
-      : (spreadWidth - Math.abs(netPremium / (shortLeg.contracts * 100))) * shortLeg.contracts * 100;
+      : (spreadWidth - Math.abs(netPremium / (shortLeg.contracts * 100))) *
+        shortLeg.contracts *
+        100;
 
     const maxLoss = isCredit
       ? (spreadWidth - Math.abs(netPremium / (shortLeg.contracts * 100))) * shortLeg.contracts * 100
@@ -282,7 +325,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
     const groups: Record<string, GroupedPosition> = {};
 
     positions
-      .filter(p => p.status === 'open' && (p.type === 'stock' || p.type === 'etf'))
+      .filter((p) => p.status === 'open' && (p.type === 'stock' || p.type === 'etf'))
       .forEach((position) => {
         if (position.type !== 'stock' && position.type !== 'etf') return;
 
@@ -322,7 +365,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
   // Get ALL positions (stocks, ETFs, and options) with sorting
   const allPositions = useMemo(() => {
-    const allPos = positions.filter(p => p.status === 'open');
+    const allPos = positions.filter((p) => p.status === 'open');
 
     // Sort positions
     const sorted = [...allPos].sort((a, b) => {
@@ -384,14 +427,14 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
     // Ticker search filter
     if (tickerSearch.trim()) {
       const searchLower = tickerSearch.toLowerCase();
-      filtered = filtered.filter(p => p.ticker.toLowerCase().includes(searchLower));
+      filtered = filtered.filter((p) => p.ticker.toLowerCase().includes(searchLower));
     }
 
     // Expiration filter
     if (filterExpiration !== 'all') {
       const weeks = parseInt(filterExpiration, 10);
       const daysThreshold = weeks * 7;
-      filtered = filtered.filter(p => {
+      filtered = filtered.filter((p) => {
         if (p.type === 'call' || p.type === 'put') {
           const option = p as CallOption | PutOption;
           if (option.expiration) {
@@ -405,7 +448,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
     // Opportunities filter
     if (filterOpportunities) {
-      filtered = filtered.filter(p => {
+      filtered = filtered.filter((p) => {
         if (p.type === 'stock' || p.type === 'etf') {
           // Check for Covered Call opportunity
           const stock = p as any;
@@ -432,7 +475,8 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
           const option = p as CallOption | PutOption;
           const isBuy = option.action === 'buy';
           const nominalProfit = option.currentValue - option.costBasis;
-          const profitPercent = option.costBasis !== 0 ? (nominalProfit / Math.abs(option.costBasis)) * 100 : 0;
+          const profitPercent =
+            option.costBasis !== 0 ? (nominalProfit / Math.abs(option.costBasis)) * 100 : 0;
 
           if (isBuy) {
             // LONG (bought) option: Check if 80% profit reached
@@ -449,15 +493,13 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
     // Alerts filter
     if (filterAlerts) {
-      filtered = filtered.filter(p => {
+      filtered = filtered.filter((p) => {
         if (p.type === 'call' || p.type === 'put') {
           const option = p as CallOption | PutOption;
           const isCall = option.type === 'call';
 
           // Calculate DTE
-          const daysToExpiration = option.expiration
-            ? getDaysToExpiration(option.expiration)
-            : 0;
+          const daysToExpiration = option.expiration ? getDaysToExpiration(option.expiration) : 0;
 
           // Check if put expires this week
           const expiresThisWeek = daysToExpiration > 0 && daysToExpiration <= 7;
@@ -466,10 +508,10 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
           // If it's a sold put (short) and we're losing money, the stock price is likely below strike
           // If it's a bought put (long) and we're making money, the stock price is likely below strike
           const nominalPnL = option.currentValue - option.costBasis;
-          const putAlert = !isCall && (
-            (option.action === 'sell' && nominalPnL < 0) || // Short put losing money (stock below strike)
-            (option.action === 'buy' && nominalPnL > 0) // Long put making money (stock below strike)
-          );
+          const putAlert =
+            !isCall &&
+            ((option.action === 'sell' && nominalPnL < 0) || // Short put losing money (stock below strike)
+              (option.action === 'buy' && nominalPnL > 0)); // Long put making money (stock below strike)
 
           return putAlert || (!isCall && expiresThisWeek);
         }
@@ -485,7 +527,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
     const spreadMap = new Map<string, Position[]>();
     const standalone: Position[] = [];
 
-    filteredPositions.forEach(position => {
+    filteredPositions.forEach((position) => {
       const spreadId = getSpreadId(position);
       if (spreadId) {
         if (!spreadMap.has(spreadId)) {
@@ -507,8 +549,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   const stockLots = useMemo(
     () =>
       positions.filter(
-        (p): p is StockPosition =>
-          (p.type === 'stock' || p.type === 'etf') && p.status === 'open'
+        (p): p is StockPosition => (p.type === 'stock' || p.type === 'etf') && p.status === 'open'
       ),
     [positions]
   );
@@ -519,7 +560,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
     // Stocks/ETFs are rendered separately by GroupedStockList — keep them out of the
     // strategy/expiry/ticker grouping so they don't appear twice.
     const nonStockPositions = filteredPositions.filter(
-      p => p.type !== 'stock' && p.type !== 'etf'
+      (p) => p.type !== 'stock' && p.type !== 'etf'
     );
 
     if (groupBy === 'none') {
@@ -529,7 +570,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
     const groups: Record<string, Position[]> = {};
     const processedSpreadIds = new Set<string>();
 
-    nonStockPositions.forEach(position => {
+    nonStockPositions.forEach((position) => {
       // Check if this is part of a spread
       const spreadId = getSpreadId(position);
 
@@ -541,7 +582,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
         processedSpreadIds.add(spreadId);
 
         // Find the spread type from the legs
-        const spreadLegs = spreads.find(s => s.id === spreadId);
+        const spreadLegs = spreads.find((s) => s.id === spreadId);
         if (spreadLegs && spreadLegs.legs.length === 2) {
           const firstLeg = spreadLegs.legs[0] as CallOption | PutOption;
 
@@ -625,7 +666,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
       return a.localeCompare(b);
     });
 
-    sortedKeys.forEach(key => {
+    sortedKeys.forEach((key) => {
       sortedGroups[key] = groups[key];
     });
 
@@ -663,7 +704,11 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
         closeValue = closeData.closePrice * quantityToClose;
       }
     } else if (positionToClose.type === 'call' || positionToClose.type === 'put') {
-      if ('contracts' in positionToClose && 'action' in positionToClose && closeData.closePremium !== undefined) {
+      if (
+        'contracts' in positionToClose &&
+        'action' in positionToClose &&
+        closeData.closePremium !== undefined
+      ) {
         const contractMultiplier = 100;
         if (positionToClose.action === 'buy') {
           closeValue = closeData.closePremium * positionToClose.contracts * contractMultiplier;
@@ -677,15 +722,18 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
     if (isPartialClose && 'shares' in positionToClose && closeData.quantity) {
       // Partial close: update the existing position with remaining shares
       const remainingShares = positionToClose.shares - closeData.quantity;
-      const remainingCostBasis = (positionToClose.costBasis / positionToClose.shares) * remainingShares;
+      const remainingCostBasis =
+        (positionToClose.costBasis / positionToClose.shares) * remainingShares;
       const purchasePricePerShare = positionToClose.costBasis / positionToClose.shares;
 
-      dispatch(updatePosition({
-        ...positionToClose,
-        shares: remainingShares,
-        costBasis: remainingCostBasis,
-        currentValue: remainingShares * purchasePricePerShare, // Will be updated by price service
-      }));
+      dispatch(
+        updatePosition({
+          ...positionToClose,
+          shares: remainingShares,
+          costBasis: remainingCostBasis,
+          currentValue: remainingShares * purchasePricePerShare, // Will be updated by price service
+        })
+      );
 
       // Log transaction for partial sale
       const transaction = {
@@ -699,20 +747,24 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
         previousValue: portfolioCurrentValue,
         newValue: portfolioCurrentValue + realizedPnL,
         createdAt: new Date().toISOString(),
-        notes: closeData.notes || `Verkocht ${closeData.quantity} van ${positionToClose.shares} aandelen. Realized P&L: ${formatCurrency(realizedPnL, currencySymbol)}`,
+        notes:
+          closeData.notes ||
+          `Verkocht ${closeData.quantity} van ${positionToClose.shares} aandelen. Realized P&L: ${formatCurrency(realizedPnL, currencySymbol)}`,
       };
 
       dispatch(addTransaction(transaction));
     } else {
       // Full close: close the position completely
-      dispatch(closePosition({
-        id: positionToClose.id,
-        closeDate: closeData.closeDate,
-        closePrice: closeData.closePrice,
-        closePremium: closeData.closePremium,
-        realizedPnL,
-        notes: closeData.notes,
-      }));
+      dispatch(
+        closePosition({
+          id: positionToClose.id,
+          closeDate: closeData.closeDate,
+          closePrice: closeData.closePrice,
+          closePremium: closeData.closePremium,
+          realizedPnL,
+          notes: closeData.notes,
+        })
+      );
 
       // Log transaction for close
       // For bought options: we receive closeValue (can be 0 if worthless)
@@ -738,17 +790,20 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
     setPositionToClose(null);
   };
 
-  const handleCloseSpread = (spreadLegs: Position[], closeData: {
-    closePremium: number;
-    closeDate: string;
-    notes?: string;
-  }) => {
+  const handleCloseSpread = (
+    spreadLegs: Position[],
+    closeData: {
+      closePremium: number;
+      closeDate: string;
+      notes?: string;
+    }
+  ) => {
     // Close both legs of the spread
     const contractMultiplier = 100;
     let totalRealizedPnL = 0;
     let totalCloseValue = 0;
 
-    spreadLegs.forEach(leg => {
+    spreadLegs.forEach((leg) => {
       const option = leg as CallOption | PutOption;
       let closeValue = 0;
       let realizedPnL = 0;
@@ -768,13 +823,15 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
       totalCloseValue += closeValue;
 
       // Close each leg
-      dispatch(closePosition({
-        id: option.id,
-        closeDate: closeData.closeDate,
-        closePremium: closeData.closePremium,
-        realizedPnL,
-        notes: closeData.notes,
-      }));
+      dispatch(
+        closePosition({
+          id: option.id,
+          closeDate: closeData.closeDate,
+          closePremium: closeData.closePremium,
+          realizedPnL,
+          notes: closeData.notes,
+        })
+      );
     });
 
     // Log a single transaction for the spread close
@@ -790,7 +847,9 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
       previousValue: portfolioCurrentValue,
       newValue: portfolioCurrentValue + totalRealizedPnL,
       createdAt: new Date().toISOString(),
-      notes: closeData.notes || `Spread gesloten. Realized P&L: ${formatCurrency(totalRealizedPnL, currencySymbol)}`,
+      notes:
+        closeData.notes ||
+        `Spread gesloten. Realized P&L: ${formatCurrency(totalRealizedPnL, currencySymbol)}`,
     };
 
     dispatch(addTransaction(transaction));
@@ -845,13 +904,15 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
     const netCashFlow = closeValue + openValue;
 
     // 1. Close the existing position
-    dispatch(closePosition({
-      id: positionToRoll.id,
-      closeDate: rollData.closeDate,
-      closePremium: rollData.closePremium,
-      realizedPnL,
-      notes: rollData.notes ? `Roll: ${rollData.notes}` : 'Rolled to new position',
-    }));
+    dispatch(
+      closePosition({
+        id: positionToRoll.id,
+        closeDate: rollData.closeDate,
+        closePremium: rollData.closePremium,
+        realizedPnL,
+        notes: rollData.notes ? `Roll: ${rollData.notes}` : 'Rolled to new position',
+      })
+    );
 
     // 2. Create the new position
     const newPosition: CallOption | PutOption = {
@@ -884,7 +945,9 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
     // Calculate days difference between expirations
     const oldExpDate = new Date(positionToRoll.expiration);
     const newExpDate = new Date(rollData.newExpiration);
-    const daysDiff = Math.round((newExpDate.getTime() - oldExpDate.getTime()) / (1000 * 60 * 60 * 24));
+    const daysDiff = Math.round(
+      (newExpDate.getTime() - oldExpDate.getTime()) / (1000 * 60 * 60 * 24)
+    );
 
     // Determine roll type
     const isHorizontalRoll = positionToRoll.strike === rollData.newStrike && daysDiff !== 0;
@@ -904,7 +967,11 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
     // Format dates for display
     const oldExpStr = oldExpDate.toLocaleDateString('nl-NL', { day: '2-digit', month: 'short' });
-    const newExpStr = newExpDate.toLocaleDateString('nl-NL', { day: '2-digit', month: 'short', year: 'numeric' });
+    const newExpStr = newExpDate.toLocaleDateString('nl-NL', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
 
     const transaction = {
       id: `txn-${Date.now()}`,
@@ -917,7 +984,9 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
       previousValue: portfolioCurrentValue,
       newValue: portfolioCurrentValue + realizedPnL,
       createdAt: new Date().toISOString(),
-      notes: rollData.notes || `${rollTypeLabel} • ${netCashFlow >= 0 ? 'Credit' : 'Debit'}: ${formatCurrency(Math.abs(netCashFlow), currencySymbol)}${daysDiff > 0 ? ` • +${daysDiff} dagen` : ''}`,
+      notes:
+        rollData.notes ||
+        `${rollTypeLabel} • ${netCashFlow >= 0 ? 'Credit' : 'Debit'}: ${formatCurrency(Math.abs(netCashFlow), currencySymbol)}${daysDiff > 0 ? ` • +${daysDiff} dagen` : ''}`,
     };
 
     dispatch(addTransaction(transaction));
@@ -952,38 +1021,50 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
     const longRealizedPnL = longCloseValue - longLeg.costBasis;
 
     // Calculate close values for short leg (buy to close)
-    const shortCloseValue = -rollData.shortLeg.closePremium * shortLeg.contracts * contractMultiplier;
+    const shortCloseValue =
+      -rollData.shortLeg.closePremium * shortLeg.contracts * contractMultiplier;
     const shortRealizedPnL = -shortCloseValue - shortLeg.costBasis;
 
     // Calculate new position values
     const longNewCostBasis = rollData.longLeg.newPremium * longLeg.contracts * contractMultiplier;
-    const shortNewCostBasis = -(rollData.shortLeg.newPremium * shortLeg.contracts * contractMultiplier);
+    const shortNewCostBasis = -(
+      rollData.shortLeg.newPremium *
+      shortLeg.contracts *
+      contractMultiplier
+    );
 
     // Net cash flow for the roll
-    const netCashFlow = longCloseValue + shortCloseValue
-      - rollData.longLeg.newPremium * longLeg.contracts * contractMultiplier
-      + rollData.shortLeg.newPremium * shortLeg.contracts * contractMultiplier;
+    const netCashFlow =
+      longCloseValue +
+      shortCloseValue -
+      rollData.longLeg.newPremium * longLeg.contracts * contractMultiplier +
+      rollData.shortLeg.newPremium * shortLeg.contracts * contractMultiplier;
 
     // 1. Close existing positions
-    dispatch(closePosition({
-      id: longLeg.id,
-      closeDate: rollData.rollDate,
-      closePremium: rollData.longLeg.closePremium,
-      realizedPnL: longRealizedPnL,
-      notes: rollData.notes ? `Spread Roll: ${rollData.notes}` : 'Rolled spread - long leg',
-    }));
+    dispatch(
+      closePosition({
+        id: longLeg.id,
+        closeDate: rollData.rollDate,
+        closePremium: rollData.longLeg.closePremium,
+        realizedPnL: longRealizedPnL,
+        notes: rollData.notes ? `Spread Roll: ${rollData.notes}` : 'Rolled spread - long leg',
+      })
+    );
 
-    dispatch(closePosition({
-      id: shortLeg.id,
-      closeDate: rollData.rollDate,
-      closePremium: rollData.shortLeg.closePremium,
-      realizedPnL: shortRealizedPnL,
-      notes: rollData.notes ? `Spread Roll: ${rollData.notes}` : 'Rolled spread - short leg',
-    }));
+    dispatch(
+      closePosition({
+        id: shortLeg.id,
+        closeDate: rollData.rollDate,
+        closePremium: rollData.shortLeg.closePremium,
+        realizedPnL: shortRealizedPnL,
+        notes: rollData.notes ? `Spread Roll: ${rollData.notes}` : 'Rolled spread - short leg',
+      })
+    );
 
     // 2. Create new positions with linked spread ID
     const newSpreadId = `spread-${Date.now()}`;
-    const spreadType = rollData.shortLeg.newPremium > rollData.longLeg.newPremium ? 'Credit' : 'Debit';
+    const spreadType =
+      rollData.shortLeg.newPremium > rollData.longLeg.newPremium ? 'Credit' : 'Debit';
 
     const newLongPosition: CallOption | PutOption = {
       id: `${newSpreadId}-long`,
@@ -1014,7 +1095,10 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
       premium: rollData.shortLeg.newPremium,
       costBasis: shortNewCostBasis,
       currentValue: shortNewCostBasis,
-      cashReserved: Math.abs(rollData.shortLeg.newStrike - rollData.longLeg.newStrike) * shortLeg.contracts * 100,
+      cashReserved:
+        Math.abs(rollData.shortLeg.newStrike - rollData.longLeg.newStrike) *
+        shortLeg.contracts *
+        100,
       status: 'open',
       openDate: rollData.rollDate,
       notes: `${rollData.notes || ''}\nSpread ID: ${newSpreadId} (${spreadType} Spread - Short Leg)\nRolled from $${shortLeg.strike}`,
@@ -1037,7 +1121,9 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
       previousValue: portfolioCurrentValue,
       newValue: portfolioCurrentValue + totalRealizedPnL,
       createdAt: new Date().toISOString(),
-      notes: rollData.notes || `Roll ${spreadType} ${optionType} Spread. ${netCashFlow >= 0 ? 'Credit' : 'Debit'}: ${formatCurrency(Math.abs(netCashFlow), currencySymbol)}`,
+      notes:
+        rollData.notes ||
+        `Roll ${spreadType} ${optionType} Spread. ${netCashFlow >= 0 ? 'Credit' : 'Debit'}: ${formatCurrency(Math.abs(netCashFlow), currencySymbol)}`,
     };
 
     dispatch(addTransaction(transaction));
@@ -1064,13 +1150,15 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
     const realizedPnL = Math.abs(option.costBasis); // Premium received is our profit on the option
 
     // Close the option position
-    dispatch(closePosition({
-      id: option.id,
-      closeDate: assignmentData.assignmentDate,
-      closePremium: 0, // Option expires/assigned, no buyback
-      realizedPnL,
-      notes: assignmentData.notes ? `Assignment: ${assignmentData.notes}` : 'Assigned',
-    }));
+    dispatch(
+      closePosition({
+        id: option.id,
+        closeDate: assignmentData.assignmentDate,
+        closePremium: 0, // Option expires/assigned, no buyback
+        realizedPnL,
+        notes: assignmentData.notes ? `Assignment: ${assignmentData.notes}` : 'Assigned',
+      })
+    );
 
     if (isPut) {
       // Short PUT assigned: create stock position
@@ -1102,10 +1190,12 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
       // Update Wheel phase if linked
       if (option.wheelId) {
-        dispatch(updateWheelPhase({
-          id: option.wheelId,
-          phase: 'stock',
-        }));
+        dispatch(
+          updateWheelPhase({
+            id: option.wheelId,
+            phase: 'stock',
+          })
+        );
       }
 
       // Log transaction
@@ -1127,10 +1217,11 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
     } else {
       // Short CALL assigned: remove stock and realize gain
       // Find the stock position
-      const stockPosition = positions.find(p =>
-        (p.type === 'stock' || p.type === 'etf') &&
-        p.ticker.toUpperCase() === option.ticker.toUpperCase() &&
-        p.status === 'open'
+      const stockPosition = positions.find(
+        (p) =>
+          (p.type === 'stock' || p.type === 'etf') &&
+          p.ticker.toUpperCase() === option.ticker.toUpperCase() &&
+          p.status === 'open'
       );
 
       if (stockPosition && 'shares' in stockPosition) {
@@ -1142,40 +1233,49 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
         // Close or reduce stock position
         if (stockPosition.shares <= shares) {
           // Close entire stock position
-          dispatch(closePosition({
-            id: stockPosition.id,
-            closeDate: assignmentData.assignmentDate,
-            closePrice: option.strike,
-            realizedPnL: stockRealizedPnL,
-            notes: `Assigned from covered call at $${option.strike}`,
-          }));
+          dispatch(
+            closePosition({
+              id: stockPosition.id,
+              closeDate: assignmentData.assignmentDate,
+              closePrice: option.strike,
+              realizedPnL: stockRealizedPnL,
+              notes: `Assigned from covered call at $${option.strike}`,
+            })
+          );
         } else {
           // Partial close - reduce shares
           const remainingShares = stockPosition.shares - shares;
-          const remainingCostBasis = (stockPosition.costBasis / stockPosition.shares) * remainingShares;
+          const remainingCostBasis =
+            (stockPosition.costBasis / stockPosition.shares) * remainingShares;
 
-          dispatch(updatePosition({
-            ...stockPosition,
-            shares: remainingShares,
-            costBasis: remainingCostBasis,
-            currentValue: remainingShares * (stockPosition.currentValue / stockPosition.shares),
-          } as any));
+          dispatch(
+            updatePosition({
+              ...stockPosition,
+              shares: remainingShares,
+              costBasis: remainingCostBasis,
+              currentValue: remainingShares * (stockPosition.currentValue / stockPosition.shares),
+            } as any)
+          );
         }
 
         // Update Wheel if linked
         if (option.wheelId) {
           // Increment cycle and move back to CSP phase
           dispatch(incrementWheelCycle(option.wheelId));
-          dispatch(updateWheelPhase({
-            id: option.wheelId,
-            phase: 'csp',
-          }));
+          dispatch(
+            updateWheelPhase({
+              id: option.wheelId,
+              phase: 'csp',
+            })
+          );
           // Add the stock P&L to wheel
-          dispatch(updateWheelPremium({
-            id: option.wheelId,
-            premiumCollected: 0,
-            realizedPnL: stockRealizedPnL,
-          }));
+          dispatch(
+            updateWheelPremium({
+              id: option.wheelId,
+              premiumCollected: 0,
+              realizedPnL: stockRealizedPnL,
+            })
+          );
         }
 
         // Log transaction
@@ -1203,7 +1303,9 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
   if (allPositions.length === 0) {
     return (
-      <div className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center h-full min-h-[400px] ${className}`}>
+      <div
+        className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center h-full min-h-[400px] ${className}`}
+      >
         <div className="text-center">
           <TrendingUp className="w-12 h-12 mx-auto mb-3 text-gray-400 dark:text-gray-500" />
           <p className="text-gray-600 dark:text-gray-400">Nog geen posities</p>
@@ -1216,7 +1318,9 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   }
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full overflow-x-hidden ${className}`}>
+    <div
+      className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full overflow-x-hidden ${className}`}
+    >
       {/* Controls Bar - Fixed at top */}
       {allPositions.length > 0 && (
         <div className="px-6 py-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0 bg-gray-50 dark:bg-gray-800/50">
@@ -1234,127 +1338,135 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
               {/* Filter Button with Popup (only for users with options access) */}
               {hasOptionsAccess && (
-              <div>
-                <button
-                  ref={filterButtonRef}
-                  onClick={() => setShowFilterPopup(!showFilterPopup)}
-                  className={`flex items-center gap-2 px-3 py-1 rounded text-sm font-medium transition-colors ${
-                    filterExpiration !== 'all' || filterOpportunities || filterAlerts || filterIdeas
-                      ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 border-2 border-primary-500 dark:border-primary-500'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                >
-                  <Filter className="w-4 h-4" />
-                  {(filterExpiration !== 'all' || filterOpportunities || filterAlerts || filterIdeas) && (
-                    <span className="ml-1 px-1.5 py-0.5 bg-primary-700 dark:bg-primary-500 text-white text-xs rounded-full">
-                      {[
-                        filterExpiration !== 'all' ? 1 : 0,
-                        filterOpportunities ? 1 : 0,
-                        filterAlerts ? 1 : 0,
-                        filterIdeas ? 1 : 0
-                      ].reduce((a, b) => a + b, 0)}
-                    </span>
-                  )}
-                </button>
+                <div>
+                  <button
+                    ref={filterButtonRef}
+                    onClick={() => setShowFilterPopup(!showFilterPopup)}
+                    className={`flex items-center gap-2 px-3 py-1 rounded text-sm font-medium transition-colors ${
+                      filterExpiration !== 'all' ||
+                      filterOpportunities ||
+                      filterAlerts ||
+                      filterIdeas
+                        ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 border-2 border-primary-500 dark:border-primary-500'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    }`}
+                  >
+                    <Filter className="w-4 h-4" />
+                    {(filterExpiration !== 'all' ||
+                      filterOpportunities ||
+                      filterAlerts ||
+                      filterIdeas) && (
+                      <span className="ml-1 px-1.5 py-0.5 bg-primary-700 dark:bg-primary-500 text-white text-xs rounded-full">
+                        {[
+                          filterExpiration !== 'all' ? 1 : 0,
+                          filterOpportunities ? 1 : 0,
+                          filterAlerts ? 1 : 0,
+                          filterIdeas ? 1 : 0,
+                        ].reduce((a, b) => a + b, 0)}
+                      </span>
+                    )}
+                  </button>
 
-                {/* Filter Popup via Portal */}
-                {showFilterPopup && createPortal(
-                  <>
-                    {/* Backdrop to close popup */}
-                    <div
-                      className="fixed inset-0 z-[9998]"
-                      onClick={() => setShowFilterPopup(false)}
-                    />
+                  {/* Filter Popup via Portal */}
+                  {showFilterPopup &&
+                    createPortal(
+                      <>
+                        {/* Backdrop to close popup */}
+                        <div
+                          className="fixed inset-0 z-[9998]"
+                          onClick={() => setShowFilterPopup(false)}
+                        />
 
-                    {/* Popup Content */}
-                    <div
-                      className="fixed w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-[9999] p-4"
-                      style={{
-                        top: `${filterPopupPosition.top}px`,
-                        left: `${filterPopupPosition.left}px`,
-                      }}
-                    >
-                      <div className="space-y-4">
-                        {/* Header */}
-                        <div className="flex items-center justify-between pb-2 border-b border-gray-200 dark:border-gray-700">
-                          <h3 className="font-semibold text-gray-900 dark:text-white">Filters</h3>
-                          <button
-                            onClick={() => {
-                              setFilterExpiration('all');
-                              setFilterOpportunities(false);
-                              setFilterAlerts(false);
-                              setFilterIdeas(false);
-                            }}
-                            className="text-xs text-primary-700 dark:text-primary-300 hover:underline"
-                          >
-                            Reset
-                          </button>
-                        </div>
+                        {/* Popup Content */}
+                        <div
+                          className="fixed w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-[9999] p-4"
+                          style={{
+                            top: `${filterPopupPosition.top}px`,
+                            left: `${filterPopupPosition.left}px`,
+                          }}
+                        >
+                          <div className="space-y-4">
+                            {/* Header */}
+                            <div className="flex items-center justify-between pb-2 border-b border-gray-200 dark:border-gray-700">
+                              <h3 className="font-semibold text-gray-900 dark:text-white">
+                                Filters
+                              </h3>
+                              <button
+                                onClick={() => {
+                                  setFilterExpiration('all');
+                                  setFilterOpportunities(false);
+                                  setFilterAlerts(false);
+                                  setFilterIdeas(false);
+                                }}
+                                className="text-xs text-primary-700 dark:text-primary-300 hover:underline"
+                              >
+                                Reset
+                              </button>
+                            </div>
 
-                        {/* Expiration Filter */}
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Verloopt binnen:
-                          </label>
-                          <select
-                            value={filterExpiration}
-                            onChange={(e) => setFilterExpiration(e.target.value)}
-                            className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-sm"
-                          >
-                            <option value="all">Alle</option>
-                            <option value="1">1 week</option>
-                            <option value="2">2 weken</option>
-                            <option value="4">4 weken</option>
-                            <option value="8">8 weken</option>
-                          </select>
-                        </div>
+                            {/* Expiration Filter */}
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Verloopt binnen:
+                              </label>
+                              <select
+                                value={filterExpiration}
+                                onChange={(e) => setFilterExpiration(e.target.value)}
+                                className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-sm"
+                              >
+                                <option value="all">Alle</option>
+                                <option value="1">1 week</option>
+                                <option value="2">2 weken</option>
+                                <option value="4">4 weken</option>
+                                <option value="8">8 weken</option>
+                              </select>
+                            </div>
 
-                        {/* Category Filters */}
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Categorieën:
-                          </label>
-                          <div className="space-y-2">
-                            <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                              <input
-                                type="checkbox"
-                                checked={filterOpportunities}
-                                onChange={(e) => setFilterOpportunities(e.target.checked)}
-                                className="w-4 h-4 rounded border-gray-300 dark:border-gray-600"
-                              />
-                              <Target className="w-4 h-4 text-positive-600 dark:text-positive-500" />
-                              <span>Opportunities</span>
-                            </label>
-                            <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                              <input
-                                type="checkbox"
-                                checked={filterAlerts}
-                                onChange={(e) => setFilterAlerts(e.target.checked)}
-                                className="w-4 h-4 rounded border-gray-300 dark:border-gray-600"
-                              />
-                              <AlertCircle className="w-4 h-4 text-negative-600 dark:text-negative-500" />
-                              <span>Alerts</span>
-                            </label>
-                            <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                              <input
-                                type="checkbox"
-                                checked={filterIdeas}
-                                onChange={(e) => setFilterIdeas(e.target.checked)}
-                                className="w-4 h-4 rounded border-gray-300 dark:border-gray-600"
-                              />
-                              <Lightbulb className="w-4 h-4 text-caution-600 dark:text-caution-500" />
-                              <span>Ideas</span>
-                            </label>
+                            {/* Category Filters */}
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Categorieën:
+                              </label>
+                              <div className="space-y-2">
+                                <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                  <input
+                                    type="checkbox"
+                                    checked={filterOpportunities}
+                                    onChange={(e) => setFilterOpportunities(e.target.checked)}
+                                    className="w-4 h-4 rounded border-gray-300 dark:border-gray-600"
+                                  />
+                                  <Target className="w-4 h-4 text-positive-600 dark:text-positive-500" />
+                                  <span>Opportunities</span>
+                                </label>
+                                <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                  <input
+                                    type="checkbox"
+                                    checked={filterAlerts}
+                                    onChange={(e) => setFilterAlerts(e.target.checked)}
+                                    className="w-4 h-4 rounded border-gray-300 dark:border-gray-600"
+                                  />
+                                  <AlertCircle className="w-4 h-4 text-negative-600 dark:text-negative-500" />
+                                  <span>Alerts</span>
+                                </label>
+                                <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                  <input
+                                    type="checkbox"
+                                    checked={filterIdeas}
+                                    onChange={(e) => setFilterIdeas(e.target.checked)}
+                                    className="w-4 h-4 rounded border-gray-300 dark:border-gray-600"
+                                  />
+                                  <Lightbulb className="w-4 h-4 text-caution-600 dark:text-caution-500" />
+                                  <span>Ideas</span>
+                                </label>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  </>,
-                  document.body
-                )}
-              </div>
+                      </>,
+                      document.body
+                    )}
+                </div>
               )}
-
             </div>
 
             {/* Group By Dropdown - Right aligned (only for users with options access) */}
@@ -1378,165 +1490,184 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
       {/* Position List - Scrollable */}
       <div className="divide-y divide-gray-200 dark:divide-gray-700 flex-1 overflow-y-auto">
         {/* Remove old grouped stocks display - now integrated in table below */}
-        {false && groupedPositions.map((group) => {
-          const isProfitable = group.unrealizedPnL >= 0;
+        {false &&
+          groupedPositions.map((group) => {
+            const isProfitable = group.unrealizedPnL >= 0;
 
-          return (
-            <div key={group.ticker} className="p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-              {/* Group Header */}
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                    group.type === 'stock'
-                      ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                      : 'bg-positive-50 dark:bg-positive-700/25 text-positive-600 dark:text-positive-500'
-                  }`}>
-                    {group.type === 'stock' ? (
-                      <TrendingUp className="w-6 h-6" />
-                    ) : (
-                      <Building2 className="w-6 h-6" />
-                    )}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h4 className="text-lg font-bold text-gray-900 dark:text-white">
-                        {group.ticker}
-                      </h4>
-                      <span className={`text-xs px-2 py-0.5 rounded ${
+            return (
+              <div
+                key={group.ticker}
+                className="p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+              >
+                {/* Group Header */}
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-12 h-12 rounded-lg flex items-center justify-center ${
                         group.type === 'stock'
                           ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                          : 'bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500'
-                      }`}>
-                        {group.type === 'stock' ? 'Aandeel' : 'ETF'}
-                      </span>
+                          : 'bg-positive-50 dark:bg-positive-700/25 text-positive-600 dark:text-positive-500'
+                      }`}
+                    >
+                      {group.type === 'stock' ? (
+                        <TrendingUp className="w-6 h-6" />
+                      ) : (
+                        <Building2 className="w-6 h-6" />
+                      )}
                     </div>
-                    {group.name && (
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        {group.name}
-                      </p>
-                    )}
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4 className="text-lg font-bold text-gray-900 dark:text-white">
+                          {group.ticker}
+                        </h4>
+                        <span
+                          className={`text-xs px-2 py-0.5 rounded ${
+                            group.type === 'stock'
+                              ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                              : 'bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500'
+                          }`}
+                        >
+                          {group.type === 'stock' ? 'Aandeel' : 'ETF'}
+                        </span>
+                      </div>
+                      {group.name && (
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{group.name}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Total P&L */}
+                  <div className="text-right">
+                    <p
+                      className={`text-lg font-bold ${
+                        group.unrealizedPnL > 0
+                          ? 'text-positive-600 dark:text-positive-500'
+                          : group.unrealizedPnL < 0
+                            ? 'text-negative-600 dark:text-negative-500'
+                            : 'text-gray-900 dark:text-white'
+                      }`}
+                    >
+                      {group.unrealizedPnL > 0 ? '+' : ''}
+                      {formatCurrency(group.unrealizedPnL, currencySymbol)}
+                    </p>
+                    <p
+                      className={`text-sm font-medium ${
+                        group.unrealizedPnL > 0
+                          ? 'text-positive-600 dark:text-positive-500'
+                          : group.unrealizedPnL < 0
+                            ? 'text-negative-600 dark:text-negative-500'
+                            : 'text-gray-900 dark:text-white'
+                      }`}
+                    >
+                      {group.unrealizedPnL > 0 ? '+' : ''}
+                      {formatNumber(group.unrealizedPnLPercent)}%
+                    </p>
                   </div>
                 </div>
 
-                {/* Total P&L */}
-                <div className="text-right">
-                  <p className={`text-lg font-bold ${
-                    group.unrealizedPnL > 0
-                      ? 'text-positive-600 dark:text-positive-500'
-                      : group.unrealizedPnL < 0
-                      ? 'text-negative-600 dark:text-negative-500'
-                      : 'text-gray-900 dark:text-white'
-                  }`}>
-                    {group.unrealizedPnL > 0 ? '+' : ''}{formatCurrency(group.unrealizedPnL, currencySymbol)}
-                  </p>
-                  <p className={`text-sm font-medium ${
-                    group.unrealizedPnL > 0
-                      ? 'text-positive-600 dark:text-positive-500'
-                      : group.unrealizedPnL < 0
-                      ? 'text-negative-600 dark:text-negative-500'
-                      : 'text-gray-900 dark:text-white'
-                  }`}>
-                    {group.unrealizedPnL > 0 ? '+' : ''}{formatNumber(group.unrealizedPnLPercent)}%
-                  </p>
+                {/* Group Stats */}
+                <div className="grid grid-cols-4 gap-4 mb-4">
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Totaal Aandelen</p>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                      {group.totalShares}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Gem. Prijs</p>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                      {formatCurrency(group.avgPurchasePrice, currencySymbol)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Totale kost</p>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                      {formatCurrency(group.totalCostBasis, currencySymbol)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Huidige Waarde</p>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                      {formatCurrency(group.currentValue, currencySymbol)}
+                    </p>
+                  </div>
                 </div>
-              </div>
 
-              {/* Group Stats */}
-              <div className="grid grid-cols-4 gap-4 mb-4">
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Totaal Aandelen</p>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                    {group.totalShares}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Gem. Prijs</p>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                    {formatCurrency(group.avgPurchasePrice, currencySymbol)}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Totale kost</p>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                    {formatCurrency(group.totalCostBasis, currencySymbol)}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Huidige Waarde</p>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                    {formatCurrency(group.currentValue, currencySymbol)}
-                  </p>
-                </div>
-              </div>
+                {/* Individual Positions */}
+                {group.positions.length > 1 && (
+                  <div className="space-y-2 pl-4 border-l-2 border-gray-200 dark:border-gray-700">
+                    {group.positions.map((position, index) => {
+                      if (position.type !== 'stock' && position.type !== 'etf') return null;
 
-              {/* Individual Positions */}
-              {group.positions.length > 1 && (
-                <div className="space-y-2 pl-4 border-l-2 border-gray-200 dark:border-gray-700">
-                  {group.positions.map((position, index) => {
-                    if (position.type !== 'stock' && position.type !== 'etf') return null;
+                      const positionPnL = position.currentValue - position.costBasis;
+                      const positionPnLPercent = (positionPnL / position.costBasis) * 100;
+                      const isProfitable = positionPnL >= 0;
 
-                    const positionPnL = position.currentValue - position.costBasis;
-                    const positionPnLPercent = (positionPnL / position.costBasis) * 100;
-                    const isProfitable = positionPnL >= 0;
-
-                    return (
-                      <div
-                        key={position.id}
-                        className="p-3 bg-gray-50 dark:bg-gray-900 rounded-lg relative group"
-                      >
-                        <button
-                          onClick={() => setPositionToClose(position)}
-                          className="absolute top-2 right-2 p-1.5 bg-negative-50 dark:bg-negative-700/25 hover:bg-negative-50 dark:hover:bg-negative-700/50 text-negative-600 dark:text-negative-500 rounded opacity-0 group-hover:opacity-100 transition-opacity"
-                          title="Positie sluiten"
+                      return (
+                        <div
+                          key={position.id}
+                          className="p-3 bg-gray-50 dark:bg-gray-900 rounded-lg relative group"
                         >
-                          <XIcon className="w-4 h-4" />
-                        </button>
-                        <div className="flex items-center justify-between mb-2">
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">
-                            Positie #{index + 1}
-                          </p>
-                          <p className={`text-sm font-semibold ${
-                            positionPnL > 0
-                              ? 'text-positive-600 dark:text-positive-500'
-                              : positionPnL < 0
-                              ? 'text-negative-600 dark:text-negative-500'
-                              : 'text-gray-900 dark:text-white'
-                          }`}>
-                            {positionPnL > 0 ? '+' : ''}{formatCurrency(positionPnL, currencySymbol)} ({positionPnL > 0 ? '+' : ''}{formatNumber(positionPnLPercent)}%)
-                          </p>
+                          <button
+                            onClick={() => setPositionToClose(position)}
+                            className="absolute top-2 right-2 p-1.5 bg-negative-50 dark:bg-negative-700/25 hover:bg-negative-50 dark:hover:bg-negative-700/50 text-negative-600 dark:text-negative-500 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                            title="Positie sluiten"
+                          >
+                            <XIcon className="w-4 h-4" />
+                          </button>
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-sm font-medium text-gray-900 dark:text-white">
+                              Positie #{index + 1}
+                            </p>
+                            <p
+                              className={`text-sm font-semibold ${
+                                positionPnL > 0
+                                  ? 'text-positive-600 dark:text-positive-500'
+                                  : positionPnL < 0
+                                    ? 'text-negative-600 dark:text-negative-500'
+                                    : 'text-gray-900 dark:text-white'
+                              }`}
+                            >
+                              {positionPnL > 0 ? '+' : ''}
+                              {formatCurrency(positionPnL, currencySymbol)} (
+                              {positionPnL > 0 ? '+' : ''}
+                              {formatNumber(positionPnLPercent)}%)
+                            </p>
+                          </div>
+                          <div className="grid grid-cols-4 gap-2 text-xs">
+                            <div>
+                              <p className="text-gray-500 dark:text-gray-400">Aandelen</p>
+                              <p className="font-medium text-gray-900 dark:text-white">
+                                {position.shares}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-gray-500 dark:text-gray-400">Prijs</p>
+                              <p className="font-medium text-gray-900 dark:text-white">
+                                {formatCurrency(position.purchasePrice, currencySymbol)}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-gray-500 dark:text-gray-400">Kost</p>
+                              <p className="font-medium text-gray-900 dark:text-white">
+                                {formatCurrency(position.costBasis, currencySymbol)}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-gray-500 dark:text-gray-400">Datum</p>
+                              <p className="font-medium text-gray-900 dark:text-white">
+                                {new Date(position.openDate).toLocaleDateString('nl-NL')}
+                              </p>
+                            </div>
+                          </div>
                         </div>
-                        <div className="grid grid-cols-4 gap-2 text-xs">
-                          <div>
-                            <p className="text-gray-500 dark:text-gray-400">Aandelen</p>
-                            <p className="font-medium text-gray-900 dark:text-white">{position.shares}</p>
-                          </div>
-                          <div>
-                            <p className="text-gray-500 dark:text-gray-400">Prijs</p>
-                            <p className="font-medium text-gray-900 dark:text-white">
-                              {formatCurrency(position.purchasePrice, currencySymbol)}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-gray-500 dark:text-gray-400">Kost</p>
-                            <p className="font-medium text-gray-900 dark:text-white">
-                              {formatCurrency(position.costBasis, currencySymbol)}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-gray-500 dark:text-gray-400">Datum</p>
-                            <p className="font-medium text-gray-900 dark:text-white">
-                              {new Date(position.openDate).toLocaleDateString('nl-NL')}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          );
-        })}
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
 
         {/* Grouped Stock/ETF Tree */}
         {stockLots.length > 0 && (
@@ -1559,21 +1690,57 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
             <div className="px-6 py-2 bg-gray-100 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700 border-l-4 border-l-transparent">
               <div className="grid grid-cols-[32px_minmax(140px,1fr)_80px_70px_70px_70px_85px_85px_90px_70px_16px_130px] gap-2 text-xs font-semibold text-gray-600 dark:text-gray-400 items-center">
                 <div></div> {/* Icon */}
-                <button onClick={() => handleSort('ticker')} className="text-left hover:text-gray-900 dark:hover:text-gray-200 flex items-center gap-1">
-                  Ticker {sortField === 'ticker' && (sortDirection === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />)}
+                <button
+                  onClick={() => handleSort('ticker')}
+                  className="text-left hover:text-gray-900 dark:hover:text-gray-200 flex items-center gap-1"
+                >
+                  Ticker{' '}
+                  {sortField === 'ticker' &&
+                    (sortDirection === 'asc' ? (
+                      <ChevronUp className="w-3 h-3" />
+                    ) : (
+                      <ChevronDown className="w-3 h-3" />
+                    ))}
                 </button>
-                <button onClick={() => handleSort('expiration')} className="text-left hover:text-gray-900 dark:hover:text-gray-200 flex items-center gap-1">
-                  Expiratie {sortField === 'expiration' && (sortDirection === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />)}
+                <button
+                  onClick={() => handleSort('expiration')}
+                  className="text-left hover:text-gray-900 dark:hover:text-gray-200 flex items-center gap-1"
+                >
+                  Expiratie{' '}
+                  {sortField === 'expiration' &&
+                    (sortDirection === 'asc' ? (
+                      <ChevronUp className="w-3 h-3" />
+                    ) : (
+                      <ChevronDown className="w-3 h-3" />
+                    ))}
                 </button>
-                <button onClick={() => handleSort('strike')} className="text-left hover:text-gray-900 dark:hover:text-gray-200 flex items-center gap-1">
-                  Strike {sortField === 'strike' && (sortDirection === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />)}
+                <button
+                  onClick={() => handleSort('strike')}
+                  className="text-left hover:text-gray-900 dark:hover:text-gray-200 flex items-center gap-1"
+                >
+                  Strike{' '}
+                  {sortField === 'strike' &&
+                    (sortDirection === 'asc' ? (
+                      <ChevronUp className="w-3 h-3" />
+                    ) : (
+                      <ChevronDown className="w-3 h-3" />
+                    ))}
                 </button>
                 <div>Stock prijs</div>
                 <div>Verschil</div>
                 <div>Open</div>
                 <div>Huidige</div>
-                <button onClick={() => handleSort('pnl')} className="text-left hover:text-gray-900 dark:hover:text-gray-200 flex items-center gap-1">
-                  Winst/Verlies {sortField === 'pnl' && (sortDirection === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />)}
+                <button
+                  onClick={() => handleSort('pnl')}
+                  className="text-left hover:text-gray-900 dark:hover:text-gray-200 flex items-center gap-1"
+                >
+                  Winst/Verlies{' '}
+                  {sortField === 'pnl' &&
+                    (sortDirection === 'asc' ? (
+                      <ChevronUp className="w-3 h-3" />
+                    ) : (
+                      <ChevronDown className="w-3 h-3" />
+                    ))}
                 </button>
                 <div>Onderpand</div>
                 <div></div> {/* Spacer */}
@@ -1588,7 +1755,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
               const hasGroupFilter = hasActiveGroupFilter(strategyName);
 
               // Apply group-specific filters to positions
-              const filteredGroupPositions = strategyPositions.filter(position => {
+              const filteredGroupPositions = strategyPositions.filter((position) => {
                 // Expiration filter
                 if (groupFilter.expiration !== 'all') {
                   const weeks = parseInt(groupFilter.expiration);
@@ -1608,14 +1775,19 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
                   if (position.type === 'call' || position.type === 'put') {
                     const option = position as CallOption | PutOption;
-                    const tickerData = tickers.find(t => t.symbol.toUpperCase() === option.ticker.toUpperCase());
+                    const tickerData = tickers.find(
+                      (t) => t.symbol.toUpperCase() === option.ticker.toUpperCase()
+                    );
                     const currentPrice = tickerData?.currentPrice || 0;
 
                     // Check for opportunity (80% profit)
                     if (groupFilter.opportunities) {
                       const openValue = option.premium * option.contracts * 100;
                       const currentValue = (option.currentPremium || 0) * option.contracts * 100;
-                      const pnl = option.action === 'sell' ? openValue - currentValue : currentValue - openValue;
+                      const pnl =
+                        option.action === 'sell'
+                          ? openValue - currentValue
+                          : currentValue - openValue;
                       const profitPercent = openValue !== 0 ? (pnl / openValue) * 100 : 0;
                       if (pnl > 0 && profitPercent >= 80) matchesCategory = true;
                     }
@@ -1628,7 +1800,8 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
                     // Check for ideas (e.g., has notes with ideas)
                     if (groupFilter.ideas) {
-                      if (option.notes && option.notes.toLowerCase().includes('idea')) matchesCategory = true;
+                      if (option.notes && option.notes.toLowerCase().includes('idea'))
+                        matchesCategory = true;
                     }
                   }
 
@@ -1639,592 +1812,934 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
               });
 
               return (
-              <div key={strategyName}>
-                {groupBy !== 'none' && (
-                  <div className="relative">
-                    <div
-                      className="px-6 py-2 bg-gray-200 dark:bg-gray-800 border-b border-gray-300 dark:border-gray-600 cursor-pointer hover:bg-gray-250 dark:hover:bg-gray-750 transition-colors flex items-center justify-between"
-                      onClick={() => toggleGroup(strategyName)}
-                    >
-                      <div className="flex items-center gap-2">
-                        {isCollapsed ? (
-                          <ChevronDown className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                        ) : (
-                          <ChevronUp className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                        )}
-                        <h4 className="font-semibold text-gray-900 dark:text-white">
-                          {strategyName} ({filteredGroupPositions.length}{filteredGroupPositions.length !== strategyPositions.length ? `/${strategyPositions.length}` : ''})
-                        </h4>
-                      </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setGroupFilterPopup(groupFilterPopup === strategyName ? null : strategyName);
-                        }}
-                        className={`p-1 rounded hover:bg-gray-300 dark:hover:bg-gray-700 ${hasGroupFilter ? 'text-primary-700 dark:text-primary-300' : 'text-gray-500 dark:text-gray-400'}`}
-                        title="Filter groep"
+                <div key={strategyName}>
+                  {groupBy !== 'none' && (
+                    <div className="relative">
+                      <div
+                        className="px-6 py-2 bg-gray-200 dark:bg-gray-800 border-b border-gray-300 dark:border-gray-600 cursor-pointer hover:bg-gray-250 dark:hover:bg-gray-750 transition-colors flex items-center justify-between"
+                        onClick={() => toggleGroup(strategyName)}
                       >
-                        <Filter className="w-4 h-4" />
-                      </button>
-                    </div>
-                    {/* Group Filter Popup */}
-                    {groupFilterPopup === strategyName && (
-                      <div className="absolute right-4 top-full mt-1 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-50 p-3">
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between pb-2 border-b border-gray-200 dark:border-gray-700">
-                            <span className="text-sm font-medium text-gray-900 dark:text-white">Filter</span>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                resetGroupFilter(strategyName);
-                              }}
-                              className="text-xs text-primary-700 dark:text-primary-300 hover:underline"
-                            >
-                              Reset
-                            </button>
-                          </div>
-                          {/* Expiration Filter */}
-                          <div>
-                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                              Verloopt binnen:
-                            </label>
-                            <select
-                              value={groupFilter.expiration}
-                              onChange={(e) => {
-                                e.stopPropagation();
-                                updateGroupFilter(strategyName, { expiration: e.target.value });
-                              }}
-                              onClick={(e) => e.stopPropagation()}
-                              className="w-full px-2 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-xs"
-                            >
-                              <option value="all">Alle</option>
-                              <option value="1">1 week</option>
-                              <option value="2">2 weken</option>
-                              <option value="4">4 weken</option>
-                              <option value="8">8 weken</option>
-                            </select>
-                          </div>
-                          {/* Category Filters */}
-                          <div className="space-y-1">
-                            <label className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-300 cursor-pointer p-1 rounded hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                              <input
-                                type="checkbox"
-                                checked={groupFilter.opportunities}
+                        <div className="flex items-center gap-2">
+                          {isCollapsed ? (
+                            <ChevronDown className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                          ) : (
+                            <ChevronUp className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                          )}
+                          <h4 className="font-semibold text-gray-900 dark:text-white">
+                            {strategyName} ({filteredGroupPositions.length}
+                            {filteredGroupPositions.length !== strategyPositions.length
+                              ? `/${strategyPositions.length}`
+                              : ''}
+                            )
+                          </h4>
+                        </div>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setGroupFilterPopup(
+                              groupFilterPopup === strategyName ? null : strategyName
+                            );
+                          }}
+                          className={`p-1 rounded hover:bg-gray-300 dark:hover:bg-gray-700 ${hasGroupFilter ? 'text-primary-700 dark:text-primary-300' : 'text-gray-500 dark:text-gray-400'}`}
+                          title="Filter groep"
+                        >
+                          <Filter className="w-4 h-4" />
+                        </button>
+                      </div>
+                      {/* Group Filter Popup */}
+                      {groupFilterPopup === strategyName && (
+                        <div className="absolute right-4 top-full mt-1 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-50 p-3">
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between pb-2 border-b border-gray-200 dark:border-gray-700">
+                              <span className="text-sm font-medium text-gray-900 dark:text-white">
+                                Filter
+                              </span>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  resetGroupFilter(strategyName);
+                                }}
+                                className="text-xs text-primary-700 dark:text-primary-300 hover:underline"
+                              >
+                                Reset
+                              </button>
+                            </div>
+                            {/* Expiration Filter */}
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Verloopt binnen:
+                              </label>
+                              <select
+                                value={groupFilter.expiration}
                                 onChange={(e) => {
                                   e.stopPropagation();
-                                  updateGroupFilter(strategyName, { opportunities: e.target.checked });
+                                  updateGroupFilter(strategyName, { expiration: e.target.value });
                                 }}
                                 onClick={(e) => e.stopPropagation()}
-                                className="w-3 h-3 rounded border-gray-300 dark:border-gray-600"
-                              />
-                              <Target className="w-3 h-3 text-positive-600 dark:text-positive-500" />
-                              <span>Opportunities</span>
-                            </label>
-                            <label className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-300 cursor-pointer p-1 rounded hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                              <input
-                                type="checkbox"
-                                checked={groupFilter.alerts}
-                                onChange={(e) => {
-                                  e.stopPropagation();
-                                  updateGroupFilter(strategyName, { alerts: e.target.checked });
-                                }}
-                                onClick={(e) => e.stopPropagation()}
-                                className="w-3 h-3 rounded border-gray-300 dark:border-gray-600"
-                              />
-                              <AlertCircle className="w-3 h-3 text-negative-600 dark:text-negative-500" />
-                              <span>Alerts</span>
-                            </label>
-                            <label className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-300 cursor-pointer p-1 rounded hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                              <input
-                                type="checkbox"
-                                checked={groupFilter.ideas}
-                                onChange={(e) => {
-                                  e.stopPropagation();
-                                  updateGroupFilter(strategyName, { ideas: e.target.checked });
-                                }}
-                                onClick={(e) => e.stopPropagation()}
-                                className="w-3 h-3 rounded border-gray-300 dark:border-gray-600"
-                              />
-                              <Lightbulb className="w-3 h-3 text-caution-600 dark:text-caution-500" />
-                              <span>Ideas</span>
-                            </label>
+                                className="w-full px-2 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-xs"
+                              >
+                                <option value="all">Alle</option>
+                                <option value="1">1 week</option>
+                                <option value="2">2 weken</option>
+                                <option value="4">4 weken</option>
+                                <option value="8">8 weken</option>
+                              </select>
+                            </div>
+                            {/* Category Filters */}
+                            <div className="space-y-1">
+                              <label className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-300 cursor-pointer p-1 rounded hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                <input
+                                  type="checkbox"
+                                  checked={groupFilter.opportunities}
+                                  onChange={(e) => {
+                                    e.stopPropagation();
+                                    updateGroupFilter(strategyName, {
+                                      opportunities: e.target.checked,
+                                    });
+                                  }}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="w-3 h-3 rounded border-gray-300 dark:border-gray-600"
+                                />
+                                <Target className="w-3 h-3 text-positive-600 dark:text-positive-500" />
+                                <span>Opportunities</span>
+                              </label>
+                              <label className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-300 cursor-pointer p-1 rounded hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                <input
+                                  type="checkbox"
+                                  checked={groupFilter.alerts}
+                                  onChange={(e) => {
+                                    e.stopPropagation();
+                                    updateGroupFilter(strategyName, { alerts: e.target.checked });
+                                  }}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="w-3 h-3 rounded border-gray-300 dark:border-gray-600"
+                                />
+                                <AlertCircle className="w-3 h-3 text-negative-600 dark:text-negative-500" />
+                                <span>Alerts</span>
+                              </label>
+                              <label className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-300 cursor-pointer p-1 rounded hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                <input
+                                  type="checkbox"
+                                  checked={groupFilter.ideas}
+                                  onChange={(e) => {
+                                    e.stopPropagation();
+                                    updateGroupFilter(strategyName, { ideas: e.target.checked });
+                                  }}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="w-3 h-3 rounded border-gray-300 dark:border-gray-600"
+                                />
+                                <Lightbulb className="w-3 h-3 text-caution-600 dark:text-caution-500" />
+                                <span>Ideas</span>
+                              </label>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    )}
-                  </div>
-                )}
+                      )}
+                    </div>
+                  )}
 
-                {/* Only render positions if group is not collapsed */}
-                {!isCollapsed && (
-                <>
-                {/* Render spreads first, then standalone positions */}
-                {(() => {
-                  // Separate spreads and standalone positions for this strategy
-                  const strategySpreadIds = new Set<string>();
-                  const strategyStandalonePositions: Position[] = [];
-
-                  filteredGroupPositions.forEach(position => {
-                    const spreadId = getSpreadId(position);
-                    if (spreadId) {
-                      strategySpreadIds.add(spreadId);
-                    } else {
-                      strategyStandalonePositions.push(position);
-                    }
-                  });
-
-                  // Get spreads that belong to this strategy
-                  const strategySpreads = spreads.filter(spread => strategySpreadIds.has(spread.id));
-
-                  return (
+                  {/* Only render positions if group is not collapsed */}
+                  {!isCollapsed && (
                     <>
-                      {/* Render spreads */}
-                      {strategySpreads.map(spread => {
-                        const summary = calculateSpreadSummary(spread.legs);
-                        if (!summary) return null;
+                      {/* Render spreads first, then standalone positions */}
+                      {(() => {
+                        // Separate spreads and standalone positions for this strategy
+                        const strategySpreadIds = new Set<string>();
+                        const strategyStandalonePositions: Position[] = [];
 
-                        const isExpanded = expandedSpreads.has(spread.id);
-                        const isProfitable = summary.totalPnL >= 0;
-
-                        // Calculate DTE
-                        const daysToExpiration = summary.expiration
-                          ? getDaysToExpiration(summary.expiration)
-                          : 0;
-
-                        // Get the short leg to calculate stock price difference
-                        const shortLeg = spread.legs.find(leg => (leg as CallOption | PutOption).action === 'sell') as CallOption | PutOption | undefined;
-                        // Get stock price from tickers store for live updates
-                        const spreadTickerData = tickers.find(t => t.symbol.toUpperCase() === summary.ticker.toUpperCase());
-                        const currentStockPrice = spreadTickerData?.currentPrice || 0;
-                        const priceDifference = currentStockPrice - summary.shortStrike;
-
-                        // Check if spread has reached 80% of max profit
-                        const isExpired = daysToExpiration <= 0;
-                        const profitPercent = summary.maxProfit !== 0 ? (summary.totalPnL / summary.maxProfit) * 100 : 0;
-                        const hasOpportunity = !isExpired && isProfitable && profitPercent >= 80;
-                        const opportunityMessage = hasOpportunity
-                          ? `Opportunity: ${formatNumber(profitPercent, 0)}% van max winst - overweeg spread te sluiten`
-                          : '';
-
-                        // Check if expires this week (alert)
-                        const expiresThisWeek = daysToExpiration > 0 && daysToExpiration <= 7;
-                        const expiresWithinTwoWeeks = daysToExpiration > 7 && daysToExpiration <= 14;
-
-                        // Check for external alerts from central evaluator (e.g., put spread alert)
-                        // Get alerts for the spread by checking any leg's spread ID
-                        const spreadExternalAlerts = spread.legs.flatMap(leg => {
-                          const legAlerts = positionAlerts.get(leg.id) || [];
-                          return legAlerts;
+                        filteredGroupPositions.forEach((position) => {
+                          const spreadId = getSpreadId(position);
+                          if (spreadId) {
+                            strategySpreadIds.add(spreadId);
+                          } else {
+                            strategyStandalonePositions.push(position);
+                          }
                         });
-                        // Remove duplicates (same alert might match multiple legs)
-                        const uniqueSpreadAlerts = spreadExternalAlerts.filter((alert, index, self) =>
-                          index === self.findIndex(a => a.id === alert.id)
+
+                        // Get spreads that belong to this strategy
+                        const strategySpreads = spreads.filter((spread) =>
+                          strategySpreadIds.has(spread.id)
                         );
-                        const hasExternalSpreadAlert = uniqueSpreadAlerts.length > 0;
-                        const spreadAlertMessage = hasExternalSpreadAlert
-                          ? uniqueSpreadAlerts.map(a => a.message).join('\n')
-                          : '';
-
-                        const hasAlert = isExpired || expiresThisWeek || hasExternalSpreadAlert;
-                        // Alert message only shows spread-specific alerts (not expiration which is already visible)
-                        const alertMessage = hasExternalSpreadAlert
-                          ? spreadAlertMessage
-                          : isExpired
-                          ? 'Spread is verlopen - sluit deze positie'
-                          : expiresThisWeek
-                          ? `Spread verloopt binnen ${daysToExpiration} dagen`
-                          : '';
-
-                        // Determine border color based on expiration or alerts
-                        const getSpreadBorderColor = () => {
-                          if (isExpired || expiresThisWeek) return 'border-l-red-500';
-                          if (hasExternalSpreadAlert || expiresWithinTwoWeeks) return 'border-l-amber-400';
-                          return 'border-l-gray-300 dark:border-l-gray-600';
-                        };
 
                         return (
-                          <React.Fragment key={spread.id}>
-                            {/* Spread Summary Row */}
-                            <div className={`px-6 py-3 hover:bg-white dark:hover:bg-gray-700/30 transition-colors border-b border-gray-200 dark:border-gray-700 bg-surface-subtle/30 dark:bg-trading-dark-700 border-l-4 ${getSpreadBorderColor()}`}
-                            >
-                              <div className="grid grid-cols-[32px_minmax(140px,1fr)_80px_70px_70px_70px_85px_85px_90px_70px_16px_130px] gap-2 items-start">
-                                {/* Icon with expand/collapse indicator - clickable for expand */}
-                                <div
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    toggleSpread(spread.id);
-                                  }}
-                                  className="w-8 h-8 rounded flex items-center justify-center flex-shrink-0 bg-surface-muted dark:bg-trading-dark-600 text-ink-600 dark:text-ink-300 cursor-pointer hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors"
-                                >
-                                  {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                                </div>
+                          <>
+                            {/* Render spreads */}
+                            {strategySpreads.map((spread) => {
+                              const summary = calculateSpreadSummary(spread.legs);
+                              if (!summary) return null;
 
-                                {/* Rest of row - clickable to open editor */}
-                                <div
-                                  onClick={() => {
-                                    setSpreadToView({ legs: spread.legs, currentStockPrice });
-                                  }}
-                                  className="contents cursor-pointer"
-                                >
-                                  {/* Ticker with spread badges */}
-                                  <div>
-                                  <div className="flex items-center gap-1.5 flex-wrap">
-                                    <h4 className="text-sm font-bold text-gray-900 dark:text-white">
-                                      {summary.contracts}x {summary.ticker}
-                                    </h4>
-                                    <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-surface-muted dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300">
-                                      {summary.type.toUpperCase()} SPREAD
-                                    </span>
-                                    <span className={`px-1.5 py-0.5 text-[10px] font-semibold rounded ${
-                                      summary.spreadType === 'credit'
-                                        ? 'bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500'
-                                        : 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                                    }`}>
-                                      {summary.spreadType === 'credit' ? 'CREDIT' : 'DEBIT'}
-                                    </span>
-                                    {hasAlert && (
-                                      <>
-                                        <div
-                                          ref={getTooltipRef(`spread-alert-${spread.id}`)}
-                                          onMouseEnter={() => setShowTooltip(`spread-alert-${spread.id}`)}
-                                          onMouseLeave={() => setShowTooltip(null)}
-                                          className="flex items-center gap-1 px-1.5 py-0.5 bg-caution-50 dark:bg-caution-600/25 rounded-full cursor-help"
-                                        >
-                                          <AlertCircle className="w-3 h-3 text-caution-600 dark:text-caution-500" />
-                                          <span className="text-[10px] font-semibold text-caution-600 dark:text-caution-500">
-                                            {uniqueSpreadAlerts.length || 1}
-                                          </span>
+                              const isExpanded = expandedSpreads.has(spread.id);
+                              const isProfitable = summary.totalPnL >= 0;
+
+                              // Calculate DTE
+                              const daysToExpiration = summary.expiration
+                                ? getDaysToExpiration(summary.expiration)
+                                : 0;
+
+                              // Get the short leg to calculate stock price difference
+                              const shortLeg = spread.legs.find(
+                                (leg) => (leg as CallOption | PutOption).action === 'sell'
+                              ) as CallOption | PutOption | undefined;
+                              // Get stock price from tickers store for live updates
+                              const spreadTickerData = tickers.find(
+                                (t) => t.symbol.toUpperCase() === summary.ticker.toUpperCase()
+                              );
+                              const currentStockPrice = spreadTickerData?.currentPrice || 0;
+                              const priceDifference = currentStockPrice - summary.shortStrike;
+
+                              // Check if spread has reached 80% of max profit
+                              const isExpired = daysToExpiration <= 0;
+                              const profitPercent =
+                                summary.maxProfit !== 0
+                                  ? (summary.totalPnL / summary.maxProfit) * 100
+                                  : 0;
+                              const hasOpportunity =
+                                !isExpired && isProfitable && profitPercent >= 80;
+                              const opportunityMessage = hasOpportunity
+                                ? `Opportunity: ${formatNumber(profitPercent, 0)}% van max winst - overweeg spread te sluiten`
+                                : '';
+
+                              // Check if expires this week (alert)
+                              const expiresThisWeek = daysToExpiration > 0 && daysToExpiration <= 7;
+                              const expiresWithinTwoWeeks =
+                                daysToExpiration > 7 && daysToExpiration <= 14;
+
+                              // Check for external alerts from central evaluator (e.g., put spread alert)
+                              // Get alerts for the spread by checking any leg's spread ID
+                              const spreadExternalAlerts = spread.legs.flatMap((leg) => {
+                                const legAlerts = positionAlerts.get(leg.id) || [];
+                                return legAlerts;
+                              });
+                              // Remove duplicates (same alert might match multiple legs)
+                              const uniqueSpreadAlerts = spreadExternalAlerts.filter(
+                                (alert, index, self) =>
+                                  index === self.findIndex((a) => a.id === alert.id)
+                              );
+                              const hasExternalSpreadAlert = uniqueSpreadAlerts.length > 0;
+                              const spreadAlertMessage = hasExternalSpreadAlert
+                                ? uniqueSpreadAlerts.map((a) => a.message).join('\n')
+                                : '';
+
+                              const hasAlert =
+                                isExpired || expiresThisWeek || hasExternalSpreadAlert;
+                              // Alert message only shows spread-specific alerts (not expiration which is already visible)
+                              const alertMessage = hasExternalSpreadAlert
+                                ? spreadAlertMessage
+                                : isExpired
+                                  ? 'Spread is verlopen - sluit deze positie'
+                                  : expiresThisWeek
+                                    ? `Spread verloopt binnen ${daysToExpiration} dagen`
+                                    : '';
+
+                              // Determine border color based on expiration or alerts
+                              const getSpreadBorderColor = () => {
+                                if (isExpired || expiresThisWeek) return 'border-l-red-500';
+                                if (hasExternalSpreadAlert || expiresWithinTwoWeeks)
+                                  return 'border-l-amber-400';
+                                return 'border-l-gray-300 dark:border-l-gray-600';
+                              };
+
+                              return (
+                                <React.Fragment key={spread.id}>
+                                  {/* Spread Summary Row */}
+                                  <div
+                                    className={`px-6 py-3 hover:bg-white dark:hover:bg-gray-700/30 transition-colors border-b border-gray-200 dark:border-gray-700 bg-surface-subtle/30 dark:bg-trading-dark-700 border-l-4 ${getSpreadBorderColor()}`}
+                                  >
+                                    <div className="grid grid-cols-[32px_minmax(140px,1fr)_80px_70px_70px_70px_85px_85px_90px_70px_16px_130px] gap-2 items-start">
+                                      {/* Icon with expand/collapse indicator - clickable for expand */}
+                                      <div
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          toggleSpread(spread.id);
+                                        }}
+                                        className="w-8 h-8 rounded flex items-center justify-center flex-shrink-0 bg-surface-muted dark:bg-trading-dark-600 text-ink-600 dark:text-ink-300 cursor-pointer hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors"
+                                      >
+                                        {isExpanded ? (
+                                          <ChevronDown className="w-4 h-4" />
+                                        ) : (
+                                          <ChevronRight className="w-4 h-4" />
+                                        )}
+                                      </div>
+                                      {/* Rest of row - clickable to open editor */}
+                                      <div
+                                        onClick={() => {
+                                          setSpreadToView({ legs: spread.legs, currentStockPrice });
+                                        }}
+                                        className="contents cursor-pointer"
+                                      >
+                                        {/* Ticker with spread badges */}
+                                        <div>
+                                          <div className="flex items-center gap-1.5 flex-wrap">
+                                            <h4 className="text-sm font-bold text-gray-900 dark:text-white">
+                                              {summary.contracts}x {summary.ticker}
+                                            </h4>
+                                            <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-surface-muted dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300">
+                                              {summary.type.toUpperCase()} SPREAD
+                                            </span>
+                                            <span
+                                              className={`px-1.5 py-0.5 text-[10px] font-semibold rounded ${
+                                                summary.spreadType === 'credit'
+                                                  ? 'bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500'
+                                                  : 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                                              }`}
+                                            >
+                                              {summary.spreadType === 'credit' ? 'CREDIT' : 'DEBIT'}
+                                            </span>
+                                            {hasAlert && (
+                                              <>
+                                                <div
+                                                  ref={getTooltipRef(`spread-alert-${spread.id}`)}
+                                                  onMouseEnter={() =>
+                                                    setShowTooltip(`spread-alert-${spread.id}`)
+                                                  }
+                                                  onMouseLeave={() => setShowTooltip(null)}
+                                                  className="flex items-center gap-1 px-1.5 py-0.5 bg-caution-50 dark:bg-caution-600/25 rounded-full cursor-help"
+                                                >
+                                                  <AlertCircle className="w-3 h-3 text-caution-600 dark:text-caution-500" />
+                                                  <span className="text-[10px] font-semibold text-caution-600 dark:text-caution-500">
+                                                    {uniqueSpreadAlerts.length || 1}
+                                                  </span>
+                                                </div>
+                                                <PortalTooltip
+                                                  triggerRef={getTooltipRef(
+                                                    `spread-alert-${spread.id}`
+                                                  )}
+                                                  show={showTooltip === `spread-alert-${spread.id}`}
+                                                >
+                                                  <div className="w-72 p-3 bg-white dark:bg-gray-800 border-2 border-caution-500/30 dark:border-caution-600/40 rounded-lg shadow-xl">
+                                                    <AlertTooltipContent
+                                                      items={
+                                                        uniqueSpreadAlerts.length > 0
+                                                          ? uniqueSpreadAlerts.map((a) => ({
+                                                              ticker: a.ticker,
+                                                              message: a.message,
+                                                            }))
+                                                          : [
+                                                              {
+                                                                ticker: summary.ticker,
+                                                                message: alertMessage,
+                                                              },
+                                                            ]
+                                                      }
+                                                      type="alert"
+                                                    />
+                                                  </div>
+                                                </PortalTooltip>
+                                              </>
+                                            )}
+                                            {hasOpportunity && (
+                                              <>
+                                                <div
+                                                  ref={getTooltipRef(`spread-opp-${spread.id}`)}
+                                                  onMouseEnter={() =>
+                                                    setShowTooltip(`spread-opp-${spread.id}`)
+                                                  }
+                                                  onMouseLeave={() => setShowTooltip(null)}
+                                                >
+                                                  <Target className="w-3.5 h-3.5 text-positive-600 dark:text-positive-500 cursor-help" />
+                                                </div>
+                                                <PortalTooltip
+                                                  triggerRef={getTooltipRef(
+                                                    `spread-opp-${spread.id}`
+                                                  )}
+                                                  show={showTooltip === `spread-opp-${spread.id}`}
+                                                >
+                                                  <div className="w-72 p-3 bg-white dark:bg-gray-800 border-2 border-positive-500/20 dark:border-positive-700/30 rounded-lg shadow-xl">
+                                                    <AlertTooltipContent
+                                                      items={[
+                                                        {
+                                                          ticker: summary.ticker,
+                                                          message: opportunityMessage,
+                                                        },
+                                                      ]}
+                                                      type="opportunity"
+                                                    />
+                                                  </div>
+                                                </PortalTooltip>
+                                              </>
+                                            )}
+                                          </div>
+                                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                                            {spreadTickerData?.name ||
+                                              `Breedte: $${formatNumber(summary.spreadWidth, 2)}`}
+                                          </p>
                                         </div>
-                                        <PortalTooltip
-                                          triggerRef={getTooltipRef(`spread-alert-${spread.id}`)}
-                                          show={showTooltip === `spread-alert-${spread.id}`}
+
+                                        {/* Expiratie */}
+                                        <div>
+                                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                            {summary.expiration
+                                              ? new Date(summary.expiration).toLocaleDateString(
+                                                  'nl-NL'
+                                                )
+                                              : 'N/A'}
+                                          </p>
+                                          <p
+                                            className={`text-xs ${
+                                              daysToExpiration <= 7 && daysToExpiration > 0
+                                                ? 'text-negative-600 dark:text-negative-500 font-semibold'
+                                                : expiresWithinTwoWeeks
+                                                  ? 'text-caution-500 dark:text-caution-500 font-semibold'
+                                                  : 'text-gray-500 dark:text-gray-400'
+                                            }`}
+                                          >
+                                            {daysToExpiration > 0
+                                              ? `${daysToExpiration}d`
+                                              : daysToExpiration === 0
+                                                ? 'Vandaag'
+                                                : 'Verlopen'}
+                                          </p>
+                                        </div>
+
+                                        {/* Strike Range - always show lowest first */}
+                                        <div>
+                                          <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                                            ${Math.min(summary.longStrike, summary.shortStrike)}-$
+                                            {Math.max(summary.longStrike, summary.shortStrike)}
+                                          </p>
+                                        </div>
+
+                                        {/* Stock prijs */}
+                                        <div>
+                                          {currentStockPrice > 0 ? (
+                                            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                              {formatCurrency(currentStockPrice, currencySymbol)}
+                                            </p>
+                                          ) : (
+                                            <p className="text-sm text-gray-400 dark:text-gray-600">
+                                              -
+                                            </p>
+                                          )}
+                                        </div>
+
+                                        {/* Verschil (stock price - short strike) */}
+                                        <div>
+                                          {currentStockPrice > 0 ? (
+                                            <p
+                                              className={`text-sm font-semibold ${(() => {
+                                                // Only show red for bad situations, otherwise neutral
+                                                // Call spread: positive difference is bad (stock above short strike)
+                                                // Put spread: negative difference is bad (stock below short strike)
+                                                const isCallSpread = summary.type === 'call';
+                                                const isBadForPosition = isCallSpread
+                                                  ? priceDifference > 0
+                                                  : priceDifference < 0;
+
+                                                if (isBadForPosition)
+                                                  return 'text-negative-600 dark:text-negative-500';
+                                                return 'text-gray-900 dark:text-white';
+                                              })()}`}
+                                            >
+                                              {priceDifference > 0 ? '+' : ''}
+                                              {formatCurrency(priceDifference, currencySymbol)}
+                                            </p>
+                                          ) : (
+                                            <p className="text-sm text-gray-400 dark:text-gray-600">
+                                              -
+                                            </p>
+                                          )}
+                                        </div>
+
+                                        {/* Net Premium (Aankoop) */}
+                                        <div>
+                                          {(() => {
+                                            // Calculate per-contract premium: short - long
+                                            const shortLegPremium = spread.legs.find(
+                                              (l) => (l as CallOption | PutOption).action === 'sell'
+                                            ) as CallOption | PutOption;
+                                            const longLegPremium = spread.legs.find(
+                                              (l) => (l as CallOption | PutOption).action === 'buy'
+                                            ) as CallOption | PutOption;
+                                            const netPremiumPerContract =
+                                              shortLegPremium.premium - longLegPremium.premium;
+
+                                            return (
+                                              <>
+                                                <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                                                  {formatCurrency(
+                                                    netPremiumPerContract,
+                                                    currencySymbol
+                                                  )}
+                                                </p>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                  {formatCurrency(
+                                                    Math.abs(summary.netPremium),
+                                                    currencySymbol
+                                                  )}
+                                                </p>
+                                              </>
+                                            );
+                                          })()}
+                                        </div>
+
+                                        {/* Current Value */}
+                                        <div>
+                                          {(() => {
+                                            // Calculate per-contract value: short - long for current value
+                                            const shortLegData = spread.legs.find(
+                                              (l) => (l as CallOption | PutOption).action === 'sell'
+                                            ) as CallOption | PutOption;
+                                            const longLegData = spread.legs.find(
+                                              (l) => (l as CallOption | PutOption).action === 'buy'
+                                            ) as CallOption | PutOption;
+                                            const shortPerContract =
+                                              Math.abs(shortLegData.currentValue) /
+                                              (shortLegData.contracts * 100);
+                                            const longPerContract =
+                                              Math.abs(longLegData.currentValue) /
+                                              (longLegData.contracts * 100);
+                                            const netPerContract =
+                                              shortPerContract - longPerContract;
+
+                                            return (
+                                              <>
+                                                <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                                                  {formatCurrency(netPerContract, currencySymbol)}
+                                                </p>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                  {formatCurrency(
+                                                    Math.abs(summary.totalCurrentValue),
+                                                    currencySymbol
+                                                  )}
+                                                </p>
+                                              </>
+                                            );
+                                          })()}
+                                        </div>
+
+                                        {/* P&L */}
+                                        <div>
+                                          <p
+                                            className={`text-sm font-bold ${
+                                              summary.totalPnL > 0
+                                                ? 'text-positive-600 dark:text-positive-500'
+                                                : summary.totalPnL < 0
+                                                  ? 'text-negative-600 dark:text-negative-500'
+                                                  : 'text-gray-900 dark:text-white'
+                                            }`}
+                                          >
+                                            {summary.totalPnL > 0 ? '+' : ''}
+                                            {formatCurrency(summary.totalPnL, currencySymbol)}
+                                          </p>
+                                          <p
+                                            className={`text-xs font-medium ${
+                                              summary.totalPnL > 0
+                                                ? 'text-positive-600 dark:text-positive-500'
+                                                : summary.totalPnL < 0
+                                                  ? 'text-negative-600 dark:text-negative-500'
+                                                  : 'text-gray-900 dark:text-white'
+                                            }`}
+                                          >
+                                            {summary.totalPnL > 0 ? '+' : ''}
+                                            {formatNumber(
+                                              (summary.totalPnL /
+                                                Math.abs(summary.totalCostBasis)) *
+                                                100
+                                            )}
+                                            %
+                                          </p>
+                                        </div>
+
+                                        {/* Collateral */}
+                                        <div>
+                                          {(() => {
+                                            // Determine if this is a credit or debit spread
+                                            // Credit spread: short strike > long strike (for puts), short strike < long strike (for calls)
+                                            const isCredit =
+                                              summary.type === 'put'
+                                                ? summary.shortStrike > summary.longStrike
+                                                : summary.shortStrike < summary.longStrike;
+
+                                            if (isCredit) {
+                                              // Credit spread - collateral is max loss (spread width × 100 × contracts)
+                                              const spreadWidth = Math.abs(
+                                                summary.shortStrike - summary.longStrike
+                                              );
+                                              const contracts = spread.legs[0]
+                                                ? (spread.legs[0] as CallOption | PutOption)
+                                                    .contracts
+                                                : 1;
+                                              const maxLoss = spreadWidth * 100 * contracts;
+
+                                              return (
+                                                <>
+                                                  <p className="text-sm font-semibold text-caution-600 dark:text-caution-500">
+                                                    Cash
+                                                  </p>
+                                                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                    {formatCurrency(maxLoss, currencySymbol)}
+                                                  </p>
+                                                </>
+                                              );
+                                            } else {
+                                              // Debit spread - no collateral needed
+                                              return (
+                                                <p className="text-sm text-gray-400 dark:text-gray-600">
+                                                  -
+                                                </p>
+                                              );
+                                            }
+                                          })()}
+                                        </div>
+                                      </div>{' '}
+                                      {/* Close "contents" wrapper for clickable row */}
+                                      {/* Spacer */}
+                                      <div></div>
+                                      {/* Action buttons - outside the clickable area */}
+                                      <div className="flex justify-end gap-1 pt-0.5">
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            // Roll both legs of the spread
+                                            const longLeg = spread.legs.find(
+                                              (leg) =>
+                                                (leg as CallOption | PutOption).action === 'buy'
+                                            ) as CallOption | PutOption | undefined;
+                                            const shortLeg = spread.legs.find(
+                                              (leg) =>
+                                                (leg as CallOption | PutOption).action === 'sell'
+                                            ) as CallOption | PutOption | undefined;
+                                            if (longLeg && shortLeg) {
+                                              setSpreadToRoll({ longLeg, shortLeg });
+                                            }
+                                          }}
+                                          className="p-1.5 hover:bg-primary-50 dark:hover:bg-primary-900/25 text-primary-700 dark:text-primary-300 rounded"
+                                          title="Spread Rollen"
                                         >
-                                          <div className="w-72 p-3 bg-white dark:bg-gray-800 border-2 border-caution-500/30 dark:border-caution-600/40 rounded-lg shadow-xl">
-                                            <AlertTooltipContent
-                                              items={uniqueSpreadAlerts.length > 0
-                                                ? uniqueSpreadAlerts.map(a => ({ ticker: a.ticker, message: a.message }))
-                                                : [{ ticker: summary.ticker, message: alertMessage }]
+                                          <Redo2 className="w-4 h-4" />
+                                        </button>
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            // Close both legs - we'll set the first leg as the position to close
+                                            // and handle the second leg in the modal
+                                            setPositionToClose(spread.legs[0]);
+                                          }}
+                                          className="p-1.5 hover:bg-negative-50 dark:hover:bg-negative-700/25 text-negative-600 dark:text-negative-500 rounded"
+                                          title="Spread Sluiten"
+                                        >
+                                          <XIcon className="w-4 h-4" />
+                                        </button>
+                                      </div>
+                                    </div>{' '}
+                                    {/* Close grid */}
+                                  </div>{' '}
+                                  {/* Close row container */}
+                                  {/* Expanded Legs */}
+                                  {isExpanded &&
+                                    spread.legs.map((legPosition) => {
+                                      const option = legPosition as CallOption | PutOption;
+                                      const isCall = option.type === 'call';
+                                      const isBuy = option.action === 'buy';
+
+                                      // Get ticker data for leg
+                                      const legTickerData = tickers.find(
+                                        (t) =>
+                                          t.symbol.toUpperCase() === option.ticker.toUpperCase()
+                                      );
+                                      const legStockPrice = legTickerData?.currentPrice || 0;
+
+                                      // Calculate collateral info for leg
+                                      let legCollateralType: CollateralType = 'none';
+                                      let legCollateralValue = 0;
+                                      let legCollateralDescription = '';
+
+                                      if (!isBuy) {
+                                        if (isCall) {
+                                          // Short call in a spread - check if this is part of a spread
+                                          const longCallLeg = spread.legs.find(
+                                            (leg) =>
+                                              leg.type === 'call' &&
+                                              'action' in leg &&
+                                              leg.action === 'buy'
+                                          ) as CallOption | undefined;
+
+                                          if (longCallLeg) {
+                                            // This is a call spread - show the long call as the protective collateral
+                                            legCollateralType = 'call';
+                                            legCollateralValue = longCallLeg.strike;
+                                            const spreadWidth = Math.abs(
+                                              option.strike - longCallLeg.strike
+                                            );
+                                            legCollateralDescription = `Beschermd door long call @ $${longCallLeg.strike}. Max verlies: $${spreadWidth} × 100 × ${option.contracts} = $${spreadWidth * 100 * option.contracts}.`;
+                                          } else {
+                                            // Standalone short call - check for stock or LEAPS as collateral
+                                            const stockPosition = positions.find(
+                                              (p) =>
+                                                (p.type === 'stock' || p.type === 'etf') &&
+                                                p.ticker.toUpperCase() ===
+                                                  option.ticker.toUpperCase() &&
+                                                p.status === 'open'
+                                            );
+
+                                            if (stockPosition && 'shares' in stockPosition) {
+                                              legCollateralType = 'stock';
+                                              legCollateralValue = stockPosition.costBasis || 0;
+                                              legCollateralDescription = `Deze call is gedekt door ${stockPosition.shares} aandelen ${option.ticker}. Bij assignment lever je de aandelen, geen cash nodig.`;
+                                            } else {
+                                              // Check for LEAPS as collateral (PMCC)
+                                              const leapsPosition = positions.find(
+                                                (p) =>
+                                                  p.type === 'call' &&
+                                                  'action' in p &&
+                                                  p.action === 'buy' &&
+                                                  p.ticker.toUpperCase() ===
+                                                    option.ticker.toUpperCase() &&
+                                                  p.status === 'open' &&
+                                                  isLEAPS(p as CallOption)
+                                              ) as CallOption | undefined;
+
+                                              if (leapsPosition) {
+                                                legCollateralType = 'leaps';
+                                                legCollateralValue = leapsPosition.costBasis;
+                                                legCollateralDescription =
+                                                  'Deze call is gedekt door je LEAPS call optie. De LEAPS fungeert als onderpand in plaats van aandelen (PMCC strategie).';
                                               }
-                                              type="alert"
-                                            />
-                                          </div>
-                                        </PortalTooltip>
-                                      </>
-                                    )}
-                                    {hasOpportunity && (
-                                      <>
-                                        <div
-                                          ref={getTooltipRef(`spread-opp-${spread.id}`)}
-                                          onMouseEnter={() => setShowTooltip(`spread-opp-${spread.id}`)}
-                                          onMouseLeave={() => setShowTooltip(null)}
-                                        >
-                                          <Target className="w-3.5 h-3.5 text-positive-600 dark:text-positive-500 cursor-help" />
-                                        </div>
-                                        <PortalTooltip
-                                          triggerRef={getTooltipRef(`spread-opp-${spread.id}`)}
-                                          show={showTooltip === `spread-opp-${spread.id}`}
-                                        >
-                                          <div className="w-72 p-3 bg-white dark:bg-gray-800 border-2 border-positive-500/20 dark:border-positive-700/30 rounded-lg shadow-xl">
-                                            <AlertTooltipContent
-                                              items={[{ ticker: summary.ticker, message: opportunityMessage }]}
-                                              type="opportunity"
-                                            />
-                                          </div>
-                                        </PortalTooltip>
-                                      </>
-                                    )}
-                                  </div>
-                                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                                    {spreadTickerData?.name || `Breedte: $${formatNumber(summary.spreadWidth, 2)}`}
-                                  </p>
-                                </div>
+                                            }
+                                          }
+                                        } else {
+                                          // Short put in a spread - check if this is part of a spread
+                                          const longPutLeg = spread.legs.find(
+                                            (leg) =>
+                                              leg.type === 'put' &&
+                                              'action' in leg &&
+                                              leg.action === 'buy'
+                                          ) as PutOption | undefined;
 
-                                {/* Expiratie */}
-                                <div>
-                                  <p className="text-sm font-medium text-gray-900 dark:text-white">
-                                    {summary.expiration ? new Date(summary.expiration).toLocaleDateString('nl-NL') : 'N/A'}
-                                  </p>
-                                  <p className={`text-xs ${
-                                    daysToExpiration <= 7 && daysToExpiration > 0
-                                      ? 'text-negative-600 dark:text-negative-500 font-semibold'
-                                      : expiresWithinTwoWeeks
-                                      ? 'text-caution-500 dark:text-caution-500 font-semibold'
-                                      : 'text-gray-500 dark:text-gray-400'
-                                  }`}>
-                                    {daysToExpiration > 0 ? `${daysToExpiration}d` : daysToExpiration === 0 ? 'Vandaag' : 'Verlopen'}
-                                  </p>
-                                </div>
+                                          if (longPutLeg) {
+                                            // This is a put spread - show the long put as the protective collateral
+                                            legCollateralType = 'put';
+                                            legCollateralValue = longPutLeg.strike;
+                                            const spreadWidth = Math.abs(
+                                              option.strike - longPutLeg.strike
+                                            );
+                                            legCollateralDescription = `Beschermd door long put @ $${longPutLeg.strike}. Max verlies: $${spreadWidth} × 100 × ${option.contracts} = $${spreadWidth * 100 * option.contracts}.`;
+                                          } else {
+                                            // Standalone short put - cash secured
+                                            legCollateralType = 'cash';
+                                            legCollateralValue =
+                                              option.strike * option.contracts * 100;
+                                            legCollateralDescription = `Deze put vereist ${formatCurrency(legCollateralValue, currencySymbol)} cash als onderpand voor mogelijke assignment.`;
+                                          }
+                                        }
+                                      }
 
-                                {/* Strike Range - always show lowest first */}
-                                <div>
-                                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                                    ${Math.min(summary.longStrike, summary.shortStrike)}-${Math.max(summary.longStrike, summary.shortStrike)}
-                                  </p>
-                                </div>
+                                      // Get LEAPS info if collateral is LEAPS
+                                      let legLeapsInfo:
+                                        | { ticker: string; expiration: string }
+                                        | undefined;
+                                      if (legCollateralType === 'leaps') {
+                                        const leapsPosition = positions.find(
+                                          (p) =>
+                                            p.type === 'call' &&
+                                            'action' in p &&
+                                            p.action === 'buy' &&
+                                            p.ticker.toUpperCase() ===
+                                              option.ticker.toUpperCase() &&
+                                            p.status === 'open' &&
+                                            isLEAPS(p as CallOption)
+                                        ) as CallOption | undefined;
 
-                                {/* Stock prijs */}
-                                <div>
-                                  {currentStockPrice > 0 ? (
-                                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                      {formatCurrency(currentStockPrice, currencySymbol)}
-                                    </p>
-                                  ) : (
-                                    <p className="text-sm text-gray-400 dark:text-gray-600">-</p>
-                                  )}
-                                </div>
-
-                                {/* Verschil (stock price - short strike) */}
-                                <div>
-                                  {currentStockPrice > 0 ? (
-                                    <p className={`text-sm font-semibold ${
-                                      (() => {
-                                        // Only show red for bad situations, otherwise neutral
-                                        // Call spread: positive difference is bad (stock above short strike)
-                                        // Put spread: negative difference is bad (stock below short strike)
-                                        const isCallSpread = summary.type === 'call';
-                                        const isBadForPosition = isCallSpread ? priceDifference > 0 : priceDifference < 0;
-
-                                        if (isBadForPosition) return 'text-negative-600 dark:text-negative-500';
-                                        return 'text-gray-900 dark:text-white';
-                                      })()
-                                    }`}>
-                                      {priceDifference > 0 ? '+' : ''}{formatCurrency(priceDifference, currencySymbol)}
-                                    </p>
-                                  ) : (
-                                    <p className="text-sm text-gray-400 dark:text-gray-600">-</p>
-                                  )}
-                                </div>
-
-                                {/* Net Premium (Aankoop) */}
-                                <div>
-                                  {(() => {
-                                    // Calculate per-contract premium: short - long
-                                    const shortLegPremium = spread.legs.find(l => (l as CallOption | PutOption).action === 'sell') as CallOption | PutOption;
-                                    const longLegPremium = spread.legs.find(l => (l as CallOption | PutOption).action === 'buy') as CallOption | PutOption;
-                                    const netPremiumPerContract = shortLegPremium.premium - longLegPremium.premium;
-
-                                    return (
-                                      <>
-                                        <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                                          {formatCurrency(netPremiumPerContract, currencySymbol)}
-                                        </p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                                          {formatCurrency(Math.abs(summary.netPremium), currencySymbol)}
-                                        </p>
-                                      </>
-                                    );
-                                  })()}
-                                </div>
-
-                                {/* Current Value */}
-                                <div>
-                                  {(() => {
-                                    // Calculate per-contract value: short - long for current value
-                                    const shortLegData = spread.legs.find(l => (l as CallOption | PutOption).action === 'sell') as CallOption | PutOption;
-                                    const longLegData = spread.legs.find(l => (l as CallOption | PutOption).action === 'buy') as CallOption | PutOption;
-                                    const shortPerContract = Math.abs(shortLegData.currentValue) / (shortLegData.contracts * 100);
-                                    const longPerContract = Math.abs(longLegData.currentValue) / (longLegData.contracts * 100);
-                                    const netPerContract = shortPerContract - longPerContract;
-
-                                    return (
-                                      <>
-                                        <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                                          {formatCurrency(netPerContract, currencySymbol)}
-                                        </p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                                          {formatCurrency(Math.abs(summary.totalCurrentValue), currencySymbol)}
-                                        </p>
-                                      </>
-                                    );
-                                  })()}
-                                </div>
-
-                                {/* P&L */}
-                                <div>
-                                  <p className={`text-sm font-bold ${
-                                    summary.totalPnL > 0
-                                      ? 'text-positive-600 dark:text-positive-500'
-                                      : summary.totalPnL < 0
-                                      ? 'text-negative-600 dark:text-negative-500'
-                                      : 'text-gray-900 dark:text-white'
-                                  }`}>
-                                    {summary.totalPnL > 0 ? '+' : ''}{formatCurrency(summary.totalPnL, currencySymbol)}
-                                  </p>
-                                  <p className={`text-xs font-medium ${
-                                    summary.totalPnL > 0
-                                      ? 'text-positive-600 dark:text-positive-500'
-                                      : summary.totalPnL < 0
-                                      ? 'text-negative-600 dark:text-negative-500'
-                                      : 'text-gray-900 dark:text-white'
-                                  }`}>
-                                    {summary.totalPnL > 0 ? '+' : ''}{formatNumber((summary.totalPnL / Math.abs(summary.totalCostBasis)) * 100)}%
-                                  </p>
-                                </div>
-
-                                {/* Collateral */}
-                                <div>
-                                  {(() => {
-                                    // Determine if this is a credit or debit spread
-                                    // Credit spread: short strike > long strike (for puts), short strike < long strike (for calls)
-                                    const isCredit = summary.type === 'put'
-                                      ? summary.shortStrike > summary.longStrike
-                                      : summary.shortStrike < summary.longStrike;
-
-                                    if (isCredit) {
-                                      // Credit spread - collateral is max loss (spread width × 100 × contracts)
-                                      const spreadWidth = Math.abs(summary.shortStrike - summary.longStrike);
-                                      const contracts = spread.legs[0] ? (spread.legs[0] as CallOption | PutOption).contracts : 1;
-                                      const maxLoss = spreadWidth * 100 * contracts;
+                                        if (leapsPosition) {
+                                          legLeapsInfo = {
+                                            ticker: leapsPosition.ticker,
+                                            expiration: leapsPosition.expiration,
+                                          };
+                                        }
+                                      }
 
                                       return (
-                                        <>
-                                          <p className="text-sm font-semibold text-caution-600 dark:text-caution-500">
-                                            Cash
-                                          </p>
-                                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                                            {formatCurrency(maxLoss, currencySymbol)}
-                                          </p>
-                                        </>
+                                        <OptionRow
+                                          key={option.id}
+                                          option={option}
+                                          currencySymbol={currencySymbol}
+                                          tickerData={legTickerData}
+                                          stockPrice={legStockPrice}
+                                          onRoll={(opt) => setPositionToRoll(opt)}
+                                          onClose={(opt) => setPositionToClose(opt)}
+                                          onAssign={(opt) => setPositionToAssign(opt)}
+                                          onClick={(opt) => setPositionToView(opt)}
+                                          showActions={true}
+                                          collateralType={legCollateralType}
+                                          collateralValue={legCollateralValue}
+                                          collateralDescription={legCollateralDescription}
+                                          leapsInfo={legLeapsInfo}
+                                          isSubItem={true}
+                                        />
                                       );
-                                    } else {
-                                      // Debit spread - no collateral needed
-                                      return <p className="text-sm text-gray-400 dark:text-gray-600">-</p>;
+                                    })}
+                                </React.Fragment>
+                              );
+                            })}
+
+                            {/* Render standalone positions */}
+                            {strategyStandalonePositions.map((position) => {
+                              // Check if this is a stock/ETF or option
+                              // NOTE: stocks/ETFs are excluded from groupedAllPositions and rendered
+                              // by GroupedStockList above, so this branch is currently unreachable.
+                              // If you ever re-add stocks to groupedAllPositions, remove this branch
+                              // to avoid double-rendering them.
+                              const isStockOrETF =
+                                position.type === 'stock' || position.type === 'etf';
+
+                              if (isStockOrETF) {
+                                // Render stock/ETF row using StockRow component
+                                const stock = position as StockPosition;
+
+                                // Get ticker data for current price from Redux store
+                                const tickerData = tickers.find((t) => t.symbol === stock.ticker);
+
+                                // Compute aggregate covered-call capacity for this ticker
+                                const stockTickerLots = positions.filter(
+                                  (p): p is StockPosition =>
+                                    (p.type === 'stock' || p.type === 'etf') &&
+                                    p.status === 'open' &&
+                                    p.portfolio === stock.portfolio &&
+                                    p.ticker === stock.ticker
+                                );
+                                const stockTickerSoldCalls = positions.filter(
+                                  (p): p is CallOption =>
+                                    p.type === 'call' &&
+                                    (p as CallOption).action === 'sell' &&
+                                    p.status === 'open' &&
+                                    p.portfolio === stock.portfolio &&
+                                    p.ticker === stock.ticker
+                                );
+                                const stockCcCapacity = computeCoveredCallCapacity(
+                                  stockTickerLots,
+                                  stockTickerSoldCalls
+                                );
+
+                                const coveredCallContracts = stockCcCapacity.coveredContracts;
+
+                                // Check for opportunities from central evaluator
+                                const stockOpportunities =
+                                  positionOpportunities.get(stock.id) || [];
+                                const hasStockOpportunity = stockOpportunities.length > 0;
+                                const stockOpportunityMessage = hasStockOpportunity
+                                  ? stockOpportunities.map((o) => o.message).join('\n')
+                                  : '';
+
+                                return (
+                                  <StockRow
+                                    key={position.id}
+                                    position={stock}
+                                    ticker={tickerData}
+                                    currency={currency}
+                                    onClose={(pos) => setPositionToClose(pos)}
+                                    onView={(pos) => setPositionToView(pos)}
+                                    showActions={true}
+                                    showOpportunityBadge={hasOptionsAccess}
+                                    coveredCallContracts={coveredCallContracts}
+                                    hasOpportunity={hasOptionsAccess && hasStockOpportunity}
+                                    opportunityMessage={stockOpportunityMessage}
+                                    canWriteCoveredCallsOverride={
+                                      stockCcCapacity.canWriteCoveredCall
                                     }
-                                  })()}
-                                </div>
-                              </div> {/* Close "contents" wrapper for clickable row */}
+                                  />
+                                );
+                              }
 
-                                {/* Spacer */}
-                                <div></div>
-
-                                {/* Action buttons - outside the clickable area */}
-                                <div className="flex justify-end gap-1 pt-0.5">
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      // Roll both legs of the spread
-                                      const longLeg = spread.legs.find(leg => (leg as CallOption | PutOption).action === 'buy') as CallOption | PutOption | undefined;
-                                      const shortLeg = spread.legs.find(leg => (leg as CallOption | PutOption).action === 'sell') as CallOption | PutOption | undefined;
-                                      if (longLeg && shortLeg) {
-                                        setSpreadToRoll({ longLeg, shortLeg });
-                                      }
-                                    }}
-                                    className="p-1.5 hover:bg-primary-50 dark:hover:bg-primary-900/25 text-primary-700 dark:text-primary-300 rounded"
-                                    title="Spread Rollen"
-                                  >
-                                    <Redo2 className="w-4 h-4" />
-                                  </button>
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      // Close both legs - we'll set the first leg as the position to close
-                                      // and handle the second leg in the modal
-                                      setPositionToClose(spread.legs[0]);
-                                    }}
-                                    className="p-1.5 hover:bg-negative-50 dark:hover:bg-negative-700/25 text-negative-600 dark:text-negative-500 rounded"
-                                    title="Spread Sluiten"
-                                  >
-                                    <XIcon className="w-4 h-4" />
-                                  </button>
-                                </div>
-                              </div> {/* Close grid */}
-                            </div> {/* Close row container */}
-
-                            {/* Expanded Legs */}
-                            {isExpanded && spread.legs.map((legPosition) => {
-                              const option = legPosition as CallOption | PutOption;
+                              // Render option row using OptionRow component
+                              const option = position as CallOption | PutOption;
                               const isCall = option.type === 'call';
                               const isBuy = option.action === 'buy';
 
-                              // Get ticker data for leg
-                              const legTickerData = tickers.find(t => t.symbol.toUpperCase() === option.ticker.toUpperCase());
-                              const legStockPrice = legTickerData?.currentPrice || 0;
+                              // Calculate DTE
+                              const daysToExpiration = option.expiration
+                                ? getDaysToExpiration(option.expiration)
+                                : 0;
 
-                              // Calculate collateral info for leg
-                              let legCollateralType: CollateralType = 'none';
-                              let legCollateralValue = 0;
-                              let legCollateralDescription = '';
+                              // Get stock price from tickers store
+                              const tickerData = tickers.find(
+                                (t) => t.symbol.toUpperCase() === option.ticker.toUpperCase()
+                              );
+                              const stockPrice = tickerData?.currentPrice || 0;
+
+                              // Check if option is expired
+                              const isExpired = daysToExpiration < 0;
+
+                              // Check for external alerts from central evaluator
+                              const externalAlerts = positionAlerts.get(option.id) || [];
+                              const hasExternalAlert = externalAlerts.length > 0;
+
+                              // Determine if there's an alert
+                              const hasAlert = isExpired || hasExternalAlert;
+                              const alertMessage = isExpired
+                                ? 'Optie is vervallen - sluit deze positie'
+                                : hasExternalAlert
+                                  ? externalAlerts.map((a) => a.message).join('\n')
+                                  : '';
+
+                              // Check for opportunities from central evaluator
+                              const externalOpportunities =
+                                positionOpportunities.get(option.id) || [];
+                              const hasOpportunity = externalOpportunities.length > 0;
+                              const opportunityMessage = hasOpportunity
+                                ? externalOpportunities.map((o) => o.message).join('\n')
+                                : '';
+
+                              // Calculate collateral info
+                              let collateralType: CollateralType = 'none';
+                              let collateralValue = 0;
+                              let collateralDescription = '';
 
                               if (!isBuy) {
                                 if (isCall) {
-                                  // Short call in a spread - check if this is part of a spread
-                                  const longCallLeg = spread.legs.find(leg =>
-                                    leg.type === 'call' &&
-                                    'action' in leg &&
-                                    leg.action === 'buy'
-                                  ) as CallOption | undefined;
-
-                                  if (longCallLeg) {
-                                    // This is a call spread - show the long call as the protective collateral
-                                    legCollateralType = 'call';
-                                    legCollateralValue = longCallLeg.strike;
-                                    const spreadWidth = Math.abs(option.strike - longCallLeg.strike);
-                                    legCollateralDescription = `Beschermd door long call @ $${longCallLeg.strike}. Max verlies: $${spreadWidth} × 100 × ${option.contracts} = $${spreadWidth * 100 * option.contracts}.`;
-                                  } else {
-                                    // Standalone short call - check for stock or LEAPS as collateral
-                                    const stockPosition = positions.find(p =>
+                                  // Short call - check for stock or LEAPS as collateral
+                                  const stockPosition = positions.find(
+                                    (p) =>
                                       (p.type === 'stock' || p.type === 'etf') &&
                                       p.ticker.toUpperCase() === option.ticker.toUpperCase() &&
                                       p.status === 'open'
-                                    );
+                                  );
 
-                                    if (stockPosition && 'shares' in stockPosition) {
-                                      legCollateralType = 'stock';
-                                      legCollateralValue = stockPosition.costBasis || 0;
-                                      legCollateralDescription = `Deze call is gedekt door ${stockPosition.shares} aandelen ${option.ticker}. Bij assignment lever je de aandelen, geen cash nodig.`;
-                                    } else {
-                                      // Check for LEAPS as collateral (PMCC)
-                                      const leapsPosition = positions.find(p =>
+                                  if (stockPosition && 'shares' in stockPosition) {
+                                    collateralType = 'stock';
+                                    collateralValue = stockPosition.costBasis || 0;
+                                    collateralDescription = `Deze call is gedekt door ${stockPosition.shares} aandelen ${option.ticker}. Bij assignment lever je de aandelen, geen cash nodig.`;
+                                  } else {
+                                    // Check for LEAPS as collateral (PMCC)
+                                    const leapsPosition = positions.find(
+                                      (p) =>
                                         p.type === 'call' &&
-                                        'action' in p && p.action === 'buy' &&
+                                        'action' in p &&
+                                        p.action === 'buy' &&
                                         p.ticker.toUpperCase() === option.ticker.toUpperCase() &&
                                         p.status === 'open' &&
                                         isLEAPS(p as CallOption)
-                                      ) as CallOption | undefined;
+                                    ) as CallOption | undefined;
 
-                                      if (leapsPosition) {
-                                        legCollateralType = 'leaps';
-                                        legCollateralValue = leapsPosition.costBasis;
-                                        legCollateralDescription = 'Deze call is gedekt door je LEAPS call optie. De LEAPS fungeert als onderpand in plaats van aandelen (PMCC strategie).';
-                                      }
+                                    if (leapsPosition) {
+                                      collateralType = 'leaps';
+                                      collateralValue = leapsPosition.costBasis;
+                                      collateralDescription =
+                                        'Deze call is gedekt door je LEAPS call optie. De LEAPS fungeert als onderpand in plaats van aandelen (PMCC strategie).';
                                     }
                                   }
                                 } else {
-                                  // Short put in a spread - check if this is part of a spread
-                                  const longPutLeg = spread.legs.find(leg =>
-                                    leg.type === 'put' &&
-                                    'action' in leg &&
-                                    leg.action === 'buy'
-                                  ) as PutOption | undefined;
-
-                                  if (longPutLeg) {
-                                    // This is a put spread - show the long put as the protective collateral
-                                    legCollateralType = 'put';
-                                    legCollateralValue = longPutLeg.strike;
-                                    const spreadWidth = Math.abs(option.strike - longPutLeg.strike);
-                                    legCollateralDescription = `Beschermd door long put @ $${longPutLeg.strike}. Max verlies: $${spreadWidth} × 100 × ${option.contracts} = $${spreadWidth * 100 * option.contracts}.`;
-                                  } else {
-                                    // Standalone short put - cash secured
-                                    legCollateralType = 'cash';
-                                    legCollateralValue = option.strike * option.contracts * 100;
-                                    legCollateralDescription = `Deze put vereist ${formatCurrency(legCollateralValue, currencySymbol)} cash als onderpand voor mogelijke assignment.`;
-                                  }
+                                  // Short put - cash secured
+                                  collateralType = 'cash';
+                                  collateralValue = option.strike * option.contracts * 100;
+                                  collateralDescription = `Deze put vereist ${formatCurrency(collateralValue, currencySymbol)} cash als onderpand voor mogelijke assignment.`;
                                 }
                               }
 
                               // Get LEAPS info if collateral is LEAPS
-                              let legLeapsInfo: { ticker: string; expiration: string } | undefined;
-                              if (legCollateralType === 'leaps') {
-                                const leapsPosition = positions.find(p =>
-                                  p.type === 'call' &&
-                                  'action' in p && p.action === 'buy' &&
-                                  p.ticker.toUpperCase() === option.ticker.toUpperCase() &&
-                                  p.status === 'open' &&
-                                  isLEAPS(p as CallOption)
+                              let leapsInfo: { ticker: string; expiration: string } | undefined;
+                              if (collateralType === 'leaps') {
+                                const leapsPosition = positions.find(
+                                  (p) =>
+                                    p.type === 'call' &&
+                                    'action' in p &&
+                                    p.action === 'buy' &&
+                                    p.ticker.toUpperCase() === option.ticker.toUpperCase() &&
+                                    p.status === 'open' &&
+                                    isLEAPS(p as CallOption)
                                 ) as CallOption | undefined;
 
                                 if (leapsPosition) {
-                                  legLeapsInfo = {
+                                  leapsInfo = {
                                     ticker: leapsPosition.ticker,
                                     expiration: leapsPosition.expiration,
                                   };
@@ -2236,213 +2751,31 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                   key={option.id}
                                   option={option}
                                   currencySymbol={currencySymbol}
-                                  tickerData={legTickerData}
-                                  stockPrice={legStockPrice}
+                                  tickerData={tickerData}
+                                  stockPrice={stockPrice}
                                   onRoll={(opt) => setPositionToRoll(opt)}
                                   onClose={(opt) => setPositionToClose(opt)}
                                   onAssign={(opt) => setPositionToAssign(opt)}
                                   onClick={(opt) => setPositionToView(opt)}
+                                  onNavigateToCampaigns={onNavigateToCampaigns}
                                   showActions={true}
-                                  collateralType={legCollateralType}
-                                  collateralValue={legCollateralValue}
-                                  collateralDescription={legCollateralDescription}
-                                  leapsInfo={legLeapsInfo}
-                                  isSubItem={true}
+                                  hasAlert={hasAlert}
+                                  alertMessage={alertMessage}
+                                  hasOpportunity={hasOpportunity}
+                                  opportunityMessage={opportunityMessage}
+                                  collateralType={collateralType}
+                                  collateralValue={collateralValue}
+                                  collateralDescription={collateralDescription}
+                                  leapsInfo={leapsInfo}
                                 />
                               );
                             })}
-                          </React.Fragment>
+                          </>
                         );
-                      })}
-
-                      {/* Render standalone positions */}
-                      {strategyStandalonePositions.map((position) => {
-                        // Check if this is a stock/ETF or option
-                        // NOTE: stocks/ETFs are excluded from groupedAllPositions and rendered
-                        // by GroupedStockList above, so this branch is currently unreachable.
-                        // If you ever re-add stocks to groupedAllPositions, remove this branch
-                        // to avoid double-rendering them.
-                        const isStockOrETF = position.type === 'stock' || position.type === 'etf';
-
-                  if (isStockOrETF) {
-                    // Render stock/ETF row using StockRow component
-                    const stock = position as StockPosition;
-
-                    // Get ticker data for current price from Redux store
-                    const tickerData = tickers.find(t => t.symbol === stock.ticker);
-
-                    // Compute aggregate covered-call capacity for this ticker
-                    const stockTickerLots = positions.filter(
-                      (p): p is StockPosition =>
-                        (p.type === 'stock' || p.type === 'etf') &&
-                        p.status === 'open' &&
-                        p.portfolio === stock.portfolio &&
-                        p.ticker === stock.ticker
-                    );
-                    const stockTickerSoldCalls = positions.filter(
-                      (p): p is CallOption =>
-                        p.type === 'call' &&
-                        (p as CallOption).action === 'sell' &&
-                        p.status === 'open' &&
-                        p.portfolio === stock.portfolio &&
-                        p.ticker === stock.ticker
-                    );
-                    const stockCcCapacity = computeCoveredCallCapacity(stockTickerLots, stockTickerSoldCalls);
-
-                    const coveredCallContracts = stockCcCapacity.coveredContracts;
-
-                    // Check for opportunities from central evaluator
-                    const stockOpportunities = positionOpportunities.get(stock.id) || [];
-                    const hasStockOpportunity = stockOpportunities.length > 0;
-                    const stockOpportunityMessage = hasStockOpportunity
-                      ? stockOpportunities.map(o => o.message).join('\n')
-                      : '';
-
-                    return (
-                      <StockRow
-                        key={position.id}
-                        position={stock}
-                        ticker={tickerData}
-                        currency={currency}
-                        onClose={(pos) => setPositionToClose(pos)}
-                        onView={(pos) => setPositionToView(pos)}
-                        showActions={true}
-                        showOpportunityBadge={hasOptionsAccess}
-                        coveredCallContracts={coveredCallContracts}
-                        hasOpportunity={hasOptionsAccess && hasStockOpportunity}
-                        opportunityMessage={stockOpportunityMessage}
-                        canWriteCoveredCallsOverride={stockCcCapacity.canWriteCoveredCall}
-                      />
-                    );
-                  }
-
-                  // Render option row using OptionRow component
-                  const option = position as CallOption | PutOption;
-                  const isCall = option.type === 'call';
-                  const isBuy = option.action === 'buy';
-
-                  // Calculate DTE
-                  const daysToExpiration = option.expiration
-                    ? getDaysToExpiration(option.expiration)
-                    : 0;
-
-                  // Get stock price from tickers store
-                  const tickerData = tickers.find(t => t.symbol.toUpperCase() === option.ticker.toUpperCase());
-                  const stockPrice = tickerData?.currentPrice || 0;
-
-                  // Check if option is expired
-                  const isExpired = daysToExpiration < 0;
-
-                  // Check for external alerts from central evaluator
-                  const externalAlerts = positionAlerts.get(option.id) || [];
-                  const hasExternalAlert = externalAlerts.length > 0;
-
-                  // Determine if there's an alert
-                  const hasAlert = isExpired || hasExternalAlert;
-                  const alertMessage = isExpired
-                    ? 'Optie is vervallen - sluit deze positie'
-                    : hasExternalAlert
-                    ? externalAlerts.map(a => a.message).join('\n')
-                    : '';
-
-                  // Check for opportunities from central evaluator
-                  const externalOpportunities = positionOpportunities.get(option.id) || [];
-                  const hasOpportunity = externalOpportunities.length > 0;
-                  const opportunityMessage = hasOpportunity
-                    ? externalOpportunities.map(o => o.message).join('\n')
-                    : '';
-
-                  // Calculate collateral info
-                  let collateralType: CollateralType = 'none';
-                  let collateralValue = 0;
-                  let collateralDescription = '';
-
-                  if (!isBuy) {
-                    if (isCall) {
-                      // Short call - check for stock or LEAPS as collateral
-                      const stockPosition = positions.find(p =>
-                        (p.type === 'stock' || p.type === 'etf') &&
-                        p.ticker.toUpperCase() === option.ticker.toUpperCase() &&
-                        p.status === 'open'
-                      );
-
-                      if (stockPosition && 'shares' in stockPosition) {
-                        collateralType = 'stock';
-                        collateralValue = stockPosition.costBasis || 0;
-                        collateralDescription = `Deze call is gedekt door ${stockPosition.shares} aandelen ${option.ticker}. Bij assignment lever je de aandelen, geen cash nodig.`;
-                      } else {
-                        // Check for LEAPS as collateral (PMCC)
-                        const leapsPosition = positions.find(p =>
-                          p.type === 'call' &&
-                          'action' in p && p.action === 'buy' &&
-                          p.ticker.toUpperCase() === option.ticker.toUpperCase() &&
-                          p.status === 'open' &&
-                          isLEAPS(p as CallOption)
-                        ) as CallOption | undefined;
-
-                        if (leapsPosition) {
-                          collateralType = 'leaps';
-                          collateralValue = leapsPosition.costBasis;
-                          collateralDescription = 'Deze call is gedekt door je LEAPS call optie. De LEAPS fungeert als onderpand in plaats van aandelen (PMCC strategie).';
-                        }
-                      }
-                    } else {
-                      // Short put - cash secured
-                      collateralType = 'cash';
-                      collateralValue = option.strike * option.contracts * 100;
-                      collateralDescription = `Deze put vereist ${formatCurrency(collateralValue, currencySymbol)} cash als onderpand voor mogelijke assignment.`;
-                    }
-                  }
-
-                  // Get LEAPS info if collateral is LEAPS
-                  let leapsInfo: { ticker: string; expiration: string } | undefined;
-                  if (collateralType === 'leaps') {
-                    const leapsPosition = positions.find(p =>
-                      p.type === 'call' &&
-                      'action' in p && p.action === 'buy' &&
-                      p.ticker.toUpperCase() === option.ticker.toUpperCase() &&
-                      p.status === 'open' &&
-                      isLEAPS(p as CallOption)
-                    ) as CallOption | undefined;
-
-                    if (leapsPosition) {
-                      leapsInfo = {
-                        ticker: leapsPosition.ticker,
-                        expiration: leapsPosition.expiration,
-                      };
-                    }
-                  }
-
-                  return (
-                    <OptionRow
-                      key={option.id}
-                      option={option}
-                      currencySymbol={currencySymbol}
-                      tickerData={tickerData}
-                      stockPrice={stockPrice}
-                      onRoll={(opt) => setPositionToRoll(opt)}
-                      onClose={(opt) => setPositionToClose(opt)}
-                      onAssign={(opt) => setPositionToAssign(opt)}
-                      onClick={(opt) => setPositionToView(opt)}
-                      onNavigateToCampaigns={onNavigateToCampaigns}
-                      showActions={true}
-                      hasAlert={hasAlert}
-                      alertMessage={alertMessage}
-                      hasOpportunity={hasOpportunity}
-                      opportunityMessage={opportunityMessage}
-                      collateralType={collateralType}
-                      collateralValue={collateralValue}
-                      collateralDescription={collateralDescription}
-                      leapsInfo={leapsInfo}
-                    />
-                  );
-                })}
+                      })()}
                     </>
-                  );
-                })()}
-                </>
-                )}
-              </div>
+                  )}
+                </div>
               );
             })}
           </div>
@@ -2517,7 +2850,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
           onClose={() => setSpreadToView(null)}
           onSave={(updatedLegs) => {
             // Update both legs
-            updatedLegs.forEach(leg => {
+            updatedLegs.forEach((leg) => {
               dispatch(updatePosition(leg));
             });
             setSpreadToView(null);

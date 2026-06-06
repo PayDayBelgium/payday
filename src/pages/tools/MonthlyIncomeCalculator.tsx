@@ -33,11 +33,16 @@ const DEFAULT_PORTFOLIO_SETTINGS: PortfolioSettings[] = [
 export const MonthlyIncomeCalculator: React.FC = () => {
   const { setPageTitle } = usePageTitle();
   const [positions, setPositions] = useState<Position[]>([]);
-  const [portfolioSettings, setPortfolioSettings] = useState<PortfolioSettings[]>(DEFAULT_PORTFOLIO_SETTINGS);
+  const [portfolioSettings, setPortfolioSettings] = useState<PortfolioSettings[]>(
+    DEFAULT_PORTFOLIO_SETTINGS
+  );
   const [selectedDelta, setSelectedDelta] = useState<10 | 15 | 20>(15);
 
   useEffect(() => {
-    setPageTitle('Monthly Income Calculator', 'Calculate potential monthly income from covered calls');
+    setPageTitle(
+      'Monthly Income Calculator',
+      'Calculate potential monthly income from covered calls'
+    );
   }, [setPageTitle]);
 
   // Add new position
@@ -59,21 +64,21 @@ export const MonthlyIncomeCalculator: React.FC = () => {
 
   // Update position
   const updatePosition = (id: string, field: keyof Position, value: any) => {
-    setPositions(positions.map(pos =>
-      pos.id === id ? { ...pos, [field]: value } : pos
-    ));
+    setPositions(positions.map((pos) => (pos.id === id ? { ...pos, [field]: value } : pos)));
   };
 
   // Delete position
   const deletePosition = (id: string) => {
-    setPositions(positions.filter(pos => pos.id !== id));
+    setPositions(positions.filter((pos) => pos.id !== id));
   };
 
   // Update portfolio settings
   const updatePortfolioSetting = (portfolio: PortfolioName, pricePerContract: number) => {
-    setPortfolioSettings(portfolioSettings.map(setting =>
-      setting.portfolio === portfolio ? { ...setting, pricePerContract } : setting
-    ));
+    setPortfolioSettings(
+      portfolioSettings.map((setting) =>
+        setting.portfolio === portfolio ? { ...setting, pricePerContract } : setting
+      )
+    );
   };
 
   // Calculate totals
@@ -89,13 +94,16 @@ export const MonthlyIncomeCalculator: React.FC = () => {
       SAXO: { gross: 0, fees: 0, net: 0 },
     };
 
-    positions.forEach(pos => {
-      const premium = selectedDelta === 10 ? pos.delta10Premium :
-                      selectedDelta === 15 ? pos.delta15Premium :
-                      pos.delta20Premium;
+    positions.forEach((pos) => {
+      const premium =
+        selectedDelta === 10
+          ? pos.delta10Premium
+          : selectedDelta === 15
+            ? pos.delta15Premium
+            : pos.delta20Premium;
 
       const grossIncome = premium * pos.quantity * 100; // Premium * contracts * multiplier
-      const portfolioSetting = portfolioSettings.find(s => s.portfolio === pos.portfolio);
+      const portfolioSetting = portfolioSettings.find((s) => s.portfolio === pos.portfolio);
       const fees = (portfolioSetting?.pricePerContract || 0) * pos.quantity;
       const netIncome = grossIncome - fees;
 
@@ -132,9 +140,7 @@ export const MonthlyIncomeCalculator: React.FC = () => {
     <div className="space-y-6">
       {/* Toolbar — page title is provided by the global header */}
       <div className="flex items-center justify-end gap-2">
-        <label className="text-sm font-medium text-ink-700 dark:text-ink-300">
-          Target Delta:
-        </label>
+        <label className="text-sm font-medium text-ink-700 dark:text-ink-300">Target Delta:</label>
         <select
           value={selectedDelta}
           onChange={(e) => setSelectedDelta(Number(e.target.value) as 10 | 15 | 20)}
@@ -170,33 +176,61 @@ export const MonthlyIncomeCalculator: React.FC = () => {
               <table className="w-full">
                 <thead className="bg-gray-50 dark:bg-gray-900/50">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Ticker</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Portfolio</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Type</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Qty</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Strike</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Exp</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">10Δ</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">15Δ</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">20Δ</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Income</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                      Ticker
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                      Portfolio
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                      Type
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                      Qty
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                      Strike
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                      Exp
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                      10Δ
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                      15Δ
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                      20Δ
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                      Income
+                    </th>
                     <th className="px-4 py-3"></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                   {positions.length === 0 ? (
                     <tr>
-                      <td colSpan={11} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                      <td
+                        colSpan={11}
+                        className="px-4 py-8 text-center text-gray-500 dark:text-gray-400"
+                      >
                         No positions added yet. Click "Add Position" to get started.
                       </td>
                     </tr>
                   ) : (
                     positions.map((pos) => {
-                      const premium = selectedDelta === 10 ? pos.delta10Premium :
-                                    selectedDelta === 15 ? pos.delta15Premium :
-                                    pos.delta20Premium;
+                      const premium =
+                        selectedDelta === 10
+                          ? pos.delta10Premium
+                          : selectedDelta === 15
+                            ? pos.delta15Premium
+                            : pos.delta20Premium;
                       const grossIncome = premium * pos.quantity * 100;
-                      const fees = (portfolioSettings.find(s => s.portfolio === pos.portfolio)?.pricePerContract || 0) * pos.quantity;
+                      const fees =
+                        (portfolioSettings.find((s) => s.portfolio === pos.portfolio)
+                          ?.pricePerContract || 0) * pos.quantity;
                       const netIncome = grossIncome - fees;
 
                       return (
@@ -205,7 +239,9 @@ export const MonthlyIncomeCalculator: React.FC = () => {
                             <div className="w-32">
                               <TickerSelector
                                 value={pos.ticker}
-                                onChange={(ticker: Ticker) => updatePosition(pos.id, 'ticker', ticker.symbol)}
+                                onChange={(ticker: Ticker) =>
+                                  updatePosition(pos.id, 'ticker', ticker.symbol)
+                                }
                                 placeholder="Ticker..."
                               />
                             </div>
@@ -236,7 +272,9 @@ export const MonthlyIncomeCalculator: React.FC = () => {
                             <input
                               type="number"
                               value={pos.quantity}
-                              onChange={(e) => updatePosition(pos.id, 'quantity', Number(e.target.value))}
+                              onChange={(e) =>
+                                updatePosition(pos.id, 'quantity', Number(e.target.value))
+                              }
                               className="w-16 rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm p-1"
                             />
                           </td>
@@ -244,7 +282,9 @@ export const MonthlyIncomeCalculator: React.FC = () => {
                             <input
                               type="number"
                               value={pos.strike || ''}
-                              onChange={(e) => updatePosition(pos.id, 'strike', Number(e.target.value))}
+                              onChange={(e) =>
+                                updatePosition(pos.id, 'strike', Number(e.target.value))
+                              }
                               placeholder={pos.type === 'leap' ? '100' : 'N/A'}
                               disabled={pos.type === 'stock'}
                               className="w-20 rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm p-1 disabled:opacity-50"
@@ -264,7 +304,9 @@ export const MonthlyIncomeCalculator: React.FC = () => {
                               type="number"
                               step="0.01"
                               value={pos.delta10Premium || ''}
-                              onChange={(e) => updatePosition(pos.id, 'delta10Premium', Number(e.target.value))}
+                              onChange={(e) =>
+                                updatePosition(pos.id, 'delta10Premium', Number(e.target.value))
+                              }
                               placeholder="1,20"
                               className="w-20 rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm p-1"
                             />
@@ -274,7 +316,9 @@ export const MonthlyIncomeCalculator: React.FC = () => {
                               type="number"
                               step="0.01"
                               value={pos.delta15Premium || ''}
-                              onChange={(e) => updatePosition(pos.id, 'delta15Premium', Number(e.target.value))}
+                              onChange={(e) =>
+                                updatePosition(pos.id, 'delta15Premium', Number(e.target.value))
+                              }
                               placeholder="1,44"
                               className="w-20 rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm p-1"
                             />
@@ -284,7 +328,9 @@ export const MonthlyIncomeCalculator: React.FC = () => {
                               type="number"
                               step="0.01"
                               value={pos.delta20Premium || ''}
-                              onChange={(e) => updatePosition(pos.id, 'delta20Premium', Number(e.target.value))}
+                              onChange={(e) =>
+                                updatePosition(pos.id, 'delta20Premium', Number(e.target.value))
+                              }
                               placeholder="1,80"
                               className="w-20 rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm p-1"
                             />
@@ -318,7 +364,10 @@ export const MonthlyIncomeCalculator: React.FC = () => {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {portfolioSettings.map((setting) => (
-                <div key={setting.portfolio} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div
+                  key={setting.portfolio}
+                  className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
+                >
                   <span className="font-medium text-gray-900 dark:text-white">
                     {setting.portfolio}
                   </span>
@@ -328,7 +377,9 @@ export const MonthlyIncomeCalculator: React.FC = () => {
                       type="number"
                       step="0.01"
                       value={setting.pricePerContract}
-                      onChange={(e) => updatePortfolioSetting(setting.portfolio, Number(e.target.value))}
+                      onChange={(e) =>
+                        updatePortfolioSetting(setting.portfolio, Number(e.target.value))
+                      }
                       className="w-20 rounded border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white text-sm p-1"
                     />
                   </div>
@@ -351,7 +402,9 @@ export const MonthlyIncomeCalculator: React.FC = () => {
 
             <div className="space-y-4">
               <div>
-                <p className="text-sm text-positive-700 dark:text-positive-500 mb-1">Gross Income</p>
+                <p className="text-sm text-positive-700 dark:text-positive-500 mb-1">
+                  Gross Income
+                </p>
                 <p className="text-2xl font-bold text-positive-700 dark:text-green-100">
                   {formatCurrency(totalGrossIncome)}
                 </p>
@@ -367,14 +420,18 @@ export const MonthlyIncomeCalculator: React.FC = () => {
               <hr className="border-positive-500/20 dark:border-positive-700" />
 
               <div>
-                <p className="text-sm text-positive-700 dark:text-positive-500 mb-1">Net Monthly Income</p>
+                <p className="text-sm text-positive-700 dark:text-positive-500 mb-1">
+                  Net Monthly Income
+                </p>
                 <p className="text-3xl font-bold text-positive-600 dark:text-positive-500">
                   {formatCurrency(totalNetIncome)}
                 </p>
               </div>
 
               <div>
-                <p className="text-sm text-positive-700 dark:text-positive-500 mb-1">Annual Income</p>
+                <p className="text-sm text-positive-700 dark:text-positive-500 mb-1">
+                  Annual Income
+                </p>
                 <p className="text-xl font-bold text-positive-700 dark:text-positive-500">
                   {formatCurrency(totalNetIncome * 12)}
                 </p>
@@ -384,8 +441,8 @@ export const MonthlyIncomeCalculator: React.FC = () => {
             <div className="mt-4 p-3 bg-primary-50 dark:bg-primary-900/30 rounded-lg flex items-start gap-2">
               <Info className="w-4 h-4 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
               <p className="text-xs text-primary-700 dark:text-primary-300">
-                Assumes you sell covered calls monthly at {selectedDelta}% delta.
-                Actual results may vary based on market conditions.
+                Assumes you sell covered calls monthly at {selectedDelta}% delta. Actual results may
+                vary based on market conditions.
               </p>
             </div>
           </div>

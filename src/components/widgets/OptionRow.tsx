@@ -117,23 +117,23 @@ export const OptionRow: React.FC<OptionRowProps> = ({
           : 'hover:bg-white dark:hover:bg-gray-700/30'
       } ${getBorderColor()}`}
     >
-      <div className={`grid ${isSubItem ? 'grid-cols-[16px_32px_minmax(124px,1fr)_80px_70px_70px_70px_85px_85px_90px_70px_16px_130px]' : 'grid-cols-[32px_minmax(140px,1fr)_80px_70px_70px_70px_85px_85px_90px_70px_16px_130px]'} gap-2 items-start ${
-        isExpired ? 'opacity-60' : ''
-      }`}>
+      <div
+        className={`grid ${isSubItem ? 'grid-cols-[16px_32px_minmax(124px,1fr)_80px_70px_70px_70px_85px_85px_90px_70px_16px_130px]' : 'grid-cols-[32px_minmax(140px,1fr)_80px_70px_70px_70px_85px_85px_90px_70px_16px_130px]'} gap-2 items-start ${
+          isExpired ? 'opacity-60' : ''
+        }`}
+      >
         {/* Spacer for sub-items */}
         {isSubItem && <div></div>}
 
         {/* Icon */}
-        <div className={`w-8 h-8 rounded flex items-center justify-center flex-shrink-0 ${
-          isCall
-            ? 'bg-positive-50 dark:bg-positive-700/25 text-positive-600 dark:text-positive-500'
-            : 'bg-surface-muted dark:bg-trading-dark-600 text-ink-600 dark:text-ink-300'
-        }`}>
-          {isCall ? (
-            <ArrowUpCircle className="w-4 h-4" />
-          ) : (
-            <ArrowDownCircle className="w-4 h-4" />
-          )}
+        <div
+          className={`w-8 h-8 rounded flex items-center justify-center flex-shrink-0 ${
+            isCall
+              ? 'bg-positive-50 dark:bg-positive-700/25 text-positive-600 dark:text-positive-500'
+              : 'bg-surface-muted dark:bg-trading-dark-600 text-ink-600 dark:text-ink-300'
+          }`}
+        >
+          {isCall ? <ArrowUpCircle className="w-4 h-4" /> : <ArrowDownCircle className="w-4 h-4" />}
         </div>
 
         {/* Ticker with badges and comment indicator */}
@@ -150,7 +150,8 @@ export const OptionRow: React.FC<OptionRowProps> = ({
                 isBuy
                   ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
                   : 'bg-caution-50 dark:bg-caution-600/25 text-caution-600 dark:text-caution-500'
-              }`}>
+              }`}
+            >
               {isBuy ? t('optionRow.long') : t('optionRow.short')}
               <PortalTooltip
                 triggerRef={getTooltipRef(`action-${option.id}`)}
@@ -163,11 +164,13 @@ export const OptionRow: React.FC<OptionRowProps> = ({
                 </div>
               </PortalTooltip>
             </span>
-            <span className={`inline-flex items-center px-1.5 py-0.5 text-[10px] font-semibold rounded ${
-              isCall
-                ? 'bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500'
-                : 'bg-surface-muted dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300'
-            }`}>
+            <span
+              className={`inline-flex items-center px-1.5 py-0.5 text-[10px] font-semibold rounded ${
+                isCall
+                  ? 'bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500'
+                  : 'bg-surface-muted dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300'
+              }`}
+            >
               {isCall ? t('optionRow.call') : t('optionRow.put')}
             </span>
             {isLEAPS && (
@@ -192,8 +195,12 @@ export const OptionRow: React.FC<OptionRowProps> = ({
                     <div className="flex items-start gap-2">
                       <AlertCircle className="w-4 h-4 text-negative-600 dark:text-negative-500 flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="font-semibold text-sm text-gray-900 dark:text-white mb-1">{t('optionRow.alert')}</p>
-                        <p className="text-xs text-gray-600 dark:text-gray-300 whitespace-pre-line">{alertMessage}</p>
+                        <p className="font-semibold text-sm text-gray-900 dark:text-white mb-1">
+                          {t('optionRow.alert')}
+                        </p>
+                        <p className="text-xs text-gray-600 dark:text-gray-300 whitespace-pre-line">
+                          {alertMessage}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -217,8 +224,12 @@ export const OptionRow: React.FC<OptionRowProps> = ({
                     <div className="flex items-start gap-2">
                       <Target className="w-4 h-4 text-positive-600 dark:text-positive-500 flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="font-semibold text-sm text-gray-900 dark:text-white mb-1">{t('optionRow.opportunity')}</p>
-                        <p className="text-xs text-gray-600 dark:text-gray-300 whitespace-pre-line">{opportunityMessage}</p>
+                        <p className="font-semibold text-sm text-gray-900 dark:text-white mb-1">
+                          {t('optionRow.opportunity')}
+                        </p>
+                        <p className="text-xs text-gray-600 dark:text-gray-300 whitespace-pre-line">
+                          {opportunityMessage}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -246,8 +257,12 @@ export const OptionRow: React.FC<OptionRowProps> = ({
                       <div className="flex items-start gap-2">
                         <MessageSquare className="w-4 h-4 text-primary-600 dark:text-primary-300 flex-shrink-0 mt-0.5" />
                         <div>
-                          <p className="font-semibold text-sm text-gray-900 dark:text-white mb-1">{t('optionRow.note')}</p>
-                          <p className="text-xs text-gray-600 dark:text-gray-300 whitespace-pre-line">{displayNotes}</p>
+                          <p className="font-semibold text-sm text-gray-900 dark:text-white mb-1">
+                            {t('optionRow.note')}
+                          </p>
+                          <p className="text-xs text-gray-600 dark:text-gray-300 whitespace-pre-line">
+                            {displayNotes}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -266,14 +281,20 @@ export const OptionRow: React.FC<OptionRowProps> = ({
           <p className="text-sm font-medium text-gray-900 dark:text-white">
             {new Date(option.expiration).toLocaleDateString('nl-NL')}
           </p>
-          <p className={`text-xs ${
-            expiresThisWeek
-              ? 'text-negative-600 dark:text-negative-500 font-semibold'
-              : expiresWithinTwoWeeks
-              ? 'text-caution-500 dark:text-caution-500 font-semibold'
-              : 'text-gray-500 dark:text-gray-400'
-          }`}>
-            {daysToExpiration > 0 ? `${daysToExpiration}d` : daysToExpiration === 0 ? t('optionRow.today') : t('optionRow.expired')}
+          <p
+            className={`text-xs ${
+              expiresThisWeek
+                ? 'text-negative-600 dark:text-negative-500 font-semibold'
+                : expiresWithinTwoWeeks
+                  ? 'text-caution-500 dark:text-caution-500 font-semibold'
+                  : 'text-gray-500 dark:text-gray-400'
+            }`}
+          >
+            {daysToExpiration > 0
+              ? `${daysToExpiration}d`
+              : daysToExpiration === 0
+                ? t('optionRow.today')
+                : t('optionRow.expired')}
           </p>
         </div>
 
@@ -298,22 +319,27 @@ export const OptionRow: React.FC<OptionRowProps> = ({
         {/* Verschil (stock price - strike) */}
         <div>
           {stockPrice > 0 ? (
-            <p className={`text-sm font-semibold ${
-              (() => {
+            <p
+              className={`text-sm font-semibold ${(() => {
                 // Only show red for bad situations, otherwise neutral
                 // Short call: positive difference is bad (stock above strike)
                 // Short put: negative difference is bad (stock below strike)
                 // Long call: negative difference is bad (stock below strike)
                 // Long put: positive difference is bad (stock above strike)
                 const isBadForPosition = isBuy
-                  ? (isCall ? priceDifference < 0 : priceDifference > 0)
-                  : (isCall ? priceDifference > 0 : priceDifference < 0);
+                  ? isCall
+                    ? priceDifference < 0
+                    : priceDifference > 0
+                  : isCall
+                    ? priceDifference > 0
+                    : priceDifference < 0;
 
                 if (isBadForPosition) return 'text-negative-600 dark:text-negative-500';
                 return 'text-gray-900 dark:text-white';
-              })()
-            }`}>
-              {priceDifference > 0 ? '+' : ''}{formatCurrency(priceDifference, currencySymbol)}
+              })()}`}
+            >
+              {priceDifference > 0 ? '+' : ''}
+              {formatCurrency(priceDifference, currencySymbol)}
             </p>
           ) : (
             <p className="text-sm text-gray-400 dark:text-gray-600">-</p>
@@ -342,23 +368,29 @@ export const OptionRow: React.FC<OptionRowProps> = ({
 
         {/* Winst (nominaal en %) */}
         <div>
-          <p className={`text-sm font-bold ${
-            nominalProfit > 0
-              ? 'text-positive-600 dark:text-positive-500'
-              : nominalProfit < 0
-              ? 'text-negative-600 dark:text-negative-500'
-              : 'text-gray-900 dark:text-white'
-          }`}>
-            {nominalProfit > 0 ? '+' : ''}{formatCurrency(nominalProfit, currencySymbol)}
+          <p
+            className={`text-sm font-bold ${
+              nominalProfit > 0
+                ? 'text-positive-600 dark:text-positive-500'
+                : nominalProfit < 0
+                  ? 'text-negative-600 dark:text-negative-500'
+                  : 'text-gray-900 dark:text-white'
+            }`}
+          >
+            {nominalProfit > 0 ? '+' : ''}
+            {formatCurrency(nominalProfit, currencySymbol)}
           </p>
-          <p className={`text-xs font-medium ${
-            nominalProfit > 0
-              ? 'text-positive-600 dark:text-positive-500'
-              : nominalProfit < 0
-              ? 'text-negative-600 dark:text-negative-500'
-              : 'text-gray-900 dark:text-white'
-          }`}>
-            {nominalProfit > 0 ? '+' : ''}{formatNumber(profitPercent)}%
+          <p
+            className={`text-xs font-medium ${
+              nominalProfit > 0
+                ? 'text-positive-600 dark:text-positive-500'
+                : nominalProfit < 0
+                  ? 'text-negative-600 dark:text-negative-500'
+                  : 'text-gray-900 dark:text-white'
+            }`}
+          >
+            {nominalProfit > 0 ? '+' : ''}
+            {formatNumber(profitPercent)}%
           </p>
         </div>
 
@@ -372,27 +404,37 @@ export const OptionRow: React.FC<OptionRowProps> = ({
                 onMouseLeave={() => setShowTooltip(null)}
                 className="cursor-help"
               >
-                <p className={`text-sm font-semibold ${
-                  collateralType === 'cash'
-                    ? 'text-caution-600 dark:text-caution-500'
-                    : collateralType === 'stock'
-                    ? 'text-primary-700 dark:text-primary-300'
-                    : collateralType === 'put'
-                    ? 'text-ink-600 dark:text-ink-300'
-                    : collateralType === 'call'
-                    ? 'text-positive-600 dark:text-positive-500'
-                    : 'text-caution-600 dark:text-caution-500'
-                }`}>
-                  {collateralType === 'stock' ? t('optionRow.stockCollateral') : collateralType === 'leaps' ? t('optionRow.leapsCollateral') : collateralType === 'put' ? t('optionRow.putCollateral') : collateralType === 'call' ? t('optionRow.callCollateral') : t('optionRow.cashCollateral')}
+                <p
+                  className={`text-sm font-semibold ${
+                    collateralType === 'cash'
+                      ? 'text-caution-600 dark:text-caution-500'
+                      : collateralType === 'stock'
+                        ? 'text-primary-700 dark:text-primary-300'
+                        : collateralType === 'put'
+                          ? 'text-ink-600 dark:text-ink-300'
+                          : collateralType === 'call'
+                            ? 'text-positive-600 dark:text-positive-500'
+                            : 'text-caution-600 dark:text-caution-500'
+                  }`}
+                >
+                  {collateralType === 'stock'
+                    ? t('optionRow.stockCollateral')
+                    : collateralType === 'leaps'
+                      ? t('optionRow.leapsCollateral')
+                      : collateralType === 'put'
+                        ? t('optionRow.putCollateral')
+                        : collateralType === 'call'
+                          ? t('optionRow.callCollateral')
+                          : t('optionRow.cashCollateral')}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   {collateralType === 'stock'
                     ? option.ticker
                     : collateralType === 'leaps' && leapsInfo
-                    ? `${leapsInfo.ticker} ${getDaysToExpiration(leapsInfo.expiration)}d`
-                    : collateralType === 'put' || collateralType === 'call'
-                    ? `$${collateralValue}`
-                    : formatCurrency(collateralValue, currencySymbol)}
+                      ? `${leapsInfo.ticker} ${getDaysToExpiration(leapsInfo.expiration)}d`
+                      : collateralType === 'put' || collateralType === 'call'
+                        ? `$${collateralValue}`
+                        : formatCurrency(collateralValue, currencySymbol)}
                 </p>
               </div>
               <PortalTooltip
@@ -403,9 +445,17 @@ export const OptionRow: React.FC<OptionRowProps> = ({
                   <div className="flex items-start gap-2">
                     <div>
                       <p className="font-semibold text-sm text-gray-900 dark:text-white mb-1">
-                        {collateralType === 'stock' ? t('optionRow.stockCollateralDesc') : collateralType === 'leaps' ? t('optionRow.leapsCollateralDesc') : collateralType === 'put' ? t('optionRow.protectivePut') : t('optionRow.cashCollateralDesc')}
+                        {collateralType === 'stock'
+                          ? t('optionRow.stockCollateralDesc')
+                          : collateralType === 'leaps'
+                            ? t('optionRow.leapsCollateralDesc')
+                            : collateralType === 'put'
+                              ? t('optionRow.protectivePut')
+                              : t('optionRow.cashCollateralDesc')}
                       </p>
-                      <p className="text-xs text-gray-600 dark:text-gray-300">{collateralDescription}</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-300">
+                        {collateralDescription}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -427,7 +477,9 @@ export const OptionRow: React.FC<OptionRowProps> = ({
             onEdit={onClick ? () => onClick(option) : undefined}
             onAssign={onAssign && !isBuy ? () => onAssign(option) : undefined}
             onClose={onClose ? () => onClose(option) : undefined}
-            campaignTitle={isLEAPS ? t('optionRow.viewPmccCampaign') : t('optionRow.viewKachingCampaign')}
+            campaignTitle={
+              isLEAPS ? t('optionRow.viewPmccCampaign') : t('optionRow.viewKachingCampaign')
+            }
           />
         ) : (
           <div></div>

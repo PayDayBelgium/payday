@@ -13,10 +13,10 @@ export const THEMES: Record<ThemeColor, ThemeConfig> = {
   blue: {
     id: 'blue',
     name: 'Institutional Blue',
-    primary: '#0B4A8F',       // institutional anchor
-    primaryHover: '#082C56',  // deeper on hover
-    primaryLight: '#2F6CAE',  // sky accent
-    primaryDark: '#051A33',   // very dark
+    primary: '#0B4A8F', // institutional anchor
+    primaryHover: '#082C56', // deeper on hover
+    primaryLight: '#2F6CAE', // sky accent
+    primaryDark: '#051A33', // very dark
   },
   green: {
     id: 'green',

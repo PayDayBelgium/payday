@@ -12,7 +12,17 @@ import { AIAssistantProvider } from '../../contexts/AIAssistantContext';
 import { AIAssistantFab } from '../ai/AIAssistantFab';
 
 const LayoutContent: React.FC = () => {
-  const { pageTitle, pageDescription, showInfoIcon, isInfoActive, onInfoClick, showWarningIcon, isWarningActive, onWarningClick, titleIcon } = usePageTitle();
+  const {
+    pageTitle,
+    pageDescription,
+    showInfoIcon,
+    isInfoActive,
+    onInfoClick,
+    showWarningIcon,
+    isWarningActive,
+    onWarningClick,
+    titleIcon,
+  } = usePageTitle();
   const currentLevel = useAppSelector(selectCurrentLevel);
 
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -95,11 +105,10 @@ const LayoutContent: React.FC = () => {
         onWarningClick={onWarningClick || undefined}
         titleIcon={titleIcon || undefined}
       />
-      <Sidebar
-        isCollapsed={isSidebarCollapsed}
-        onToggleCollapse={toggleSidebar}
-      />
-      <main className={`flex-1 ${isSidebarCollapsed ? 'ml-16' : 'ml-64'} mt-16 p-6 bg-surface dark:bg-trading-dark-900 transition-all duration-300`}>
+      <Sidebar isCollapsed={isSidebarCollapsed} onToggleCollapse={toggleSidebar} />
+      <main
+        className={`flex-1 ${isSidebarCollapsed ? 'ml-16' : 'ml-64'} mt-16 p-6 bg-surface dark:bg-trading-dark-900 transition-all duration-300`}
+      >
         <Outlet />
       </main>
 

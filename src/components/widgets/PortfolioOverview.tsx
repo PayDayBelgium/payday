@@ -7,7 +7,15 @@ import { useAlerts } from '../../hooks/useAlerts';
 import { formatCurrency, formatNumber } from '../../utils/numberFormat';
 import { getCurrencySymbol } from '../../utils/currency';
 import { AlertTooltipContent } from '../common/AlertTooltipContent';
-import { TrendingUp, TrendingDown, RotateCcw, AlertCircle, Target, Plus, Settings } from 'lucide-react';
+import {
+  TrendingUp,
+  TrendingDown,
+  RotateCcw,
+  AlertCircle,
+  Target,
+  Plus,
+  Settings,
+} from 'lucide-react';
 import type { CallOption, PutOption } from '../../types';
 
 type TimePeriod = '1W' | '1M' | '3M' | 'YTD' | '1Y' | 'ALL';
@@ -31,7 +39,7 @@ export const PortfolioOverview: React.FC = memo(() => {
 
   const toggleFlip = (portfolioName: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    setFlippedCards(prev => {
+    setFlippedCards((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(portfolioName)) {
         newSet.delete(portfolioName);
@@ -44,7 +52,7 @@ export const PortfolioOverview: React.FC = memo(() => {
 
   const setTimePeriod = (portfolioName: string, period: TimePeriod, e: React.MouseEvent) => {
     e.stopPropagation();
-    setTimePeriods(prev => ({ ...prev, [portfolioName]: period }));
+    setTimePeriods((prev) => ({ ...prev, [portfolioName]: period }));
   };
 
   const handlePortfolioClick = (portfolioName: string) => {
@@ -64,7 +72,9 @@ export const PortfolioOverview: React.FC = memo(() => {
   const handleEditPortfolio = (portfolioId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     pushNavigation('/settings/portfolios', 'Portfolio Beheer');
-    navigate('/settings/portfolios', { state: { editPortfolioId: portfolioId, fromPage: 'dashboard' } });
+    navigate('/settings/portfolios', {
+      state: { editPortfolioId: portfolioId, fromPage: 'dashboard' },
+    });
   };
 
   return (
@@ -72,9 +82,7 @@ export const PortfolioOverview: React.FC = memo(() => {
       {/* Header */}
       <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-            Portefeuilles
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Portefeuilles</h3>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             {summaries.length} {summaries.length === 1 ? 'portefeuille' : 'portefeuilles'}
           </p>
@@ -102,24 +110,34 @@ export const PortfolioOverview: React.FC = memo(() => {
 
             // Calculate Long and Short values for this portfolio
             const portfolioPositions = positions.filter(
-              p => p.portfolio === summary.portfolio && p.status === 'open'
+              (p) => p.portfolio === summary.portfolio && p.status === 'open'
             );
 
             // Stock and ETF value (always long positions)
             const stockEtfValue = portfolioPositions
-              .filter(p => p.type === 'stock' || p.type === 'etf')
+              .filter((p) => p.type === 'stock' || p.type === 'etf')
               .reduce((sum, pos) => sum + (pos.currentValue ?? 0), 0);
 
             // Options long value (bought options)
             const optionsLongValue = portfolioPositions
-              .filter(p => (p.type === 'call' || p.type === 'put') && 'action' in p && (p as any).action === 'buy')
+              .filter(
+                (p) =>
+                  (p.type === 'call' || p.type === 'put') &&
+                  'action' in p &&
+                  (p as any).action === 'buy'
+              )
               .reduce((sum, pos) => sum + Math.abs(pos.currentValue ?? 0), 0);
 
             const longValue = stockEtfValue + optionsLongValue;
 
             // Short value (sold options)
             const shortValue = portfolioPositions
-              .filter(p => (p.type === 'call' || p.type === 'put') && 'action' in p && (p as any).action === 'sell')
+              .filter(
+                (p) =>
+                  (p.type === 'call' || p.type === 'put') &&
+                  'action' in p &&
+                  (p as any).action === 'sell'
+              )
               .reduce((sum, pos) => sum + Math.abs(pos.currentValue ?? 0), 0);
 
             // Calculate allocated cash (collateral)
@@ -136,15 +154,18 @@ export const PortfolioOverview: React.FC = memo(() => {
             const freeCash = summary.cash - allocatedCash;
 
             // Calculate gains based on selected period
-            const portfolioDailyData = dailyData.filter(d => d.portfolio === summary.portfolio);
+            const portfolioDailyData = dailyData.filter((d) => d.portfolio === summary.portfolio);
             const calculateGain = (period: TimePeriod) => {
               if (portfolioDailyData.length === 0) {
                 // No daily data, calculate from initial capital
                 return {
                   absolute: summary.totalValue - portfolio.initialCapital,
-                  percentage: portfolio.initialCapital > 0
-                    ? ((summary.totalValue - portfolio.initialCapital) / portfolio.initialCapital) * 100
-                    : 0
+                  percentage:
+                    portfolio.initialCapital > 0
+                      ? ((summary.totalValue - portfolio.initialCapital) /
+                          portfolio.initialCapital) *
+                        100
+                      : 0,
                 };
               }
 
@@ -172,15 +193,18 @@ export const PortfolioOverview: React.FC = memo(() => {
                   // Use initial capital
                   return {
                     absolute: summary.totalValue - portfolio.initialCapital,
-                    percentage: portfolio.initialCapital > 0
-                      ? ((summary.totalValue - portfolio.initialCapital) / portfolio.initialCapital) * 100
-                      : 0
+                    percentage:
+                      portfolio.initialCapital > 0
+                        ? ((summary.totalValue - portfolio.initialCapital) /
+                            portfolio.initialCapital) *
+                          100
+                        : 0,
                   };
               }
 
               // Find the closest data point to start date
               const relevantData = portfolioDailyData
-                .filter(d => new Date(d.date) >= startDate)
+                .filter((d) => new Date(d.date) >= startDate)
                 .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
               if (relevantData.length === 0) {
@@ -195,7 +219,12 @@ export const PortfolioOverview: React.FC = memo(() => {
             };
 
             const gain = calculateGain(selectedPeriod);
-            const alertsOpp = portfolioAlertsOpportunities[summary.portfolio] || { alerts: 0, opportunities: 0, alertItems: [], opportunityItems: [] };
+            const alertsOpp = portfolioAlertsOpportunities[summary.portfolio] || {
+              alerts: 0,
+              opportunities: 0,
+              alertItems: [],
+              opportunityItems: [],
+            };
 
             return (
               <div
@@ -250,7 +279,10 @@ export const PortfolioOverview: React.FC = memo(() => {
                             {alertsOpp.opportunityItems.length > 0 && (
                               <div className="absolute right-0 top-full mt-2 hidden group-hover:block w-64 p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-xs rounded-lg shadow-lg z-50 border-2 border-gray-200 dark:border-gray-600">
                                 <div className="absolute -top-1.5 right-3 w-3 h-3 bg-white dark:bg-gray-800 border-l border-t border-gray-200 dark:border-gray-600 transform rotate-45"></div>
-                                <AlertTooltipContent items={alertsOpp.opportunityItems} type="opportunity" />
+                                <AlertTooltipContent
+                                  items={alertsOpp.opportunityItems}
+                                  type="opportunity"
+                                />
                               </div>
                             )}
                           </div>
@@ -309,13 +341,17 @@ export const PortfolioOverview: React.FC = memo(() => {
                       {/* Stats - all aligned left */}
                       <div className="space-y-1.5 text-xs flex-1">
                         <div className="flex">
-                          <span className="text-gray-500 dark:text-gray-400 w-20">Long posities</span>
+                          <span className="text-gray-500 dark:text-gray-400 w-20">
+                            Long posities
+                          </span>
                           <span className="font-medium text-gray-900 dark:text-white">
                             {formatCurrency(longValue, currencySymbol)}
                           </span>
                         </div>
                         <div className="flex">
-                          <span className="text-gray-500 dark:text-gray-400 w-20">Short posities</span>
+                          <span className="text-gray-500 dark:text-gray-400 w-20">
+                            Short posities
+                          </span>
                           <span className="font-medium text-gray-900 dark:text-white">
                             {formatCurrency(shortValue, currencySymbol)}
                           </span>
@@ -328,7 +364,9 @@ export const PortfolioOverview: React.FC = memo(() => {
                         </div>
                         <div className="flex">
                           <span className="text-gray-500 dark:text-gray-400 w-20">Vrije cash</span>
-                          <span className={`font-medium ${freeCash < 0 ? 'text-negative-600 dark:text-negative-500' : 'text-gray-900 dark:text-white'}`}>
+                          <span
+                            className={`font-medium ${freeCash < 0 ? 'text-negative-600 dark:text-negative-500' : 'text-gray-900 dark:text-white'}`}
+                          >
                             {formatCurrency(freeCash, currencySymbol)}
                           </span>
                         </div>
@@ -395,7 +433,11 @@ export const PortfolioOverview: React.FC = memo(() => {
                             onKeyDown={(e) => {
                               if (e.key === 'Enter' || e.key === ' ') {
                                 e.preventDefault();
-                                setTimePeriod(summary.portfolio, period, e as unknown as React.MouseEvent);
+                                setTimePeriod(
+                                  summary.portfolio,
+                                  period,
+                                  e as unknown as React.MouseEvent
+                                );
                               }
                             }}
                           >
@@ -409,24 +451,30 @@ export const PortfolioOverview: React.FC = memo(() => {
                         <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
                           {selectedPeriod === 'ALL' ? 'Totale Gain' : `Gain (${selectedPeriod})`}
                         </p>
-                        <p className={`text-2xl font-bold mb-1 ${
-                          gain.absolute >= 0
-                            ? 'text-positive-600 dark:text-positive-500'
-                            : 'text-negative-600 dark:text-negative-500'
-                        }`}>
-                          {gain.absolute >= 0 ? '+' : ''}{formatCurrency(gain.absolute, currencySymbol)}
+                        <p
+                          className={`text-2xl font-bold mb-1 ${
+                            gain.absolute >= 0
+                              ? 'text-positive-600 dark:text-positive-500'
+                              : 'text-negative-600 dark:text-negative-500'
+                          }`}
+                        >
+                          {gain.absolute >= 0 ? '+' : ''}
+                          {formatCurrency(gain.absolute, currencySymbol)}
                         </p>
-                        <p className={`text-sm font-medium flex items-center gap-1 ${
-                          gain.percentage >= 0
-                            ? 'text-positive-600 dark:text-positive-500'
-                            : 'text-negative-600 dark:text-negative-500'
-                        }`}>
+                        <p
+                          className={`text-sm font-medium flex items-center gap-1 ${
+                            gain.percentage >= 0
+                              ? 'text-positive-600 dark:text-positive-500'
+                              : 'text-negative-600 dark:text-negative-500'
+                          }`}
+                        >
                           {gain.percentage >= 0 ? (
                             <TrendingUp className="w-4 h-4" />
                           ) : (
                             <TrendingDown className="w-4 h-4" />
                           )}
-                          {gain.percentage >= 0 ? '+' : ''}{formatNumber(gain.percentage)}%
+                          {gain.percentage >= 0 ? '+' : ''}
+                          {formatNumber(gain.percentage)}%
                         </p>
                       </div>
                     </button>

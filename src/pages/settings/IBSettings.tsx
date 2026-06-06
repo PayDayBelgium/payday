@@ -14,7 +14,10 @@ export const IBSettings: React.FC = () => {
     setPageTitle('Interactive Portfolios Settings', 'Configure connection to TWS or IB Gateway');
   }, [setPageTitle]);
   const [isSaving, setIsSaving] = useState(false);
-  const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [saveMessage, setSaveMessage] = useState<{
+    type: 'success' | 'error';
+    text: string;
+  } | null>(null);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -52,7 +55,7 @@ export const IBSettings: React.FC = () => {
 
   return (
     <div className="space-y-6">
-<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Settings Form */}
         <div className="lg:col-span-2 space-y-6">
           {/* Connection Status */}
@@ -168,23 +171,31 @@ export const IBSettings: React.FC = () => {
             </h3>
             <div className="space-y-3 text-sm text-gray-600 dark:text-gray-400">
               <div>
-                <p className="font-semibold text-gray-900 dark:text-white mb-1">1. Enable API in TWS</p>
+                <p className="font-semibold text-gray-900 dark:text-white mb-1">
+                  1. Enable API in TWS
+                </p>
                 <p>File → Global Configuration → API → Settings</p>
                 <p>Check "Enable ActiveX and Socket Clients"</p>
               </div>
 
               <div>
-                <p className="font-semibold text-gray-900 dark:text-white mb-1">2. Configure Port</p>
+                <p className="font-semibold text-gray-900 dark:text-white mb-1">
+                  2. Configure Port
+                </p>
                 <p>Set Socket Port to 7497 (paper) or 7496 (live)</p>
               </div>
 
               <div>
-                <p className="font-semibold text-gray-900 dark:text-white mb-1">3. Allow Connections</p>
+                <p className="font-semibold text-gray-900 dark:text-white mb-1">
+                  3. Allow Connections
+                </p>
                 <p>Add 127.0.0.1 to "Trusted IP Addresses"</p>
               </div>
 
               <div>
-                <p className="font-semibold text-gray-900 dark:text-white mb-1">4. WebSocket Setup</p>
+                <p className="font-semibold text-gray-900 dark:text-white mb-1">
+                  4. WebSocket Setup
+                </p>
                 <p className="text-caution-600 dark:text-caution-500">
                   Note: IB doesn't natively support WebSocket. You'll need a middleware service.
                 </p>

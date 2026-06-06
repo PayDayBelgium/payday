@@ -11,7 +11,10 @@ export const CapitalGainsTaxCalculator: React.FC = () => {
   const [showInfo, setShowInfo] = useState(false);
 
   useEffect(() => {
-    setPageTitle('Meerwaardebelasting simulator', 'Belgische belasting op meerwaarden aandelen (2026+)');
+    setPageTitle(
+      'Meerwaardebelasting simulator',
+      'Belgische belasting op meerwaarden aandelen (2026+)'
+    );
   }, [setPageTitle]);
 
   const parseNumber = (value: string): number => {
@@ -21,7 +24,7 @@ export const CapitalGainsTaxCalculator: React.FC = () => {
 
   const gains = parseNumber(realizedGains);
   const taxableAmount = Math.max(0, gains - 10000);
-  const taxDue = taxableAmount * 0.10;
+  const taxDue = taxableAmount * 0.1;
   const effectiveRate = gains > 0 ? (taxDue / gains) * 100 : 0;
   const netGains = gains - taxDue;
 
@@ -30,7 +33,7 @@ export const CapitalGainsTaxCalculator: React.FC = () => {
       style: 'currency',
       currency: 'EUR',
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      maximumFractionDigits: 2,
     });
   };
 
@@ -43,7 +46,9 @@ export const CapitalGainsTaxCalculator: React.FC = () => {
           className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-[var(--line)] text-sm text-ink-700 hover:bg-surface-subtle transition-colors"
           title={showInfo ? 'Verberg uitleg' : 'Toon uitleg'}
         >
-          <Info className={`w-4 h-4 ${showInfo ? 'text-caution-600 dark:text-caution-500' : 'text-ink-400'}`} />
+          <Info
+            className={`w-4 h-4 ${showInfo ? 'text-caution-600 dark:text-caution-500' : 'text-ink-400'}`}
+          />
           {showInfo ? 'Verberg uitleg' : 'Toon uitleg'}
         </button>
       </div>
@@ -58,9 +63,9 @@ export const CapitalGainsTaxCalculator: React.FC = () => {
                 Niet van toepassing
               </h4>
               <p className="text-sm text-gray-700 dark:text-gray-300">
-                Deze calculator is specifiek voor Belgische belastingplichtigen.
-                Je huidige nationaliteit is ingesteld op {nationality}.
-                Deze regels zijn mogelijk niet van toepassing op jou.
+                Deze calculator is specifiek voor Belgische belastingplichtigen. Je huidige
+                nationaliteit is ingesteld op {nationality}. Deze regels zijn mogelijk niet van
+                toepassing op jou.
               </p>
             </div>
           </div>
@@ -77,9 +82,9 @@ export const CapitalGainsTaxCalculator: React.FC = () => {
                 Wat is de meerwaardebelasting?
               </h3>
               <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
-                Vanaf 1 januari 2026 wordt in België een belasting van <strong>10%</strong> geheven op
-                gerealiseerde meerwaarden op aandelen. Dit betekent dat wanneer je aandelen verkoopt met winst,
-                je hierover belasting moet betalen.
+                Vanaf 1 januari 2026 wordt in België een belasting van <strong>10%</strong> geheven
+                op gerealiseerde meerwaarden op aandelen. Dit betekent dat wanneer je aandelen
+                verkoopt met winst, je hierover belasting moet betalen.
               </p>
               <div className="space-y-2">
                 <div className="flex items-start gap-2">
@@ -91,19 +96,22 @@ export const CapitalGainsTaxCalculator: React.FC = () => {
                 <div className="flex items-start gap-2">
                   <ArrowRight className="w-4 h-4 text-caution-600 dark:text-caution-500 mt-0.5 flex-shrink-0" />
                   <p className="text-sm text-gray-700 dark:text-gray-300">
-                    <strong>Vrijstelling:</strong> De eerste €10.000 meerwaarde per jaar is vrijgesteld
+                    <strong>Vrijstelling:</strong> De eerste €10.000 meerwaarde per jaar is
+                    vrijgesteld
                   </p>
                 </div>
                 <div className="flex items-start gap-2">
                   <ArrowRight className="w-4 h-4 text-caution-600 dark:text-caution-500 mt-0.5 flex-shrink-0" />
                   <p className="text-sm text-gray-700 dark:text-gray-300">
-                    <strong>Maximum voordeel:</strong> Tot €1.000 belastingbesparing door de vrijstelling
+                    <strong>Maximum voordeel:</strong> Tot €1.000 belastingbesparing door de
+                    vrijstelling
                   </p>
                 </div>
                 <div className="flex items-start gap-2">
                   <ArrowRight className="w-4 h-4 text-caution-600 dark:text-caution-500 mt-0.5 flex-shrink-0" />
                   <p className="text-sm text-gray-700 dark:text-gray-300">
-                    <strong>Gerealiseerde meerwaarde:</strong> Alleen winst bij verkoop telt, niet onverkochte posities
+                    <strong>Gerealiseerde meerwaarde:</strong> Alleen winst bij verkoop telt, niet
+                    onverkochte posities
                   </p>
                 </div>
               </div>
@@ -139,16 +147,26 @@ export const CapitalGainsTaxCalculator: React.FC = () => {
         <div className="space-y-4">
           <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-gray-600 dark:text-gray-400">Gerealiseerde meerwaarde</span>
-              <span className="text-lg font-bold text-gray-900 dark:text-white">{formatCurrency(gains)}</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                Gerealiseerde meerwaarde
+              </span>
+              <span className="text-lg font-bold text-gray-900 dark:text-white">
+                {formatCurrency(gains)}
+              </span>
             </div>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm text-gray-600 dark:text-gray-400">Vrijstelling</span>
-              <span className="text-lg font-semibold text-positive-600 dark:text-positive-500">- {formatCurrency(10000)}</span>
+              <span className="text-lg font-semibold text-positive-600 dark:text-positive-500">
+                - {formatCurrency(10000)}
+              </span>
             </div>
             <div className="flex items-center justify-between pt-2 border-t border-gray-300 dark:border-gray-600">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Belastbaar bedrag</span>
-              <span className="text-lg font-bold text-gray-900 dark:text-white">{formatCurrency(taxableAmount)}</span>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Belastbaar bedrag
+              </span>
+              <span className="text-lg font-bold text-gray-900 dark:text-white">
+                {formatCurrency(taxableAmount)}
+              </span>
             </div>
           </div>
 
@@ -168,7 +186,9 @@ export const CapitalGainsTaxCalculator: React.FC = () => {
               </span>
             </div>
             <div className="flex items-center justify-between pt-2 border-t border-caution-500/40 dark:border-caution-600/40">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Netto meerwaarde na belasting</span>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Netto meerwaarde na belasting
+              </span>
               <span className="text-lg font-bold text-positive-600 dark:text-positive-500">
                 {formatCurrency(netGains)}
               </span>
@@ -179,9 +199,7 @@ export const CapitalGainsTaxCalculator: React.FC = () => {
 
       {/* Examples */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Voorbeelden
-        </h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Voorbeelden</h3>
         <div className="space-y-4">
           <div className="p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-gray-700">
             <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">
@@ -197,8 +215,10 @@ export const CapitalGainsTaxCalculator: React.FC = () => {
               Scenario 2: €15.000 meerwaarde
             </p>
             <p className="text-sm text-gray-700 dark:text-gray-300">
-              Belastbaar bedrag: €5.000 (€15.000 - €10.000)<br />
-              Belasting: <strong>€500</strong> (10% van €5.000)<br />
+              Belastbaar bedrag: €5.000 (€15.000 - €10.000)
+              <br />
+              Belasting: <strong>€500</strong> (10% van €5.000)
+              <br />
               Netto meerwaarde: €14.500
             </p>
           </div>
@@ -208,9 +228,12 @@ export const CapitalGainsTaxCalculator: React.FC = () => {
               Scenario 3: €50.000 meerwaarde
             </p>
             <p className="text-sm text-gray-700 dark:text-gray-300">
-              Belastbaar bedrag: €40.000 (€50.000 - €10.000)<br />
-              Belasting: <strong>€4.000</strong> (10% van €40.000)<br />
-              Netto meerwaarde: €46.000<br />
+              Belastbaar bedrag: €40.000 (€50.000 - €10.000)
+              <br />
+              Belasting: <strong>€4.000</strong> (10% van €40.000)
+              <br />
+              Netto meerwaarde: €46.000
+              <br />
               Effectief tarief: 8%
             </p>
           </div>
@@ -224,10 +247,16 @@ export const CapitalGainsTaxCalculator: React.FC = () => {
           Belangrijke opmerkingen
         </h4>
         <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-2 ml-7">
-          <li>• Deze belasting is alleen van toepassing op <strong>gerealiseerde</strong> meerwaarden (verkochte posities)</li>
+          <li>
+            • Deze belasting is alleen van toepassing op <strong>gerealiseerde</strong> meerwaarden
+            (verkochte posities)
+          </li>
           <li>• Niet-gerealiseerde winsten (aandelen die je nog bezit) worden niet belast</li>
           <li>• De vrijstelling van €10.000 geldt per kalenderjaar</li>
-          <li>• Deze calculator is informatief - raadpleeg een belastingadviseur voor persoonlijk advies</li>
+          <li>
+            • Deze calculator is informatief - raadpleeg een belastingadviseur voor persoonlijk
+            advies
+          </li>
           <li>• Verliezen kunnen mogelijk verrekend worden - check de actuele wetgeving</li>
         </ul>
       </div>

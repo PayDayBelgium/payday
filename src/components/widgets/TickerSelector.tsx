@@ -56,8 +56,8 @@ export const TickerSelector: React.FC<TickerSelectorProps> = ({
       )
     : tickers;
 
-  const showCreateNew = searchTerm &&
-    !tickers.some(t => t.symbol.toLowerCase() === searchTerm.toLowerCase());
+  const showCreateNew =
+    searchTerm && !tickers.some((t) => t.symbol.toLowerCase() === searchTerm.toLowerCase());
 
   useEffect(() => {
     // Close dropdown when clicking outside

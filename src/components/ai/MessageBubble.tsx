@@ -32,11 +32,9 @@ export const MessageBubble: React.FC<{ message: ChatMessage }> = ({ message }) =
               ) : (
                 <p key={i} className="whitespace-pre-wrap">
                   {block.text}
-                  {message.pending && (
-                    <span className="ml-1 animate-pulse">▋</span>
-                  )}
+                  {message.pending && <span className="ml-1 animate-pulse">▋</span>}
                 </p>
-              ),
+              )
             )}
             {message.pending && !hasText && <span className="animate-pulse">▋</span>}
           </div>

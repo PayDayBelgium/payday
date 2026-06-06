@@ -18,14 +18,14 @@ const upcomingEvents: Event[] = [
     title: 'NVDA Earnings',
     type: 'earnings',
     ticker: 'NVDA',
-    description: 'Nvidia Q4 2024 earnings report'
+    description: 'Nvidia Q4 2024 earnings report',
   },
   {
     id: '2',
     date: '2025-01-17',
     title: 'FED Rate Decision',
     type: 'fed',
-    description: 'Federal Reserve interest rate announcement'
+    description: 'Federal Reserve interest rate announcement',
   },
   {
     id: '3',
@@ -33,7 +33,7 @@ const upcomingEvents: Event[] = [
     title: 'TSLA Earnings',
     type: 'earnings',
     ticker: 'TSLA',
-    description: 'Tesla Q4 2024 earnings report'
+    description: 'Tesla Q4 2024 earnings report',
   },
   {
     id: '4',
@@ -41,7 +41,7 @@ const upcomingEvents: Event[] = [
     title: 'MSFT S&P500 Rebalance',
     type: 'inclusion',
     ticker: 'MSFT',
-    description: 'S&P 500 index rebalancing'
+    description: 'S&P 500 index rebalancing',
   },
 ];
 

@@ -9,12 +9,26 @@ describe('parseProposedChange', () => {
 
   it('parses a portfolio proposal and defaults invalid currency to USD', () => {
     expect(
-      parseProposedChange('propose_create_portfolio', { name: 'Growth', currency: 'GBP', availableCash: 5000 }, 'tu1')
-    ).toEqual({ kind: 'portfolio', toolUseId: 'tu1', name: 'Growth', currency: 'USD', availableCash: 5000 });
+      parseProposedChange(
+        'propose_create_portfolio',
+        { name: 'Growth', currency: 'GBP', availableCash: 5000 },
+        'tu1'
+      )
+    ).toEqual({
+      kind: 'portfolio',
+      toolUseId: 'tu1',
+      name: 'Growth',
+      currency: 'USD',
+      availableCash: 5000,
+    });
   });
 
   it('keeps EUR when explicitly provided', () => {
-    const result = parseProposedChange('propose_create_portfolio', { name: 'X', currency: 'EUR' }, 'tu2');
+    const result = parseProposedChange(
+      'propose_create_portfolio',
+      { name: 'X', currency: 'EUR' },
+      'tu2'
+    );
     expect(result).toMatchObject({ currency: 'EUR', availableCash: 0 });
   });
 
@@ -22,7 +36,14 @@ describe('parseProposedChange', () => {
     expect(
       parseProposedChange(
         'propose_create_stock',
-        { portfolio: 'Growth', ticker: 'aapl', name: 'Apple', shares: 10, purchasePrice: 150, openDate: '2026-01-02' },
+        {
+          portfolio: 'Growth',
+          ticker: 'aapl',
+          name: 'Apple',
+          shares: 10,
+          purchasePrice: 150,
+          openDate: '2026-01-02',
+        },
         'tu3'
       )
     ).toEqual({

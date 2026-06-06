@@ -28,7 +28,7 @@ const migrateOldKeys = (): void => {
   }
 
   // Merge from old keys
-  OLD_KEYS.forEach(oldKey => {
+  OLD_KEYS.forEach((oldKey) => {
     const saved = localStorage.getItem(oldKey);
     if (saved) {
       try {
@@ -69,7 +69,7 @@ export const useAlerts = (portfolioFilter?: string) => {
   // Listen for alerts-updated events
   useEffect(() => {
     const handleAlertsUpdated = () => {
-      setUpdateTrigger(prev => prev + 1);
+      setUpdateTrigger((prev) => prev + 1);
     };
     window.addEventListener('alerts-updated', handleAlertsUpdated);
     return () => {
@@ -93,13 +93,7 @@ export const useAlerts = (portfolioFilter?: string) => {
 
   // Evaluate all alerts and opportunities using the central evaluator
   const { alerts, opportunities } = useMemo(() => {
-    return evaluateAllAlerts(
-      portfolios,
-      positions,
-      dismissedAlerts,
-      portfolioFilter,
-      tickers
-    );
+    return evaluateAllAlerts(portfolios, positions, dismissedAlerts, portfolioFilter, tickers);
   }, [portfolios, positions, dismissedAlerts, portfolioFilter, tickers]);
 
   // O(1) position lookup so per-position helpers don't scan the full array each call.
@@ -110,43 +104,50 @@ export const useAlerts = (portfolioFilter?: string) => {
   }, [positions]);
 
   // Get alerts/opportunities for a specific position by ID
-  const getAlertsForPosition = useCallback((positionId: string): AlertItem[] => {
-    return alerts.filter(alert => {
-      // Match different alert ID patterns
-      // Expiring: expiring-{positionId}
-      if (alert.id === `expiring-${positionId}`) return true;
-      // Price alerts: {positionId}-{ruleId}
-      if (alert.id.startsWith(`${positionId}-`)) return true;
-      // Put position alerts: put-position-alert-{positionId}
-      if (alert.id === `put-position-alert-${positionId}`) return true;
-      // Put spread alerts: put-spread-alert-{spreadId}
-      // Call spread alerts: call-spread-alert-{spreadId}
-      // Expiring spread alerts: expiring-spread-{spreadId}
-      // Position IDs for spread legs are like "spread-123-long" or "spread-123-short"
-      const spreadMatch = positionId.match(/^(spread-\d+)/);
-      if (spreadMatch) {
-        if (alert.id === `put-spread-alert-${spreadMatch[1]}`) return true;
-        if (alert.id === `call-spread-alert-${spreadMatch[1]}`) return true;
-        if (alert.id === `expiring-spread-${spreadMatch[1]}`) return true;
-      }
-      return false;
-    });
-  }, [alerts]);
+  const getAlertsForPosition = useCallback(
+    (positionId: string): AlertItem[] => {
+      return alerts.filter((alert) => {
+        // Match different alert ID patterns
+        // Expiring: expiring-{positionId}
+        if (alert.id === `expiring-${positionId}`) return true;
+        // Price alerts: {positionId}-{ruleId}
+        if (alert.id.startsWith(`${positionId}-`)) return true;
+        // Put position alerts: put-position-alert-{positionId}
+        if (alert.id === `put-position-alert-${positionId}`) return true;
+        // Put spread alerts: put-spread-alert-{spreadId}
+        // Call spread alerts: call-spread-alert-{spreadId}
+        // Expiring spread alerts: expiring-spread-{spreadId}
+        // Position IDs for spread legs are like "spread-123-long" or "spread-123-short"
+        const spreadMatch = positionId.match(/^(spread-\d+)/);
+        if (spreadMatch) {
+          if (alert.id === `put-spread-alert-${spreadMatch[1]}`) return true;
+          if (alert.id === `call-spread-alert-${spreadMatch[1]}`) return true;
+          if (alert.id === `expiring-spread-${spreadMatch[1]}`) return true;
+        }
+        return false;
+      });
+    },
+    [alerts]
+  );
 
-  const getOpportunitiesForPosition = useCallback((positionId: string): AlertItem[] => {
-    const position = positionsById.get(positionId);
-    return opportunities.filter(opp => {
-      // Stock CC opportunities are aggregated per ticker+portfolio
-      if (position && opp.id === `stock-cc-opportunity-${position.ticker}-${position.portfolio}`) return true;
-      // LEAPS CC: leaps-cc-opportunity-{positionId}
-      if (opp.id === `leaps-cc-opportunity-${positionId}`) return true;
-      // KaChing: kaching-opportunity-{positionId}
-      if (opp.id === `kaching-opportunity-${positionId}`) return true;
-      // Profit: profit-opportunity-{positionId}
-      if (opp.id === `profit-opportunity-${positionId}`) return true;
-      return false;
-    });
-  }, [opportunities, positionsById]);
+  const getOpportunitiesForPosition = useCallback(
+    (positionId: string): AlertItem[] => {
+      const position = positionsById.get(positionId);
+      return opportunities.filter((opp) => {
+        // Stock CC opportunities are aggregated per ticker+portfolio
+        if (position && opp.id === `stock-cc-opportunity-${position.ticker}-${position.portfolio}`)
+          return true;
+        // LEAPS CC: leaps-cc-opportunity-{positionId}
+        if (opp.id === `leaps-cc-opportunity-${positionId}`) return true;
+        // KaChing: kaching-opportunity-{positionId}
+        if (opp.id === `kaching-opportunity-${positionId}`) return true;
+        // Profit: profit-opportunity-{positionId}
+        if (opp.id === `profit-opportunity-${positionId}`) return true;
+        return false;
+      });
+    },
+    [opportunities, positionsById]
+  );
 
   // Dismiss an alert
   const dismissAlert = useCallback((alertId: string) => {
@@ -169,15 +170,18 @@ export const useAlerts = (portfolioFilter?: string) => {
 
   // Get counts per portfolio
   const getPortfolioCounts = useCallback(() => {
-    const counts: Record<string, {
-      alerts: number;
-      opportunities: number;
-      alertItems: AlertItem[];
-      opportunityItems: AlertItem[];
-    }> = {};
+    const counts: Record<
+      string,
+      {
+        alerts: number;
+        opportunities: number;
+        alertItems: AlertItem[];
+        opportunityItems: AlertItem[];
+      }
+    > = {};
 
     // Initialize for all portfolios
-    portfolios.forEach(portfolio => {
+    portfolios.forEach((portfolio) => {
       counts[portfolio.name] = {
         alerts: 0,
         opportunities: 0,
@@ -187,7 +191,7 @@ export const useAlerts = (portfolioFilter?: string) => {
     });
 
     // Count alerts per portfolio
-    alerts.forEach(alert => {
+    alerts.forEach((alert) => {
       if (counts[alert.portfolio]) {
         counts[alert.portfolio].alerts++;
         counts[alert.portfolio].alertItems.push(alert);
@@ -195,7 +199,7 @@ export const useAlerts = (portfolioFilter?: string) => {
     });
 
     // Count opportunities per portfolio
-    opportunities.forEach(opp => {
+    opportunities.forEach((opp) => {
       if (counts[opp.portfolio]) {
         counts[opp.portfolio].opportunities++;
         counts[opp.portfolio].opportunityItems.push(opp);

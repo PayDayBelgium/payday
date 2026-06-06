@@ -17,11 +17,7 @@ interface FeatureGateProps {
  * Component to gate features based on user level
  * Shows a locked state when the user doesn't have access
  */
-export const FeatureGate: React.FC<FeatureGateProps> = ({
-  feature,
-  children,
-  fallback,
-}) => {
+export const FeatureGate: React.FC<FeatureGateProps> = ({ feature, children, fallback }) => {
   const navigate = useNavigate();
   const { hasAccess, requiredLevel } = useFeatureAccess(feature);
   const credits = useAppSelector(selectCredits);
@@ -42,22 +38,38 @@ export const FeatureGate: React.FC<FeatureGateProps> = ({
     <div className="min-h-[400px] flex items-center justify-center">
       <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8 text-center">
         {/* Lock icon with level color */}
-        <div className={`
+        <div
+          className={`
           w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center
-          ${levelConfig?.slopeColor === 'green' ? 'bg-positive-50 dark:bg-positive-700/25' :
-            levelConfig?.slopeColor === 'blue' ? 'bg-primary-50 dark:bg-primary-900/30' :
-            levelConfig?.slopeColor === 'red' ? 'bg-negative-50 dark:bg-negative-700/25' :
-            levelConfig?.slopeColor === 'orange' ? 'bg-caution-50 dark:bg-caution-600/25' :
-            'bg-gray-100 dark:bg-gray-700'}
-        `}>
-          <Lock className={`
+          ${
+            levelConfig?.slopeColor === 'green'
+              ? 'bg-positive-50 dark:bg-positive-700/25'
+              : levelConfig?.slopeColor === 'blue'
+                ? 'bg-primary-50 dark:bg-primary-900/30'
+                : levelConfig?.slopeColor === 'red'
+                  ? 'bg-negative-50 dark:bg-negative-700/25'
+                  : levelConfig?.slopeColor === 'orange'
+                    ? 'bg-caution-50 dark:bg-caution-600/25'
+                    : 'bg-gray-100 dark:bg-gray-700'
+          }
+        `}
+        >
+          <Lock
+            className={`
             w-10 h-10
-            ${levelConfig?.slopeColor === 'green' ? 'text-positive-600 dark:text-positive-500' :
-              levelConfig?.slopeColor === 'blue' ? 'text-primary-700 dark:text-primary-300' :
-              levelConfig?.slopeColor === 'red' ? 'text-negative-600 dark:text-negative-500' :
-              levelConfig?.slopeColor === 'orange' ? 'text-caution-600 dark:text-caution-500' :
-              'text-gray-600 dark:text-gray-400'}
-          `} />
+            ${
+              levelConfig?.slopeColor === 'green'
+                ? 'text-positive-600 dark:text-positive-500'
+                : levelConfig?.slopeColor === 'blue'
+                  ? 'text-primary-700 dark:text-primary-300'
+                  : levelConfig?.slopeColor === 'red'
+                    ? 'text-negative-600 dark:text-negative-500'
+                    : levelConfig?.slopeColor === 'orange'
+                      ? 'text-caution-600 dark:text-caution-500'
+                      : 'text-gray-600 dark:text-gray-400'
+            }
+          `}
+          />
         </div>
 
         {/* Title */}
@@ -73,14 +85,22 @@ export const FeatureGate: React.FC<FeatureGateProps> = ({
 
         {/* Level card */}
         {levelConfig && (
-          <div className={`
+          <div
+            className={`
             p-4 rounded-lg mb-6
-            ${levelConfig.slopeColor === 'green' ? 'bg-positive-50 dark:bg-positive-700/15 border border-positive-500/20 dark:border-positive-700' :
-              levelConfig.slopeColor === 'blue' ? 'bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-700' :
-              levelConfig.slopeColor === 'red' ? 'bg-negative-50 dark:bg-negative-700/15 border border-negative-500/20 dark:border-negative-700' :
-              levelConfig.slopeColor === 'orange' ? 'bg-caution-50 dark:bg-caution-600/15 border border-caution-500/30 dark:border-caution-600' :
-              'bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600'}
-          `}>
+            ${
+              levelConfig.slopeColor === 'green'
+                ? 'bg-positive-50 dark:bg-positive-700/15 border border-positive-500/20 dark:border-positive-700'
+                : levelConfig.slopeColor === 'blue'
+                  ? 'bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-700'
+                  : levelConfig.slopeColor === 'red'
+                    ? 'bg-negative-50 dark:bg-negative-700/15 border border-negative-500/20 dark:border-negative-700'
+                    : levelConfig.slopeColor === 'orange'
+                      ? 'bg-caution-50 dark:bg-caution-600/15 border border-caution-500/30 dark:border-caution-600'
+                      : 'bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600'
+            }
+          `}
+          >
             <div className="flex items-center justify-center gap-2 mb-2">
               <span className="text-2xl">{levelConfig.icon}</span>
               <span className="font-bold text-gray-900 dark:text-white">
@@ -91,9 +111,7 @@ export const FeatureGate: React.FC<FeatureGateProps> = ({
               {levelConfig.creditsRequired > 0 && (
                 <>
                   <span className="font-medium">{levelConfig.creditsRequired} credits</span> nodig
-                  {credits > 0 && (
-                    <span className="text-gray-500"> (je hebt {credits})</span>
-                  )}
+                  {credits > 0 && <span className="text-gray-500"> (je hebt {credits})</span>}
                 </>
               )}
             </p>
@@ -112,9 +130,7 @@ export const FeatureGate: React.FC<FeatureGateProps> = ({
           </button>
 
           {levelConfig?.priceEUR && levelConfig.priceEUR > 0 && (
-            <button
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg font-medium transition-colors text-gray-700 dark:text-gray-300"
-            >
+            <button className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg font-medium transition-colors text-gray-700 dark:text-gray-300">
               <Star className="w-5 h-5" />
               Direct Ontgrendelen voor €{levelConfig.priceEUR}
             </button>
@@ -154,7 +170,5 @@ export const FeatureLockIndicator: React.FC<{ feature: FeatureId; className?: st
     return null;
   }
 
-  return (
-    <Lock className={`w-3 h-3 text-gray-400 ${className}`} />
-  );
+  return <Lock className={`w-3 h-3 text-gray-400 ${className}`} />;
 };

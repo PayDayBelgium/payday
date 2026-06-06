@@ -68,7 +68,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
   // Get the initial wheel if provided
   const initialWheel = useMemo(() => {
     if (!initialWheelId) return null;
-    return allWheels.find(w => w.id === initialWheelId) || null;
+    return allWheels.find((w) => w.id === initialWheelId) || null;
   }, [initialWheelId, allWheels]);
 
   // Step 1: Action selection
@@ -110,9 +110,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
     contracts: 1,
   });
 
-  const [purchaseDate, setPurchaseDate] = useState(
-    new Date().toISOString().split('T')[0]
-  );
+  const [purchaseDate, setPurchaseDate] = useState(new Date().toISOString().split('T')[0]);
   const [notes, setNotes] = useState('');
 
   // Text representations for locale-based number formatting
@@ -137,17 +135,20 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
 
   // Calculate eligible underlyings for covered calls
   const eligibleUnderlyings = useMemo(() => {
-    const portfolioPositions = allPositions.filter(p => p.portfolio === portfolio.name && p.status === 'open');
+    const portfolioPositions = allPositions.filter(
+      (p) => p.portfolio === portfolio.name && p.status === 'open'
+    );
 
     // Stocks/ETFs aggregated per ticker, with >= 1 free (uncovered) contract
-    const eligibleStocks: Holding[] = groupHoldings(portfolioPositions, portfolio.name)
-      .filter(h => h.canWriteCoveredCall);
+    const eligibleStocks: Holding[] = groupHoldings(portfolioPositions, portfolio.name).filter(
+      (h) => h.canWriteCoveredCall
+    );
 
     // LEAPs: long calls with expiry > 3 months (90 days)
     const today = new Date();
     const threeMonthsFromNow = new Date(today.getTime() + 90 * 24 * 60 * 60 * 1000);
 
-    const eligibleLeaps = portfolioPositions.filter(p => {
+    const eligibleLeaps = portfolioPositions.filter((p) => {
       if (p.type !== 'call') return false;
       const call = p as CallOption;
       if (call.action !== 'buy') return false;
@@ -159,7 +160,8 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
   }, [allPositions, portfolio.name]);
 
   // Check if covered call option should be available
-  const hasCoveredCallEligible = eligibleUnderlyings.stocks.length > 0 || eligibleUnderlyings.leaps.length > 0;
+  const hasCoveredCallEligible =
+    eligibleUnderlyings.stocks.length > 0 || eligibleUnderlyings.leaps.length > 0;
 
   // Use shared utility for cost/value calculations
   const calculateValues = () => calculateCallValues(action, longLeg, shortLeg);
@@ -201,7 +203,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
   // Check if contracts should be locked to wheel's targetContracts
   const wheelLockedContracts = useMemo(() => {
     if (!selectedWheelId) return null;
-    const wheel = allWheels.find(w => w.id === selectedWheelId);
+    const wheel = allWheels.find((w) => w.id === selectedWheelId);
     return wheel?.targetContracts || null;
   }, [selectedWheelId, allWheels]);
 
@@ -217,7 +219,9 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
   // For covered calls: max contracts is capped at the holding's freeContracts
   const maxCoveredCallContracts = useMemo(() => {
     if (action !== 'covered-call' || !selectedTicker) return Infinity;
-    const holding = eligibleUnderlyings.stocks.find(h => h.ticker.toUpperCase() === selectedTicker.symbol.toUpperCase());
+    const holding = eligibleUnderlyings.stocks.find(
+      (h) => h.ticker.toUpperCase() === selectedTicker.symbol.toUpperCase()
+    );
     return holding ? holding.freeContracts : Infinity;
   }, [action, selectedTicker, eligibleUnderlyings.stocks]);
 
@@ -277,13 +281,15 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
       };
 
       // Ensure ticker exists in central store
-      dispatch(ensureTicker({
-        symbol: selectedTicker.symbol,
-        name: selectedTicker.name,
-        type: 'stock',
-        optionsAvailable: selectedTicker.optionsAvailable,
-        miniContractsAvailable: selectedTicker.miniContractsAvailable,
-      }));
+      dispatch(
+        ensureTicker({
+          symbol: selectedTicker.symbol,
+          name: selectedTicker.name,
+          type: 'stock',
+          optionsAvailable: selectedTicker.optionsAvailable,
+          miniContractsAvailable: selectedTicker.miniContractsAvailable,
+        })
+      );
 
       dispatch(addPosition(longPosition));
       dispatch(addPosition(shortPosition));
@@ -335,21 +341,25 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
       // Update wheel premium if linked
       if (shouldLinkToWheel && selectedWheelId) {
         const premiumCollected = longLeg.premium * longLeg.contracts * 100;
-        dispatch(updateWheelPremium({
-          id: selectedWheelId,
-          premiumCollected,
-          realizedPnL: 0, // P&L will be realized when the option closes
-        }));
+        dispatch(
+          updateWheelPremium({
+            id: selectedWheelId,
+            premiumCollected,
+            realizedPnL: 0, // P&L will be realized when the option closes
+          })
+        );
       }
 
       // Ensure ticker exists in central store
-      dispatch(ensureTicker({
-        symbol: selectedTicker.symbol,
-        name: selectedTicker.name,
-        type: 'stock',
-        optionsAvailable: selectedTicker.optionsAvailable,
-        miniContractsAvailable: selectedTicker.miniContractsAvailable,
-      }));
+      dispatch(
+        ensureTicker({
+          symbol: selectedTicker.symbol,
+          name: selectedTicker.name,
+          type: 'stock',
+          optionsAvailable: selectedTicker.optionsAvailable,
+          miniContractsAvailable: selectedTicker.miniContractsAvailable,
+        })
+      );
 
       dispatch(addPosition(newPosition));
 
@@ -416,7 +426,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
         setSelectedWheelId(initialWheelId);
         // Also set the contracts to match the wheel's targetContracts
         if (initialWheel) {
-          setLongLeg(prev => ({ ...prev, contracts: initialWheel.targetContracts }));
+          setLongLeg((prev) => ({ ...prev, contracts: initialWheel.targetContracts }));
         }
       }
     }
@@ -425,7 +435,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
   // Effect to sync contracts when wheel selection changes
   React.useEffect(() => {
     if (wheelLockedContracts !== null) {
-      setLongLeg(prev => ({ ...prev, contracts: wheelLockedContracts }));
+      setLongLeg((prev) => ({ ...prev, contracts: wheelLockedContracts }));
     }
   }, [wheelLockedContracts]);
 
@@ -521,38 +531,58 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
               <p className="text-xs text-primary-700 dark:text-primary-300 mb-2">
                 {action === 'buy' && (
                   <>
-                    <strong>{t('callWizard.actionStep.buyCallInfo.when')}</strong> {t('callWizard.actionStep.buyCallInfo.whenText')}
-                    <br /><br />
-                    <strong>{t('callWizard.actionStep.buyCallInfo.how')}</strong> {t('callWizard.actionStep.buyCallInfo.howText')}
-                    <br /><br />
-                    <strong>{t('callWizard.actionStep.buyCallInfo.risk')}</strong> {t('callWizard.actionStep.buyCallInfo.riskText')}
+                    <strong>{t('callWizard.actionStep.buyCallInfo.when')}</strong>{' '}
+                    {t('callWizard.actionStep.buyCallInfo.whenText')}
+                    <br />
+                    <br />
+                    <strong>{t('callWizard.actionStep.buyCallInfo.how')}</strong>{' '}
+                    {t('callWizard.actionStep.buyCallInfo.howText')}
+                    <br />
+                    <br />
+                    <strong>{t('callWizard.actionStep.buyCallInfo.risk')}</strong>{' '}
+                    {t('callWizard.actionStep.buyCallInfo.riskText')}
                   </>
                 )}
                 {action === 'sell' && (
                   <>
-                    <strong>{t('callWizard.actionStep.sellCallInfo.when')}</strong> {t('callWizard.actionStep.sellCallInfo.whenText')}
-                    <br /><br />
-                    <strong>{t('callWizard.actionStep.sellCallInfo.how')}</strong> {t('callWizard.actionStep.sellCallInfo.howText')}
-                    <br /><br />
-                    <strong>{t('callWizard.actionStep.sellCallInfo.risk')}</strong> {t('callWizard.actionStep.sellCallInfo.riskText')}
+                    <strong>{t('callWizard.actionStep.sellCallInfo.when')}</strong>{' '}
+                    {t('callWizard.actionStep.sellCallInfo.whenText')}
+                    <br />
+                    <br />
+                    <strong>{t('callWizard.actionStep.sellCallInfo.how')}</strong>{' '}
+                    {t('callWizard.actionStep.sellCallInfo.howText')}
+                    <br />
+                    <br />
+                    <strong>{t('callWizard.actionStep.sellCallInfo.risk')}</strong>{' '}
+                    {t('callWizard.actionStep.sellCallInfo.riskText')}
                   </>
                 )}
                 {action === 'credit-spread' && (
                   <>
-                    <strong>{t('callWizard.actionStep.creditSpreadInfo.when')}</strong> {t('callWizard.actionStep.creditSpreadInfo.whenText')}
-                    <br /><br />
-                    <strong>{t('callWizard.actionStep.creditSpreadInfo.how')}</strong> {t('callWizard.actionStep.creditSpreadInfo.howText')}
-                    <br /><br />
-                    <strong>{t('callWizard.actionStep.creditSpreadInfo.risk')}</strong> {t('callWizard.actionStep.creditSpreadInfo.riskText')}
+                    <strong>{t('callWizard.actionStep.creditSpreadInfo.when')}</strong>{' '}
+                    {t('callWizard.actionStep.creditSpreadInfo.whenText')}
+                    <br />
+                    <br />
+                    <strong>{t('callWizard.actionStep.creditSpreadInfo.how')}</strong>{' '}
+                    {t('callWizard.actionStep.creditSpreadInfo.howText')}
+                    <br />
+                    <br />
+                    <strong>{t('callWizard.actionStep.creditSpreadInfo.risk')}</strong>{' '}
+                    {t('callWizard.actionStep.creditSpreadInfo.riskText')}
                   </>
                 )}
                 {action === 'debit-spread' && (
                   <>
-                    <strong>{t('callWizard.actionStep.debitSpreadInfo.when')}</strong> {t('callWizard.actionStep.debitSpreadInfo.whenText')}
-                    <br /><br />
-                    <strong>{t('callWizard.actionStep.debitSpreadInfo.how')}</strong> {t('callWizard.actionStep.debitSpreadInfo.howText')}
-                    <br /><br />
-                    <strong>{t('callWizard.actionStep.debitSpreadInfo.risk')}</strong> {t('callWizard.actionStep.debitSpreadInfo.riskText')}
+                    <strong>{t('callWizard.actionStep.debitSpreadInfo.when')}</strong>{' '}
+                    {t('callWizard.actionStep.debitSpreadInfo.whenText')}
+                    <br />
+                    <br />
+                    <strong>{t('callWizard.actionStep.debitSpreadInfo.how')}</strong>{' '}
+                    {t('callWizard.actionStep.debitSpreadInfo.howText')}
+                    <br />
+                    <br />
+                    <strong>{t('callWizard.actionStep.debitSpreadInfo.risk')}</strong>{' '}
+                    {t('callWizard.actionStep.debitSpreadInfo.riskText')}
                   </>
                 )}
               </p>
@@ -601,7 +631,8 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                         {selectedTicker.optionsAvailable && (
                           <p className="text-xs text-positive-600 dark:text-positive-500">
                             {t('callWizard.tickerStep.optionsAvailable')}
-                            {selectedTicker.miniContractsAvailable && ` • ${t('callWizard.tickerStep.miniContracts')}`}
+                            {selectedTicker.miniContractsAvailable &&
+                              ` • ${t('callWizard.tickerStep.miniContracts')}`}
                           </p>
                         )}
                       </div>
@@ -627,9 +658,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                   <input
                     type="text"
                     value={newTickerData.name}
-                    onChange={(e) =>
-                      setNewTickerData({ ...newTickerData, name: e.target.value })
-                    }
+                    onChange={(e) => setNewTickerData({ ...newTickerData, name: e.target.value })}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     placeholder={t('callWizard.tickerStep.companyPlaceholder')}
                     autoFocus
@@ -649,7 +678,9 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                           : 'border-gray-200 dark:border-gray-700'
                       }`}
                     >
-                      <p className="font-medium text-gray-900 dark:text-white">{t('callWizard.tickerStep.stock')}</p>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {t('callWizard.tickerStep.stock')}
+                      </p>
                     </button>
                     <button
                       onClick={() => setNewTickerData({ ...newTickerData, type: 'etf' })}
@@ -659,7 +690,9 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                           : 'border-gray-200 dark:border-gray-700'
                       }`}
                     >
-                      <p className="font-medium text-gray-900 dark:text-white">{t('callWizard.tickerStep.etf')}</p>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {t('callWizard.tickerStep.etf')}
+                      </p>
                     </button>
                   </div>
                 </div>
@@ -739,24 +772,25 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
       {
         id: 'details',
         title: t('callWizard.detailsStep.title'),
-        description: isSpread ? t('callWizard.detailsStep.descriptionSpread') : t('callWizard.detailsStep.descriptionSingle'),
-        isValid:
-          isSpread
-            ? longLeg.strike > 0 &&
-              longLeg.expiration !== '' &&
-              longLeg.premium > 0 &&
-              longLeg.contracts > 0 &&
-              shortLeg.strike > 0 &&
-              shortLeg.expiration !== '' &&
-              shortLeg.premium > 0 &&
-              shortLeg.contracts > 0 &&
-              (action === 'credit-spread'
-                ? shortLeg.strike < longLeg.strike && shortLeg.premium > longLeg.premium // Credit: short lower, premium validates net credit
-                : longLeg.strike < shortLeg.strike && longLeg.premium > shortLeg.premium) // Debit: long lower, premium validates net debit
-            : longLeg.strike > 0 &&
-              longLeg.expiration !== '' &&
-              longLeg.premium > 0 &&
-              longLeg.contracts > 0,
+        description: isSpread
+          ? t('callWizard.detailsStep.descriptionSpread')
+          : t('callWizard.detailsStep.descriptionSingle'),
+        isValid: isSpread
+          ? longLeg.strike > 0 &&
+            longLeg.expiration !== '' &&
+            longLeg.premium > 0 &&
+            longLeg.contracts > 0 &&
+            shortLeg.strike > 0 &&
+            shortLeg.expiration !== '' &&
+            shortLeg.premium > 0 &&
+            shortLeg.contracts > 0 &&
+            (action === 'credit-spread'
+              ? shortLeg.strike < longLeg.strike && shortLeg.premium > longLeg.premium // Credit: short lower, premium validates net credit
+              : longLeg.strike < shortLeg.strike && longLeg.premium > shortLeg.premium) // Debit: long lower, premium validates net debit
+          : longLeg.strike > 0 &&
+            longLeg.expiration !== '' &&
+            longLeg.premium > 0 &&
+            longLeg.contracts > 0,
         component: (
           <div className="space-y-6">
             {isSpread ? (
@@ -802,7 +836,10 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                                 const value = e.target.value;
                                 if (validateNumberInput(value)) {
                                   setShortLegPremiumText(value);
-                                  setShortLeg({ ...shortLeg, premium: parseLocalizedNumber(value) });
+                                  setShortLeg({
+                                    ...shortLeg,
+                                    premium: parseLocalizedNumber(value),
+                                  });
                                 }
                               }}
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
@@ -943,7 +980,10 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                                 const value = e.target.value;
                                 if (validateNumberInput(value)) {
                                   setShortLegPremiumText(value);
-                                  setShortLeg({ ...shortLeg, premium: parseLocalizedNumber(value) });
+                                  setShortLeg({
+                                    ...shortLeg,
+                                    premium: parseLocalizedNumber(value),
+                                  });
                                 }
                               }}
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
@@ -976,7 +1016,8 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                       />
                       {longLeg.expiration && (
                         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                          {t('callWizard.detailsStep.dte')} {calculateDTE(longLeg.expiration)} {t('callWizard.detailsStep.days')}
+                          {t('callWizard.detailsStep.dte')} {calculateDTE(longLeg.expiration)}{' '}
+                          {t('callWizard.detailsStep.days')}
                         </p>
                       )}
                     </div>
@@ -1005,57 +1046,98 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                 </div>
 
                 {/* Spread Summary */}
-                {longLeg.strike > 0 && shortLeg.strike > 0 && longLeg.premium > 0 && shortLeg.premium > 0 && (
-                  <div className="p-3 bg-surface-subtle dark:bg-trading-dark-700 rounded-lg border border-ink-200 dark:border-trading-dark-600">
-                    <h4 className="text-sm font-semibold text-purple-900 dark:text-ink-300 mb-3 flex items-center gap-2">
-                      <BarChart3 className="w-4 h-4" />
-                      {t('callWizard.detailsStep.spreadOverview')}
-                    </h4>
-                    <div className="grid grid-cols-2 gap-3 text-sm">
-                      <div>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                          {action === 'credit-spread' ? t('callWizard.detailsStep.netCredit') : t('callWizard.detailsStep.netDebit')}
-                        </p>
-                        <p className={`font-semibold ${action === 'credit-spread' ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
-                          {action === 'credit-spread' ? '+' : '-'}${formatNumber(Math.abs((shortLeg.premium - longLeg.premium) * longLeg.contracts * 100), 2)}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">{t('callWizard.detailsStep.maxProfit')}</p>
-                        <p className="font-semibold text-positive-600 dark:text-positive-500">
-                          ${action === 'credit-spread'
-                            ? formatNumber((shortLeg.premium - longLeg.premium) * longLeg.contracts * 100, 2)
-                            : formatNumber((Math.abs(shortLeg.strike - longLeg.strike) - (longLeg.premium - shortLeg.premium)) * longLeg.contracts * 100, 2)
-                          }
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">{t('callWizard.detailsStep.maxLoss')}</p>
-                        <p className="font-semibold text-negative-600 dark:text-negative-500">
-                          -${action === 'credit-spread'
-                            ? formatNumber((Math.abs(shortLeg.strike - longLeg.strike) - (shortLeg.premium - longLeg.premium)) * longLeg.contracts * 100, 2)
-                            : formatNumber((longLeg.premium - shortLeg.premium) * longLeg.contracts * 100, 2)
-                          }
-                        </p>
-                        <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-0.5">
-                          {action === 'credit-spread'
-                            ? `($${formatNumber(Math.abs(shortLeg.strike - longLeg.strike), 2)} × 100 × ${longLeg.contracts}) - $${formatNumber((shortLeg.premium - longLeg.premium) * longLeg.contracts * 100, 2)}`
-                            : t('callWizard.detailsStep.netDebitPaid')
-                          }
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">{t('callWizard.detailsStep.spreadWidth')}</p>
-                        <p className="font-semibold text-gray-900 dark:text-white">
-                          ${formatNumber(Math.abs(shortLeg.strike - longLeg.strike), 2)}
-                        </p>
-                        <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-0.5">
-                          Max: ${formatNumber(Math.abs(shortLeg.strike - longLeg.strike) * 100 * longLeg.contracts, 2)} ({longLeg.contracts}×100)
-                        </p>
+                {longLeg.strike > 0 &&
+                  shortLeg.strike > 0 &&
+                  longLeg.premium > 0 &&
+                  shortLeg.premium > 0 && (
+                    <div className="p-3 bg-surface-subtle dark:bg-trading-dark-700 rounded-lg border border-ink-200 dark:border-trading-dark-600">
+                      <h4 className="text-sm font-semibold text-purple-900 dark:text-ink-300 mb-3 flex items-center gap-2">
+                        <BarChart3 className="w-4 h-4" />
+                        {t('callWizard.detailsStep.spreadOverview')}
+                      </h4>
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                          <p className="text-xs text-gray-600 dark:text-gray-400">
+                            {action === 'credit-spread'
+                              ? t('callWizard.detailsStep.netCredit')
+                              : t('callWizard.detailsStep.netDebit')}
+                          </p>
+                          <p
+                            className={`font-semibold ${action === 'credit-spread' ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
+                          >
+                            {action === 'credit-spread' ? '+' : '-'}$
+                            {formatNumber(
+                              Math.abs(
+                                (shortLeg.premium - longLeg.premium) * longLeg.contracts * 100
+                              ),
+                              2
+                            )}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-600 dark:text-gray-400">
+                            {t('callWizard.detailsStep.maxProfit')}
+                          </p>
+                          <p className="font-semibold text-positive-600 dark:text-positive-500">
+                            $
+                            {action === 'credit-spread'
+                              ? formatNumber(
+                                  (shortLeg.premium - longLeg.premium) * longLeg.contracts * 100,
+                                  2
+                                )
+                              : formatNumber(
+                                  (Math.abs(shortLeg.strike - longLeg.strike) -
+                                    (longLeg.premium - shortLeg.premium)) *
+                                    longLeg.contracts *
+                                    100,
+                                  2
+                                )}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-600 dark:text-gray-400">
+                            {t('callWizard.detailsStep.maxLoss')}
+                          </p>
+                          <p className="font-semibold text-negative-600 dark:text-negative-500">
+                            -$
+                            {action === 'credit-spread'
+                              ? formatNumber(
+                                  (Math.abs(shortLeg.strike - longLeg.strike) -
+                                    (shortLeg.premium - longLeg.premium)) *
+                                    longLeg.contracts *
+                                    100,
+                                  2
+                                )
+                              : formatNumber(
+                                  (longLeg.premium - shortLeg.premium) * longLeg.contracts * 100,
+                                  2
+                                )}
+                          </p>
+                          <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-0.5">
+                            {action === 'credit-spread'
+                              ? `($${formatNumber(Math.abs(shortLeg.strike - longLeg.strike), 2)} × 100 × ${longLeg.contracts}) - $${formatNumber((shortLeg.premium - longLeg.premium) * longLeg.contracts * 100, 2)}`
+                              : t('callWizard.detailsStep.netDebitPaid')}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-600 dark:text-gray-400">
+                            {t('callWizard.detailsStep.spreadWidth')}
+                          </p>
+                          <p className="font-semibold text-gray-900 dark:text-white">
+                            ${formatNumber(Math.abs(shortLeg.strike - longLeg.strike), 2)}
+                          </p>
+                          <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-0.5">
+                            Max: $
+                            {formatNumber(
+                              Math.abs(shortLeg.strike - longLeg.strike) * 100 * longLeg.contracts,
+                              2
+                            )}{' '}
+                            ({longLeg.contracts}×100)
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
               </>
             ) : (
               <>
@@ -1113,7 +1195,8 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                       placeholder={`5${getDecimalSeparator()}50`}
                     />
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      {t('callWizard.detailsStep.total')} ${formatNumber(longLeg.premium * longLeg.contracts * 100, 2)}
+                      {t('callWizard.detailsStep.total')} $
+                      {formatNumber(longLeg.premium * longLeg.contracts * 100, 2)}
                     </p>
                   </div>
 
@@ -1128,7 +1211,8 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                     />
                     {longLeg.expiration && (
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        {t('callWizard.detailsStep.dte')} {calculateDTE(longLeg.expiration)} {t('callWizard.detailsStep.days')}
+                        {t('callWizard.detailsStep.dte')} {calculateDTE(longLeg.expiration)}{' '}
+                        {t('callWizard.detailsStep.days')}
                       </p>
                     )}
                   </div>
@@ -1140,13 +1224,18 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                     <input
                       type="number"
                       min="1"
-                      max={Number.isFinite(maxCoveredCallContracts) ? maxCoveredCallContracts : undefined}
+                      max={
+                        Number.isFinite(maxCoveredCallContracts)
+                          ? maxCoveredCallContracts
+                          : undefined
+                      }
                       value={longLeg.contracts || ''}
                       onChange={(e) => {
                         const requested = parseInt(e.target.value, 10) || 1;
-                        const contracts = Number.isFinite(maxCoveredCallContracts) && maxCoveredCallContracts > 0
-                          ? Math.min(requested, maxCoveredCallContracts)
-                          : requested;
+                        const contracts =
+                          Number.isFinite(maxCoveredCallContracts) && maxCoveredCallContracts > 0
+                            ? Math.min(requested, maxCoveredCallContracts)
+                            : requested;
                         setLongLeg({ ...longLeg, contracts });
                       }}
                       disabled={wheelLockedContracts !== null}
@@ -1165,7 +1254,8 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                     </p>
                     {action === 'covered-call' && Number.isFinite(maxCoveredCallContracts) && (
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        Max {maxCoveredCallContracts} vrij contract{maxCoveredCallContracts === 1 ? '' : 'en'} beschikbaar
+                        Max {maxCoveredCallContracts} vrij contract
+                        {maxCoveredCallContracts === 1 ? '' : 'en'} beschikbaar
                       </p>
                     )}
                   </div>
@@ -1176,19 +1266,29 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                   <div className="p-4 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{t('callWizard.detailsStep.breakEvenPrice')}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {t('callWizard.detailsStep.breakEvenPrice')}
+                        </p>
                         <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                          ${formatNumber(calculateCallBreakEven(longLeg.strike, longLeg.premium), 2)}
+                          $
+                          {formatNumber(calculateCallBreakEven(longLeg.strike, longLeg.premium), 2)}
                         </p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {action === 'buy' ? t('callWizard.detailsStep.maxLoss') : t('callWizard.detailsStep.maxProfit')}
+                          {action === 'buy'
+                            ? t('callWizard.detailsStep.maxLoss')
+                            : t('callWizard.detailsStep.maxProfit')}
                         </p>
-                        <p className={`text-lg font-semibold ${
-                          action === 'buy' ? 'text-negative-600 dark:text-negative-500' : 'text-positive-600 dark:text-positive-500'
-                        }`}>
-                          {action === 'buy' ? '-' : '+'}${formatNumber(longLeg.premium * longLeg.contracts * 100, 2)}
+                        <p
+                          className={`text-lg font-semibold ${
+                            action === 'buy'
+                              ? 'text-negative-600 dark:text-negative-500'
+                              : 'text-positive-600 dark:text-positive-500'
+                          }`}
+                        >
+                          {action === 'buy' ? '-' : '+'}$
+                          {formatNumber(longLeg.premium * longLeg.contracts * 100, 2)}
                         </p>
                       </div>
                     </div>
@@ -1234,10 +1334,15 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                     </h4>
                     <p className="text-sm text-caution-600 dark:text-caution-500 mb-3">
                       {matchingWheels.length === 1
-                        ? t('callWizard.detailsStep.wheelFoundDesc', { count: matchingWheels.length, ticker: selectedTicker?.symbol })
-                        : t('callWizard.detailsStep.wheelFoundDescPlural', { count: matchingWheels.length, ticker: selectedTicker?.symbol })
-                      }
-                      {' '}{t('callWizard.detailsStep.linkToWheel')}
+                        ? t('callWizard.detailsStep.wheelFoundDesc', {
+                            count: matchingWheels.length,
+                            ticker: selectedTicker?.symbol,
+                          })
+                        : t('callWizard.detailsStep.wheelFoundDescPlural', {
+                            count: matchingWheels.length,
+                            ticker: selectedTicker?.symbol,
+                          })}{' '}
+                      {t('callWizard.detailsStep.linkToWheel')}
                     </p>
                     <div className="space-y-2">
                       {matchingWheels.map((wheel) => (
@@ -1261,7 +1366,11 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                               Wheel - {wheel.ticker}
                             </p>
                             <p className="text-xs text-gray-600 dark:text-gray-400">
-                              {t('callWizard.detailsStep.wheelInfo', { contracts: wheel.targetContracts, cycles: wheel.cycles, premium: formatNumber(wheel.totalPremiumCollected, 2) })}
+                              {t('callWizard.detailsStep.wheelInfo', {
+                                contracts: wheel.targetContracts,
+                                cycles: wheel.cycles,
+                                premium: formatNumber(wheel.totalPremiumCollected, 2),
+                              })}
                             </p>
                           </div>
                         </label>
@@ -1298,31 +1407,35 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
             )}
 
             {/* P&L Curve */}
-            {action === 'spread' ? (
-              // Spread P&L Curve
-              longLeg.strike > 0 && shortLeg.strike > 0 && longLeg.premium > 0 && shortLeg.premium > 0 && longLeg.contracts > 0 && (
-                <PnLCurve
-                  type="call-spread"
-                  longStrike={longLeg.strike}
-                  shortStrike={shortLeg.strike}
-                  longPremium={longLeg.premium}
-                  shortPremium={shortLeg.premium}
-                  contracts={longLeg.contracts}
-                  currency={portfolio.currency}
-                />
-              )
-            ) : (
-              // Single Option P&L Curve
-              longLeg.strike > 0 && longLeg.premium > 0 && longLeg.contracts > 0 && (
-                <PnLCurve
-                  type={action === 'buy' ? 'call-buy' : 'call-sell'}
-                  strike={longLeg.strike}
-                  premium={longLeg.premium}
-                  contracts={longLeg.contracts}
-                  currency={portfolio.currency}
-                />
-              )
-            )}
+            {action === 'spread'
+              ? // Spread P&L Curve
+                longLeg.strike > 0 &&
+                shortLeg.strike > 0 &&
+                longLeg.premium > 0 &&
+                shortLeg.premium > 0 &&
+                longLeg.contracts > 0 && (
+                  <PnLCurve
+                    type="call-spread"
+                    longStrike={longLeg.strike}
+                    shortStrike={shortLeg.strike}
+                    longPremium={longLeg.premium}
+                    shortPremium={shortLeg.premium}
+                    contracts={longLeg.contracts}
+                    currency={portfolio.currency}
+                  />
+                )
+              : // Single Option P&L Curve
+                longLeg.strike > 0 &&
+                longLeg.premium > 0 &&
+                longLeg.contracts > 0 && (
+                  <PnLCurve
+                    type={action === 'buy' ? 'call-buy' : 'call-sell'}
+                    strike={longLeg.strike}
+                    premium={longLeg.premium}
+                    contracts={longLeg.contracts}
+                    currency={portfolio.currency}
+                  />
+                )}
           </div>
         ),
       },

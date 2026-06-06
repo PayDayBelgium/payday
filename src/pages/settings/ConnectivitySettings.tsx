@@ -1,5 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Wifi, WifiOff, Play, Square, Save, RotateCcw, Trash2, Send, TrendingUp, Radio } from 'lucide-react';
+import {
+  Wifi,
+  WifiOff,
+  Play,
+  Square,
+  Save,
+  RotateCcw,
+  Trash2,
+  Send,
+  TrendingUp,
+  Radio,
+} from 'lucide-react';
 import { useSelector } from 'react-redux';
 import {
   priceWebSocketService,
@@ -13,8 +24,16 @@ import { selectActivePositions } from '../../store/slices/positionsSlice';
 import type { Position } from '../../types';
 
 const DATA_MODE_OPTIONS: { value: DataMode; label: string; description: string }[] = [
-  { value: 'demo', label: 'Demo (Manual)', description: 'Prijzen handmatig aanpassen via simulator control' },
-  { value: 'demo-feed', label: 'Demo (Feed)', description: 'Gesimuleerde prijzen automatisch gegenereerd' },
+  {
+    value: 'demo',
+    label: 'Demo (Manual)',
+    description: 'Prijzen handmatig aanpassen via simulator control',
+  },
+  {
+    value: 'demo-feed',
+    label: 'Demo (Feed)',
+    description: 'Gesimuleerde prijzen automatisch gegenereerd',
+  },
   { value: 'live', label: 'Live (IB)', description: 'Real-time data van Interactive Brokers' },
 ];
 
@@ -26,10 +45,17 @@ export const ConnectivitySettings: React.FC = () => {
   const [status, setStatus] = useState<ConnectionStatus>(priceWebSocketService.getStatus());
   const [logs, setLogs] = useState<WebSocketLogEntry[]>([]);
   const [isSaving, setIsSaving] = useState(false);
-  const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [saveMessage, setSaveMessage] = useState<{
+    type: 'success' | 'error';
+    text: string;
+  } | null>(null);
   const [subscribeSymbol, setSubscribeSymbol] = useState('');
-  const [subscribedTickers, setSubscribedTickers] = useState<string[]>(priceWebSocketService.getSubscribedTickers());
-  const [subscribedOptions, setSubscribedOptions] = useState<OptionIdentifier[]>(priceWebSocketService.getSubscribedOptions());
+  const [subscribedTickers, setSubscribedTickers] = useState<string[]>(
+    priceWebSocketService.getSubscribedTickers()
+  );
+  const [subscribedOptions, setSubscribedOptions] = useState<OptionIdentifier[]>(
+    priceWebSocketService.getSubscribedOptions()
+  );
   const logContainerRef = useRef<HTMLDivElement>(null);
   const [autoScroll, setAutoScroll] = useState(true);
 
@@ -116,8 +142,8 @@ export const ConnectivitySettings: React.FC = () => {
     const symbols = subscribeSymbol
       .toUpperCase()
       .split(',')
-      .map(s => s.trim())
-      .filter(s => s.length > 0);
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
 
     if (symbols.length > 0) {
       priceWebSocketService.subscribe('tickers', symbols);
@@ -156,7 +182,7 @@ export const ConnectivitySettings: React.FC = () => {
   };
 
   const handleSubscribeAllTickers = () => {
-    const symbols = tickers.map(t => t.symbol);
+    const symbols = tickers.map((t) => t.symbol);
     if (symbols.length > 0) {
       priceWebSocketService.subscribe('tickers', symbols);
       setSubscribedTickers(priceWebSocketService.getSubscribedTickers());
@@ -224,10 +250,10 @@ export const ConnectivitySettings: React.FC = () => {
 
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className={`w-3 h-3 rounded-full ${getStatusBgColor()} ${status === 'connecting' ? 'animate-pulse' : ''}`} />
-                <span className={`font-medium capitalize ${getStatusColor()}`}>
-                  {status}
-                </span>
+                <div
+                  className={`w-3 h-3 rounded-full ${getStatusBgColor()} ${status === 'connecting' ? 'animate-pulse' : ''}`}
+                />
+                <span className={`font-medium capitalize ${getStatusColor()}`}>{status}</span>
               </div>
               <div className="flex gap-2">
                 {status === 'disconnected' || status === 'error' ? (
@@ -255,9 +281,7 @@ export const ConnectivitySettings: React.FC = () => {
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div className="flex items-center gap-2 mb-4">
               <Radio className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Data Mode
-              </h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Data Mode</h2>
             </div>
 
             <div className="space-y-2">
@@ -279,11 +303,13 @@ export const ConnectivitySettings: React.FC = () => {
                     className="mt-1 text-primary-700 focus:ring-primary-500"
                   />
                   <div className="flex-1">
-                    <span className={`font-medium ${
-                      dataMode === option.value
-                        ? 'text-primary-700 dark:text-primary-300'
-                        : 'text-gray-900 dark:text-white'
-                    }`}>
+                    <span
+                      className={`font-medium ${
+                        dataMode === option.value
+                          ? 'text-primary-700 dark:text-primary-300'
+                          : 'text-gray-900 dark:text-white'
+                      }`}
+                    >
                       {option.label}
                     </span>
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
@@ -297,7 +323,8 @@ export const ConnectivitySettings: React.FC = () => {
             {dataMode === 'live' && (
               <div className="mt-3 p-3 bg-caution-50 dark:bg-caution-600/15 border border-caution-500/30 dark:border-caution-500/30 rounded-lg">
                 <p className="text-xs text-caution-600 dark:text-caution-500">
-                  <strong>Let op:</strong> Live mode vereist een actieve Interactive Brokers connectie via de backend service.
+                  <strong>Let op:</strong> Live mode vereist een actieve Interactive Brokers
+                  connectie via de backend service.
                 </p>
               </div>
             )}
@@ -331,7 +358,9 @@ export const ConnectivitySettings: React.FC = () => {
                   <input
                     type="number"
                     value={config.reconnectInterval}
-                    onChange={(e) => setConfig({ ...config, reconnectInterval: Number(e.target.value) })}
+                    onChange={(e) =>
+                      setConfig({ ...config, reconnectInterval: Number(e.target.value) })
+                    }
                     min="1000"
                     step="1000"
                     className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2 text-sm"
@@ -345,7 +374,9 @@ export const ConnectivitySettings: React.FC = () => {
                   <input
                     type="number"
                     value={config.maxReconnectAttempts}
-                    onChange={(e) => setConfig({ ...config, maxReconnectAttempts: Number(e.target.value) })}
+                    onChange={(e) =>
+                      setConfig({ ...config, maxReconnectAttempts: Number(e.target.value) })
+                    }
                     min="1"
                     max="100"
                     className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2 text-sm"
@@ -491,7 +522,8 @@ export const ConnectivitySettings: React.FC = () => {
                             className="flex items-center justify-between px-2 py-1 rounded bg-surface-muted dark:bg-trading-dark-600 text-ink-800 dark:text-ink-300 text-xs"
                           >
                             <span>
-                              {opt.symbol} {opt.strike} {opt.optionType.toUpperCase()} {opt.expiration}
+                              {opt.symbol} {opt.strike} {opt.optionType.toUpperCase()}{' '}
+                              {opt.expiration}
                             </span>
                             <button
                               onClick={() => handleUnsubscribeOption(opt)}
@@ -532,9 +564,7 @@ export const ConnectivitySettings: React.FC = () => {
         <div className="lg:col-span-2">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 h-full flex flex-col">
             <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Message Log
-              </h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Message Log</h2>
               <div className="flex items-center gap-3">
                 <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                   <input
@@ -586,12 +616,8 @@ export const ConnectivitySettings: React.FC = () => {
                         {entry.direction === 'outgoing' && '>>'}
                         {entry.direction === 'system' && '--'}
                       </span>
-                      <span className="text-gray-400">
-                        [{entry.type}]
-                      </span>
-                      <span className={getLogEntryColor(entry)}>
-                        {entry.message}
-                      </span>
+                      <span className="text-gray-400">[{entry.type}]</span>
+                      <span className={getLogEntryColor(entry)}>{entry.message}</span>
                     </div>
                   ))}
                 </div>

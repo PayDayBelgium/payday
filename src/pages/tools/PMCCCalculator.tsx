@@ -15,15 +15,23 @@ import type { Ticker } from '../../types';
 
 // Tooltip explanations for PMCC calculations
 const TOOLTIPS = {
-  initialInvestment: 'Initiële Investering = LEAP Premium × 100\n\nDit is het bedrag dat je betaalt voor de LEAP call optie. Het is je maximale risico in deze strategie.',
-  leapBreakEven: 'Break-Even = LEAP Strike + LEAP Premium\n\nDe koers die het aandeel moet bereiken zodat je LEAP call op expiratie break-even is.',
-  periods: 'Aantal periodes dat je covered calls kunt verkopen voordat de LEAP expireert.\n\nPeriodes = Dagen tot LEAP expiratie / Dagen per periode',
-  extrinsicValue: 'Extrinsieke Waarde = LEAP Premium - Intrinsieke Waarde\n\nIntrinsieke Waarde = max(0, Koers - Strike)\n\nDit is het tijdswaarde-gedeelte dat je betaalt en dat langzaam vervalt.',
-  residualValue: 'Restwaarde = max(0, Koers - Strike) × 100\n\nDe intrinsieke waarde van je LEAP op expiratie als de koers gelijk blijft.',
-  premiumCollected: 'Ontvangen Premium = Premium per Call × 100 × Aantal Periodes\n\nDe totale premium die je ontvangt door het verkopen van covered calls.',
-  netPnL: 'Netto Winst/Verlies = Restwaarde + Ontvangen Premium - Initiële Investering\n\nJe totale rendement op de PMCC strategie.',
+  initialInvestment:
+    'Initiële Investering = LEAP Premium × 100\n\nDit is het bedrag dat je betaalt voor de LEAP call optie. Het is je maximale risico in deze strategie.',
+  leapBreakEven:
+    'Break-Even = LEAP Strike + LEAP Premium\n\nDe koers die het aandeel moet bereiken zodat je LEAP call op expiratie break-even is.',
+  periods:
+    'Aantal periodes dat je covered calls kunt verkopen voordat de LEAP expireert.\n\nPeriodes = Dagen tot LEAP expiratie / Dagen per periode',
+  extrinsicValue:
+    'Extrinsieke Waarde = LEAP Premium - Intrinsieke Waarde\n\nIntrinsieke Waarde = max(0, Koers - Strike)\n\nDit is het tijdswaarde-gedeelte dat je betaalt en dat langzaam vervalt.',
+  residualValue:
+    'Restwaarde = max(0, Koers - Strike) × 100\n\nDe intrinsieke waarde van je LEAP op expiratie als de koers gelijk blijft.',
+  premiumCollected:
+    'Ontvangen Premium = Premium per Call × 100 × Aantal Periodes\n\nDe totale premium die je ontvangt door het verkopen van covered calls.',
+  netPnL:
+    'Netto Winst/Verlies = Restwaarde + Ontvangen Premium - Initiële Investering\n\nJe totale rendement op de PMCC strategie.',
   roi: 'ROI = (Netto Winst/Verlies / Initiële Investering) × 100%\n\nHet procentuele rendement op je investering.',
-  annualizedROI: 'Annualized ROI = ROI × (365 / Dagen)\n\nHet rendement genormaliseerd naar een volledig jaar. Dit geeft een betere vergelijking tussen strategieën met verschillende looptijden.',
+  annualizedROI:
+    'Annualized ROI = ROI × (365 / Dagen)\n\nHet rendement genormaliseerd naar een volledig jaar. Dit geeft een betere vergelijking tussen strategieën met verschillende looptijden.',
 };
 
 interface PMCCInputs {
@@ -92,7 +100,10 @@ export const PMCCCalculator: React.FC = () => {
 
   // Set page title
   useEffect(() => {
-    setPageTitle("Poor Man's Covered Call simulator", "Calculate potential returns for your Poor Man's Covered Call strategy");
+    setPageTitle(
+      "Poor Man's Covered Call simulator",
+      "Calculate potential returns for your Poor Man's Covered Call strategy"
+    );
   }, [setPageTitle]);
 
   // Auto-calculate on input change
@@ -101,7 +112,7 @@ export const PMCCCalculator: React.FC = () => {
   }, [inputs]);
 
   const handleInputChange = (field: keyof PMCCInputs, value: string | number) => {
-    setInputs(prev => ({
+    setInputs((prev) => ({
       ...prev,
       [field]: value,
     }));
@@ -132,7 +143,7 @@ export const PMCCCalculator: React.FC = () => {
 
   // Handle opening the create ticker form
   const handleOpenCreateTicker = (symbol: string) => {
-    setNewTickerData(prev => ({
+    setNewTickerData((prev) => ({
       ...prev,
       symbol: symbol.toUpperCase(),
     }));
@@ -141,13 +152,28 @@ export const PMCCCalculator: React.FC = () => {
 
   const calculateResults = () => {
     const {
-      ticker, underlyingPrice, startDate, leapStrike, leapDebit,
-      leapExpiration, shortStrike, expectedPremium, premiumFrequency
+      ticker,
+      underlyingPrice,
+      startDate,
+      leapStrike,
+      leapDebit,
+      leapExpiration,
+      shortStrike,
+      expectedPremium,
+      premiumFrequency,
     } = inputs;
 
     // Check if all required fields are filled
-    if (!ticker || !underlyingPrice || !startDate || !leapStrike ||
-        !leapDebit || !leapExpiration || !shortStrike || !expectedPremium) {
+    if (
+      !ticker ||
+      !underlyingPrice ||
+      !startDate ||
+      !leapStrike ||
+      !leapDebit ||
+      !leapExpiration ||
+      !shortStrike ||
+      !expectedPremium
+    ) {
       setResults(null);
       return;
     }
@@ -387,7 +413,8 @@ export const PMCCCalculator: React.FC = () => {
                           <div className="group relative">
                             <Info className="w-4 h-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-help" />
                             <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 z-50">
-                              Sommige aandelen hebben mini-contracten van 10 aandelen per contract in plaats van de standaard 100.
+                              Sommige aandelen hebben mini-contracten van 10 aandelen per contract
+                              in plaats van de standaard 100.
                             </div>
                           </div>
                         </span>
@@ -429,7 +456,9 @@ export const PMCCCalculator: React.FC = () => {
                   <input
                     type="number"
                     value={inputs.underlyingPrice || ''}
-                    onChange={(e) => handleInputChange('underlyingPrice', parseFloat(e.target.value) || 0)}
+                    onChange={(e) =>
+                      handleInputChange('underlyingPrice', parseFloat(e.target.value) || 0)
+                    }
                     placeholder="150,00"
                     className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-1.5 text-sm"
                   />
@@ -463,7 +492,9 @@ export const PMCCCalculator: React.FC = () => {
                   <input
                     type="number"
                     value={inputs.leapStrike || ''}
-                    onChange={(e) => handleInputChange('leapStrike', parseFloat(e.target.value) || 0)}
+                    onChange={(e) =>
+                      handleInputChange('leapStrike', parseFloat(e.target.value) || 0)
+                    }
                     placeholder="100,00"
                     className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-1.5 text-sm"
                   />
@@ -475,7 +506,9 @@ export const PMCCCalculator: React.FC = () => {
                   <input
                     type="number"
                     value={inputs.leapDebit || ''}
-                    onChange={(e) => handleInputChange('leapDebit', parseFloat(e.target.value) || 0)}
+                    onChange={(e) =>
+                      handleInputChange('leapDebit', parseFloat(e.target.value) || 0)
+                    }
                     placeholder="25,00"
                     className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-1.5 text-sm"
                   />
@@ -508,7 +541,9 @@ export const PMCCCalculator: React.FC = () => {
                   <input
                     type="number"
                     value={inputs.shortStrike || ''}
-                    onChange={(e) => handleInputChange('shortStrike', parseFloat(e.target.value) || 0)}
+                    onChange={(e) =>
+                      handleInputChange('shortStrike', parseFloat(e.target.value) || 0)
+                    }
                     placeholder="160,00"
                     className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-1.5 text-sm"
                   />
@@ -520,7 +555,9 @@ export const PMCCCalculator: React.FC = () => {
                   <input
                     type="number"
                     value={inputs.expectedPremium || ''}
-                    onChange={(e) => handleInputChange('expectedPremium', parseFloat(e.target.value) || 0)}
+                    onChange={(e) =>
+                      handleInputChange('expectedPremium', parseFloat(e.target.value) || 0)
+                    }
                     placeholder="0,50"
                     className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-1.5 text-sm"
                   />
@@ -532,7 +569,9 @@ export const PMCCCalculator: React.FC = () => {
                 </label>
                 <select
                   value={inputs.premiumFrequency}
-                  onChange={(e) => handleInputChange('premiumFrequency', e.target.value as 'monthly' | 'weekly')}
+                  onChange={(e) =>
+                    handleInputChange('premiumFrequency', e.target.value as 'monthly' | 'weekly')
+                  }
                   className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-1.5 text-sm"
                 >
                   <option value="weekly">Weekly</option>
@@ -564,7 +603,13 @@ export const PMCCCalculator: React.FC = () => {
                     <div>
                       <p className="text-xs font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
                         Initial Investment
-                        <PortalTooltip content={<pre className="whitespace-pre-wrap text-xs max-w-xs">{TOOLTIPS.initialInvestment}</pre>}>
+                        <PortalTooltip
+                          content={
+                            <pre className="whitespace-pre-wrap text-xs max-w-xs">
+                              {TOOLTIPS.initialInvestment}
+                            </pre>
+                          }
+                        >
                           <Info className="w-3 h-3 text-gray-400 hover:text-primary-500 cursor-help" />
                         </PortalTooltip>
                       </p>
@@ -575,7 +620,13 @@ export const PMCCCalculator: React.FC = () => {
                     <div>
                       <p className="text-xs font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
                         LEAP Break-Even
-                        <PortalTooltip content={<pre className="whitespace-pre-wrap text-xs max-w-xs">{TOOLTIPS.leapBreakEven}</pre>}>
+                        <PortalTooltip
+                          content={
+                            <pre className="whitespace-pre-wrap text-xs max-w-xs">
+                              {TOOLTIPS.leapBreakEven}
+                            </pre>
+                          }
+                        >
                           <Info className="w-3 h-3 text-gray-400 hover:text-primary-500 cursor-help" />
                         </PortalTooltip>
                       </p>
@@ -586,18 +637,31 @@ export const PMCCCalculator: React.FC = () => {
                     <div>
                       <p className="text-xs font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
                         Calculated Periods
-                        <PortalTooltip content={<pre className="whitespace-pre-wrap text-xs max-w-xs">{TOOLTIPS.periods}</pre>}>
+                        <PortalTooltip
+                          content={
+                            <pre className="whitespace-pre-wrap text-xs max-w-xs">
+                              {TOOLTIPS.periods}
+                            </pre>
+                          }
+                        >
                           <Info className="w-3 h-3 text-gray-400 hover:text-primary-500 cursor-help" />
                         </PortalTooltip>
                       </p>
                       <p className="text-base font-bold text-gray-900 dark:text-white">
-                        {results.periods} {inputs.premiumFrequency === 'weekly' ? 'weeks' : 'months'}
+                        {results.periods}{' '}
+                        {inputs.premiumFrequency === 'weekly' ? 'weeks' : 'months'}
                       </p>
                     </div>
                     <div>
                       <p className="text-xs font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
                         Premium Paid (LEAP)
-                        <PortalTooltip content={<pre className="whitespace-pre-wrap text-xs max-w-xs">{TOOLTIPS.extrinsicValue}</pre>}>
+                        <PortalTooltip
+                          content={
+                            <pre className="whitespace-pre-wrap text-xs max-w-xs">
+                              {TOOLTIPS.extrinsicValue}
+                            </pre>
+                          }
+                        >
                           <Info className="w-3 h-3 text-gray-400 hover:text-primary-500 cursor-help" />
                         </PortalTooltip>
                       </p>
@@ -616,7 +680,13 @@ export const PMCCCalculator: React.FC = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
                       LEAP Residual Value
-                      <PortalTooltip content={<pre className="whitespace-pre-wrap text-xs max-w-xs">{TOOLTIPS.residualValue}</pre>}>
+                      <PortalTooltip
+                        content={
+                          <pre className="whitespace-pre-wrap text-xs max-w-xs">
+                            {TOOLTIPS.residualValue}
+                          </pre>
+                        }
+                      >
                         <Info className="w-3 h-3 text-gray-400 hover:text-primary-500 cursor-help" />
                       </PortalTooltip>
                     </span>
@@ -628,7 +698,13 @@ export const PMCCCalculator: React.FC = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
                       Premium Collected
-                      <PortalTooltip content={<pre className="whitespace-pre-wrap text-xs max-w-xs">{TOOLTIPS.premiumCollected}</pre>}>
+                      <PortalTooltip
+                        content={
+                          <pre className="whitespace-pre-wrap text-xs max-w-xs">
+                            {TOOLTIPS.premiumCollected}
+                          </pre>
+                        }
+                      >
                         <Info className="w-3 h-3 text-gray-400 hover:text-primary-500 cursor-help" />
                       </PortalTooltip>
                     </span>
@@ -641,11 +717,19 @@ export const PMCCCalculator: React.FC = () => {
                     <div className="flex justify-between items-baseline mb-1">
                       <span className="text-sm font-bold text-gray-900 dark:text-gray-100 flex items-center gap-1">
                         Net Profit / Loss
-                        <PortalTooltip content={<pre className="whitespace-pre-wrap text-xs max-w-xs">{TOOLTIPS.netPnL}</pre>}>
+                        <PortalTooltip
+                          content={
+                            <pre className="whitespace-pre-wrap text-xs max-w-xs">
+                              {TOOLTIPS.netPnL}
+                            </pre>
+                          }
+                        >
                           <Info className="w-3 h-3 text-gray-400 hover:text-primary-500 cursor-help" />
                         </PortalTooltip>
                       </span>
-                      <span className={`text-xl font-bold ${results.netPnL >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
+                      <span
+                        className={`text-xl font-bold ${results.netPnL >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
+                      >
                         {formatCurrency(results.netPnL)}
                       </span>
                     </div>
@@ -658,11 +742,19 @@ export const PMCCCalculator: React.FC = () => {
                     <div className="flex justify-between items-baseline">
                       <span className="text-sm font-bold text-gray-900 dark:text-gray-100 flex items-center gap-1">
                         ROI
-                        <PortalTooltip content={<pre className="whitespace-pre-wrap text-xs max-w-xs">{TOOLTIPS.roi}</pre>}>
+                        <PortalTooltip
+                          content={
+                            <pre className="whitespace-pre-wrap text-xs max-w-xs">
+                              {TOOLTIPS.roi}
+                            </pre>
+                          }
+                        >
                           <Info className="w-3 h-3 text-gray-400 hover:text-primary-500 cursor-help" />
                         </PortalTooltip>
                       </span>
-                      <span className={`text-xl font-bold ${results.roi >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
+                      <span
+                        className={`text-xl font-bold ${results.roi >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
+                      >
                         {formatPercentage(results.roi)}
                       </span>
                     </div>
@@ -675,11 +767,19 @@ export const PMCCCalculator: React.FC = () => {
                         <span className="text-sm font-bold text-gray-900 dark:text-white">
                           Annualized ROI
                         </span>
-                        <PortalTooltip content={<pre className="whitespace-pre-wrap text-xs max-w-xs">{TOOLTIPS.annualizedROI}</pre>}>
+                        <PortalTooltip
+                          content={
+                            <pre className="whitespace-pre-wrap text-xs max-w-xs">
+                              {TOOLTIPS.annualizedROI}
+                            </pre>
+                          }
+                        >
                           <Info className="w-3 h-3 text-gray-400 hover:text-primary-500 cursor-help" />
                         </PortalTooltip>
                       </div>
-                      <span className={`text-2xl font-bold ${results.annualizedROI >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
+                      <span
+                        className={`text-2xl font-bold ${results.annualizedROI >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
+                      >
                         {formatPercentage(results.annualizedROI)}
                       </span>
                     </div>
@@ -735,12 +835,15 @@ export const PMCCCalculator: React.FC = () => {
               Select Portfolio
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              Choose the portfolio where you want to create this LEAP position for <strong>{inputs.ticker}</strong>
+              Choose the portfolio where you want to create this LEAP position for{' '}
+              <strong>{inputs.ticker}</strong>
             </p>
 
             {portfolios.length === 0 ? (
               <div className="text-center py-6">
-                <p className="text-gray-600 dark:text-gray-400 mb-4">No portfolios configured yet.</p>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                  No portfolios configured yet.
+                </p>
                 <button
                   onClick={() => {
                     setShowPortfolioDialog(false);
@@ -762,7 +865,9 @@ export const PMCCCalculator: React.FC = () => {
                     {portfolio.logo && (
                       <img src={portfolio.logo} alt={portfolio.name} className="w-8 h-8 rounded" />
                     )}
-                    <span className="font-medium text-gray-900 dark:text-white">{portfolio.name}</span>
+                    <span className="font-medium text-gray-900 dark:text-white">
+                      {portfolio.name}
+                    </span>
                   </button>
                 ))}
               </div>

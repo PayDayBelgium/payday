@@ -103,9 +103,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
     contracts: 1,
   });
 
-  const [purchaseDate, setPurchaseDate] = useState(
-    new Date().toISOString().split('T')[0]
-  );
+  const [purchaseDate, setPurchaseDate] = useState(new Date().toISOString().split('T')[0]);
   const [notes, setNotes] = useState('');
 
   // Text representations for locale-based number formatting
@@ -230,13 +228,15 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
       };
 
       // Ensure ticker exists in central store
-      dispatch(ensureTicker({
-        symbol: selectedTicker.symbol,
-        name: selectedTicker.name,
-        type: 'stock',
-        optionsAvailable: selectedTicker.optionsAvailable,
-        miniContractsAvailable: selectedTicker.miniContractsAvailable,
-      }));
+      dispatch(
+        ensureTicker({
+          symbol: selectedTicker.symbol,
+          name: selectedTicker.name,
+          type: 'stock',
+          optionsAvailable: selectedTicker.optionsAvailable,
+          miniContractsAvailable: selectedTicker.miniContractsAvailable,
+        })
+      );
 
       dispatch(addPosition(longPosition));
       dispatch(addPosition(shortPosition));
@@ -291,21 +291,25 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
       // Update wheel premium if linked
       if (action === 'sell' && selectedWheelId) {
         const premiumCollected = longLeg.premium * longLeg.contracts * 100;
-        dispatch(updateWheelPremium({
-          id: selectedWheelId,
-          premiumCollected,
-          realizedPnL: 0, // P&L will be realized when the option closes
-        }));
+        dispatch(
+          updateWheelPremium({
+            id: selectedWheelId,
+            premiumCollected,
+            realizedPnL: 0, // P&L will be realized when the option closes
+          })
+        );
       }
 
       // Ensure ticker exists in central store
-      dispatch(ensureTicker({
-        symbol: selectedTicker.symbol,
-        name: selectedTicker.name,
-        type: 'stock',
-        optionsAvailable: selectedTicker.optionsAvailable,
-        miniContractsAvailable: selectedTicker.miniContractsAvailable,
-      }));
+      dispatch(
+        ensureTicker({
+          symbol: selectedTicker.symbol,
+          name: selectedTicker.name,
+          type: 'stock',
+          optionsAvailable: selectedTicker.optionsAvailable,
+          miniContractsAvailable: selectedTicker.miniContractsAvailable,
+        })
+      );
 
       dispatch(addPosition(newPosition));
 
@@ -472,38 +476,58 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
               <p className="text-xs text-primary-700 dark:text-primary-300 mb-2">
                 {action === 'buy' && (
                   <>
-                    <strong>{t('putWizard.actionStep.buyPutInfo.when')}</strong> {t('putWizard.actionStep.buyPutInfo.whenText')}
-                    <br /><br />
-                    <strong>{t('putWizard.actionStep.buyPutInfo.how')}</strong> {t('putWizard.actionStep.buyPutInfo.howText')}
-                    <br /><br />
-                    <strong>{t('putWizard.actionStep.buyPutInfo.risk')}</strong> {t('putWizard.actionStep.buyPutInfo.riskText')}
+                    <strong>{t('putWizard.actionStep.buyPutInfo.when')}</strong>{' '}
+                    {t('putWizard.actionStep.buyPutInfo.whenText')}
+                    <br />
+                    <br />
+                    <strong>{t('putWizard.actionStep.buyPutInfo.how')}</strong>{' '}
+                    {t('putWizard.actionStep.buyPutInfo.howText')}
+                    <br />
+                    <br />
+                    <strong>{t('putWizard.actionStep.buyPutInfo.risk')}</strong>{' '}
+                    {t('putWizard.actionStep.buyPutInfo.riskText')}
                   </>
                 )}
                 {action === 'sell' && (
                   <>
-                    <strong>{t('putWizard.actionStep.sellPutInfo.when')}</strong> {t('putWizard.actionStep.sellPutInfo.whenText')}
-                    <br /><br />
-                    <strong>{t('putWizard.actionStep.sellPutInfo.how')}</strong> {t('putWizard.actionStep.sellPutInfo.howText')}
-                    <br /><br />
-                    <strong>{t('putWizard.actionStep.sellPutInfo.risk')}</strong> {t('putWizard.actionStep.sellPutInfo.riskText')}
+                    <strong>{t('putWizard.actionStep.sellPutInfo.when')}</strong>{' '}
+                    {t('putWizard.actionStep.sellPutInfo.whenText')}
+                    <br />
+                    <br />
+                    <strong>{t('putWizard.actionStep.sellPutInfo.how')}</strong>{' '}
+                    {t('putWizard.actionStep.sellPutInfo.howText')}
+                    <br />
+                    <br />
+                    <strong>{t('putWizard.actionStep.sellPutInfo.risk')}</strong>{' '}
+                    {t('putWizard.actionStep.sellPutInfo.riskText')}
                   </>
                 )}
                 {action === 'credit-spread' && (
                   <>
-                    <strong>{t('putWizard.actionStep.creditSpreadInfo.when')}</strong> {t('putWizard.actionStep.creditSpreadInfo.whenText')}
-                    <br /><br />
-                    <strong>{t('putWizard.actionStep.creditSpreadInfo.how')}</strong> {t('putWizard.actionStep.creditSpreadInfo.howText')}
-                    <br /><br />
-                    <strong>{t('putWizard.actionStep.creditSpreadInfo.risk')}</strong> {t('putWizard.actionStep.creditSpreadInfo.riskText')}
+                    <strong>{t('putWizard.actionStep.creditSpreadInfo.when')}</strong>{' '}
+                    {t('putWizard.actionStep.creditSpreadInfo.whenText')}
+                    <br />
+                    <br />
+                    <strong>{t('putWizard.actionStep.creditSpreadInfo.how')}</strong>{' '}
+                    {t('putWizard.actionStep.creditSpreadInfo.howText')}
+                    <br />
+                    <br />
+                    <strong>{t('putWizard.actionStep.creditSpreadInfo.risk')}</strong>{' '}
+                    {t('putWizard.actionStep.creditSpreadInfo.riskText')}
                   </>
                 )}
                 {action === 'debit-spread' && (
                   <>
-                    <strong>{t('putWizard.actionStep.debitSpreadInfo.when')}</strong> {t('putWizard.actionStep.debitSpreadInfo.whenText')}
-                    <br /><br />
-                    <strong>{t('putWizard.actionStep.debitSpreadInfo.how')}</strong> {t('putWizard.actionStep.debitSpreadInfo.howText')}
-                    <br /><br />
-                    <strong>{t('putWizard.actionStep.debitSpreadInfo.risk')}</strong> {t('putWizard.actionStep.debitSpreadInfo.riskText')}
+                    <strong>{t('putWizard.actionStep.debitSpreadInfo.when')}</strong>{' '}
+                    {t('putWizard.actionStep.debitSpreadInfo.whenText')}
+                    <br />
+                    <br />
+                    <strong>{t('putWizard.actionStep.debitSpreadInfo.how')}</strong>{' '}
+                    {t('putWizard.actionStep.debitSpreadInfo.howText')}
+                    <br />
+                    <br />
+                    <strong>{t('putWizard.actionStep.debitSpreadInfo.risk')}</strong>{' '}
+                    {t('putWizard.actionStep.debitSpreadInfo.riskText')}
                   </>
                 )}
               </p>
@@ -552,7 +576,8 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                         {selectedTicker.optionsAvailable && (
                           <p className="text-xs text-positive-600 dark:text-positive-500">
                             {t('putWizard.tickerStep.optionsAvailable')}
-                            {selectedTicker.miniContractsAvailable && ` • ${t('putWizard.tickerStep.miniContracts')}`}
+                            {selectedTicker.miniContractsAvailable &&
+                              ` • ${t('putWizard.tickerStep.miniContracts')}`}
                           </p>
                         )}
                       </div>
@@ -578,9 +603,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                   <input
                     type="text"
                     value={newTickerData.name}
-                    onChange={(e) =>
-                      setNewTickerData({ ...newTickerData, name: e.target.value })
-                    }
+                    onChange={(e) => setNewTickerData({ ...newTickerData, name: e.target.value })}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     placeholder="Apple Inc."
                     autoFocus
@@ -650,7 +673,8 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                       <div className="group relative">
                         <Info className="w-4 h-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-help" />
                         <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 z-50">
-                          Sommige aandelen hebben mini-contracten van 10 aandelen per contract in plaats van de standaard 100 aandelen per contract
+                          Sommige aandelen hebben mini-contracten van 10 aandelen per contract in
+                          plaats van de standaard 100 aandelen per contract
                         </div>
                       </div>
                     </span>
@@ -690,24 +714,25 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
       {
         id: 'details',
         title: 'Optie details',
-        description: isSpread ? 'Voer details in voor beide legs van de spread' : 'Voer de optie details in',
-        isValid:
-          isSpread
-            ? longLeg.strike > 0 &&
-              longLeg.expiration !== '' &&
-              longLeg.premium > 0 &&
-              longLeg.contracts > 0 &&
-              shortLeg.strike > 0 &&
-              shortLeg.expiration !== '' &&
-              shortLeg.premium > 0 &&
-              shortLeg.contracts > 0 &&
-              (action === 'credit-spread'
-                ? shortLeg.strike > longLeg.strike && shortLeg.premium > longLeg.premium // Credit: short higher, premium validates net credit
-                : longLeg.strike > shortLeg.strike && longLeg.premium > shortLeg.premium) // Debit: long higher, premium validates net debit
-            : longLeg.strike > 0 &&
-              longLeg.expiration !== '' &&
-              longLeg.premium > 0 &&
-              longLeg.contracts > 0,
+        description: isSpread
+          ? 'Voer details in voor beide legs van de spread'
+          : 'Voer de optie details in',
+        isValid: isSpread
+          ? longLeg.strike > 0 &&
+            longLeg.expiration !== '' &&
+            longLeg.premium > 0 &&
+            longLeg.contracts > 0 &&
+            shortLeg.strike > 0 &&
+            shortLeg.expiration !== '' &&
+            shortLeg.premium > 0 &&
+            shortLeg.contracts > 0 &&
+            (action === 'credit-spread'
+              ? shortLeg.strike > longLeg.strike && shortLeg.premium > longLeg.premium // Credit: short higher, premium validates net credit
+              : longLeg.strike > shortLeg.strike && longLeg.premium > shortLeg.premium) // Debit: long higher, premium validates net debit
+          : longLeg.strike > 0 &&
+            longLeg.expiration !== '' &&
+            longLeg.premium > 0 &&
+            longLeg.contracts > 0,
         component: (
           <div className="space-y-6">
             {isSpread ? (
@@ -753,7 +778,10 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                                 const value = e.target.value;
                                 if (validateNumberInput(value)) {
                                   setShortLegPremiumText(value);
-                                  setShortLeg({ ...shortLeg, premium: parseLocalizedNumber(value) });
+                                  setShortLeg({
+                                    ...shortLeg,
+                                    premium: parseLocalizedNumber(value),
+                                  });
                                 }
                               }}
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
@@ -894,7 +922,10 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                                 const value = e.target.value;
                                 if (validateNumberInput(value)) {
                                   setShortLegPremiumText(value);
-                                  setShortLeg({ ...shortLeg, premium: parseLocalizedNumber(value) });
+                                  setShortLeg({
+                                    ...shortLeg,
+                                    premium: parseLocalizedNumber(value),
+                                  });
                                 }
                               }}
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
@@ -956,57 +987,90 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                 </div>
 
                 {/* Spread Summary */}
-                {longLeg.strike > 0 && shortLeg.strike > 0 && longLeg.premium > 0 && shortLeg.premium > 0 && (
-                  <div className="p-3 bg-surface-subtle dark:bg-trading-dark-700 rounded-lg border border-ink-200 dark:border-trading-dark-600">
-                    <h4 className="font-semibold text-purple-900 dark:text-ink-300 mb-3 text-sm flex items-center gap-2">
-                      <BarChart3 className="w-4 h-4" />
-                      Spread Overzicht
-                    </h4>
-                    <div className="grid grid-cols-2 gap-3 text-sm">
-                      <div>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                          {action === 'credit-spread' ? 'Netto Credit' : 'Netto Debit'}
-                        </p>
-                        <p className={`font-semibold ${action === 'credit-spread' ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
-                          {action === 'credit-spread' ? '+' : '-'}${formatNumber(Math.abs((shortLeg.premium - longLeg.premium) * longLeg.contracts * 100), 2)}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">Max Winst</p>
-                        <p className="font-semibold text-positive-600 dark:text-positive-500">
-                          ${action === 'credit-spread'
-                            ? formatNumber((shortLeg.premium - longLeg.premium) * longLeg.contracts * 100, 2)
-                            : formatNumber((Math.abs(shortLeg.strike - longLeg.strike) - (longLeg.premium - shortLeg.premium)) * longLeg.contracts * 100, 2)
-                          }
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">Max Verlies</p>
-                        <p className="font-semibold text-negative-600 dark:text-negative-500">
-                          -${action === 'credit-spread'
-                            ? formatNumber((Math.abs(shortLeg.strike - longLeg.strike) - (shortLeg.premium - longLeg.premium)) * longLeg.contracts * 100, 2)
-                            : formatNumber((longLeg.premium - shortLeg.premium) * longLeg.contracts * 100, 2)
-                          }
-                        </p>
-                        <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-0.5">
-                          {action === 'credit-spread'
-                            ? `($${formatNumber(Math.abs(shortLeg.strike - longLeg.strike), 2)} × 100 × ${longLeg.contracts}) - $${formatNumber((shortLeg.premium - longLeg.premium) * longLeg.contracts * 100, 2)}`
-                            : `Netto debit betaald`
-                          }
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">Spread Breedte</p>
-                        <p className="font-semibold text-gray-900 dark:text-white">
-                          ${formatNumber(Math.abs(shortLeg.strike - longLeg.strike), 2)}
-                        </p>
-                        <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-0.5">
-                          Max: ${formatNumber(Math.abs(shortLeg.strike - longLeg.strike) * 100 * longLeg.contracts, 2)} ({longLeg.contracts}×100)
-                        </p>
+                {longLeg.strike > 0 &&
+                  shortLeg.strike > 0 &&
+                  longLeg.premium > 0 &&
+                  shortLeg.premium > 0 && (
+                    <div className="p-3 bg-surface-subtle dark:bg-trading-dark-700 rounded-lg border border-ink-200 dark:border-trading-dark-600">
+                      <h4 className="font-semibold text-purple-900 dark:text-ink-300 mb-3 text-sm flex items-center gap-2">
+                        <BarChart3 className="w-4 h-4" />
+                        Spread Overzicht
+                      </h4>
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                          <p className="text-xs text-gray-600 dark:text-gray-400">
+                            {action === 'credit-spread' ? 'Netto Credit' : 'Netto Debit'}
+                          </p>
+                          <p
+                            className={`font-semibold ${action === 'credit-spread' ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
+                          >
+                            {action === 'credit-spread' ? '+' : '-'}$
+                            {formatNumber(
+                              Math.abs(
+                                (shortLeg.premium - longLeg.premium) * longLeg.contracts * 100
+                              ),
+                              2
+                            )}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-600 dark:text-gray-400">Max Winst</p>
+                          <p className="font-semibold text-positive-600 dark:text-positive-500">
+                            $
+                            {action === 'credit-spread'
+                              ? formatNumber(
+                                  (shortLeg.premium - longLeg.premium) * longLeg.contracts * 100,
+                                  2
+                                )
+                              : formatNumber(
+                                  (Math.abs(shortLeg.strike - longLeg.strike) -
+                                    (longLeg.premium - shortLeg.premium)) *
+                                    longLeg.contracts *
+                                    100,
+                                  2
+                                )}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-600 dark:text-gray-400">Max Verlies</p>
+                          <p className="font-semibold text-negative-600 dark:text-negative-500">
+                            -$
+                            {action === 'credit-spread'
+                              ? formatNumber(
+                                  (Math.abs(shortLeg.strike - longLeg.strike) -
+                                    (shortLeg.premium - longLeg.premium)) *
+                                    longLeg.contracts *
+                                    100,
+                                  2
+                                )
+                              : formatNumber(
+                                  (longLeg.premium - shortLeg.premium) * longLeg.contracts * 100,
+                                  2
+                                )}
+                          </p>
+                          <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-0.5">
+                            {action === 'credit-spread'
+                              ? `($${formatNumber(Math.abs(shortLeg.strike - longLeg.strike), 2)} × 100 × ${longLeg.contracts}) - $${formatNumber((shortLeg.premium - longLeg.premium) * longLeg.contracts * 100, 2)}`
+                              : `Netto debit betaald`}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-600 dark:text-gray-400">Spread Breedte</p>
+                          <p className="font-semibold text-gray-900 dark:text-white">
+                            ${formatNumber(Math.abs(shortLeg.strike - longLeg.strike), 2)}
+                          </p>
+                          <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-0.5">
+                            Max: $
+                            {formatNumber(
+                              Math.abs(shortLeg.strike - longLeg.strike) * 100 * longLeg.contracts,
+                              2
+                            )}{' '}
+                            ({longLeg.contracts}×100)
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
               </>
             ) : (
               <>
@@ -1106,11 +1170,13 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
 
                 {/* Break-even & Max Display */}
                 {longLeg.strike > 0 && longLeg.premium > 0 && (
-                  <div className={`p-4 rounded-lg border ${
-                    action === 'sell'
-                      ? 'bg-positive-50 dark:bg-positive-700/15 border-positive-500/20 dark:border-positive-700/30'
-                      : 'bg-negative-50 dark:bg-negative-700/15 border-negative-500/20 dark:border-negative-700/30'
-                  }`}>
+                  <div
+                    className={`p-4 rounded-lg border ${
+                      action === 'sell'
+                        ? 'bg-positive-50 dark:bg-positive-700/15 border-positive-500/20 dark:border-positive-700/30'
+                        : 'bg-negative-50 dark:bg-negative-700/15 border-negative-500/20 dark:border-negative-700/30'
+                    }`}
+                  >
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <p className="text-sm text-gray-600 dark:text-gray-400">Break-even prijs</p>
@@ -1122,10 +1188,15 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                         <p className="text-sm text-gray-600 dark:text-gray-400">
                           {action === 'buy' ? 'Max Verlies' : 'Max Winst'}
                         </p>
-                        <p className={`text-lg font-semibold ${
-                          action === 'buy' ? 'text-negative-600 dark:text-negative-500' : 'text-positive-600 dark:text-positive-500'
-                        }`}>
-                          {action === 'buy' ? '-' : '+'}${formatNumber(longLeg.premium * longLeg.contracts * 100, 2)}
+                        <p
+                          className={`text-lg font-semibold ${
+                            action === 'buy'
+                              ? 'text-negative-600 dark:text-negative-500'
+                              : 'text-positive-600 dark:text-positive-500'
+                          }`}
+                        >
+                          {action === 'buy' ? '-' : '+'}$
+                          {formatNumber(longLeg.premium * longLeg.contracts * 100, 2)}
                         </p>
                       </div>
                     </div>
@@ -1170,8 +1241,12 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                       Wheel campagne Gevonden
                     </h4>
                     <p className="text-sm text-caution-600 dark:text-caution-500 mb-3">
-                      Er {matchingWheels.length === 1 ? 'is een actieve Wheel' : `zijn ${matchingWheels.length} actieve Wheels`} voor {selectedTicker?.symbol} in dit portfolio.
-                      Wil je deze CSP koppelen aan een Wheel?
+                      Er{' '}
+                      {matchingWheels.length === 1
+                        ? 'is een actieve Wheel'
+                        : `zijn ${matchingWheels.length} actieve Wheels`}{' '}
+                      voor {selectedTicker?.symbol} in dit portfolio. Wil je deze CSP koppelen aan
+                      een Wheel?
                     </p>
                     <div className="space-y-2">
                       {matchingWheels.map((wheel) => (
@@ -1195,7 +1270,8 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                               Wheel - {wheel.ticker}
                             </p>
                             <p className="text-xs text-gray-600 dark:text-gray-400">
-                              {wheel.targetContracts} contracten • Cycli: {wheel.cycles} • Premium: ${formatNumber(wheel.totalPremiumCollected, 2)}
+                              {wheel.targetContracts} contracten • Cycli: {wheel.cycles} • Premium:
+                              ${formatNumber(wheel.totalPremiumCollected, 2)}
                             </p>
                           </div>
                         </label>
@@ -1230,31 +1306,35 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
             )}
 
             {/* P&L Curve */}
-            {isSpread ? (
-              // Spread P&L Curve
-              longLeg.strike > 0 && shortLeg.strike > 0 && longLeg.premium > 0 && shortLeg.premium > 0 && longLeg.contracts > 0 && (
-                <PnLCurve
-                  type="put-spread"
-                  longStrike={longLeg.strike}
-                  shortStrike={shortLeg.strike}
-                  longPremium={longLeg.premium}
-                  shortPremium={shortLeg.premium}
-                  contracts={longLeg.contracts}
-                  currency={portfolio.currency}
-                />
-              )
-            ) : (
-              // Single Option P&L Curve
-              longLeg.strike > 0 && longLeg.premium > 0 && longLeg.contracts > 0 && (
-                <PnLCurve
-                  type={action === 'buy' ? 'put-buy' : 'put-sell'}
-                  strike={longLeg.strike}
-                  premium={longLeg.premium}
-                  contracts={longLeg.contracts}
-                  currency={portfolio.currency}
-                />
-              )
-            )}
+            {isSpread
+              ? // Spread P&L Curve
+                longLeg.strike > 0 &&
+                shortLeg.strike > 0 &&
+                longLeg.premium > 0 &&
+                shortLeg.premium > 0 &&
+                longLeg.contracts > 0 && (
+                  <PnLCurve
+                    type="put-spread"
+                    longStrike={longLeg.strike}
+                    shortStrike={shortLeg.strike}
+                    longPremium={longLeg.premium}
+                    shortPremium={shortLeg.premium}
+                    contracts={longLeg.contracts}
+                    currency={portfolio.currency}
+                  />
+                )
+              : // Single Option P&L Curve
+                longLeg.strike > 0 &&
+                longLeg.premium > 0 &&
+                longLeg.contracts > 0 && (
+                  <PnLCurve
+                    type={action === 'buy' ? 'put-buy' : 'put-sell'}
+                    strike={longLeg.strike}
+                    premium={longLeg.premium}
+                    contracts={longLeg.contracts}
+                    currency={portfolio.currency}
+                  />
+                )}
           </div>
         ),
       },

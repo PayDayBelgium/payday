@@ -1,5 +1,15 @@
 import React from 'react';
-import { AlertCircle, Target, Clock, ShieldAlert, TrendingUp, DollarSign, Percent, AlertTriangle, type LucideIcon } from 'lucide-react';
+import {
+  AlertCircle,
+  Target,
+  Clock,
+  ShieldAlert,
+  TrendingUp,
+  DollarSign,
+  Percent,
+  AlertTriangle,
+  type LucideIcon,
+} from 'lucide-react';
 
 interface AlertTooltipItem {
   ticker: string;
@@ -28,7 +38,11 @@ const getIconForMessage = (message: string, isAlert: boolean): LucideIcon => {
   if (message.toLowerCase().includes('verloopt') || message.toLowerCase().includes('expir')) {
     return Clock;
   }
-  if (message.toLowerCase().includes('gevaar') || message.toLowerCase().includes('danger') || message.toLowerCase().includes('verlies')) {
+  if (
+    message.toLowerCase().includes('gevaar') ||
+    message.toLowerCase().includes('danger') ||
+    message.toLowerCase().includes('verlies')
+  ) {
     return ShieldAlert;
   }
   if (message.toLowerCase().includes('itm') || message.toLowerCase().includes('strike')) {
@@ -41,10 +55,7 @@ const getIconForMessage = (message: string, isAlert: boolean): LucideIcon => {
   return AlertCircle;
 };
 
-export const AlertTooltipContent: React.FC<AlertTooltipContentProps> = ({
-  items,
-  type,
-}) => {
+export const AlertTooltipContent: React.FC<AlertTooltipContentProps> = ({ items, type }) => {
   const isAlert = type === 'alert';
   const iconBgClass = isAlert
     ? 'bg-caution-50 dark:bg-caution-600/25'

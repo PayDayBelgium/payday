@@ -28,7 +28,9 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
   onSubmit,
   portfolio,
 }) => {
-  const [transactionType, setTransactionType] = useState<'deposit' | 'withdrawal' | 'adjustment'>('deposit');
+  const [transactionType, setTransactionType] = useState<'deposit' | 'withdrawal' | 'adjustment'>(
+    'deposit'
+  );
   const [amount, setAmount] = useState<number>(0);
   const [description, setDescription] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -83,9 +85,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-            Portfolio Transactie
-          </h2>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Portfolio Transactie</h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
@@ -146,7 +146,8 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
           {/* Amount */}
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              {transactionType === 'adjustment' ? 'Nieuwe Portfolio Waarde' : 'Bedrag'} ({currencySymbol})
+              {transactionType === 'adjustment' ? 'Nieuwe Portfolio Waarde' : 'Bedrag'} (
+              {currencySymbol})
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -216,24 +217,33 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                     {transactionType === 'withdrawal' && 'Opname:'}
                     {transactionType === 'adjustment' && 'Aanpassing:'}
                   </span>
-                  <span className={`font-medium ${
-                    (transactionType === 'deposit') || (transactionType === 'adjustment' && amount > portfolio.currentValue)
-                      ? 'text-positive-600 dark:text-positive-500'
-                      : 'text-negative-600 dark:text-negative-500'
-                  }`}>
+                  <span
+                    className={`font-medium ${
+                      transactionType === 'deposit' ||
+                      (transactionType === 'adjustment' && amount > portfolio.currentValue)
+                        ? 'text-positive-600 dark:text-positive-500'
+                        : 'text-negative-600 dark:text-negative-500'
+                    }`}
+                  >
                     {transactionType === 'adjustment'
-                      ? (amount > portfolio.currentValue ? '+' : '') + formatCurrency(amount - portfolio.currentValue, currencySymbol)
-                      : (transactionType === 'withdrawal' ? '-' : '+') + formatCurrency(Math.abs(amount), currencySymbol)
-                    }
+                      ? (amount > portfolio.currentValue ? '+' : '') +
+                        formatCurrency(amount - portfolio.currentValue, currencySymbol)
+                      : (transactionType === 'withdrawal' ? '-' : '+') +
+                        formatCurrency(Math.abs(amount), currencySymbol)}
                   </span>
                 </div>
                 <div className="flex justify-between pt-2 border-t border-primary-300 dark:border-primary-700">
-                  <span className="font-semibold text-primary-900 dark:text-primary-200">Nieuwe waarde:</span>
+                  <span className="font-semibold text-primary-900 dark:text-primary-200">
+                    Nieuwe waarde:
+                  </span>
                   <span className="font-bold text-primary-900 dark:text-primary-200">
                     {formatCurrency(
                       transactionType === 'adjustment'
                         ? amount
-                        : portfolio.currentValue + (transactionType === 'withdrawal' ? -Math.abs(amount) : Math.abs(amount)),
+                        : portfolio.currentValue +
+                            (transactionType === 'withdrawal'
+                              ? -Math.abs(amount)
+                              : Math.abs(amount)),
                       currencySymbol
                     )}
                   </span>

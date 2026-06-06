@@ -1,5 +1,13 @@
 import React, { useMemo, useState } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 import type { DailyPortfolioData, CurrencyType } from '../../types';
 import { getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency, formatCompactNumber } from '../../utils/numberFormat';
@@ -34,7 +42,7 @@ export const MultiPortfolioChart: React.FC<MultiPortfolioChartProps> = ({
 
   // Toggle portfolio visibility
   const togglePortfolio = (portfolioName: string) => {
-    setHiddenPortfolios(prev => {
+    setHiddenPortfolios((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(portfolioName)) {
         newSet.delete(portfolioName);
@@ -50,14 +58,14 @@ export const MultiPortfolioChart: React.FC<MultiPortfolioChartProps> = ({
     // Index values by "date|portfolio" once for O(1) lookups (was O(dates*portfolios*data)).
     const valueByDatePortfolio = new Map<string, number>();
     const dateSet = new Set<string>();
-    data.forEach(d => {
+    data.forEach((d) => {
       dateSet.add(d.date);
       valueByDatePortfolio.set(`${d.date}|${d.portfolio}`, d.totalValue);
     });
 
     const dates = [...dateSet].sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
 
-    return dates.map(date => {
+    return dates.map((date) => {
       const dataPoint: any = {
         date: new Date(date).toLocaleDateString('nl-NL', {
           day: '2-digit',
@@ -67,7 +75,7 @@ export const MultiPortfolioChart: React.FC<MultiPortfolioChartProps> = ({
       };
 
       // Add value for each portfolio
-      portfolios.forEach(portfolio => {
+      portfolios.forEach((portfolio) => {
         dataPoint[portfolio.name] = valueByDatePortfolio.get(`${date}|${portfolio.name}`) ?? null;
       });
 
@@ -76,13 +84,13 @@ export const MultiPortfolioChart: React.FC<MultiPortfolioChartProps> = ({
   }, [data, portfolios]);
 
   // Get currency symbol (use first portfolio's currency or default to EUR)
-  const currencySymbol = portfolios.length > 0
-    ? getCurrencySymbol(portfolios[0].currency)
-    : '€';
+  const currencySymbol = portfolios.length > 0 ? getCurrencySymbol(portfolios[0].currency) : '€';
 
   if (chartData.length === 0) {
     return (
-      <div className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 ${className}`}>
+      <div
+        className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 ${className}`}
+      >
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -108,7 +116,9 @@ export const MultiPortfolioChart: React.FC<MultiPortfolioChartProps> = ({
   }
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 h-full flex flex-col ${className}`}>
+    <div
+      className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 h-full flex flex-col ${className}`}
+    >
       {/* Header */}
       <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -142,7 +152,10 @@ export const MultiPortfolioChart: React.FC<MultiPortfolioChartProps> = ({
                 color: '#000000',
                 boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
               }}
-              formatter={(value: number, name: string) => [formatCurrency(value, currencySymbol), name]}
+              formatter={(value: number, name: string) => [
+                formatCurrency(value, currencySymbol),
+                name,
+              ]}
               labelStyle={{ color: '#000000', fontWeight: '600' }}
               itemStyle={{ color: '#000000' }}
             />
@@ -170,7 +183,10 @@ export const MultiPortfolioChart: React.FC<MultiPortfolioChartProps> = ({
       </div>
 
       {/* Interactive Legend Controls */}
-      <div className="px-6 py-3 border-t border-gray-200 dark:border-gray-700 flex-shrink-0" style={{ minHeight: '52px' }}>
+      <div
+        className="px-6 py-3 border-t border-gray-200 dark:border-gray-700 flex-shrink-0"
+        style={{ minHeight: '52px' }}
+      >
         <div className="flex flex-wrap gap-2">
           {portfolios.map((portfolio, index) => {
             const color = portfolio.color || PORTFOLIO_COLORS[index % PORTFOLIO_COLORS.length];
@@ -190,11 +206,11 @@ export const MultiPortfolioChart: React.FC<MultiPortfolioChartProps> = ({
                   className="w-3 h-3 rounded-full"
                   style={{ backgroundColor: isVisible ? color : '#9ca3af' }}
                 />
-                <span className={`text-sm font-medium ${
-                  isVisible
-                    ? 'text-gray-900 dark:text-white'
-                    : 'text-gray-500 dark:text-gray-400'
-                }`}>
+                <span
+                  className={`text-sm font-medium ${
+                    isVisible ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'
+                  }`}
+                >
                   {portfolio.name}
                 </span>
               </button>

@@ -74,7 +74,11 @@ const LoginPage: React.FC = () => {
         // Create demo store with mock data directly in localStorage
         const demoStore = {
           auth: JSON.stringify({ isAuthenticated: true, user: 'demo' }),
-          portfolios: JSON.stringify({ portfolios: mockPortfolios, summaries: mockPortfolioSummaries, dailyData: mockDailyData }),
+          portfolios: JSON.stringify({
+            portfolios: mockPortfolios,
+            summaries: mockPortfolioSummaries,
+            dailyData: mockDailyData,
+          }),
           positions: JSON.stringify({ positions: [] }),
           trades: JSON.stringify({ trades: [] }),
           rules: JSON.stringify({ rules: [] }),
@@ -100,7 +104,7 @@ const LoginPage: React.FC = () => {
     }
 
     // Wait at least 3 seconds to show the loading message
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    await new Promise((resolve) => setTimeout(resolve, 3000));
     window.location.reload();
   };
 
@@ -109,25 +113,47 @@ const LoginPage: React.FC = () => {
       <div className="relative flex items-center justify-center min-h-screen overflow-hidden bg-sky-fade dark:bg-trading-dark-900">
         {/* Background composition: faint mountain silhouette + grid */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0 opacity-[0.35]"
-               style={{
-                 backgroundImage:
-                   'linear-gradient(rgba(11,74,143,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(11,74,143,0.05) 1px, transparent 1px)',
-                 backgroundSize: '40px 40px',
-               }} />
-          <svg className="absolute bottom-0 left-0 right-0 w-full h-1/2" preserveAspectRatio="none" viewBox="0 0 1200 400">
-            <polygon points="0,400 350,140 600,260 900,80 1200,200 1200,400" fill="#DCE7F5" opacity="0.7" />
-            <polygon points="0,400 200,260 480,180 760,300 1080,180 1200,260 1200,400" fill="#0B4A8F" opacity="0.06" />
+          <div
+            className="absolute inset-0 opacity-[0.35]"
+            style={{
+              backgroundImage:
+                'linear-gradient(rgba(11,74,143,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(11,74,143,0.05) 1px, transparent 1px)',
+              backgroundSize: '40px 40px',
+            }}
+          />
+          <svg
+            className="absolute bottom-0 left-0 right-0 w-full h-1/2"
+            preserveAspectRatio="none"
+            viewBox="0 0 1200 400"
+          >
+            <polygon
+              points="0,400 350,140 600,260 900,80 1200,200 1200,400"
+              fill="#DCE7F5"
+              opacity="0.7"
+            />
+            <polygon
+              points="0,400 200,260 480,180 760,300 1080,180 1200,260 1200,400"
+              fill="#0B4A8F"
+              opacity="0.06"
+            />
           </svg>
         </div>
 
         <div className="relative w-full max-w-md mx-4">
           {/* Brand mark — single, calm wordmark above the form */}
           <div className="flex items-center justify-center gap-3 mb-8">
-            <img src={logo} alt="PayDay" className="w-11 h-11 rounded-md ring-1 ring-[var(--line)] bg-white" />
+            <img
+              src={logo}
+              alt="PayDay"
+              className="w-11 h-11 rounded-md ring-1 ring-[var(--line)] bg-white"
+            />
             <div className="text-left leading-tight">
-              <p className="text-lg font-semibold tracking-tight text-ink-900 dark:text-white">PayDay</p>
-              <p className="text-[10px] uppercase tracking-[0.18em] text-ink-400 mt-0.5">Trading&nbsp;Workspace</p>
+              <p className="text-lg font-semibold tracking-tight text-ink-900 dark:text-white">
+                PayDay
+              </p>
+              <p className="text-[10px] uppercase tracking-[0.18em] text-ink-400 mt-0.5">
+                Trading&nbsp;Workspace
+              </p>
             </div>
           </div>
 
@@ -139,7 +165,13 @@ const LoginPage: React.FC = () => {
               </h1>
               <p className="mt-1.5 text-sm text-ink-500 dark:text-ink-400">{t('login.subtitle')}</p>
             </div>
-            <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
+            <form
+              className="space-y-5"
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleLogin();
+              }}
+            >
               <div>
                 <label htmlFor="username" className="eyebrow block mb-1.5">
                   {t('login.username')}

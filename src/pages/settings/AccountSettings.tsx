@@ -21,7 +21,7 @@ export const AccountSettings: React.FC = () => {
     setIsResetting(true);
 
     // Wait a moment to show the loading message
-    await new Promise(resolve => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
     // Clear all localStorage data
     localStorage.clear();
@@ -34,7 +34,9 @@ export const AccountSettings: React.FC = () => {
     <div className="max-w-4xl">
       {/* Account Info */}
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Account information</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+          Account information
+        </h2>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-600 dark:text-gray-400">Username:</span>
@@ -42,7 +44,9 @@ export const AccountSettings: React.FC = () => {
           </div>
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-600 dark:text-gray-400">Storage Key:</span>
-            <span className="text-sm font-mono text-gray-900 dark:text-white">payday-{username}</span>
+            <span className="text-sm font-mono text-gray-900 dark:text-white">
+              payday-{username}
+            </span>
           </div>
 
           {/* Nationality Setting */}
@@ -78,7 +82,9 @@ export const AccountSettings: React.FC = () => {
         <div className="flex items-start gap-3 mb-4">
           <AlertTriangle className="w-6 h-6 text-negative-600 dark:text-negative-500 flex-shrink-0 mt-0.5" />
           <div>
-            <h2 className="text-xl font-bold text-negative-700 dark:text-negative-500 mb-2">Danger zone</h2>
+            <h2 className="text-xl font-bold text-negative-700 dark:text-negative-500 mb-2">
+              Danger zone
+            </h2>
             <p className="text-sm text-negative-700 dark:text-negative-500">
               These actions are permanent and cannot be undone. Please be careful!
             </p>
