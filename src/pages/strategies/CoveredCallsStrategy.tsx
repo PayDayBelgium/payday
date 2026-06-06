@@ -16,12 +16,19 @@ import {
 import { StrategyRules } from '../../components/strategy/StrategyRules';
 import { StrategyRuleModal } from '../../components/modals/StrategyRuleModal';
 import { useStrategyRules } from '../../hooks/useStrategyRules';
+import { useAppSelector } from '../../hooks/useAppSelector';
+import { selectPortfolios } from '../../store/slices/portfoliosSlice';
+import { CampaignView } from '../../components/widgets/CampaignView';
+import type { CurrencyType } from '../../types';
 
 export const CoveredCallsStrategy: React.FC = () => {
   const { portfolio } = useParams<{ portfolio: string }>();
   const { setPageTitle } = usePageTitle();
   const navigate = useNavigate();
   const { pushNavigation } = useNavigation();
+  const portfolios = useAppSelector(selectPortfolios);
+  const currency: CurrencyType =
+    portfolios.find((p) => p.name === portfolio)?.currency ?? 'USD';
   const [activeTab, setActiveTab] = useState<'positions' | 'rules' | 'info'>('positions');
   const {
     strategyRules,
@@ -63,9 +70,6 @@ export const CoveredCallsStrategy: React.FC = () => {
               }`}
             >
               Posities
-              <span className="px-2 py-0.5 rounded-full text-xs bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">
-                0
-              </span>
             </button>
             <button
               onClick={() => setActiveTab('rules')}
@@ -154,41 +158,17 @@ export const CoveredCallsStrategy: React.FC = () => {
               </div>
             )}
 
-            {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
-                <p className="text-sm text-ink-600 dark:text-ink-400">Totaal Premie (Maand)</p>
-                <p className="text-2xl font-bold text-primary-700 dark:text-primary-300 mt-1">
-                  $0.00
-                </p>
-              </div>
-              <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
-                <p className="text-sm text-ink-600 dark:text-ink-400">Actieve calls</p>
-                <p className="text-2xl font-bold text-ink-900 dark:text-white mt-1">0</p>
-              </div>
-              <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
-                <p className="text-sm text-ink-600 dark:text-ink-400">Op Aandelen/ETFs</p>
-                <p className="text-2xl font-bold text-ink-900 dark:text-white mt-1">0</p>
-              </div>
-              <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
-                <p className="text-sm text-ink-600 dark:text-ink-400">Op LEAPS</p>
-                <p className="text-2xl font-bold text-ink-900 dark:text-white mt-1">0</p>
-              </div>
-            </div>
-
-            {/* Positions */}
-            <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-12 text-center">
-              <DollarSign className="w-16 h-16 text-ink-300 dark:text-ink-600 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
-                Geen Covered Calls
-              </h3>
-              <p className="text-ink-600 dark:text-ink-400 mb-4">
-                Schrijf je eerste covered call om premie-inkomen te genereren
-              </p>
-              <button className="px-6 py-3 bg-primary-700 hover:bg-primary-800 text-white rounded-lg font-medium transition-colors">
-                Schrijf je Eerste Covered Call
-              </button>
-            </div>
+            {/* Covered-call campaigns: each stock position with the calls written
+                against it, derived from the shared coverage allocator (shares are
+                covered before LEAPS). The campaign view also surfaces the
+                write-opportunity when there is free capacity. */}
+            <CampaignView
+              portfolioName={portfolio ?? ''}
+              currency={currency}
+              initialFilter="covered-call"
+              lockFilter
+              className="min-h-[400px]"
+            />
           </>
         )}
 

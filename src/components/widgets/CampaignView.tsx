@@ -42,6 +42,10 @@ interface CampaignViewProps {
   portfolioName: string;
   currency: CurrencyType;
   className?: string;
+  /** Campaign type to show first (defaults to covered-call). */
+  initialFilter?: CampaignType;
+  /** Lock the view to initialFilter and hide the filter tabs (for strategy pages). */
+  lockFilter?: boolean;
 }
 
 type FilterType = CampaignType;
@@ -50,6 +54,8 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
   portfolioName,
   currency,
   className = '',
+  initialFilter = 'covered-call',
+  lockFilter = false,
 }) => {
   const dispatch = useAppDispatch();
   const currencySymbol = getCurrencySymbol(currency);
@@ -59,7 +65,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
   const wheels = useAppSelector((state: RootState) =>
     selectWheelsByPortfolio(state, portfolioName as PortfolioName)
   );
-  const [filter, setFilter] = useState<FilterType>('covered-call');
+  const [filter, setFilter] = useState<FilterType>(initialFilter);
   const [expandedCampaigns, setExpandedCampaigns] = useState<Set<string>>(new Set());
   const [showHistory, setShowHistory] = useState<Set<string>>(new Set());
   // Track expanded sections within campaigns (default to expanded)
@@ -658,13 +664,15 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
     <div
       className={`bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 h-full flex flex-col ${className}`}
     >
-      {/* Filter Tabs */}
-      <CampaignFilterTabs
-        filter={filter}
-        onFilterChange={setFilter}
-        campaignCounts={campaignCounts}
-        onNewWheel={() => setShowNewWheelModal(true)}
-      />
+      {/* Filter Tabs — hidden when the view is locked to a single campaign type */}
+      {!lockFilter && (
+        <CampaignFilterTabs
+          filter={filter}
+          onFilterChange={setFilter}
+          campaignCounts={campaignCounts}
+          onNewWheel={() => setShowNewWheelModal(true)}
+        />
+      )}
 
       {/* Campaign List */}
       <div className="divide-y divide-surface-line dark:divide-trading-dark-600 flex-1 overflow-y-auto">
