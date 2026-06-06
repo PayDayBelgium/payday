@@ -27,6 +27,11 @@ export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const summaries = useAppSelector(selectPortfolioSummaries);
   const portfolios = useAppSelector((state) => state.portfolios.portfolios);
+  // Stable prop for MultiPortfolioChart so its chartData memo isn't invalidated every render.
+  const chartPortfolios = useMemo(
+    () => portfolios.map((b) => ({ name: b.name, currency: b.currency })),
+    [portfolios]
+  );
   const positions = useAppSelector((state) => state.positions.positions);
   const alerts = useAppSelector((state) => state.alerts.alerts);
   const dailyData = useAppSelector((state) => state.portfolios.dailyData);
@@ -303,7 +308,7 @@ export const Dashboard: React.FC = () => {
             {/* Multi-Portfolio Chart - Individual lines for each portfolio */}
             <MultiPortfolioChart
               data={dailyData}
-              portfolios={portfolios.map(b => ({ name: b.name, currency: b.currency }))}
+              portfolios={chartPortfolios}
             />
           </div>
 

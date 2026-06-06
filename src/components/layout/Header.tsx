@@ -7,6 +7,7 @@ import { WebSocketConnectionStatus } from '../common/WebSocketConnectionStatus';
 import { LoadingOverlay } from '../common/LoadingOverlay';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { useStore } from 'react-redux';
 import { useToast } from '../../contexts/ToastContext';
 import { THEMES, applyTheme, getSavedTheme } from '../../constants/themes';
 import type { ThemeColor } from '../../constants/themes';
@@ -54,29 +55,24 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription, isSi
   const userProgress = useAppSelector(selectUserProgress);
   const currentLevelConfig = useAppSelector(selectCurrentLevelConfig);
 
-  // Select specific slices needed for backup instead of entire state
-  const portfoliosState = useAppSelector((state) => state.portfolios);
-  const positionsState = useAppSelector((state) => state.positions);
-  const todosState = useAppSelector((state) => state.todos);
-  const alertsState = useAppSelector((state) => state.alerts);
-  const journalState = useAppSelector((state) => state.journal);
-  const tradesState = useAppSelector((state) => state.trades);
-  const rulesState = useAppSelector((state) => state.rules);
-  const tickersState = useAppSelector((state) => state.tickers);
-  const strategiesState = useAppSelector((state) => state.strategies);
-
-  // Build state object for backup (only when needed)
-  const getBackupState = () => ({
-    portfolios: portfoliosState,
-    positions: positionsState,
-    todos: todosState,
-    alerts: alertsState,
-    journal: journalState,
-    trades: tradesState,
-    rules: rulesState,
-    tickers: tickersState,
-    strategies: strategiesState,
-  } as any);
+  // Read the backup snapshot lazily via the store. Subscribing to these 9 slices
+  // with useAppSelector would re-render the always-mounted Header on every data
+  // mutation (incl. every price tick); we only need this data on a backup click.
+  const store = useStore();
+  const getBackupState = () => {
+    const state = store.getState() as any;
+    return {
+      portfolios: state.portfolios,
+      positions: state.positions,
+      todos: state.todos,
+      alerts: state.alerts,
+      journal: state.journal,
+      trades: state.trades,
+      rules: state.rules,
+      tickers: state.tickers,
+      strategies: state.strategies,
+    } as any;
+  };
 
   const handleThemeChange = (theme: ThemeColor) => {
     setCurrentTheme(theme);

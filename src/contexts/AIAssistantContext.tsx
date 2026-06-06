@@ -6,7 +6,6 @@ import { useAppDispatch } from '../hooks/useAppDispatch';
 import { selectCurrentLevel, selectUnlockedLevels } from '../store/slices/userProgressSlice';
 import type { RootState } from '../store';
 import { loadAIConfig } from '../services/ai/config';
-import { createProvider } from '../services/ai/providers';
 import { buildSystemPrompt } from '../services/ai/systemPrompt';
 import type { AIMessage, ContentBlock } from '../services/ai/types';
 import {
@@ -139,6 +138,9 @@ export const AIAssistantProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
       try {
         const cfg = loadAIConfig();
+        // Lazy-load the provider (and the heavy @anthropic-ai/sdk) on first use,
+        // keeping it out of the initial bundle that every logged-in user downloads.
+        const { createProvider } = await import('../services/ai/providers');
         const provider = createProvider(cfg);
         const system = buildSystemPrompt({ userLevel, unlockedLevels });
         const model = cfg.model;

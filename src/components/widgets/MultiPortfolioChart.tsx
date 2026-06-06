@@ -28,14 +28,13 @@ export const MultiPortfolioChart: React.FC<MultiPortfolioChartProps> = ({
   portfolios,
   className = '',
 }) => {
-  // Track visibility of each portfolio's series
-  const [visiblePortfolios, setVisiblePortfolios] = useState<Set<string>>(
-    new Set(portfolios.map(b => b.name))
-  );
+  // Track HIDDEN series instead of visible ones, so portfolios added after mount
+  // are visible by default (they're simply not in the hidden set).
+  const [hiddenPortfolios, setHiddenPortfolios] = useState<Set<string>>(new Set());
 
   // Toggle portfolio visibility
   const togglePortfolio = (portfolioName: string) => {
-    setVisiblePortfolios(prev => {
+    setHiddenPortfolios(prev => {
       const newSet = new Set(prev);
       if (newSet.has(portfolioName)) {
         newSet.delete(portfolioName);
@@ -48,10 +47,15 @@ export const MultiPortfolioChart: React.FC<MultiPortfolioChartProps> = ({
 
   // Prepare chart data - group by date and create separate values for each portfolio
   const chartData = useMemo(() => {
-    // Get all unique dates
-    const dates = [...new Set(data.map(d => d.date))].sort(
-      (a, b) => new Date(a).getTime() - new Date(b).getTime()
-    );
+    // Index values by "date|portfolio" once for O(1) lookups (was O(dates*portfolios*data)).
+    const valueByDatePortfolio = new Map<string, number>();
+    const dateSet = new Set<string>();
+    data.forEach(d => {
+      dateSet.add(d.date);
+      valueByDatePortfolio.set(`${d.date}|${d.portfolio}`, d.totalValue);
+    });
+
+    const dates = [...dateSet].sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
 
     return dates.map(date => {
       const dataPoint: any = {
@@ -64,8 +68,7 @@ export const MultiPortfolioChart: React.FC<MultiPortfolioChartProps> = ({
 
       // Add value for each portfolio
       portfolios.forEach(portfolio => {
-        const portfolioData = data.find(d => d.date === date && d.portfolio === portfolio.name);
-        dataPoint[portfolio.name] = portfolioData?.totalValue || null;
+        dataPoint[portfolio.name] = valueByDatePortfolio.get(`${date}|${portfolio.name}`) ?? null;
       });
 
       return dataPoint;
@@ -145,7 +148,7 @@ export const MultiPortfolioChart: React.FC<MultiPortfolioChartProps> = ({
             />
             {portfolios.map((portfolio, index) => {
               const color = portfolio.color || PORTFOLIO_COLORS[index % PORTFOLIO_COLORS.length];
-              const isVisible = visiblePortfolios.has(portfolio.name);
+              const isVisible = !hiddenPortfolios.has(portfolio.name);
 
               return (
                 <Line
@@ -171,7 +174,7 @@ export const MultiPortfolioChart: React.FC<MultiPortfolioChartProps> = ({
         <div className="flex flex-wrap gap-2">
           {portfolios.map((portfolio, index) => {
             const color = portfolio.color || PORTFOLIO_COLORS[index % PORTFOLIO_COLORS.length];
-            const isVisible = visiblePortfolios.has(portfolio.name);
+            const isVisible = !hiddenPortfolios.has(portfolio.name);
 
             return (
               <button

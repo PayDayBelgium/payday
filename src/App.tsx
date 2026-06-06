@@ -1,41 +1,43 @@
-import { useEffect } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import {
-  LoginPage,
-  Dashboard,
-  PortfolioDetail,
-  PortfolioManagement,
-  StocksETFsStrategy,
-  LEAPSStrategy,
-  CoveredCallsStrategy,
-  CSPStrategy,
-  PMCCStrategy,
-  SpreadsStrategy,
-  KaChingStrategy,
-  PMCCCalculator,
-  KaChingCalculator,
-  MonthlyIncomeCalculator,
-  CapitalGainsTaxCalculator,
-  PnLSimulator,
-  CoveredCallSimulator,
-  OptionCheck,
-  Settings,
-  Journal,
-  Todos,
-  TickersOverview,
-  Analytics,
-  HelpPortal,
-  MissionStatement,
-  Community,
-  QuantTrading,
-  Mentorship,
-} from './pages';
+// Route-level code splitting: each page is a separate chunk loaded on navigation,
+// so the heavy ones (recharts tools, the 105KB education curriculum) stay out of the
+// initial bundle. Shells (Layout/AdminLayout) and the login page are eager.
+import { LoginPage } from './pages';
+const Dashboard = lazy(() => import('./pages/dashboard/Dashboard').then((m) => ({ default: m.Dashboard })));
+const PortfolioDetail = lazy(() => import('./pages/portfolios/PortfolioDetail').then((m) => ({ default: m.PortfolioDetail })));
+const PortfolioManagement = lazy(() => import('./pages/portfolios/PortfolioManagement').then((m) => ({ default: m.PortfolioManagement })));
+const StocksETFsStrategy = lazy(() => import('./pages/strategies/StocksETFsStrategy').then((m) => ({ default: m.StocksETFsStrategy })));
+const LEAPSStrategy = lazy(() => import('./pages/strategies/LEAPSStrategy').then((m) => ({ default: m.LEAPSStrategy })));
+const CoveredCallsStrategy = lazy(() => import('./pages/strategies/CoveredCallsStrategy').then((m) => ({ default: m.CoveredCallsStrategy })));
+const CSPStrategy = lazy(() => import('./pages/strategies/CSPStrategy').then((m) => ({ default: m.CSPStrategy })));
+const PMCCStrategy = lazy(() => import('./pages/strategies/PMCCStrategy').then((m) => ({ default: m.PMCCStrategy })));
+const SpreadsStrategy = lazy(() => import('./pages/strategies/SpreadsStrategy').then((m) => ({ default: m.SpreadsStrategy })));
+const KaChingStrategy = lazy(() => import('./pages/strategies/KaChingStrategy').then((m) => ({ default: m.KaChingStrategy })));
+const PMCCCalculator = lazy(() => import('./pages/tools/PMCCCalculator').then((m) => ({ default: m.PMCCCalculator })));
+const KaChingCalculator = lazy(() => import('./pages/tools/KaChingCalculator').then((m) => ({ default: m.KaChingCalculator })));
+const MonthlyIncomeCalculator = lazy(() => import('./pages/tools/MonthlyIncomeCalculator').then((m) => ({ default: m.MonthlyIncomeCalculator })));
+const CapitalGainsTaxCalculator = lazy(() => import('./pages/tools/CapitalGainsTaxCalculator').then((m) => ({ default: m.CapitalGainsTaxCalculator })));
+const PnLSimulator = lazy(() => import('./pages/tools/PnLSimulator').then((m) => ({ default: m.PnLSimulator })));
+const CoveredCallSimulator = lazy(() => import('./pages/tools/CoveredCallSimulator').then((m) => ({ default: m.CoveredCallSimulator })));
+const OptionCheck = lazy(() => import('./pages/tools/OptionCheck').then((m) => ({ default: m.OptionCheck })));
+const Settings = lazy(() => import('./pages/settings/Settings').then((m) => ({ default: m.Settings })));
+const Journal = lazy(() => import('./pages/journal/Journal').then((m) => ({ default: m.Journal })));
+const Todos = lazy(() => import('./pages/journal/Todos'));
+const TickersOverview = lazy(() => import('./pages/tickers/TickersOverview').then((m) => ({ default: m.TickersOverview })));
+const Analytics = lazy(() => import('./pages/analytics/Analytics').then((m) => ({ default: m.Analytics })));
+const HelpPortal = lazy(() => import('./pages/help/HelpPortal').then((m) => ({ default: m.HelpPortal })));
+const MissionStatement = lazy(() => import('./pages/mission/MissionStatement').then((m) => ({ default: m.MissionStatement })));
+const Community = lazy(() => import('./pages/community/Community').then((m) => ({ default: m.Community })));
+const QuantTrading = lazy(() => import('./pages/quant/QuantTrading').then((m) => ({ default: m.QuantTrading })));
+const Mentorship = lazy(() => import('./pages/mentorship/Mentorship').then((m) => ({ default: m.Mentorship })));
 import { AdminLayout } from './components/layout/AdminLayout';
-import { AdminDashboard } from './pages/admin/AdminDashboard';
-import { UsersList } from './pages/admin/UsersList';
-import { UserDetail } from './pages/admin/UserDetail';
-import { AddUser } from './pages/admin/AddUser';
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard').then((m) => ({ default: m.AdminDashboard })));
+const UsersList = lazy(() => import('./pages/admin/UsersList').then((m) => ({ default: m.UsersList })));
+const UserDetail = lazy(() => import('./pages/admin/UserDetail').then((m) => ({ default: m.UserDetail })));
+const AddUser = lazy(() => import('./pages/admin/AddUser').then((m) => ({ default: m.AddUser })));
 import { Layout } from './components';
+import { LoadingOverlay } from './components/common/LoadingOverlay';
 import { FeatureGate } from './components/features/FeatureGate';
 import { useIBConnection } from './hooks/useIBConnection';
 import { useAppSelector } from './hooks/useAppSelector';
@@ -114,23 +116,25 @@ function App() {
 
   return (
     <Router>
-      <Routes>
-        {/* Admin Routes */}
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<Navigate to="/admin/dashboard" replace />} />
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="users" element={<UsersList />} />
-          <Route path="users/add" element={<AddUser />} />
-          <Route path="users/:username" element={<UserDetail />} />
-        </Route>
+      <Suspense fallback={<LoadingOverlay message="Laden..." />}>
+        <Routes>
+          {/* Admin Routes */}
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<Navigate to="/admin/dashboard" replace />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="users" element={<UsersList />} />
+            <Route path="users/add" element={<AddUser />} />
+            <Route path="users/:username" element={<UserDetail />} />
+          </Route>
 
-        {/* Regular App Routes */}
-        <Route path="/*" element={
-          isAdminAuthenticated ? <Navigate to="/admin/dashboard" replace /> :
-          isAuthenticated ? <AppContent /> :
-          <LoginPage />
-        } />
-      </Routes>
+          {/* Regular App Routes */}
+          <Route path="/*" element={
+            isAdminAuthenticated ? <Navigate to="/admin/dashboard" replace /> :
+            isAuthenticated ? <AppContent /> :
+            <LoginPage />
+          } />
+        </Routes>
+      </Suspense>
     </Router>
   );
 }

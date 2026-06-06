@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ChevronDown, ChevronRight, AlertCircle, CheckCircle, Search, Edit2, Check, X, TrendingDown, Target } from 'lucide-react';
 import type { StockPosition, PriceAlert, Portfolio, CallOption } from '../../types';
 import { formatCurrency } from '../../utils/currencyHelpers';
@@ -30,6 +30,10 @@ interface GroupedStockListProps {
   onSellPosition?: (position: StockPosition) => void;
 }
 
+// Stable empty default so an omitted strategyAlertsMap prop doesn't create a new
+// Map each render (which would invalidate the grouping memo below).
+const EMPTY_STRATEGY_ALERTS: Map<string, StrategyAlert[]> = new Map();
+
 interface TickerGroup {
   ticker: string;
   type: 'stock' | 'etf';
@@ -47,7 +51,7 @@ interface TickerGroup {
 export const GroupedStockList: React.FC<GroupedStockListProps> = ({
   positions,
   alerts,
-  strategyAlertsMap = new Map(),
+  strategyAlertsMap = EMPTY_STRATEGY_ALERTS,
   allPortfolios,
   onEditPosition,
   onDismissStrategyAlert,
@@ -70,63 +74,68 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
     message: '',
   });
 
-  // Group positions by ticker (only open positions)
-  const groupedPositions = positions
-    .filter(position => position.status === 'open')
-    .reduce<Record<string, TickerGroup>>((acc, position) => {
-      if (!acc[position.ticker]) {
-        acc[position.ticker] = {
-          ticker: position.ticker,
-          type: position.type,
-          positions: [],
-          totalShares: 0,
-          averageCost: 0,
-          totalValue: 0,
-          totalCostBasis: 0,
-          profitLoss: 0,
-          profitLossPercentage: 0,
-          alerts: [],
-          strategyAlerts: [],
-        };
-      }
+  // Group positions by ticker (only open positions). Memoized on its real inputs so
+  // this whole pipeline does NOT recompute on every search-box keystroke.
+  const groupedPositions = useMemo(() => {
+    const groups = positions
+      .filter(position => position.status === 'open')
+      .reduce<Record<string, TickerGroup>>((acc, position) => {
+        if (!acc[position.ticker]) {
+          acc[position.ticker] = {
+            ticker: position.ticker,
+            type: position.type,
+            positions: [],
+            totalShares: 0,
+            averageCost: 0,
+            totalValue: 0,
+            totalCostBasis: 0,
+            profitLoss: 0,
+            profitLossPercentage: 0,
+            alerts: [],
+            strategyAlerts: [],
+          };
+        }
 
-      acc[position.ticker].positions.push(position);
-      acc[position.ticker].totalShares += position.shares;
-      acc[position.ticker].totalValue += position.currentValue;
-      acc[position.ticker].totalCostBasis += position.costBasis;
+        acc[position.ticker].positions.push(position);
+        acc[position.ticker].totalShares += position.shares;
+        acc[position.ticker].totalValue += position.currentValue;
+        acc[position.ticker].totalCostBasis += position.costBasis;
 
-      // Get alerts for this position
-      const positionAlerts = alerts.filter(a => a.positionId === position.id && !a.isRead);
-      acc[position.ticker].alerts.push(...positionAlerts);
+        // Get alerts for this position
+        const positionAlerts = alerts.filter(a => a.positionId === position.id && !a.isRead);
+        acc[position.ticker].alerts.push(...positionAlerts);
 
-      // Get strategy alerts for this position
-      const posStrategyAlerts = strategyAlertsMap.get(position.id) || [];
-      acc[position.ticker].strategyAlerts.push(...posStrategyAlerts);
+        // Get strategy alerts for this position
+        const posStrategyAlerts = strategyAlertsMap.get(position.id) || [];
+        acc[position.ticker].strategyAlerts.push(...posStrategyAlerts);
 
-      return acc;
-    }, {});
+        return acc;
+      }, {});
 
-  // Calculate GAK and P&L for each group
-  Object.values(groupedPositions).forEach(group => {
-    group.averageCost = group.totalCostBasis / group.totalShares;
-    group.profitLoss = group.totalValue - group.totalCostBasis;
-    group.profitLossPercentage = group.totalCostBasis > 0
-      ? (group.profitLoss / group.totalCostBasis) * 100
-      : 0;
+    // Calculate GAK and P&L for each group
+    Object.values(groups).forEach(group => {
+      group.averageCost = group.totalCostBasis / group.totalShares;
+      group.profitLoss = group.totalValue - group.totalCostBasis;
+      group.profitLossPercentage = group.totalCostBasis > 0
+        ? (group.profitLoss / group.totalCostBasis) * 100
+        : 0;
 
-    // Sort positions by date (oldest first)
-    group.positions.sort((a, b) =>
-      new Date(a.openDate).getTime() - new Date(b.openDate).getTime()
-    );
-  });
+      // Sort positions by date (oldest first)
+      group.positions.sort((a, b) =>
+        new Date(a.openDate).getTime() - new Date(b.openDate).getTime()
+      );
+    });
 
-  // Filter groups by search query
-  const filteredGroups = Object.values(groupedPositions).filter(group =>
-    group.ticker.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+    return groups;
+  }, [positions, alerts, strategyAlertsMap]);
 
-  // Sort groups alphabetically by ticker
-  filteredGroups.sort((a, b) => a.ticker.localeCompare(b.ticker));
+  // Filter + sort groups by search query (cheap; only this re-runs while typing).
+  const filteredGroups = useMemo(() => {
+    const q = searchQuery.toLowerCase();
+    return Object.values(groupedPositions)
+      .filter(group => group.ticker.toLowerCase().includes(q))
+      .sort((a, b) => a.ticker.localeCompare(b.ticker));
+  }, [groupedPositions, searchQuery]);
 
   const toggleExpanded = (ticker: string) => {
     setExpandedTickers(prev => {

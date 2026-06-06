@@ -110,4 +110,16 @@ export default defineConfig({
     port: 3000,
     open: true,
   },
+  build: {
+    rollupOptions: {
+      output: {
+        // Isolate heavy vendors into their own chunks so they are cached separately
+        // and (for the AI SDK, now imported dynamically) loaded only when needed.
+        manualChunks: {
+          'vendor-anthropic': ['@anthropic-ai/sdk'],
+          'vendor-charts': ['recharts'],
+        },
+      },
+    },
+  },
 })

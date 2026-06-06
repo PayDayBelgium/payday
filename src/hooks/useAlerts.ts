@@ -102,6 +102,13 @@ export const useAlerts = (portfolioFilter?: string) => {
     );
   }, [portfolios, positions, dismissedAlerts, portfolioFilter, tickers]);
 
+  // O(1) position lookup so per-position helpers don't scan the full array each call.
+  const positionsById = useMemo(() => {
+    const map = new Map<string, (typeof positions)[number]>();
+    positions.forEach((p) => map.set(p.id, p));
+    return map;
+  }, [positions]);
+
   // Get alerts/opportunities for a specific position by ID
   const getAlertsForPosition = useCallback((positionId: string): AlertItem[] => {
     return alerts.filter(alert => {
@@ -127,7 +134,7 @@ export const useAlerts = (portfolioFilter?: string) => {
   }, [alerts]);
 
   const getOpportunitiesForPosition = useCallback((positionId: string): AlertItem[] => {
-    const position = positions.find(p => p.id === positionId);
+    const position = positionsById.get(positionId);
     return opportunities.filter(opp => {
       // Stock CC opportunities are aggregated per ticker+portfolio
       if (position && opp.id === `stock-cc-opportunity-${position.ticker}-${position.portfolio}`) return true;
@@ -139,7 +146,7 @@ export const useAlerts = (portfolioFilter?: string) => {
       if (opp.id === `profit-opportunity-${positionId}`) return true;
       return false;
     });
-  }, [opportunities, positions]);
+  }, [opportunities, positionsById]);
 
   // Dismiss an alert
   const dismissAlert = useCallback((alertId: string) => {
