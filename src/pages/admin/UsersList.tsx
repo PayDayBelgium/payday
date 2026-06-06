@@ -35,7 +35,7 @@ export const UsersList: React.FC = () => {
     }
   };
 
-  const filteredUsers = users.filter(user =>
+  const filteredUsers = users.filter((user) =>
     user.username.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -63,15 +63,15 @@ export const UsersList: React.FC = () => {
     <div className="space-y-6">
       {/* Search Bar and Add User Button */}
       <div className="flex items-center gap-4">
-        <div className="flex-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-4">
+        <div className="flex-1 bg-white dark:bg-trading-dark-800 border border-surface-line dark:border-trading-dark-600 rounded-lg shadow-sm p-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-ink-400" />
             <input
               type="text"
               placeholder="Search users..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full pl-10 pr-4 py-2 bg-surface dark:bg-trading-dark-700 border border-ink-200 dark:border-trading-dark-500 rounded-lg text-ink-900 dark:text-white placeholder-ink-500 dark:placeholder-ink-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
         </div>
@@ -85,29 +85,32 @@ export const UsersList: React.FC = () => {
       </div>
 
       {/* Users Table */}
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-trading-dark-800 border border-surface-line dark:border-trading-dark-600 rounded-lg shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
+            <thead className="bg-surface dark:bg-trading-dark-700/50 border-b border-surface-line dark:border-trading-dark-500">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-ink-700 dark:text-ink-300 uppercase tracking-wider">
                   Username
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-ink-700 dark:text-ink-300 uppercase tracking-wider">
                   Created
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-ink-700 dark:text-ink-300 uppercase tracking-wider">
                   Last Login
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-6 py-3 text-right text-xs font-medium text-ink-700 dark:text-ink-300 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className="divide-y divide-surface-line dark:divide-trading-dark-600">
               {filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                  <td
+                    colSpan={4}
+                    className="px-6 py-8 text-center text-ink-500 dark:text-ink-400"
+                  >
                     {searchTerm ? 'No users found matching your search' : 'No users yet'}
                   </td>
                 </tr>
@@ -116,7 +119,7 @@ export const UsersList: React.FC = () => {
                   <tr
                     key={user.username}
                     onClick={() => handleRowClick(user.username)}
-                    className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors cursor-pointer"
+                    className="hover:bg-surface dark:hover:bg-trading-dark-700/30 transition-colors cursor-pointer"
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
@@ -125,19 +128,19 @@ export const UsersList: React.FC = () => {
                             {user.username.charAt(0).toUpperCase()}
                           </span>
                         </div>
-                        <span className="font-medium text-gray-900 dark:text-white">
+                        <span className="font-medium text-ink-900 dark:text-white">
                           {user.username}
                         </span>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                      <div className="flex items-center gap-2 text-sm text-ink-600 dark:text-ink-400">
                         <Calendar className="w-4 h-4" />
                         {formatDate(user.createdAt)}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                      <div className="flex items-center gap-2 text-sm text-ink-600 dark:text-ink-400">
                         <Clock className="w-4 h-4" />
                         {formatDate(user.lastLogin)}
                       </div>
@@ -154,7 +157,7 @@ export const UsersList: React.FC = () => {
                             </button>
                             <button
                               onClick={handleCancelClick}
-                              className="px-3 py-1 text-sm bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-400 dark:hover:bg-gray-500"
+                              className="px-3 py-1 text-sm bg-ink-200 dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300 rounded hover:bg-ink-300 dark:hover:bg-ink-400"
                             >
                               Cancel
                             </button>
@@ -179,8 +182,8 @@ export const UsersList: React.FC = () => {
       </div>
 
       {/* Stats Footer */}
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-4">
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+      <div className="bg-white dark:bg-trading-dark-800 border border-surface-line dark:border-trading-dark-600 rounded-lg shadow-sm p-4">
+        <p className="text-sm text-ink-600 dark:text-ink-400">
           Showing {filteredUsers.length} of {users.length} users
         </p>
       </div>

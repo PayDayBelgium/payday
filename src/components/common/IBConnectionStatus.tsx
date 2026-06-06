@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Wifi, WifiOff, RefreshCw, AlertCircle, Settings } from 'lucide-react';
+import React, { useState } from 'react';
+import { Wifi, WifiOff, RefreshCw, AlertCircle } from 'lucide-react';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { ibWebSocketService } from '../../services/ibWebSocketService';
 import type { ConnectionStatus } from '../../store/slices/ibConnectionSlice';
@@ -16,7 +16,6 @@ export const IBConnectionStatus: React.FC<IBConnectionStatusProps> = ({
   const { status, error, lastConnected, reconnectAttempts, maxReconnectAttempts } = useAppSelector(
     (state) => state.ibConnection
   );
-  const [showSettings, setShowSettings] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
 
   const handleRetry = async () => {
@@ -60,8 +59,8 @@ export const IBConnectionStatus: React.FC<IBConnectionStatusProps> = ({
       default:
         return {
           icon: WifiOff,
-          color: 'text-gray-600 dark:text-gray-400',
-          bgColor: 'bg-gray-100 dark:bg-gray-900/30',
+          color: 'text-ink-600 dark:text-ink-400',
+          bgColor: 'bg-surface-subtle dark:bg-trading-dark-900/30',
           label: 'Disconnected',
           pulse: false,
         };
@@ -75,16 +74,22 @@ export const IBConnectionStatus: React.FC<IBConnectionStatusProps> = ({
     return (
       <div className="relative group">
         <button
-          onClick={() => status === 'disconnected' || status === 'error' ? handleRetry() : undefined}
+          onClick={() =>
+            status === 'disconnected' || status === 'error' ? handleRetry() : undefined
+          }
           className={`p-2 rounded-lg transition-all ${config.bgColor} ${
             status === 'disconnected' || status === 'error'
               ? 'cursor-pointer hover:scale-110 hover:shadow-md ring-2 ring-yellow-500 ring-offset-2'
               : status === 'connected'
-              ? 'cursor-default'
-              : ''
+                ? 'cursor-default'
+                : ''
           }`}
           disabled={isRetrying || status === 'connecting'}
-          title={status === 'disconnected' || status === 'error' ? 'Click to retry connection' : config.label}
+          title={
+            status === 'disconnected' || status === 'error'
+              ? 'Click to retry connection'
+              : config.label
+          }
         >
           <Icon
             className={`w-5 h-5 ${config.color} ${config.pulse || isRetrying ? 'animate-spin' : ''}`}
@@ -92,15 +97,20 @@ export const IBConnectionStatus: React.FC<IBConnectionStatusProps> = ({
         </button>
 
         {/* Tooltip */}
-        <div className="absolute right-0 top-full mt-2 hidden group-hover:block w-72 bg-gray-50 dark:bg-gray-50 text-gray-900 text-xs rounded-lg shadow-lg border-2 border-primary-900 z-50 overflow-hidden">
+        <div className="absolute right-0 top-full mt-2 hidden group-hover:block w-72 bg-surface dark:bg-surface text-ink-900 text-xs rounded-lg shadow-lg border-2 border-primary-900 z-50 overflow-hidden">
           <div className="p-3">
-            <p className="font-bold mb-1 text-gray-900">IB TWS Connection</p>
-            <p className={`${
-              status === 'connected' ? 'text-positive-600' :
-              status === 'connecting' ? 'text-primary-700' :
-              status === 'error' ? 'text-negative-600' :
-              'text-gray-600'
-            } font-semibold`}>
+            <p className="font-bold mb-1 text-ink-900">IB TWS Connection</p>
+            <p
+              className={`${
+                status === 'connected'
+                  ? 'text-positive-600'
+                  : status === 'connecting'
+                    ? 'text-primary-700'
+                    : status === 'error'
+                      ? 'text-negative-600'
+                      : 'text-ink-600'
+              } font-semibold`}
+            >
               {config.label}
             </p>
             {error && (
@@ -109,19 +119,19 @@ export const IBConnectionStatus: React.FC<IBConnectionStatusProps> = ({
               </div>
             )}
             {lastConnected && status === 'connected' && (
-              <p className="text-gray-600 mt-2">
+              <p className="text-ink-600 mt-2">
                 ✓ Connected: {new Date(lastConnected).toLocaleTimeString()}
               </p>
             )}
             {status === 'connecting' && reconnectAttempts > 0 && (
-              <p className="text-gray-600 mt-2">
+              <p className="text-ink-600 mt-2">
                 🔄 Retry {reconnectAttempts}/{maxReconnectAttempts}
               </p>
             )}
           </div>
 
           {(status === 'disconnected' || status === 'error') && (
-            <div className="border-t border-gray-300 p-2 bg-gray-100">
+            <div className="border-t border-ink-200 p-2 bg-surface-subtle">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -149,14 +159,16 @@ export const IBConnectionStatus: React.FC<IBConnectionStatusProps> = ({
       {showLabel && (
         <div className="flex-1">
           <p className={`text-sm font-medium ${config.color}`}>{config.label}</p>
-          {error && <p className="text-xs text-negative-600 dark:text-negative-500 mt-0.5">{error}</p>}
+          {error && (
+            <p className="text-xs text-negative-600 dark:text-negative-500 mt-0.5">{error}</p>
+          )}
           {lastConnected && status === 'connected' && (
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
+            <p className="text-xs text-ink-600 dark:text-ink-400 mt-0.5">
               Last: {new Date(lastConnected).toLocaleTimeString()}
             </p>
           )}
           {status === 'connecting' && reconnectAttempts > 0 && (
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
+            <p className="text-xs text-ink-600 dark:text-ink-400 mt-0.5">
               Attempt {reconnectAttempts}/{maxReconnectAttempts}
             </p>
           )}

@@ -1,12 +1,18 @@
 import React, { useMemo } from 'react';
 import { DollarSign, Shield, TrendingUp, Calendar, AlertCircle } from 'lucide-react';
 import { useAppSelector } from '../../hooks/useAppSelector';
-import { selectPortfolios } from '../../store/slices/portfoliosSlice';
+import { selectPortfolios, selectPortfolioSummaries } from '../../store/slices/portfoliosSlice';
 import { selectPositions } from '../../store/slices/positionsSlice';
 import { formatCurrency } from '../../utils/currencyHelpers';
 import { formatNumber } from '../../utils/numberFormat';
 import { getSpreadId } from '../../utils/spreadHelpers';
-import type { Position, PortfolioName, CashSecuredPut, CreditSpread, IronCondor } from '../../types';
+import type {
+  Position,
+  PortfolioName,
+  CashSecuredPut,
+  CreditSpread,
+  IronCondor,
+} from '../../types';
 
 interface OnderpandPosition {
   id: string;
@@ -31,6 +37,7 @@ interface PortfolioCashAnalysis {
 export const CashOnderpandAnalysis: React.FC = () => {
   const portfolios = useAppSelector(selectPortfolios);
   const positions = useAppSelector(selectPositions);
+  const summaries = useAppSelector(selectPortfolioSummaries);
 
   const calculateDaysToExpiration = (expiration: string): number => {
     const today = new Date();
@@ -62,11 +69,14 @@ export const CashOnderpandAnalysis: React.FC = () => {
     const portfolioMap = new Map<PortfolioName, PortfolioCashAnalysis>();
 
     // Initialize portfolios with options support
-    portfolios.forEach(portfolio => {
+    portfolios.forEach((portfolio) => {
       if (portfolio.hasOptions) {
+        // Real available cash for the portfolio (derived in selectPortfolioSummaries),
+        // not a hardcoded placeholder. freeCash = totalCash - reserved collateral.
+        const totalCash = summaries.find((s) => s.portfolio === portfolio.name)?.cash ?? 0;
         portfolioMap.set(portfolio.name, {
           portfolio: portfolio.name,
-          totalCash: 10000, // TODO: Get from portfolio data
+          totalCash,
           totalOnderpand: 0,
           freeCash: 0,
           positions: [],
@@ -79,9 +89,11 @@ export const CashOnderpandAnalysis: React.FC = () => {
     // Track processed spreads to avoid double-counting
     const processedSpreads = new Set<string>();
 
-    positions.forEach(position => {
+    positions.forEach((position) => {
       // Skip non-option positions
-      if (!['cash-secured-put', 'credit-spread', 'iron-condor', 'put', 'call'].includes(position.type)) {
+      if (
+        !['cash-secured-put', 'credit-spread', 'iron-condor', 'put', 'call'].includes(position.type)
+      ) {
         return;
       }
 
@@ -154,12 +166,12 @@ export const CashOnderpandAnalysis: React.FC = () => {
     });
 
     // Calculate free cash
-    portfolioMap.forEach(analysis => {
+    portfolioMap.forEach((analysis) => {
       analysis.freeCash = analysis.totalCash - analysis.totalOnderpand;
     });
 
     return Array.from(portfolioMap.values());
-  }, [portfolios, positions]);
+  }, [portfolios, positions, summaries]);
 
   const totalAnalysis = useMemo(() => {
     const total = {
@@ -169,7 +181,7 @@ export const CashOnderpandAnalysis: React.FC = () => {
       positionsCount: 0,
     };
 
-    cashAnalysis.forEach(portfolio => {
+    cashAnalysis.forEach((portfolio) => {
       total.totalCash += portfolio.totalCash;
       total.totalOnderpand += portfolio.totalOnderpand;
       total.freeCash += portfolio.freeCash;
@@ -183,7 +195,8 @@ export const CashOnderpandAnalysis: React.FC = () => {
     return (
       <div className="bg-caution-50 dark:bg-caution-600/15 border border-caution-500/30 dark:border-caution-500/30 rounded-lg p-4">
         <p className="text-sm text-caution-600 dark:text-amber-200">
-          Geen portfolios met opties gevonden. Deze analyse is alleen beschikbaar voor portfolios die opties ondersteunen.
+          Geen portfolios met opties gevonden. Deze analyse is alleen beschikbaar voor portfolios
+          die opties ondersteunen.
         </p>
       </div>
     );
@@ -193,86 +206,87 @@ export const CashOnderpandAnalysis: React.FC = () => {
     <div className="space-y-6">
       {/* Total Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
           <div className="flex items-center gap-2 mb-2">
             <DollarSign className="w-5 h-5 text-primary-700 dark:text-primary-300" />
-            <p className="text-sm text-gray-600 dark:text-gray-400">Totale Cash</p>
+            <p className="text-sm text-ink-600 dark:text-ink-400">Totale Cash</p>
           </div>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white">
+          <p className="text-2xl font-bold text-ink-900 dark:text-white">
             {formatCurrency(totalAnalysis.totalCash, portfolios)}
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
             Alle portfolios met opties
           </p>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
           <div className="flex items-center gap-2 mb-2">
             <Shield className="w-5 h-5 text-ink-600 dark:text-ink-300" />
-            <p className="text-sm text-gray-600 dark:text-gray-400">Totaal Onderpand</p>
+            <p className="text-sm text-ink-600 dark:text-ink-400">Totaal Onderpand</p>
           </div>
           <p className="text-2xl font-bold text-ink-600 dark:text-ink-300">
             {formatCurrency(totalAnalysis.totalOnderpand, portfolios)}
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
             {totalAnalysis.positionsCount} posities
           </p>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
           <div className="flex items-center gap-2 mb-2">
             <TrendingUp className="w-5 h-5 text-positive-600 dark:text-positive-500" />
-            <p className="text-sm text-gray-600 dark:text-gray-400">Vrije cash</p>
+            <p className="text-sm text-ink-600 dark:text-ink-400">Vrije cash</p>
           </div>
           <p className="text-2xl font-bold text-positive-600 dark:text-positive-500">
             {formatCurrency(totalAnalysis.freeCash, portfolios)}
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
             Beschikbaar voor nieuwe posities
           </p>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
           <div className="flex items-center gap-2 mb-2">
             <Calendar className="w-5 h-5 text-caution-600 dark:text-caution-500" />
-            <p className="text-sm text-gray-600 dark:text-gray-400">Onderpand %</p>
+            <p className="text-sm text-ink-600 dark:text-ink-400">Onderpand %</p>
           </div>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white">
+          <p className="text-2xl font-bold text-ink-900 dark:text-white">
             {totalAnalysis.totalCash > 0
               ? formatNumber((totalAnalysis.totalOnderpand / totalAnalysis.totalCash) * 100, 1)
-              : 0}%
+              : 0}
+            %
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            Van totale cash
-          </p>
+          <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">Van totale cash</p>
         </div>
       </div>
 
       {/* Per Portfolio Analysis */}
-      {cashAnalysis.map(portfolio => (
+      {cashAnalysis.map((portfolio) => (
         <div
           key={portfolio.portfolio}
-          className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
+          className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 overflow-hidden"
         >
           {/* Portfolio Header */}
-          <div className="bg-gradient-to-r from-primary-50 to-primary-50 dark:from-gray-700 dark:to-gray-750 p-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="bg-gradient-to-r from-primary-50 to-primary-50 dark:from-trading-dark-600 dark:to-trading-dark-700 p-4 border-b border-surface-line dark:border-trading-dark-600">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white">{portfolio.portfolio}</h3>
+              <h3 className="text-lg font-bold text-ink-900 dark:text-white">
+                {portfolio.portfolio}
+              </h3>
               <div className="flex gap-4 text-sm">
                 <div className="text-right">
-                  <p className="text-gray-600 dark:text-gray-400">Cash</p>
-                  <p className="font-bold text-gray-900 dark:text-white">
+                  <p className="text-ink-600 dark:text-ink-400">Cash</p>
+                  <p className="font-bold text-ink-900 dark:text-white">
                     {formatCurrency(portfolio.totalCash, portfolios)}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-gray-600 dark:text-gray-400">Onderpand</p>
+                  <p className="text-ink-600 dark:text-ink-400">Onderpand</p>
                   <p className="font-bold text-ink-600 dark:text-ink-300">
                     {formatCurrency(portfolio.totalOnderpand, portfolios)}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-gray-600 dark:text-gray-400">Vrij</p>
+                  <p className="text-ink-600 dark:text-ink-400">Vrij</p>
                   <p className="font-bold text-positive-600 dark:text-positive-500">
                     {formatCurrency(portfolio.freeCash, portfolios)}
                   </p>
@@ -285,77 +299,90 @@ export const CashOnderpandAnalysis: React.FC = () => {
           {portfolio.positions.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 dark:bg-gray-700">
+                <thead className="bg-surface dark:bg-trading-dark-700">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
                       Ticker
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
                       Type
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-right text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
                       Onderpand
                     </th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-center text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
                       Expiratie
                     </th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-center text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
                       DTE
                     </th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-center text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
                       Delta
                     </th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-center text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
                       Actie
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {portfolio.positions.map(position => (
-                    <tr key={position.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                <tbody className="divide-y divide-surface-line dark:divide-trading-dark-600">
+                  {portfolio.positions.map((position) => (
+                    <tr key={position.id} className="hover:bg-surface dark:hover:bg-trading-dark-700/50">
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <span className="font-medium text-gray-900 dark:text-white">
+                        <span className="font-medium text-ink-900 dark:text-white">
                           {position.ticker}
                         </span>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <span className={`px-2 py-1 text-xs rounded-full ${
-                          position.type === 'cash-secured-put'
-                            ? 'bg-surface-muted dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300'
+                        <span
+                          className={`px-2 py-1 text-xs rounded-full ${
+                            position.type === 'cash-secured-put'
+                              ? 'bg-surface-muted dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300'
+                              : position.type === 'credit-spread'
+                                ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                                : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400'
+                          }`}
+                        >
+                          {position.type === 'cash-secured-put'
+                            ? 'Cash Secured Put'
                             : position.type === 'credit-spread'
-                            ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                            : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400'
-                        }`}>
-                          {position.type === 'cash-secured-put' ? 'Cash Secured Put' : position.type === 'credit-spread' ? 'Spread' : 'IC'}
+                              ? 'Spread'
+                              : 'IC'}
                         </span>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-right">
-                        <span className="font-medium text-gray-900 dark:text-white">
+                        <span className="font-medium text-ink-900 dark:text-white">
                           {formatCurrency(position.onderpand, portfolios)}
                         </span>
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-center text-sm text-gray-600 dark:text-gray-400">
-                        {new Date(position.expiration).toLocaleDateString('nl-NL', { month: 'short', day: 'numeric' })}
+                      <td className="px-4 py-3 whitespace-nowrap text-center text-sm text-ink-600 dark:text-ink-400">
+                        {new Date(position.expiration).toLocaleDateString('nl-NL', {
+                          month: 'short',
+                          day: 'numeric',
+                        })}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-center">
-                        <span className={`font-medium ${
-                          position.daysToExpiration < 7
-                            ? 'text-caution-600 dark:text-caution-500'
-                            : position.daysToExpiration < 14
-                            ? 'text-caution-600 dark:text-caution-500'
-                            : 'text-gray-600 dark:text-gray-400'
-                        }`}>
+                        <span
+                          className={`font-medium ${
+                            position.daysToExpiration < 7
+                              ? 'text-caution-600 dark:text-caution-500'
+                              : position.daysToExpiration < 14
+                                ? 'text-caution-600 dark:text-caution-500'
+                                : 'text-ink-600 dark:text-ink-400'
+                          }`}
+                        >
                           {position.daysToExpiration}d
                         </span>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-center">
-                        <span className={`font-medium ${
-                          (position.delta || 0) > 0.5
-                            ? 'text-negative-600 dark:text-negative-500'
-                            : (position.delta || 0) > 0.3
-                            ? 'text-caution-600 dark:text-caution-500'
-                            : 'text-positive-600 dark:text-positive-500'
-                        }`}>
+                        <span
+                          className={`font-medium ${
+                            (position.delta || 0) > 0.5
+                              ? 'text-negative-600 dark:text-negative-500'
+                              : (position.delta || 0) > 0.3
+                                ? 'text-caution-600 dark:text-caution-500'
+                                : 'text-positive-600 dark:text-positive-500'
+                          }`}
+                        >
                           {position.delta ? formatNumber(position.delta, 2) : 'N/A'}
                         </span>
                       </td>
@@ -368,7 +395,9 @@ export const CashOnderpandAnalysis: React.FC = () => {
                             </span>
                           </div>
                         ) : (
-                          <span className="text-xs text-gray-500 dark:text-gray-400">Aanhouden</span>
+                          <span className="text-xs text-ink-500 dark:text-ink-400">
+                            Aanhouden
+                          </span>
                         )}
                       </td>
                     </tr>
@@ -377,7 +406,7 @@ export const CashOnderpandAnalysis: React.FC = () => {
               </table>
             </div>
           ) : (
-            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+            <div className="p-8 text-center text-ink-500 dark:text-ink-400">
               Geen posities met onderpand vereisten
             </div>
           )}
@@ -393,10 +422,22 @@ export const CashOnderpandAnalysis: React.FC = () => {
               Hoe gebruik je deze analyse?
             </h4>
             <ul className="text-sm text-primary-700 dark:text-primary-200 space-y-1">
-              <li>• <strong>Vrije cash</strong>: Dit is het bedrag dat je kunt gebruiken voor nieuwe Cash Secured Puts of spreads</li>
-              <li>• <strong>DTE (Days To Expiration)</strong>: Oranje (&lt;7 dagen) = expireert binnenkort, overweeg vroeg sluiten als winstgevend</li>
-              <li>• <strong>Delta</strong>: Hoe dichtbij de strike price. Groen (&lt;0.3) = veilig, Oranje (0.3-0.5) = let op, Rood (&gt;0.5) = ITM risk</li>
-              <li>• <strong>Actie</strong>: "Overweeg sluiten" = positie is &lt;7 DTE én winstgevend, onderpand kan vrijkomen voor nieuwe trades</li>
+              <li>
+                • <strong>Vrije cash</strong>: Dit is het bedrag dat je kunt gebruiken voor nieuwe
+                Cash Secured Puts of spreads
+              </li>
+              <li>
+                • <strong>DTE (Days To Expiration)</strong>: Oranje (&lt;7 dagen) = expireert
+                binnenkort, overweeg vroeg sluiten als winstgevend
+              </li>
+              <li>
+                • <strong>Delta</strong>: Hoe dichtbij de strike price. Groen (&lt;0.3) = veilig,
+                Oranje (0.3-0.5) = let op, Rood (&gt;0.5) = ITM risk
+              </li>
+              <li>
+                • <strong>Actie</strong>: "Overweeg sluiten" = positie is &lt;7 DTE én winstgevend,
+                onderpand kan vrijkomen voor nieuwe trades
+              </li>
             </ul>
           </div>
         </div>

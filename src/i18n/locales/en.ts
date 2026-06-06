@@ -14,6 +14,40 @@ export const en = {
     reset: 'Reset',
   },
 
+  // AI Assistant
+  ai: {
+    title: 'Assistant',
+    emptyState: 'Ask me anything about PayDay or your portfolio.',
+    inputPlaceholder: 'Type a message…',
+    send: 'Send',
+    stop: 'Stop',
+    settingsTab: 'AI Assistant',
+    settingsHeading: 'AI Assistant',
+    provider: 'Provider',
+    model: 'Model',
+    apiKey: 'API key',
+    apiKeySet: '✓ Set',
+    apiKeyHelp: 'Your key is stored in this browser only. Fine for personal use, not for public production.',
+    saved: 'Saved',
+    noKeyError: 'No API key set. Open Settings → AI Assistant to add one.',
+    providerUnavailable: 'This provider is not available yet.',
+    attach: 'Add screenshot',
+    examples: [
+      'I want to add a broker — I will upload a screenshot of it.',
+      'Explain what a covered call is.',
+      'What is the difference between a call and a put?',
+      'How does the wheel strategy work?',
+    ],
+    proposalTitle: 'Proposed changes — confirm to create:',
+    confirmCreate: 'Create',
+    created: 'Created:',
+    cancelled: 'Cancelled.',
+    newChat: 'New conversation',
+    errorOverloaded: 'The AI service is busy right now. Please try again in a moment.',
+    errorRateLimit: 'Rate limit reached. Please wait a moment and try again.',
+    errorAuth: 'Invalid API key. Check Settings → AI Assistant.',
+  },
+
   // Login
   login: {
     title: 'Welcome back',

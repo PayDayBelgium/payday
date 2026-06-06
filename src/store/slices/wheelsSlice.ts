@@ -26,10 +26,13 @@ const wheelsSlice = createSlice({
     removeWheel: (state, action: PayloadAction<string>) => {
       state.wheels = state.wheels.filter((w) => w.id !== action.payload);
     },
-    updateWheelPhase: (state, action: PayloadAction<{
-      id: string;
-      phase: 'csp' | 'stock' | 'completed';
-    }>) => {
+    updateWheelPhase: (
+      state,
+      action: PayloadAction<{
+        id: string;
+        phase: 'csp' | 'stock' | 'completed';
+      }>
+    ) => {
       const wheel = state.wheels.find((w) => w.id === action.payload.id);
       if (wheel) {
         wheel.phase = action.payload.phase;
@@ -47,11 +50,14 @@ const wheelsSlice = createSlice({
         wheel.updatedAt = new Date().toISOString();
       }
     },
-    updateWheelPremium: (state, action: PayloadAction<{
-      id: string;
-      premiumCollected: number;
-      realizedPnL: number;
-    }>) => {
+    updateWheelPremium: (
+      state,
+      action: PayloadAction<{
+        id: string;
+        premiumCollected: number;
+        realizedPnL: number;
+      }>
+    ) => {
       const wheel = state.wheels.find((w) => w.id === action.payload.id);
       if (wheel) {
         wheel.totalPremiumCollected += action.payload.premiumCollected;
@@ -62,7 +68,10 @@ const wheelsSlice = createSlice({
     loadWheels: (state, action: PayloadAction<WheelCampaign[]>) => {
       state.wheels = action.payload;
     },
-    updateWheelPortfolioName: (state, action: PayloadAction<{ oldName: string; newName: string }>) => {
+    updateWheelPortfolioName: (
+      state,
+      action: PayloadAction<{ oldName: string; newName: string }>
+    ) => {
       const { oldName, newName } = action.payload;
       // Update portfolio name in all wheels
       state.wheels = state.wheels.map((wheel) =>
@@ -91,9 +100,8 @@ export const selectWheelsByPortfolio = createSelector(
   (wheels, portfolioName) => wheels.filter((w) => w.portfolio === portfolioName)
 );
 
-export const selectActiveWheels = createSelector(
-  [selectAllWheels],
-  (wheels) => wheels.filter((w) => w.status === 'active')
+export const selectActiveWheels = createSelector([selectAllWheels], (wheels) =>
+  wheels.filter((w) => w.status === 'active')
 );
 
 export const selectWheelById = createSelector(

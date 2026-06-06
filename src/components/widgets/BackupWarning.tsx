@@ -51,7 +51,8 @@ export const BackupWarning: React.FC = () => {
               Nog geen backup gemaakt
             </h3>
             <p className="text-xs text-primary-700 dark:text-primary-300 mt-1">
-              Het is aan te raden om regelmatig een backup van je data te maken. Klik op je profielicoon rechtsboven om je eerste backup te maken.
+              Het is aan te raden om regelmatig een backup van je data te maken. Klik op je
+              profielicoon rechtsboven om je eerste backup te maken.
             </p>
           </div>
         </div>
@@ -70,7 +71,8 @@ export const BackupWarning: React.FC = () => {
               Backup Reminder
             </h3>
             <p className="text-xs text-caution-600 dark:text-caution-500 mt-1">
-              Your last backup was {daysSinceBackup} days ago. Consider creating a new backup to ensure your data is safe.
+              Your last backup was {daysSinceBackup} days ago. Consider creating a new backup to
+              ensure your data is safe.
             </p>
           </div>
         </div>
@@ -89,7 +91,8 @@ export const BackupWarning: React.FC = () => {
               Backup Required!
             </h3>
             <p className="text-xs text-negative-700 dark:text-negative-500 mt-1">
-              Your last backup was {daysSinceBackup} days ago. Create a backup now to protect your trading data.
+              Your last backup was {daysSinceBackup} days ago. Create a backup now to protect your
+              trading data.
             </p>
           </div>
         </div>

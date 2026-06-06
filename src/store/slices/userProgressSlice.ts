@@ -1,7 +1,15 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '../index';
-import type { UserLevel, UserProgress, Achievement, CreditTransaction, LevelConfig, FeatureId, ModuleId } from '../../types';
+import type {
+  UserLevel,
+  UserProgress,
+  Achievement,
+  CreditTransaction,
+  LevelConfig,
+  FeatureId,
+  ModuleId,
+} from '../../types';
 
 // Level configurations with ski slope analogy
 // Note: priceEUR is set to 0 for all levels - unlock only via credits
@@ -13,8 +21,16 @@ export const LEVEL_CONFIGS: LevelConfig[] = [
     slopeName: 'Groene Piste',
     slopeColor: 'green',
     icon: '🟢',
-    description: 'Start je beleggingsreis met aandelen, ETFs en dividenden. Leer de basisprincipes van portfoliobeheer.',
-    features: ['broker_setup', 'stocks', 'etfs', 'dividends', 'portfolio_tracking', 'basic_analytics'],
+    description:
+      'Start je beleggingsreis met aandelen, ETFs en dividenden. Leer de basisprincipes van portfoliobeheer.',
+    features: [
+      'broker_setup',
+      'stocks',
+      'etfs',
+      'dividends',
+      'portfolio_tracking',
+      'basic_analytics',
+    ],
     creditsRequired: 0,
     priceEUR: 0,
   },
@@ -24,8 +40,15 @@ export const LEVEL_CONFIGS: LevelConfig[] = [
     slopeName: 'Blauwe Piste',
     slopeColor: 'blue',
     icon: '🔵',
-    description: 'Ontdek inkomensstrategieën met covered calls, cash secured puts en de Wheel strategie.',
-    features: ['covered_calls', 'cash_secured_puts', 'wheel_strategy', 'options_basics', 'premium_tracking'],
+    description:
+      'Ontdek inkomensstrategieën met covered calls, cash secured puts en de Wheel strategie.',
+    features: [
+      'covered_calls',
+      'cash_secured_puts',
+      'wheel_strategy',
+      'options_basics',
+      'premium_tracking',
+    ],
     creditsRequired: 0,
     priceEUR: 0,
   },
@@ -46,8 +69,16 @@ export const LEVEL_CONFIGS: LevelConfig[] = [
     slopeName: 'Zwarte Piste',
     slopeColor: 'black',
     icon: '⚫',
-    description: 'Toegang tot alle strategieën inclusief spreads, iron condors, KaChing en AI-assistent.',
-    features: ['spreads', 'iron_condors', 'kaching', 'complex_strategies', 'paper_trading', 'ai_assistant'],
+    description:
+      'Toegang tot alle strategieën inclusief spreads, iron condors, KaChing en AI-assistent.',
+    features: [
+      'spreads',
+      'iron_condors',
+      'kaching',
+      'complex_strategies',
+      'paper_trading',
+      'ai_assistant',
+    ],
     creditsRequired: 0,
     priceEUR: 0,
   },
@@ -57,7 +88,8 @@ export const LEVEL_CONFIGS: LevelConfig[] = [
     slopeName: 'Off-piste',
     slopeColor: 'orange',
     icon: '🟠',
-    description: 'Verlaat de geprepareerde piste: kwantitatieve modellen, edge-detectie en data-gedreven trading. Ontgrendel via de community.',
+    description:
+      'Verlaat de geprepareerde piste: kwantitatieve modellen, edge-detectie en data-gedreven trading. Ontgrendel via de community.',
     features: ['quant_trading'],
     creditsRequired: 0,
     priceEUR: 0,
@@ -69,9 +101,9 @@ export const getFeaturesForLevel = (level: UserLevel): FeatureId[] => {
   const levelOrder: UserLevel[] = ['beginner', 'medior', 'senior', 'expert', 'offpiste'];
   const levelIndex = levelOrder.indexOf(level);
 
-  return LEVEL_CONFIGS
-    .filter((_, index) => index <= levelIndex)
-    .flatMap(config => config.features);
+  return LEVEL_CONFIGS.filter((_, index) => index <= levelIndex).flatMap(
+    (config) => config.features
+  );
 };
 
 // Check if a feature is available for a user
@@ -86,7 +118,7 @@ export const isFeatureAvailable = (feature: FeatureId, unlockedLevels: UserLevel
 
 // Get the level configuration
 export const getLevelConfig = (level: UserLevel): LevelConfig => {
-  return LEVEL_CONFIGS.find(config => config.level === level) || LEVEL_CONFIGS[0];
+  return LEVEL_CONFIGS.find((config) => config.level === level) || LEVEL_CONFIGS[0];
 };
 
 interface UserProgressState {
@@ -132,7 +164,10 @@ const userProgressSlice = createSlice({
     },
 
     // Spend credits (e.g., to unlock a level)
-    spendCredits: (state, action: PayloadAction<{ amount: number; reason: string; levelId?: UserLevel }>) => {
+    spendCredits: (
+      state,
+      action: PayloadAction<{ amount: number; reason: string; levelId?: UserLevel }>
+    ) => {
       const { amount, reason, levelId } = action.payload;
       if (state.progress.credits >= amount) {
         state.progress.credits -= amount;
@@ -202,7 +237,10 @@ const userProgressSlice = createSlice({
     },
 
     // Complete a lesson
-    completeLesson: (state, action: PayloadAction<{ lessonId: string; creditsAwarded: number }>) => {
+    completeLesson: (
+      state,
+      action: PayloadAction<{ lessonId: string; creditsAwarded: number }>
+    ) => {
       const { lessonId, creditsAwarded } = action.payload;
       if (!state.progress.completedLessons.includes(lessonId)) {
         state.progress.completedLessons.push(lessonId);
@@ -222,7 +260,7 @@ const userProgressSlice = createSlice({
     // Add an achievement
     addAchievement: (state, action: PayloadAction<Achievement>) => {
       const achievement = action.payload;
-      if (!state.progress.achievements.find(a => a.id === achievement.id)) {
+      if (!state.progress.achievements.find((a) => a.id === achievement.id)) {
         state.progress.achievements.push(achievement);
         state.progress.credits += achievement.creditsAwarded;
 
@@ -274,15 +312,20 @@ export const {
 export const selectUserProgress = (state: RootState) => state.userProgress.progress;
 export const selectCurrentLevel = (state: RootState) => state.userProgress.progress.currentLevel;
 export const selectCredits = (state: RootState) => state.userProgress.progress.credits;
-export const selectUnlockedLevels = (state: RootState) => state.userProgress.progress.unlockedLevels;
+export const selectUnlockedLevels = (state: RootState) =>
+  state.userProgress.progress.unlockedLevels;
 export const selectCreditHistory = (state: RootState) => state.userProgress.creditHistory;
-export const selectPaperTradingEnabled = (state: RootState) => state.userProgress.progress.paperTradingEnabled;
-export const selectCompletedLessons = (state: RootState) => state.userProgress.progress.completedLessons;
+export const selectPaperTradingEnabled = (state: RootState) =>
+  state.userProgress.progress.paperTradingEnabled;
+export const selectCompletedLessons = (state: RootState) =>
+  state.userProgress.progress.completedLessons;
 export const selectAchievements = (state: RootState) => state.userProgress.progress.achievements;
 export const selectActivatedModules = (state: RootState): ModuleId[] =>
   state.userProgress.progress.activatedModules ?? [];
-export const selectIsModuleActivated = (moduleId: ModuleId) => (state: RootState): boolean =>
-  (state.userProgress.progress.activatedModules ?? []).includes(moduleId);
+export const selectIsModuleActivated =
+  (moduleId: ModuleId) =>
+  (state: RootState): boolean =>
+    (state.userProgress.progress.activatedModules ?? []).includes(moduleId);
 
 // Computed selectors
 export const selectCanAccessLevel = (level: UserLevel) => (state: RootState) =>

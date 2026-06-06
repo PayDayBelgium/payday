@@ -61,7 +61,7 @@ export const parseBackupFile = async (file: File): Promise<BackupData> => {
         }
 
         resolve(backup);
-      } catch (error) {
+      } catch {
         reject(new Error('Failed to parse backup file'));
       }
     };

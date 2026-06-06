@@ -68,16 +68,13 @@ export function isKaChingEligible(option: PutOption): boolean {
 /**
  * Detect all campaigns in a portfolio
  */
-export function detectCampaigns(
-  positions: Position[],
-  closedPositions: Position[]
-): Campaign[] {
+export function detectCampaigns(positions: Position[], closedPositions: Position[]): Campaign[] {
   const campaigns: Campaign[] = [];
-  const openPositions = positions.filter(p => p.status === 'open');
+  const openPositions = positions.filter((p) => p.status === 'open');
 
   // Group positions by ticker
   const positionsByTicker = new Map<string, Position[]>();
-  openPositions.forEach(p => {
+  openPositions.forEach((p) => {
     const ticker = p.ticker.toUpperCase();
     if (!positionsByTicker.has(ticker)) {
       positionsByTicker.set(ticker, []);
@@ -87,7 +84,7 @@ export function detectCampaigns(
 
   // Also group closed positions by ticker for history
   const closedByTicker = new Map<string, Position[]>();
-  closedPositions.forEach(p => {
+  closedPositions.forEach((p) => {
     const ticker = p.ticker.toUpperCase();
     if (!closedByTicker.has(ticker)) {
       closedByTicker.set(ticker, []);
@@ -102,11 +99,11 @@ export function detectCampaigns(
 
     // 1. Check for Covered Call campaigns (stock + short calls)
     // Exclude positions that are already linked to a wheel
-    const stocks = tickerPositions.filter(p =>
-      (p.type === 'stock' || p.type === 'etf') && !p.wheelId
+    const stocks = tickerPositions.filter(
+      (p) => (p.type === 'stock' || p.type === 'etf') && !p.wheelId
     ) as StockPosition[];
-    const shortCalls = tickerPositions.filter(p =>
-      p.type === 'call' && (p as CallOption).action === 'sell' && !p.wheelId
+    const shortCalls = tickerPositions.filter(
+      (p) => p.type === 'call' && (p as CallOption).action === 'sell' && !p.wheelId
     ) as CallOption[];
 
     const capacity = computeCoveredCallCapacity(stocks, shortCalls);
@@ -125,11 +122,11 @@ export function detectCampaigns(
 
     // 2. Check for PMCC campaigns (LEAPS call + short calls)
     // Exclude positions that are already linked to a wheel
-    const longCalls = tickerPositions.filter(p =>
-      p.type === 'call' && (p as CallOption).action === 'buy' && !p.wheelId
+    const longCalls = tickerPositions.filter(
+      (p) => p.type === 'call' && (p as CallOption).action === 'buy' && !p.wheelId
     ) as CallOption[];
 
-    longCalls.forEach(longCall => {
+    longCalls.forEach((longCall) => {
       if (isLEAPS(longCall)) {
         const campaign = createPMCCCampaign(
           longCall,
@@ -146,14 +143,14 @@ export function detectCampaigns(
 
     // 3. Check for KaChing campaigns (protective put + short puts)
     // Exclude positions that are already linked to a wheel
-    const longPuts = tickerPositions.filter(p =>
-      p.type === 'put' && (p as PutOption).action === 'buy' && !p.wheelId
+    const longPuts = tickerPositions.filter(
+      (p) => p.type === 'put' && (p as PutOption).action === 'buy' && !p.wheelId
     ) as PutOption[];
-    const shortPuts = tickerPositions.filter(p =>
-      p.type === 'put' && (p as PutOption).action === 'sell' && !p.wheelId
+    const shortPuts = tickerPositions.filter(
+      (p) => p.type === 'put' && (p as PutOption).action === 'sell' && !p.wheelId
     ) as PutOption[];
 
-    longPuts.forEach(longPut => {
+    longPuts.forEach((longPut) => {
       if (isKaChingEligible(longPut)) {
         const campaign = createKaChingCampaign(
           longPut,
@@ -188,16 +185,16 @@ function createCoveredCallCampaign(
   const totalShares = capacity.totalShares;
   const contractsNeeded = capacity.maxContracts;
   const totalCostBasis = stocks.reduce((sum, s) => sum + s.costBasis, 0);
-  const lotIds = new Set(stocks.map(s => s.id));
+  const lotIds = new Set(stocks.map((s) => s.id));
 
   // Include calls linked to ANY lot of this ticker, or calls with no underlyingId
-  const relevantShortCalls = shortCalls.filter(c =>
+  const relevantShortCalls = shortCalls.filter((c) =>
     c.underlyingId ? lotIds.has(c.underlyingId) : true
   );
   const totalCoveredContracts = relevantShortCalls.reduce((sum, c) => sum + c.contracts, 0);
 
   // Get historical covered calls for all lots of this ticker
-  const historicalCalls = closedPositions.filter(p => {
+  const historicalCalls = closedPositions.filter((p) => {
     if (p.type !== 'call') return false;
     const call = p as CallOption;
     if (call.action !== 'sell' || p.status !== 'closed') return false;
@@ -206,8 +203,14 @@ function createCoveredCallCampaign(
   }) as CallOption[];
 
   // Calculate premiums
-  const activePremium = relevantShortCalls.reduce((sum, c) => sum + (c.premium * c.contracts * 100), 0);
-  const historicalPremium = historicalCalls.reduce((sum, c) => sum + (c.premium * c.contracts * 100), 0);
+  const activePremium = relevantShortCalls.reduce(
+    (sum, c) => sum + c.premium * c.contracts * 100,
+    0
+  );
+  const historicalPremium = historicalCalls.reduce(
+    (sum, c) => sum + c.premium * c.contracts * 100,
+    0
+  );
   const historicalPnL = historicalCalls.reduce((sum, c) => sum + ((c as any).realizedPnL || 0), 0);
 
   const totalPremiumCollected = activePremium + historicalPremium;
@@ -231,12 +234,12 @@ function createCoveredCallCampaign(
       adjustedCostBasis,
       totalPremiumCollected,
     },
-    activeOptions: relevantShortCalls.map(c => ({
+    activeOptions: relevantShortCalls.map((c) => ({
       position: c,
       status: 'open' as const,
       premiumCollected: c.premium * c.contracts * 100,
     })),
-    historicalOptions: historicalCalls.map(c => ({
+    historicalOptions: historicalCalls.map((c) => ({
       position: c,
       status: 'closed' as const,
       premiumCollected: c.premium * c.contracts * 100,
@@ -262,7 +265,7 @@ function createPMCCCampaign(
   // Filter short calls that belong to this LEAPS position
   // - If underlyingId matches this LEAPS, include it
   // - If no underlyingId is set, include it based on strike/contracts (backwards compatibility)
-  const relevantShortCalls = shortCalls.filter(c => {
+  const relevantShortCalls = shortCalls.filter((c) => {
     if (c.underlyingId) {
       return c.underlyingId === leapsCall.id;
     }
@@ -272,7 +275,7 @@ function createPMCCCampaign(
   const totalCoveredContracts = relevantShortCalls.reduce((sum, c) => sum + c.contracts, 0);
 
   // Get historical covered calls for this LEAPS
-  const historicalCalls = closedPositions.filter(p => {
+  const historicalCalls = closedPositions.filter((p) => {
     if (p.type !== 'call') return false;
     const call = p as CallOption;
     if (call.action !== 'sell' || p.status !== 'closed') return false;
@@ -286,8 +289,14 @@ function createPMCCCampaign(
   }) as CallOption[];
 
   // Calculate premiums
-  const activePremium = relevantShortCalls.reduce((sum, c) => sum + (c.premium * c.contracts * 100), 0);
-  const historicalPremium = historicalCalls.reduce((sum, c) => sum + (c.premium * c.contracts * 100), 0);
+  const activePremium = relevantShortCalls.reduce(
+    (sum, c) => sum + c.premium * c.contracts * 100,
+    0
+  );
+  const historicalPremium = historicalCalls.reduce(
+    (sum, c) => sum + c.premium * c.contracts * 100,
+    0
+  );
   const historicalPnL = historicalCalls.reduce((sum, c) => sum + ((c as any).realizedPnL || 0), 0);
 
   const totalPremiumCollected = activePremium + historicalPremium;
@@ -311,12 +320,12 @@ function createPMCCCampaign(
       adjustedCostBasis,
       totalPremiumCollected,
     },
-    activeOptions: relevantShortCalls.map(c => ({
+    activeOptions: relevantShortCalls.map((c) => ({
       position: c,
       status: 'open' as const,
       premiumCollected: c.premium * c.contracts * 100,
     })),
-    historicalOptions: historicalCalls.map(c => ({
+    historicalOptions: historicalCalls.map((c) => ({
       position: c,
       status: 'closed' as const,
       premiumCollected: c.premium * c.contracts * 100,
@@ -342,7 +351,7 @@ function createKaChingCampaign(
   // Filter short puts that belong to this protective put position
   // - If underlyingId matches this protective put, include it
   // - If no underlyingId is set, include it based on strike/contracts (backwards compatibility)
-  const relevantShortPuts = shortPuts.filter(p => {
+  const relevantShortPuts = shortPuts.filter((p) => {
     if (p.underlyingId) {
       return p.underlyingId === protectivePut.id;
     }
@@ -352,7 +361,7 @@ function createKaChingCampaign(
   const totalCoveredContracts = relevantShortPuts.reduce((sum, p) => sum + p.contracts, 0);
 
   // Get historical short puts for this protective put
-  const historicalPuts = closedPositions.filter(p => {
+  const historicalPuts = closedPositions.filter((p) => {
     if (p.type !== 'put') return false;
     const put = p as PutOption;
     if (put.action !== 'sell' || p.status !== 'closed') return false;
@@ -366,8 +375,14 @@ function createKaChingCampaign(
   }) as PutOption[];
 
   // Calculate premiums
-  const activePremium = relevantShortPuts.reduce((sum, p) => sum + (p.premium * p.contracts * 100), 0);
-  const historicalPremium = historicalPuts.reduce((sum, p) => sum + (p.premium * p.contracts * 100), 0);
+  const activePremium = relevantShortPuts.reduce(
+    (sum, p) => sum + p.premium * p.contracts * 100,
+    0
+  );
+  const historicalPremium = historicalPuts.reduce(
+    (sum, p) => sum + p.premium * p.contracts * 100,
+    0
+  );
   const historicalPnL = historicalPuts.reduce((sum, p) => sum + ((p as any).realizedPnL || 0), 0);
 
   const totalPremiumCollected = activePremium + historicalPremium;
@@ -378,10 +393,6 @@ function createKaChingCampaign(
   const opportunityMessage = hasOpportunity
     ? `Je kunt nog ${protectivePut.contracts - totalCoveredContracts} put(s) schrijven deze week`
     : undefined;
-
-  // Calculate if we've recovered the cost of the protective put
-  const costRecovered = historicalPnL >= protectivePut.costBasis;
-  const profitAfterRecovery = costRecovered ? historicalPnL - protectivePut.costBasis : 0;
 
   return {
     id: `kaching-${protectivePut.id}`,
@@ -396,12 +407,12 @@ function createKaChingCampaign(
       adjustedCostBasis,
       totalPremiumCollected,
     },
-    activeOptions: relevantShortPuts.map(p => ({
+    activeOptions: relevantShortPuts.map((p) => ({
       position: p,
       status: 'open' as const,
       premiumCollected: p.premium * p.contracts * 100,
     })),
-    historicalOptions: historicalPuts.map(p => ({
+    historicalOptions: historicalPuts.map((p) => ({
       position: p,
       status: 'closed' as const,
       premiumCollected: p.premium * p.contracts * 100,
@@ -464,7 +475,7 @@ export function buildWheelCampaign(
   const ticker = wheel.ticker.toUpperCase();
 
   // Get all positions linked to this wheel
-  const wheelPositions = positions.filter(p => {
+  const wheelPositions = positions.filter((p) => {
     if (p.type === 'stock' || p.type === 'etf') {
       return (p as StockPosition).wheelId === wheel.id;
     }
@@ -477,7 +488,7 @@ export function buildWheelCampaign(
     return false;
   });
 
-  const closedWheelPositions = closedPositions.filter(p => {
+  const closedWheelPositions = closedPositions.filter((p) => {
     if (p.type === 'stock' || p.type === 'etf') {
       return (p as StockPosition).wheelId === wheel.id;
     }
@@ -491,36 +502,49 @@ export function buildWheelCampaign(
   });
 
   // Separate by type
-  const activePuts = wheelPositions.filter(p =>
-    p.type === 'put' && (p as PutOption).action === 'sell'
+  const activePuts = wheelPositions.filter(
+    (p) => p.type === 'put' && (p as PutOption).action === 'sell'
   ) as PutOption[];
 
-  const activeCalls = wheelPositions.filter(p =>
-    p.type === 'call' && (p as CallOption).action === 'sell'
+  const activeCalls = wheelPositions.filter(
+    (p) => p.type === 'call' && (p as CallOption).action === 'sell'
   ) as CallOption[];
 
-  const activeStock = wheelPositions.find(p =>
-    p.type === 'stock' || p.type === 'etf'
-  ) as StockPosition | undefined;
+  const activeStock = wheelPositions.find((p) => p.type === 'stock' || p.type === 'etf') as
+    | StockPosition
+    | undefined;
 
   // Historical options
-  const historicalPuts = closedWheelPositions.filter(p =>
-    p.type === 'put' && (p as PutOption).action === 'sell'
+  const historicalPuts = closedWheelPositions.filter(
+    (p) => p.type === 'put' && (p as PutOption).action === 'sell'
   ) as PutOption[];
 
-  const historicalCalls = closedWheelPositions.filter(p =>
-    p.type === 'call' && (p as CallOption).action === 'sell'
+  const historicalCalls = closedWheelPositions.filter(
+    (p) => p.type === 'call' && (p as CallOption).action === 'sell'
   ) as CallOption[];
 
   // Calculate premiums
-  const activePutPremium = activePuts.reduce((sum, p) => sum + (p.premium * p.contracts * 100), 0);
-  const activeCallPremium = activeCalls.reduce((sum, p) => sum + (p.premium * p.contracts * 100), 0);
-  const historicalPutPremium = historicalPuts.reduce((sum, p) => sum + (p.premium * p.contracts * 100), 0);
-  const historicalCallPremium = historicalCalls.reduce((sum, p) => sum + (p.premium * p.contracts * 100), 0);
-  const historicalPutPnL = historicalPuts.reduce((sum, p) => sum + ((p as any).realizedPnL || 0), 0);
-  const historicalCallPnL = historicalCalls.reduce((sum, p) => sum + ((p as any).realizedPnL || 0), 0);
+  const activePutPremium = activePuts.reduce((sum, p) => sum + p.premium * p.contracts * 100, 0);
+  const activeCallPremium = activeCalls.reduce((sum, p) => sum + p.premium * p.contracts * 100, 0);
+  const historicalPutPremium = historicalPuts.reduce(
+    (sum, p) => sum + p.premium * p.contracts * 100,
+    0
+  );
+  const historicalCallPremium = historicalCalls.reduce(
+    (sum, p) => sum + p.premium * p.contracts * 100,
+    0
+  );
+  const historicalPutPnL = historicalPuts.reduce(
+    (sum, p) => sum + ((p as any).realizedPnL || 0),
+    0
+  );
+  const historicalCallPnL = historicalCalls.reduce(
+    (sum, p) => sum + ((p as any).realizedPnL || 0),
+    0
+  );
 
-  const totalPremiumCollected = activePutPremium + activeCallPremium + historicalPutPremium + historicalCallPremium;
+  const totalPremiumCollected =
+    activePutPremium + activeCallPremium + historicalPutPremium + historicalCallPremium;
   const totalRealizedPnL = historicalPutPnL + historicalCallPnL;
 
   // Determine current phase and create appropriate root
@@ -545,14 +569,15 @@ export function buildWheelCampaign(
       totalPremiumCollected,
     };
 
-    activeOptions = activeCalls.map(c => ({
+    activeOptions = activeCalls.map((c) => ({
       position: c,
       status: 'open' as const,
       premiumCollected: c.premium * c.contracts * 100,
     }));
 
     // Coverage shows cycle phase for Wheel (no x/y since there's only 1 option at a time)
-    coverage = totalCoveredContracts === 0 ? 'Covered Call Fase - Te Starten' : 'Covered Call Fase - Actief';
+    coverage =
+      totalCoveredContracts === 0 ? 'Covered Call Fase - Te Starten' : 'Covered Call Fase - Actief';
     hasOpportunity = totalCoveredContracts < contractsNeeded;
     opportunityMessage = hasOpportunity
       ? `Je kunt nog ${contractsNeeded - totalCoveredContracts} covered call(s) schrijven`
@@ -574,7 +599,7 @@ export function buildWheelCampaign(
         totalPremiumCollected,
       };
 
-      activeOptions = activePuts.map(p => ({
+      activeOptions = activePuts.map((p) => ({
         position: p,
         status: 'open' as const,
         premiumCollected: p.premium * p.contracts * 100,
@@ -609,28 +634,30 @@ export function buildWheelCampaign(
     }
 
     // Coverage shows cycle phase for Wheel (no x/y since there's only 1 option at a time)
-    coverage = totalPutContracts === 0
-      ? 'Cash Secured Put Fase - Te Starten'
-      : 'Cash Secured Put Fase - Actief';
+    coverage =
+      totalPutContracts === 0
+        ? 'Cash Secured Put Fase - Te Starten'
+        : 'Cash Secured Put Fase - Actief';
     // Only show opportunity if we need more puts
     hasOpportunity = totalPutContracts < wheel.targetContracts;
-    opportunityMessage = totalPutContracts === 0
-      ? `Start met het schrijven van ${wheel.targetContracts} cash-secured put(s)`
-      : totalPutContracts < wheel.targetContracts
-      ? `Je kunt nog ${wheel.targetContracts - totalPutContracts} cash-secured put(s) schrijven`
-      : undefined;
+    opportunityMessage =
+      totalPutContracts === 0
+        ? `Start met het schrijven van ${wheel.targetContracts} cash-secured put(s)`
+        : totalPutContracts < wheel.targetContracts
+          ? `Je kunt nog ${wheel.targetContracts - totalPutContracts} cash-secured put(s) schrijven`
+          : undefined;
   }
 
   // Combine all historical options
   historicalOptions = [
-    ...historicalPuts.map(p => ({
+    ...historicalPuts.map((p) => ({
       position: p,
       status: 'closed' as const,
       premiumCollected: p.premium * p.contracts * 100,
       realizedPnL: (p as any).realizedPnL,
       closeDate: p.closeDate,
     })),
-    ...historicalCalls.map(c => ({
+    ...historicalCalls.map((c) => ({
       position: c,
       status: 'closed' as const,
       premiumCollected: c.premium * c.contracts * 100,
@@ -645,7 +672,8 @@ export function buildWheelCampaign(
     }
     // If closeDates are equal, sort by openDate (newest first)
     if (a.position.openDate && b.position.openDate) {
-      const openDateCompare = new Date(b.position.openDate).getTime() - new Date(a.position.openDate).getTime();
+      const openDateCompare =
+        new Date(b.position.openDate).getTime() - new Date(a.position.openDate).getTime();
       if (openDateCompare !== 0) return openDateCompare;
     }
     // If both dates are equal, sort by position ID (higher ID = newer)

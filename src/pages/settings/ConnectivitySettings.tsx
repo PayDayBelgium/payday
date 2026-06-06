@@ -1,5 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Wifi, WifiOff, Play, Square, Save, RotateCcw, Trash2, Send, TrendingUp, Radio } from 'lucide-react';
+import {
+  Wifi,
+  WifiOff,
+  Play,
+  Square,
+  Save,
+  RotateCcw,
+  Trash2,
+  Send,
+  TrendingUp,
+  Radio,
+} from 'lucide-react';
 import { useSelector } from 'react-redux';
 import {
   priceWebSocketService,
@@ -13,8 +24,16 @@ import { selectActivePositions } from '../../store/slices/positionsSlice';
 import type { Position } from '../../types';
 
 const DATA_MODE_OPTIONS: { value: DataMode; label: string; description: string }[] = [
-  { value: 'demo', label: 'Demo (Manual)', description: 'Prijzen handmatig aanpassen via simulator control' },
-  { value: 'demo-feed', label: 'Demo (Feed)', description: 'Gesimuleerde prijzen automatisch gegenereerd' },
+  {
+    value: 'demo',
+    label: 'Demo (Manual)',
+    description: 'Prijzen handmatig aanpassen via simulator control',
+  },
+  {
+    value: 'demo-feed',
+    label: 'Demo (Feed)',
+    description: 'Gesimuleerde prijzen automatisch gegenereerd',
+  },
   { value: 'live', label: 'Live (IB)', description: 'Real-time data van Interactive Brokers' },
 ];
 
@@ -26,10 +45,17 @@ export const ConnectivitySettings: React.FC = () => {
   const [status, setStatus] = useState<ConnectionStatus>(priceWebSocketService.getStatus());
   const [logs, setLogs] = useState<WebSocketLogEntry[]>([]);
   const [isSaving, setIsSaving] = useState(false);
-  const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [saveMessage, setSaveMessage] = useState<{
+    type: 'success' | 'error';
+    text: string;
+  } | null>(null);
   const [subscribeSymbol, setSubscribeSymbol] = useState('');
-  const [subscribedTickers, setSubscribedTickers] = useState<string[]>(priceWebSocketService.getSubscribedTickers());
-  const [subscribedOptions, setSubscribedOptions] = useState<OptionIdentifier[]>(priceWebSocketService.getSubscribedOptions());
+  const [subscribedTickers, setSubscribedTickers] = useState<string[]>(
+    priceWebSocketService.getSubscribedTickers()
+  );
+  const [subscribedOptions, setSubscribedOptions] = useState<OptionIdentifier[]>(
+    priceWebSocketService.getSubscribedOptions()
+  );
   const logContainerRef = useRef<HTMLDivElement>(null);
   const [autoScroll, setAutoScroll] = useState(true);
 
@@ -66,7 +92,7 @@ export const ConnectivitySettings: React.FC = () => {
   const handleConnect = async () => {
     try {
       await priceWebSocketService.connect();
-    } catch (error) {
+    } catch {
       // Error is logged by the service
     }
   };
@@ -82,7 +108,7 @@ export const ConnectivitySettings: React.FC = () => {
     try {
       priceWebSocketService.updateConfig(config);
       setSaveMessage({ type: 'success', text: 'Configuration saved!' });
-    } catch (error) {
+    } catch {
       setSaveMessage({ type: 'error', text: 'Failed to save configuration' });
     } finally {
       setIsSaving(false);
@@ -116,8 +142,8 @@ export const ConnectivitySettings: React.FC = () => {
     const symbols = subscribeSymbol
       .toUpperCase()
       .split(',')
-      .map(s => s.trim())
-      .filter(s => s.length > 0);
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
 
     if (symbols.length > 0) {
       priceWebSocketService.subscribe('tickers', symbols);
@@ -156,7 +182,7 @@ export const ConnectivitySettings: React.FC = () => {
   };
 
   const handleSubscribeAllTickers = () => {
-    const symbols = tickers.map(t => t.symbol);
+    const symbols = tickers.map((t) => t.symbol);
     if (symbols.length > 0) {
       priceWebSocketService.subscribe('tickers', symbols);
       setSubscribedTickers(priceWebSocketService.getSubscribedTickers());
@@ -172,7 +198,7 @@ export const ConnectivitySettings: React.FC = () => {
       case 'error':
         return 'text-negative-600';
       default:
-        return 'text-gray-500';
+        return 'text-ink-500';
     }
   };
 
@@ -185,7 +211,7 @@ export const ConnectivitySettings: React.FC = () => {
       case 'error':
         return 'bg-negative-500';
       default:
-        return 'bg-gray-500';
+        return 'bg-ink-400';
     }
   };
 
@@ -196,9 +222,9 @@ export const ConnectivitySettings: React.FC = () => {
       case 'outgoing':
         return 'text-primary-500';
       case 'system':
-        return entry.type === 'error' ? 'text-negative-500' : 'text-gray-400';
+        return entry.type === 'error' ? 'text-negative-500' : 'text-ink-400';
       default:
-        return 'text-gray-400';
+        return 'text-ink-400';
     }
   };
 
@@ -217,17 +243,17 @@ export const ConnectivitySettings: React.FC = () => {
         {/* Left Column: Config & Subscriptions */}
         <div className="space-y-6">
           {/* Connection Status */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
+            <h2 className="text-lg font-semibold text-ink-900 dark:text-white mb-4">
               Connection Status
             </h2>
 
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className={`w-3 h-3 rounded-full ${getStatusBgColor()} ${status === 'connecting' ? 'animate-pulse' : ''}`} />
-                <span className={`font-medium capitalize ${getStatusColor()}`}>
-                  {status}
-                </span>
+                <div
+                  className={`w-3 h-3 rounded-full ${getStatusBgColor()} ${status === 'connecting' ? 'animate-pulse' : ''}`}
+                />
+                <span className={`font-medium capitalize ${getStatusColor()}`}>{status}</span>
               </div>
               <div className="flex gap-2">
                 {status === 'disconnected' || status === 'error' ? (
@@ -252,12 +278,10 @@ export const ConnectivitySettings: React.FC = () => {
           </div>
 
           {/* Data Mode Selection */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
             <div className="flex items-center gap-2 mb-4">
-              <Radio className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Data Mode
-              </h2>
+              <Radio className="w-5 h-5 text-ink-600 dark:text-ink-400" />
+              <h2 className="text-lg font-semibold text-ink-900 dark:text-white">Data Mode</h2>
             </div>
 
             <div className="space-y-2">
@@ -267,7 +291,7 @@ export const ConnectivitySettings: React.FC = () => {
                   className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
                     dataMode === option.value
                       ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-                      : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                      : 'border-surface-line dark:border-trading-dark-600 hover:bg-surface dark:hover:bg-trading-dark-700/50'
                   }`}
                 >
                   <input
@@ -279,14 +303,16 @@ export const ConnectivitySettings: React.FC = () => {
                     className="mt-1 text-primary-700 focus:ring-primary-500"
                   />
                   <div className="flex-1">
-                    <span className={`font-medium ${
-                      dataMode === option.value
-                        ? 'text-primary-700 dark:text-primary-300'
-                        : 'text-gray-900 dark:text-white'
-                    }`}>
+                    <span
+                      className={`font-medium ${
+                        dataMode === option.value
+                          ? 'text-primary-700 dark:text-primary-300'
+                          : 'text-ink-900 dark:text-white'
+                      }`}
+                    >
                       {option.label}
                     </span>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                    <p className="text-xs text-ink-500 dark:text-ink-400 mt-0.5">
                       {option.description}
                     </p>
                   </div>
@@ -297,21 +323,22 @@ export const ConnectivitySettings: React.FC = () => {
             {dataMode === 'live' && (
               <div className="mt-3 p-3 bg-caution-50 dark:bg-caution-600/15 border border-caution-500/30 dark:border-caution-500/30 rounded-lg">
                 <p className="text-xs text-caution-600 dark:text-caution-500">
-                  <strong>Let op:</strong> Live mode vereist een actieve Interactive Brokers connectie via de backend service.
+                  <strong>Let op:</strong> Live mode vereist een actieve Interactive Brokers
+                  connectie via de backend service.
                 </p>
               </div>
             )}
           </div>
 
           {/* Configuration */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
+            <h2 className="text-lg font-semibold text-ink-900 dark:text-white mb-4">
               WebSocket Configuration
             </h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
                   WebSocket URL
                 </label>
                 <input
@@ -319,36 +346,40 @@ export const ConnectivitySettings: React.FC = () => {
                   value={config.url}
                   onChange={(e) => setConfig({ ...config, url: e.target.value })}
                   placeholder="ws://localhost:5000/ws/prices"
-                  className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2 text-sm"
+                  className="w-full rounded-md border-ink-200 dark:border-trading-dark-500 dark:bg-trading-dark-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2 text-sm"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
                     Reconnect Interval (ms)
                   </label>
                   <input
                     type="number"
                     value={config.reconnectInterval}
-                    onChange={(e) => setConfig({ ...config, reconnectInterval: Number(e.target.value) })}
+                    onChange={(e) =>
+                      setConfig({ ...config, reconnectInterval: Number(e.target.value) })
+                    }
                     min="1000"
                     step="1000"
-                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2 text-sm"
+                    className="w-full rounded-md border-ink-200 dark:border-trading-dark-500 dark:bg-trading-dark-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2 text-sm"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
                     Max Reconnect Attempts
                   </label>
                   <input
                     type="number"
                     value={config.maxReconnectAttempts}
-                    onChange={(e) => setConfig({ ...config, maxReconnectAttempts: Number(e.target.value) })}
+                    onChange={(e) =>
+                      setConfig({ ...config, maxReconnectAttempts: Number(e.target.value) })
+                    }
                     min="1"
                     max="100"
-                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2 text-sm"
+                    className="w-full rounded-md border-ink-200 dark:border-trading-dark-500 dark:bg-trading-dark-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2 text-sm"
                   />
                 </div>
               </div>
@@ -365,7 +396,7 @@ export const ConnectivitySettings: React.FC = () => {
 
                 <button
                   onClick={handleResetConfig}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg text-sm font-medium transition-colors"
+                  className="flex items-center gap-2 px-3 py-1.5 bg-surface-muted dark:bg-trading-dark-700 hover:bg-ink-200 dark:hover:bg-trading-dark-600 text-ink-700 dark:text-ink-200 rounded-lg text-sm font-medium transition-colors"
                 >
                   <RotateCcw className="w-4 h-4" />
                   Reset
@@ -387,8 +418,8 @@ export const ConnectivitySettings: React.FC = () => {
           </div>
 
           {/* Subscriptions */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
+            <h2 className="text-lg font-semibold text-ink-900 dark:text-white mb-4">
               Subscriptions
             </h2>
 
@@ -401,7 +432,7 @@ export const ConnectivitySettings: React.FC = () => {
                   onChange={(e) => setSubscribeSymbol(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSubscribeTicker()}
                   placeholder="AAPL, MSFT, GOOGL..."
-                  className="flex-1 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2 text-sm"
+                  className="flex-1 rounded-md border-ink-200 dark:border-trading-dark-500 dark:bg-trading-dark-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2 text-sm"
                   disabled={status !== 'connected'}
                 />
                 <button
@@ -424,7 +455,7 @@ export const ConnectivitySettings: React.FC = () => {
               {/* Subscribed Tickers */}
               {subscribedTickers.length > 0 && (
                 <div className="mt-3">
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                  <p className="text-xs text-ink-500 dark:text-ink-400 mb-2">
                     Subscribed tickers:
                   </p>
                   <div className="flex flex-wrap gap-1">
@@ -448,12 +479,12 @@ export const ConnectivitySettings: React.FC = () => {
               )}
 
               {/* Options Subscription */}
-              <div className="border-t border-gray-200 dark:border-gray-700 pt-3 mt-3">
+              <div className="border-t border-surface-line dark:border-trading-dark-600 pt-3 mt-3">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <span className="text-sm font-medium text-ink-700 dark:text-ink-300">
                     Options Prices
                   </span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                  <span className="text-xs text-ink-500 dark:text-ink-400">
                     {optionPositions.length} position(s)
                   </span>
                 </div>
@@ -471,7 +502,7 @@ export const ConnectivitySettings: React.FC = () => {
                 {subscribedOptions.length > 0 && (
                   <div className="mt-2">
                     <div className="flex items-center justify-between mb-2">
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-xs text-ink-500 dark:text-ink-400">
                         Subscribed options:
                       </p>
                       <button
@@ -491,7 +522,8 @@ export const ConnectivitySettings: React.FC = () => {
                             className="flex items-center justify-between px-2 py-1 rounded bg-surface-muted dark:bg-trading-dark-600 text-ink-800 dark:text-ink-300 text-xs"
                           >
                             <span>
-                              {opt.symbol} {opt.strike} {opt.optionType.toUpperCase()} {opt.expiration}
+                              {opt.symbol} {opt.strike} {opt.optionType.toUpperCase()}{' '}
+                              {opt.expiration}
                             </span>
                             <button
                               onClick={() => handleUnsubscribeOption(opt)}
@@ -509,7 +541,7 @@ export const ConnectivitySettings: React.FC = () => {
 
                 {/* Show available options if not all subscribed */}
                 {optionPositions.length > 0 && subscribedOptions.length === 0 && (
-                  <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-700/50 rounded text-xs text-gray-600 dark:text-gray-400">
+                  <div className="mt-2 p-2 bg-surface dark:bg-trading-dark-700/50 rounded text-xs text-ink-600 dark:text-ink-400">
                     <p className="font-medium mb-1">Available options to subscribe:</p>
                     <ul className="space-y-0.5">
                       {optionPositions.slice(0, 5).map((pos) => (
@@ -518,7 +550,7 @@ export const ConnectivitySettings: React.FC = () => {
                         </li>
                       ))}
                       {optionPositions.length > 5 && (
-                        <li className="text-gray-500">+{optionPositions.length - 5} more...</li>
+                        <li className="text-ink-500">+{optionPositions.length - 5} more...</li>
                       )}
                     </ul>
                   </div>
@@ -530,24 +562,22 @@ export const ConnectivitySettings: React.FC = () => {
 
         {/* Right Column: Log Viewer */}
         <div className="lg:col-span-2">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 h-full flex flex-col">
-            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Message Log
-              </h2>
+          <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 h-full flex flex-col">
+            <div className="flex items-center justify-between p-4 border-b border-surface-line dark:border-trading-dark-600">
+              <h2 className="text-lg font-semibold text-ink-900 dark:text-white">Message Log</h2>
               <div className="flex items-center gap-3">
-                <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                <label className="flex items-center gap-2 text-sm text-ink-600 dark:text-ink-400">
                   <input
                     type="checkbox"
                     checked={autoScroll}
                     onChange={(e) => setAutoScroll(e.target.checked)}
-                    className="rounded border-gray-300 dark:border-gray-600"
+                    className="rounded border-ink-200 dark:border-trading-dark-500"
                   />
                   Auto-scroll
                 </label>
                 <button
                   onClick={handleClearLogs}
-                  className="flex items-center gap-1 px-2 py-1 text-sm text-gray-600 dark:text-gray-400 hover:text-negative-600 dark:hover:text-negative-500 transition-colors"
+                  className="flex items-center gap-1 px-2 py-1 text-sm text-ink-600 dark:text-ink-400 hover:text-negative-600 dark:hover:text-negative-500 transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
                   Clear
@@ -557,10 +587,10 @@ export const ConnectivitySettings: React.FC = () => {
 
             <div
               ref={logContainerRef}
-              className="flex-1 overflow-auto p-4 bg-gray-900 font-mono text-xs min-h-[500px] max-h-[600px]"
+              className="flex-1 overflow-auto p-4 bg-trading-dark-900 font-mono text-xs min-h-[500px] max-h-[600px]"
             >
               {logs.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-gray-500">
+                <div className="flex flex-col items-center justify-center h-full text-ink-500">
                   {status === 'disconnected' ? (
                     <>
                       <WifiOff className="w-12 h-12 mb-3 opacity-50" />
@@ -578,7 +608,7 @@ export const ConnectivitySettings: React.FC = () => {
                 <div className="space-y-1">
                   {logs.map((entry) => (
                     <div key={entry.id} className="flex gap-2">
-                      <span className="text-gray-500 whitespace-nowrap">
+                      <span className="text-ink-500 whitespace-nowrap">
                         [{formatTimestamp(entry.timestamp)}]
                       </span>
                       <span className={`whitespace-nowrap ${getLogEntryColor(entry)}`}>
@@ -586,12 +616,8 @@ export const ConnectivitySettings: React.FC = () => {
                         {entry.direction === 'outgoing' && '>>'}
                         {entry.direction === 'system' && '--'}
                       </span>
-                      <span className="text-gray-400">
-                        [{entry.type}]
-                      </span>
-                      <span className={getLogEntryColor(entry)}>
-                        {entry.message}
-                      </span>
+                      <span className="text-ink-400">[{entry.type}]</span>
+                      <span className={getLogEntryColor(entry)}>{entry.message}</span>
                     </div>
                   ))}
                 </div>
@@ -599,7 +625,7 @@ export const ConnectivitySettings: React.FC = () => {
             </div>
 
             {/* Legend */}
-            <div className="p-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-xs">
+            <div className="p-3 border-t border-surface-line dark:border-trading-dark-600 bg-surface dark:bg-trading-dark-800/50 text-xs">
               <div className="flex gap-4">
                 <span className="flex items-center gap-1">
                   <span className="text-positive-500">&lt;&lt;</span> Incoming
@@ -608,7 +634,7 @@ export const ConnectivitySettings: React.FC = () => {
                   <span className="text-primary-500">&gt;&gt;</span> Outgoing
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="text-gray-400">--</span> System
+                  <span className="text-ink-400">--</span> System
                 </span>
               </div>
             </div>

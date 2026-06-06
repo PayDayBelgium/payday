@@ -31,7 +31,8 @@ export const getDefaultStocksETFsRules = (portfolio: PortfolioName): StrategyRul
       strategyType: 'stocks-etfs',
       portfolio,
       name: 'Prijs Gestegen met 10%',
-      description: 'Kans om te verkopen wanneer de prijs met 10% stijgt ten opzichte van de aankoopprijs',
+      description:
+        'Kans om te verkopen wanneer de prijs met 10% stijgt ten opzichte van de aankoopprijs',
       category: 'opportunity',
       trigger: 'price_increase',
       enabled: true,

@@ -1,0 +1,16 @@
+// src/services/ai/providers/types.ts
+import type { AIMessage, AIStreamEvent, ToolSchema } from '../types';
+
+export interface StreamChatInput {
+  system: string;
+  messages: AIMessage[];
+  model: string;
+  tools?: ToolSchema[];
+  signal: AbortSignal;
+}
+
+export interface AIProvider {
+  readonly id: 'anthropic' | 'openai' | 'gemini';
+  // Stuurt het gesprek en levert een stream van genormaliseerde events.
+  streamChat(input: StreamChatInput): AsyncIterable<AIStreamEvent>;
+}

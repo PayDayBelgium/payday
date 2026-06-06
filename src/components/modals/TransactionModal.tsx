@@ -28,7 +28,9 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
   onSubmit,
   portfolio,
 }) => {
-  const [transactionType, setTransactionType] = useState<'deposit' | 'withdrawal' | 'adjustment'>('deposit');
+  const [transactionType, setTransactionType] = useState<'deposit' | 'withdrawal' | 'adjustment'>(
+    'deposit'
+  );
   const [amount, setAmount] = useState<number>(0);
   const [description, setDescription] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -80,15 +82,13 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-trading-dark-800 rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-            Portfolio Transactie
-          </h2>
+        <div className="sticky top-0 bg-white dark:bg-trading-dark-800 border-b border-surface-line dark:border-trading-dark-600 px-6 py-4 flex items-center justify-between">
+          <h2 className="text-xl font-bold text-ink-900 dark:text-white">Portfolio Transactie</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            className="text-ink-400 hover:text-ink-600 dark:hover:text-ink-300 transition-colors"
           >
             <X className="w-6 h-6" />
           </button>
@@ -98,7 +98,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Transaction Type Selection */}
           <div>
-            <label className="block mb-3 text-sm font-medium text-gray-900 dark:text-white">
+            <label className="block mb-3 text-sm font-medium text-ink-900 dark:text-white">
               Type Transactie
             </label>
             <div className="grid grid-cols-3 gap-3">
@@ -108,7 +108,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                 className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
                   transactionType === 'deposit'
                     ? 'border-positive-500 bg-positive-50 dark:bg-positive-700/15 text-positive-700 dark:text-positive-500'
-                    : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                    : 'border-ink-200 dark:border-trading-dark-500 hover:border-ink-300 dark:hover:border-ink-400'
                 }`}
               >
                 <TrendingUp className="w-6 h-6" />
@@ -121,7 +121,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                 className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
                   transactionType === 'withdrawal'
                     ? 'border-negative-500 bg-negative-50 dark:bg-negative-700/15 text-negative-700 dark:text-negative-500'
-                    : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                    : 'border-ink-200 dark:border-trading-dark-500 hover:border-ink-300 dark:hover:border-ink-400'
                 }`}
               >
                 <TrendingDown className="w-6 h-6" />
@@ -134,7 +134,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                 className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
                   transactionType === 'adjustment'
                     ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300'
-                    : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                    : 'border-ink-200 dark:border-trading-dark-500 hover:border-ink-300 dark:hover:border-ink-400'
                 }`}
               >
                 <Edit3 className="w-6 h-6" />
@@ -145,24 +145,25 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
 
           {/* Amount */}
           <div>
-            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              {transactionType === 'adjustment' ? 'Nieuwe Portfolio Waarde' : 'Bedrag'} ({currencySymbol})
+            <label className="block mb-2 text-sm font-medium text-ink-900 dark:text-white">
+              {transactionType === 'adjustment' ? 'Nieuwe Portfolio Waarde' : 'Bedrag'} (
+              {currencySymbol})
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <DollarSign className="w-5 h-5 text-gray-400" />
+                <DollarSign className="w-5 h-5 text-ink-400" />
               </div>
               <NumberInput
                 value={amount}
                 onChange={setAmount}
                 min={0}
                 placeholder="0"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                 required
               />
             </div>
             {transactionType === 'adjustment' && (
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              <p className="mt-1 text-xs text-ink-500 dark:text-ink-400">
                 Vul de nieuwe totale waarde van de portefeuille in
               </p>
             )}
@@ -170,7 +171,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
 
           {/* Date */}
           <div>
-            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label className="block mb-2 text-sm font-medium text-ink-900 dark:text-white">
               datum
             </label>
             <input
@@ -178,21 +179,21 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
               value={date}
               onChange={(e) => setDate(e.target.value)}
               max={new Date().toISOString().split('T')[0]}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
               required
             />
           </div>
 
           {/* Description */}
           <div>
-            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label className="block mb-2 text-sm font-medium text-ink-900 dark:text-white">
               Beschrijving (optioneel)
             </label>
             <input
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
               placeholder="Bijv.: Maandelijkse storting, Koersaanpassing, etc."
             />
           </div>
@@ -216,24 +217,33 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                     {transactionType === 'withdrawal' && 'Opname:'}
                     {transactionType === 'adjustment' && 'Aanpassing:'}
                   </span>
-                  <span className={`font-medium ${
-                    (transactionType === 'deposit') || (transactionType === 'adjustment' && amount > portfolio.currentValue)
-                      ? 'text-positive-600 dark:text-positive-500'
-                      : 'text-negative-600 dark:text-negative-500'
-                  }`}>
+                  <span
+                    className={`font-medium ${
+                      transactionType === 'deposit' ||
+                      (transactionType === 'adjustment' && amount > portfolio.currentValue)
+                        ? 'text-positive-600 dark:text-positive-500'
+                        : 'text-negative-600 dark:text-negative-500'
+                    }`}
+                  >
                     {transactionType === 'adjustment'
-                      ? (amount > portfolio.currentValue ? '+' : '') + formatCurrency(amount - portfolio.currentValue, currencySymbol)
-                      : (transactionType === 'withdrawal' ? '-' : '+') + formatCurrency(Math.abs(amount), currencySymbol)
-                    }
+                      ? (amount > portfolio.currentValue ? '+' : '') +
+                        formatCurrency(amount - portfolio.currentValue, currencySymbol)
+                      : (transactionType === 'withdrawal' ? '-' : '+') +
+                        formatCurrency(Math.abs(amount), currencySymbol)}
                   </span>
                 </div>
                 <div className="flex justify-between pt-2 border-t border-primary-300 dark:border-primary-700">
-                  <span className="font-semibold text-primary-900 dark:text-primary-200">Nieuwe waarde:</span>
+                  <span className="font-semibold text-primary-900 dark:text-primary-200">
+                    Nieuwe waarde:
+                  </span>
                   <span className="font-bold text-primary-900 dark:text-primary-200">
                     {formatCurrency(
                       transactionType === 'adjustment'
                         ? amount
-                        : portfolio.currentValue + (transactionType === 'withdrawal' ? -Math.abs(amount) : Math.abs(amount)),
+                        : portfolio.currentValue +
+                            (transactionType === 'withdrawal'
+                              ? -Math.abs(amount)
+                              : Math.abs(amount)),
                       currencySymbol
                     )}
                   </span>
@@ -243,11 +253,11 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
           )}
 
           {/* Action Buttons */}
-          <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex gap-3 pt-4 border-t border-surface-line dark:border-trading-dark-600">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2.5 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg font-medium transition-colors"
+              className="flex-1 px-4 py-2.5 bg-surface-muted dark:bg-trading-dark-700 hover:bg-ink-200 dark:hover:bg-trading-dark-600 text-ink-700 dark:text-ink-200 rounded-lg font-medium transition-colors"
             >
               Annuleren
             </button>

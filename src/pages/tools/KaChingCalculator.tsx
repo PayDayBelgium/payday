@@ -39,7 +39,10 @@ interface KaChingResults {
 export const KaChingCalculator: React.FC = () => {
   const { setPageTitle } = usePageTitle();
   useEffect(() => {
-    setPageTitle('KaChing Strategy Calculator', 'Calculate returns from selling weekly puts against a protective put');
+    setPageTitle(
+      'KaChing Strategy Calculator',
+      'Calculate returns from selling weekly puts against a protective put'
+    );
   }, [setPageTitle]);
   const [inputs, setInputs] = useState<KaChingInputs>({
     ticker: '',
@@ -61,7 +64,7 @@ export const KaChingCalculator: React.FC = () => {
   }, [inputs]);
 
   const handleInputChange = (field: keyof KaChingInputs, value: string | number) => {
-    setInputs(prev => ({
+    setInputs((prev) => ({
       ...prev,
       [field]: value,
     }));
@@ -69,15 +72,27 @@ export const KaChingCalculator: React.FC = () => {
 
   const calculateResults = () => {
     const {
-      ticker, underlyingPrice, protectivePutStrike, protectivePutPremium,
-      protectivePutPurchaseDate, protectivePutExpiration,
-      weeklyPutStrike, weeklyPutPremium
+      ticker,
+      underlyingPrice,
+      protectivePutStrike,
+      protectivePutPremium,
+      protectivePutPurchaseDate,
+      protectivePutExpiration,
+      weeklyPutStrike,
+      weeklyPutPremium,
     } = inputs;
 
     // Check if all required fields are filled
-    if (!ticker || !underlyingPrice || !protectivePutStrike || !protectivePutPremium ||
-        !protectivePutPurchaseDate || !protectivePutExpiration ||
-        !weeklyPutStrike || !weeklyPutPremium) {
+    if (
+      !ticker ||
+      !underlyingPrice ||
+      !protectivePutStrike ||
+      !protectivePutPremium ||
+      !protectivePutPurchaseDate ||
+      !protectivePutExpiration ||
+      !weeklyPutStrike ||
+      !weeklyPutPremium
+    ) {
       setResults(null);
       return;
     }
@@ -114,16 +129,17 @@ export const KaChingCalculator: React.FC = () => {
     const annualizedROI = totalDays > 0 ? (roi / totalDays) * 365 : 0;
 
     // Calculate break-even weeks (weeks needed to recover protective put cost)
-    const breakevenWeeks = weeklyPutPremium > 0
-      ? Math.ceil(protectivePutPremium / weeklyPutPremium)
-      : 0;
+    const breakevenWeeks =
+      weeklyPutPremium > 0 ? Math.ceil(protectivePutPremium / weeklyPutPremium) : 0;
 
     // Calculate weeks after break-even (pure profit weeks)
     const weeksAfterBreakeven = Math.max(0, totalWeeks - breakevenWeeks);
 
     // Warnings
     if (weeklyPutStrike > protectivePutStrike) {
-      newWarnings.push('Weekly put strike is above protective put strike. This increases assignment risk.');
+      newWarnings.push(
+        'Weekly put strike is above protective put strike. This increases assignment risk.'
+      );
     }
 
     if (protectivePutStrike > underlyingPrice) {
@@ -131,11 +147,15 @@ export const KaChingCalculator: React.FC = () => {
     }
 
     if (totalWeeks < 6) {
-      newWarnings.push('Less than 6 weeks available. Consider using a longer-dated protective put.');
+      newWarnings.push(
+        'Less than 6 weeks available. Consider using a longer-dated protective put.'
+      );
     }
 
     if (breakevenWeeks > totalWeeks) {
-      newWarnings.push(`You need ${breakevenWeeks} weeks to break even, but only have ${totalWeeks} weeks available.`);
+      newWarnings.push(
+        `You need ${breakevenWeeks} weeks to break even, but only have ${totalWeeks} weeks available.`
+      );
     }
 
     if (weeklyPutPremium < 0.05) {
@@ -177,13 +197,13 @@ export const KaChingCalculator: React.FC = () => {
         {/* Left Column: Inputs */}
         <div className="space-y-6">
           {/* Stock Section */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
+          <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
+            <h2 className="text-lg font-semibold text-ink-900 dark:text-white mb-4 pb-2 border-b border-surface-line dark:border-trading-dark-600">
               Stock
             </h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
                   Ticker
                 </label>
                 <TickerSelector
@@ -198,82 +218,89 @@ export const KaChingCalculator: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
                   Current Price ($)
                 </label>
                 <input
                   type="number"
                   value={inputs.underlyingPrice || ''}
-                  onChange={(e) => handleInputChange('underlyingPrice', parseFloat(e.target.value) || 0)}
+                  onChange={(e) =>
+                    handleInputChange('underlyingPrice', parseFloat(e.target.value) || 0)
+                  }
                   placeholder="450,00"
-                  className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
+                  className="w-full rounded-md border-ink-200 dark:border-trading-dark-500 dark:bg-trading-dark-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
                 />
               </div>
             </div>
           </div>
 
           {/* Protective Put Section */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <div className="flex items-center gap-2 mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
+            <div className="flex items-center gap-2 mb-4 pb-2 border-b border-surface-line dark:border-trading-dark-600">
+              <h2 className="text-lg font-semibold text-ink-900 dark:text-white">
                 Protective Put (Long Put)
               </h2>
               <div className="group relative">
-                <div className="w-5 h-5 rounded-full bg-gray-400 dark:bg-gray-600 flex items-center justify-center cursor-help">
+                <div className="w-5 h-5 rounded-full bg-ink-300 dark:bg-trading-dark-600 flex items-center justify-center cursor-help">
                   <span className="text-white text-xs font-bold">i</span>
                 </div>
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 z-10">
-                  This is your insurance - a longer-dated put (6-12 weeks) that protects your position.
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-white dark:bg-trading-dark-800 text-ink-700 dark:text-ink-300 text-xs rounded-lg shadow-lg border border-surface-line dark:border-trading-dark-500 z-10">
+                  This is your insurance - a longer-dated put (6-12 weeks) that protects your
+                  position.
                 </div>
               </div>
             </div>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
                     Strike Price ($)
                   </label>
                   <input
                     type="number"
                     value={inputs.protectivePutStrike || ''}
-                    onChange={(e) => handleInputChange('protectivePutStrike', parseFloat(e.target.value) || 0)}
+                    onChange={(e) =>
+                      handleInputChange('protectivePutStrike', parseFloat(e.target.value) || 0)
+                    }
                     placeholder="440,00"
-                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
+                    className="w-full rounded-md border-ink-200 dark:border-trading-dark-500 dark:bg-trading-dark-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
                     Premium per Share ($)
                   </label>
                   <input
                     type="number"
                     value={inputs.protectivePutPremium || ''}
-                    onChange={(e) => handleInputChange('protectivePutPremium', parseFloat(e.target.value) || 0)}
+                    onChange={(e) =>
+                      handleInputChange('protectivePutPremium', parseFloat(e.target.value) || 0)
+                    }
                     placeholder="5,00"
-                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
+                    className="w-full rounded-md border-ink-200 dark:border-trading-dark-500 dark:bg-trading-dark-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
                   />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
                     Purchase Date
                   </label>
                   <input
                     type="date"
                     value={inputs.protectivePutPurchaseDate}
                     onChange={(e) => handleInputChange('protectivePutPurchaseDate', e.target.value)}
-                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
+                    className="w-full rounded-md border-ink-200 dark:border-trading-dark-500 dark:bg-trading-dark-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
                     Expiration Date
                   </label>
                   <FridayDatePicker
                     value={inputs.protectivePutExpiration}
                     onChange={(date) => handleInputChange('protectivePutExpiration', date)}
-                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
+                    className="w-full rounded-md border-ink-200 dark:border-trading-dark-500 dark:bg-trading-dark-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
                   />
                 </div>
               </div>
@@ -281,44 +308,49 @@ export const KaChingCalculator: React.FC = () => {
           </div>
 
           {/* Weekly Short Puts Section */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <div className="flex items-center gap-2 mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
+            <div className="flex items-center gap-2 mb-4 pb-2 border-b border-surface-line dark:border-trading-dark-600">
+              <h2 className="text-lg font-semibold text-ink-900 dark:text-white">
                 Weekly Short Puts
               </h2>
               <div className="group relative">
-                <div className="w-5 h-5 rounded-full bg-gray-400 dark:bg-gray-600 flex items-center justify-center cursor-help">
+                <div className="w-5 h-5 rounded-full bg-ink-300 dark:bg-trading-dark-600 flex items-center justify-center cursor-help">
                   <span className="text-white text-xs font-bold">i</span>
                 </div>
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 z-10">
-                  These are the weekly puts you sell to collect premium. Strike should be at or slightly below your protective put.
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-white dark:bg-trading-dark-800 text-ink-700 dark:text-ink-300 text-xs rounded-lg shadow-lg border border-surface-line dark:border-trading-dark-500 z-10">
+                  These are the weekly puts you sell to collect premium. Strike should be at or
+                  slightly below your protective put.
                 </div>
               </div>
             </div>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
                     Strike Price ($)
                   </label>
                   <input
                     type="number"
                     value={inputs.weeklyPutStrike || ''}
-                    onChange={(e) => handleInputChange('weeklyPutStrike', parseFloat(e.target.value) || 0)}
+                    onChange={(e) =>
+                      handleInputChange('weeklyPutStrike', parseFloat(e.target.value) || 0)
+                    }
                     placeholder="438,00"
-                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
+                    className="w-full rounded-md border-ink-200 dark:border-trading-dark-500 dark:bg-trading-dark-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
                     Premium per Share ($)
                   </label>
                   <input
                     type="number"
                     value={inputs.weeklyPutPremium || ''}
-                    onChange={(e) => handleInputChange('weeklyPutPremium', parseFloat(e.target.value) || 0)}
+                    onChange={(e) =>
+                      handleInputChange('weeklyPutPremium', parseFloat(e.target.value) || 0)
+                    }
                     placeholder="0,75"
-                    className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
+                    className="w-full rounded-md border-ink-200 dark:border-trading-dark-500 dark:bg-trading-dark-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 p-2"
                   />
                 </div>
               </div>
@@ -329,42 +361,50 @@ export const KaChingCalculator: React.FC = () => {
         {/* Right Column: Results */}
         <div className="space-y-6">
           {/* Live Results Card */}
-          <div className="bg-primary-50 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <div className="bg-primary-50 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
             {results ? (
               <div className="space-y-6">
                 {/* Header Section */}
                 <div>
                   <div className="flex items-baseline gap-2 mb-4">
-                    <h3 className="text-3xl font-bold text-gray-900 dark:text-white">
+                    <h3 className="text-3xl font-bold text-ink-900 dark:text-white">
                       {inputs.ticker || '...'}
                     </h3>
-                    <span className="text-lg text-gray-600 dark:text-gray-400">
+                    <span className="text-lg text-ink-600 dark:text-ink-400">
                       {formatCurrency(inputs.underlyingPrice)}
                     </span>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Initial Investment</p>
-                      <p className="text-xl font-bold text-gray-900 dark:text-white">
+                      <p className="text-sm font-medium text-ink-700 dark:text-ink-300">
+                        Initial Investment
+                      </p>
+                      <p className="text-xl font-bold text-ink-900 dark:text-white">
                         {formatCurrency(results.initialInvestment)}
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Total Weeks</p>
-                      <p className="text-xl font-bold text-gray-900 dark:text-white">
+                      <p className="text-sm font-medium text-ink-700 dark:text-ink-300">
+                        Total Weeks
+                      </p>
+                      <p className="text-xl font-bold text-ink-900 dark:text-white">
                         {results.totalWeeks} weeks
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Weekly Premium</p>
+                      <p className="text-sm font-medium text-ink-700 dark:text-ink-300">
+                        Weekly Premium
+                      </p>
                       <p className="text-xl font-bold text-positive-600 dark:text-positive-500">
                         {formatCurrency(results.weeklyPremiumCollected)}
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Break-Even</p>
-                      <p className="text-xl font-bold text-gray-900 dark:text-white">
+                      <p className="text-sm font-medium text-ink-700 dark:text-ink-300">
+                        Break-Even
+                      </p>
+                      <p className="text-xl font-bold text-ink-900 dark:text-white">
                         {results.breakevenWeeks} weeks
                       </p>
                     </div>
@@ -372,12 +412,12 @@ export const KaChingCalculator: React.FC = () => {
                 </div>
 
                 {/* Divider */}
-                <hr className="border-gray-200 dark:border-gray-700" />
+                <hr className="border-surface-line dark:border-trading-dark-600" />
 
                 {/* P&L Section */}
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <span className="text-sm font-medium text-ink-700 dark:text-ink-300">
                       Protective Put Cost
                     </span>
                     <span className="text-sm font-semibold text-negative-600 dark:text-negative-500">
@@ -386,7 +426,7 @@ export const KaChingCalculator: React.FC = () => {
                   </div>
 
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <span className="text-sm font-medium text-ink-700 dark:text-ink-300">
                       Total Premium Collected
                     </span>
                     <span className="text-sm font-semibold text-positive-600 dark:text-positive-500">
@@ -394,65 +434,73 @@ export const KaChingCalculator: React.FC = () => {
                     </span>
                   </div>
 
-                  <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
+                  <div className="pt-3 border-t border-surface-line dark:border-trading-dark-600">
                     <div className="flex justify-between items-baseline mb-1">
-                      <span className="text-base font-bold text-gray-900 dark:text-gray-100">
+                      <span className="text-base font-bold text-ink-900 dark:text-ink-100">
                         Net Cost
                       </span>
-                      <span className={`text-xl font-bold ${results.netCost <= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-caution-600 dark:text-caution-500'}`}>
+                      <span
+                        className={`text-xl font-bold ${results.netCost <= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-caution-600 dark:text-caution-500'}`}
+                      >
                         {formatCurrency(Math.abs(results.netCost))}
                         {results.netCost <= 0 && ' profit'}
                       </span>
                     </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 text-right">
+                    <p className="text-xs text-ink-500 dark:text-ink-400 text-right">
                       {results.netCost > 0
                         ? 'Remaining cost after premium collection'
                         : 'Strategy has paid for itself and is profitable'}
                     </p>
                   </div>
 
-                  <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
+                  <div className="pt-3 border-t border-surface-line dark:border-trading-dark-600">
                     <div className="flex justify-between items-baseline mb-1">
-                      <span className="text-base font-bold text-gray-900 dark:text-gray-100">
+                      <span className="text-base font-bold text-ink-900 dark:text-ink-100">
                         Net Profit / Loss
                       </span>
-                      <span className={`text-2xl font-bold ${results.netPnL >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
+                      <span
+                        className={`text-2xl font-bold ${results.netPnL >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
+                      >
                         {formatCurrency(results.netPnL)}
                       </span>
                     </div>
                   </div>
 
-                  <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
+                  <div className="pt-3 border-t border-surface-line dark:border-trading-dark-600">
                     <div className="flex justify-between items-baseline">
-                      <span className="text-base font-bold text-gray-900 dark:text-gray-100">
+                      <span className="text-base font-bold text-ink-900 dark:text-ink-100">
                         ROI
                       </span>
-                      <span className={`text-2xl font-bold ${results.roi >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
+                      <span
+                        className={`text-2xl font-bold ${results.roi >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
+                      >
                         {formatPercentage(results.roi)}
                       </span>
                     </div>
                   </div>
 
-                  <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
+                  <div className="pt-3 border-t border-surface-line dark:border-trading-dark-600">
                     <div className="flex justify-between items-baseline">
                       <div className="flex items-center gap-1">
-                        <TrendingUp className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                        <span className="text-base font-bold text-gray-900 dark:text-gray-100">
+                        <TrendingUp className="w-4 h-4 text-ink-600 dark:text-ink-400" />
+                        <span className="text-base font-bold text-ink-900 dark:text-ink-100">
                           Annualized ROI
                         </span>
                       </div>
-                      <span className={`text-2xl font-bold ${results.annualizedROI >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
+                      <span
+                        className={`text-2xl font-bold ${results.annualizedROI >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
+                      >
                         {formatPercentage(results.annualizedROI)}
                       </span>
                     </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 text-right">
+                    <p className="text-xs text-ink-500 dark:text-ink-400 text-right">
                       Based on {Math.round(results.totalDays)} days
                     </p>
                   </div>
 
                   {/* Bonus: Profit Weeks Info */}
                   {results.weeksAfterBreakeven > 0 && (
-                    <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
+                    <div className="pt-3 border-t border-surface-line dark:border-trading-dark-600">
                       <div className="flex items-center gap-2 bg-positive-50 dark:bg-positive-700/25 p-3 rounded-lg">
                         <Calendar className="w-5 h-5 text-positive-600 dark:text-positive-500" />
                         <div className="flex-1">
@@ -471,7 +519,7 @@ export const KaChingCalculator: React.FC = () => {
             ) : (
               <div className="text-center py-12">
                 <DollarSign className="w-16 h-16 text-purple-300 dark:text-ink-600 mx-auto mb-4" />
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-ink-600 dark:text-ink-400">
                   Fill in all fields to see results
                 </p>
               </div>

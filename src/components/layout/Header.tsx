@@ -1,5 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { LogOut, ChevronLeft, Menu, Globe, Palette, Info, HelpCircle, ArrowLeft, Download, Upload, AlertCircle, Mountain, Star, Settings } from 'lucide-react';
+import {
+  LogOut,
+  ChevronLeft,
+  Menu,
+  Globe,
+  Palette,
+  Info,
+  HelpCircle,
+  ArrowLeft,
+  Download,
+  Upload,
+  AlertCircle,
+  Mountain,
+  Star,
+  Settings,
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import logo from '../../assets/app/logo.png';
@@ -7,11 +22,17 @@ import { WebSocketConnectionStatus } from '../common/WebSocketConnectionStatus';
 import { LoadingOverlay } from '../common/LoadingOverlay';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { useStore } from 'react-redux';
 import { useToast } from '../../contexts/ToastContext';
 import { THEMES, applyTheme, getSavedTheme } from '../../constants/themes';
 import type { ThemeColor } from '../../constants/themes';
 import { useNavigation } from '../../contexts/NavigationContext';
-import { createBackup, downloadBackup, parseBackupFile, saveLastBackupTimestamp } from '../../utils/backup';
+import {
+  createBackup,
+  downloadBackup,
+  parseBackupFile,
+  saveLastBackupTimestamp,
+} from '../../utils/backup';
 import { restoreFromBackup } from '../../store/actions/backupActions';
 import { RestoreConfirmModal } from '../modals/RestoreConfirmModal';
 import { BackupNameModal } from '../modals/BackupNameModal';
@@ -32,7 +53,19 @@ interface HeaderProps {
   titleIcon?: string;
 }
 
-export const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription, isSidebarCollapsed, onToggleSidebar, showInfoIcon, onInfoClick, isInfoActive, showWarningIcon, onWarningClick, isWarningActive, titleIcon }) => {
+export const Header: React.FC<HeaderProps> = ({
+  pageTitle,
+  pageDescription,
+  isSidebarCollapsed,
+  onToggleSidebar,
+  showInfoIcon,
+  onInfoClick,
+  isInfoActive,
+  showWarningIcon,
+  onWarningClick,
+  isWarningActive,
+  titleIcon,
+}) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const toast = useToast();
@@ -54,29 +87,24 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription, isSi
   const userProgress = useAppSelector(selectUserProgress);
   const currentLevelConfig = useAppSelector(selectCurrentLevelConfig);
 
-  // Select specific slices needed for backup instead of entire state
-  const portfoliosState = useAppSelector((state) => state.portfolios);
-  const positionsState = useAppSelector((state) => state.positions);
-  const todosState = useAppSelector((state) => state.todos);
-  const alertsState = useAppSelector((state) => state.alerts);
-  const journalState = useAppSelector((state) => state.journal);
-  const tradesState = useAppSelector((state) => state.trades);
-  const rulesState = useAppSelector((state) => state.rules);
-  const tickersState = useAppSelector((state) => state.tickers);
-  const strategiesState = useAppSelector((state) => state.strategies);
-
-  // Build state object for backup (only when needed)
-  const getBackupState = () => ({
-    portfolios: portfoliosState,
-    positions: positionsState,
-    todos: todosState,
-    alerts: alertsState,
-    journal: journalState,
-    trades: tradesState,
-    rules: rulesState,
-    tickers: tickersState,
-    strategies: strategiesState,
-  } as any);
+  // Read the backup snapshot lazily via the store. Subscribing to these 9 slices
+  // with useAppSelector would re-render the always-mounted Header on every data
+  // mutation (incl. every price tick); we only need this data on a backup click.
+  const store = useStore();
+  const getBackupState = () => {
+    const state = store.getState() as any;
+    return {
+      portfolios: state.portfolios,
+      positions: state.positions,
+      todos: state.todos,
+      alerts: state.alerts,
+      journal: state.journal,
+      trades: state.trades,
+      rules: state.rules,
+      tickers: state.tickers,
+      strategies: state.strategies,
+    } as any;
+  };
 
   const handleThemeChange = (theme: ThemeColor) => {
     setCurrentTheme(theme);
@@ -179,7 +207,7 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription, isSi
     setShowUserMenu(false);
 
     // Wait a moment to show the loading message
-    await new Promise(resolve => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
     // Clear the current user key
     localStorage.removeItem('payday-current-user');
@@ -193,7 +221,7 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription, isSi
         parsed.auth = JSON.stringify({ isAuthenticated: false, user: null });
         localStorage.setItem('persist:payday-root', JSON.stringify(parsed));
       }
-    } catch (e) {
+    } catch {
       // If there's an error, just remove the whole store
       localStorage.removeItem('persist:payday-root');
     }
@@ -223,13 +251,23 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription, isSi
     <header className="fixed top-0 left-0 right-0 h-16 bg-white dark:bg-trading-dark-800 border-b border-[var(--line)] dark:border-trading-dark-700 z-50">
       <div className="h-full flex items-center justify-between">
         {/* Logo Section - Fixed width to match sidebar */}
-        <div className={`${isSidebarCollapsed ? 'w-16' : 'w-64'} relative flex items-center ${isSidebarCollapsed ? 'justify-center' : 'pl-5'} transition-all duration-300`}>
+        <div
+          className={`${isSidebarCollapsed ? 'w-16' : 'w-64'} relative flex items-center ${isSidebarCollapsed ? 'justify-center' : 'pl-5'} transition-all duration-300`}
+        >
           {!isSidebarCollapsed && (
             <div className="flex items-center gap-3">
-              <img src={logo} alt="PayDay" className="w-9 h-9 rounded-md ring-1 ring-[var(--line)]" />
+              <img
+                src={logo}
+                alt="PayDay"
+                className="w-9 h-9 rounded-md ring-1 ring-[var(--line)]"
+              />
               <div className="leading-tight">
-                <h1 className="text-xl font-semibold text-ink-900 dark:text-white tracking-tight">PayDay</h1>
-                <p className="text-[10px] uppercase tracking-[0.16em] text-ink-400 -mt-0.5">Stock management</p>
+                <h1 className="text-xl font-semibold text-ink-900 dark:text-white tracking-tight">
+                  PayDay
+                </h1>
+                <p className="text-[10px] uppercase tracking-[0.16em] text-ink-400 -mt-0.5">
+                  Stock management
+                </p>
               </div>
             </div>
           )}
@@ -242,7 +280,11 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription, isSi
             className="absolute bottom-1 right-1 p-0.5 rounded-full bg-white border border-[var(--line)] text-ink-500 hover:text-ink-900 hover:border-primary-300 transition-colors"
             title={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
-            {isSidebarCollapsed ? <Menu className="w-3 h-3" /> : <ChevronLeft className="w-3 h-3" />}
+            {isSidebarCollapsed ? (
+              <Menu className="w-3 h-3" />
+            ) : (
+              <ChevronLeft className="w-3 h-3" />
+            )}
           </button>
         </div>
 
@@ -254,7 +296,10 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription, isSi
               className="flex-shrink-0 p-2 hover:bg-surface-subtle rounded-md transition-colors group"
               title={t('navigation.goBack')}
             >
-              <ArrowLeft className="w-4 h-4 text-ink-500 group-hover:text-ink-900" strokeWidth={1.75} />
+              <ArrowLeft
+                className="w-4 h-4 text-ink-500 group-hover:text-ink-900"
+                strokeWidth={1.75}
+              />
             </button>
           )}
           {pageTitle && (
@@ -267,7 +312,9 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription, isSi
                 />
               )}
               <div className="leading-tight">
-                <h2 className="text-base font-semibold text-ink-900 dark:text-white tracking-tight">{pageTitle}</h2>
+                <h2 className="text-base font-semibold text-ink-900 dark:text-white tracking-tight">
+                  {pageTitle}
+                </h2>
                 {pageDescription && (
                   <p className="text-xs text-ink-500 dark:text-ink-400 mt-0.5">{pageDescription}</p>
                 )}
@@ -276,18 +323,24 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription, isSi
                 <button
                   onClick={onInfoClick}
                   className="p-1.5 hover:bg-primary-50 rounded-md transition-colors flex-shrink-0"
-                  title={isInfoActive ? "Verberg uitleg" : "Toon uitleg"}
+                  title={isInfoActive ? 'Verberg uitleg' : 'Toon uitleg'}
                 >
-                  <Info className={`w-4 h-4 ${isInfoActive ? 'text-primary-700' : 'text-ink-400'}`} strokeWidth={1.75} />
+                  <Info
+                    className={`w-4 h-4 ${isInfoActive ? 'text-primary-700' : 'text-ink-400'}`}
+                    strokeWidth={1.75}
+                  />
                 </button>
               )}
               {showWarningIcon && onWarningClick && (
                 <button
                   onClick={onWarningClick}
                   className="p-1.5 hover:bg-caution-50 rounded-md transition-colors flex-shrink-0"
-                  title={isWarningActive ? "Verberg waarschuwing" : "Toon waarschuwing"}
+                  title={isWarningActive ? 'Verberg waarschuwing' : 'Toon waarschuwing'}
                 >
-                  <AlertCircle className={`w-4 h-4 ${isWarningActive ? 'text-caution-600' : 'text-ink-400'}`} strokeWidth={1.75} />
+                  <AlertCircle
+                    className={`w-4 h-4 ${isWarningActive ? 'text-caution-600' : 'text-ink-400'}`}
+                    strokeWidth={1.75}
+                  />
                 </button>
               )}
             </div>
@@ -313,14 +366,17 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription, isSi
             <button
               onClick={() => setShowUserMenu(!showUserMenu)}
               className="w-9 h-9 rounded-full flex items-center justify-center text-white font-semibold text-sm transition-colors"
-              style={{ background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%)' }}
+              style={{
+                background:
+                  'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%)',
+              }}
             >
               {(username || 'U')[0].toUpperCase()}
             </button>
 
             {/* Dropdown Menu */}
             {showUserMenu && (
-              <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-surface-line dark:border-slate-700 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                 {/* User Profile Header */}
                 <div className="relative overflow-hidden">
                   {/* Gradient Background - uses theme color */}
@@ -336,11 +392,11 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription, isSi
                       </div>
 
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-base text-gray-900 dark:text-white truncate">
+                        <h3 className="font-bold text-base text-ink-900 dark:text-white truncate">
                           {username || 'Trader'}
                         </h3>
                         <div className="flex items-center gap-2">
-                          <p className="text-xs text-gray-500 dark:text-gray-400">Options Trader</p>
+                          <p className="text-xs text-ink-500 dark:text-ink-400">Options Trader</p>
                           {/* Credits Badge */}
                           <div className="flex items-center gap-1 px-1.5 py-0.5 bg-caution-50 dark:bg-caution-600/25 rounded-full">
                             <Star className="w-2.5 h-2.5 text-caution-600 dark:text-caution-500" />
@@ -362,42 +418,60 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription, isSi
                       navigate('/mission');
                     }}
                     className={`w-full p-2.5 rounded-xl border transition-all hover:shadow-sm ${
-                      currentLevelConfig.slopeColor === 'green' ? 'border-positive-500/20 dark:border-positive-700/30 bg-positive-50/50 dark:bg-positive-700/10 hover:border-positive-500/30 dark:hover:border-positive-700' :
-                      currentLevelConfig.slopeColor === 'blue' ? 'border-primary-200 dark:border-primary-800 bg-primary-50/50 dark:bg-primary-900/15 hover:border-primary-300 dark:hover:border-primary-700' :
-                      currentLevelConfig.slopeColor === 'red' ? 'border-negative-500/20 dark:border-negative-700/30 bg-negative-50/50 dark:bg-negative-700/10 hover:border-negative-500/30 dark:hover:border-negative-700' :
-                      'border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/10 hover:border-gray-300 dark:hover:border-gray-600'
+                      currentLevelConfig.slopeColor === 'green'
+                        ? 'border-positive-500/20 dark:border-positive-700/30 bg-positive-50/50 dark:bg-positive-700/10 hover:border-positive-500/30 dark:hover:border-positive-700'
+                        : currentLevelConfig.slopeColor === 'blue'
+                          ? 'border-primary-200 dark:border-primary-800 bg-primary-50/50 dark:bg-primary-900/15 hover:border-primary-300 dark:hover:border-primary-700'
+                          : currentLevelConfig.slopeColor === 'red'
+                            ? 'border-negative-500/20 dark:border-negative-700/30 bg-negative-50/50 dark:bg-negative-700/10 hover:border-negative-500/30 dark:hover:border-negative-700'
+                            : 'border-surface-line dark:border-trading-dark-600 bg-surface/50 dark:bg-trading-dark-900/10 hover:border-ink-200 dark:hover:border-trading-dark-500'
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2.5">
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-base ${
-                          currentLevelConfig.slopeColor === 'green' ? 'bg-positive-50 dark:bg-positive-700/25' :
-                          currentLevelConfig.slopeColor === 'blue' ? 'bg-primary-50 dark:bg-primary-900/30' :
-                          currentLevelConfig.slopeColor === 'red' ? 'bg-negative-50 dark:bg-negative-700/25' :
-                          'bg-gray-100 dark:bg-gray-700'
-                        }`}>
+                        <div
+                          className={`w-8 h-8 rounded-lg flex items-center justify-center text-base ${
+                            currentLevelConfig.slopeColor === 'green'
+                              ? 'bg-positive-50 dark:bg-positive-700/25'
+                              : currentLevelConfig.slopeColor === 'blue'
+                                ? 'bg-primary-50 dark:bg-primary-900/30'
+                                : currentLevelConfig.slopeColor === 'red'
+                                  ? 'bg-negative-50 dark:bg-negative-700/25'
+                                  : 'bg-surface-subtle dark:bg-trading-dark-700'
+                          }`}
+                        >
                           {currentLevelConfig.icon}
                         </div>
                         <div className="text-left">
-                          <span className={`text-xs font-bold ${
-                            currentLevelConfig.slopeColor === 'green' ? 'text-positive-700 dark:text-positive-500' :
-                            currentLevelConfig.slopeColor === 'blue' ? 'text-primary-700 dark:text-primary-300' :
-                            currentLevelConfig.slopeColor === 'red' ? 'text-negative-700 dark:text-negative-500' :
-                            'text-gray-700 dark:text-gray-300'
-                          }`}>
+                          <span
+                            className={`text-xs font-bold ${
+                              currentLevelConfig.slopeColor === 'green'
+                                ? 'text-positive-700 dark:text-positive-500'
+                                : currentLevelConfig.slopeColor === 'blue'
+                                  ? 'text-primary-700 dark:text-primary-300'
+                                  : currentLevelConfig.slopeColor === 'red'
+                                    ? 'text-negative-700 dark:text-negative-500'
+                                    : 'text-ink-700 dark:text-ink-300'
+                            }`}
+                          >
                             {currentLevelConfig.slopeName}
                           </span>
-                          <p className="text-[10px] text-gray-500 dark:text-gray-400">
+                          <p className="text-[10px] text-ink-500 dark:text-ink-400">
                             {currentLevelConfig.name} niveau
                           </p>
                         </div>
                       </div>
-                      <Mountain className={`w-4 h-4 ${
-                        currentLevelConfig.slopeColor === 'green' ? 'text-positive-500 dark:text-positive-500' :
-                        currentLevelConfig.slopeColor === 'blue' ? 'text-primary-500 dark:text-primary-300' :
-                        currentLevelConfig.slopeColor === 'red' ? 'text-negative-500 dark:text-negative-500' :
-                        'text-gray-400 dark:text-gray-500'
-                      }`} />
+                      <Mountain
+                        className={`w-4 h-4 ${
+                          currentLevelConfig.slopeColor === 'green'
+                            ? 'text-positive-500 dark:text-positive-500'
+                            : currentLevelConfig.slopeColor === 'blue'
+                              ? 'text-primary-500 dark:text-primary-300'
+                              : currentLevelConfig.slopeColor === 'red'
+                                ? 'text-negative-500 dark:text-negative-500'
+                                : 'text-ink-400 dark:text-ink-500'
+                        }`}
+                      />
                     </div>
                   </button>
                 </div>
@@ -414,26 +488,34 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription, isSi
                         setShowUserMenu(false);
                         navigate('/settings');
                       }}
-                      className="flex items-center gap-2 p-2 rounded-lg bg-gray-50 dark:bg-slate-700/50 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors group"
+                      className="flex items-center gap-2 p-2 rounded-lg bg-surface dark:bg-slate-700/50 hover:bg-surface-subtle dark:hover:bg-slate-700 transition-colors group"
                     >
                       <div className="w-7 h-7 rounded-md bg-white dark:bg-slate-600 shadow-sm flex items-center justify-center group-hover:scale-105 transition-transform">
-                        <Settings className="w-3.5 h-3.5 text-gray-600 dark:text-gray-300" />
+                        <Settings className="w-3.5 h-3.5 text-ink-600 dark:text-ink-300" />
                       </div>
-                      <span className="text-xs font-medium text-gray-700 dark:text-gray-200">Instellingen</span>
+                      <span className="text-xs font-medium text-ink-700 dark:text-ink-200">
+                        Instellingen
+                      </span>
                     </button>
 
                     {/* Help Cards Toggle */}
                     <button
                       onClick={handleToggleExtraInfo}
-                      className="flex items-center gap-2 p-2 rounded-lg bg-gray-50 dark:bg-slate-700/50 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors group"
+                      className="flex items-center gap-2 p-2 rounded-lg bg-surface dark:bg-slate-700/50 hover:bg-surface-subtle dark:hover:bg-slate-700 transition-colors group"
                     >
                       <div className="w-7 h-7 rounded-md bg-white dark:bg-slate-600 shadow-sm flex items-center justify-center group-hover:scale-105 transition-transform">
-                        <Info className="w-3.5 h-3.5 text-gray-600 dark:text-gray-300" />
+                        <Info className="w-3.5 h-3.5 text-ink-600 dark:text-ink-300" />
                       </div>
                       <div className="flex-1 flex items-center justify-between">
-                        <span className="text-xs font-medium text-gray-700 dark:text-gray-200">Help</span>
-                        <div className={`w-7 h-3.5 rounded-full transition-colors ${showExtraInfo ? 'bg-primary-500' : 'bg-gray-300 dark:bg-gray-600'} relative`}>
-                          <div className={`absolute top-0.5 left-0.5 w-2.5 h-2.5 rounded-full bg-white shadow-sm transition-transform ${showExtraInfo ? 'translate-x-3.5' : ''}`} />
+                        <span className="text-xs font-medium text-ink-700 dark:text-ink-200">
+                          Help
+                        </span>
+                        <div
+                          className={`w-7 h-3.5 rounded-full transition-colors ${showExtraInfo ? 'bg-primary-500' : 'bg-ink-200 dark:bg-trading-dark-600'} relative`}
+                        >
+                          <div
+                            className={`absolute top-0.5 left-0.5 w-2.5 h-2.5 rounded-full bg-white shadow-sm transition-transform ${showExtraInfo ? 'translate-x-3.5' : ''}`}
+                          />
                         </div>
                       </div>
                     </button>
@@ -445,21 +527,23 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription, isSi
 
                 {/* Preferences Section */}
                 <div className="p-3 space-y-2">
-                  <p className="text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-1">
+                  <p className="text-[10px] font-semibold text-ink-400 dark:text-ink-500 uppercase tracking-wider px-1">
                     Voorkeuren
                   </p>
 
                   {/* Language */}
-                  <div className="flex items-center gap-2 p-1.5 rounded-lg bg-gray-50 dark:bg-slate-700/50">
+                  <div className="flex items-center gap-2 p-1.5 rounded-lg bg-surface dark:bg-slate-700/50">
                     <div className="w-7 h-7 rounded-md bg-white dark:bg-slate-600 shadow-sm flex items-center justify-center">
-                      <Globe className="w-3.5 h-3.5 text-gray-600 dark:text-gray-300" />
+                      <Globe className="w-3.5 h-3.5 text-ink-600 dark:text-ink-300" />
                     </div>
                     <div className="flex-1">
-                      <span className="text-[10px] text-gray-500 dark:text-gray-400">{t('header.language')}</span>
+                      <span className="text-[10px] text-ink-500 dark:text-ink-400">
+                        {t('header.language')}
+                      </span>
                       <select
                         value={i18n.language}
                         onChange={(e) => handleLanguageChange(e.target.value)}
-                        className="w-full px-0 py-0 text-xs font-medium bg-transparent border-none text-gray-900 dark:text-white focus:outline-none focus:ring-0 cursor-pointer"
+                        className="w-full px-0 py-0 text-xs font-medium bg-transparent border-none text-ink-900 dark:text-white focus:outline-none focus:ring-0 cursor-pointer"
                       >
                         <option value="en">English</option>
                         <option value="nl">Nederlands</option>
@@ -469,16 +553,18 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription, isSi
                   </div>
 
                   {/* Theme */}
-                  <div className="flex items-center gap-2 p-1.5 rounded-lg bg-gray-50 dark:bg-slate-700/50">
+                  <div className="flex items-center gap-2 p-1.5 rounded-lg bg-surface dark:bg-slate-700/50">
                     <div className="w-7 h-7 rounded-md bg-white dark:bg-slate-600 shadow-sm flex items-center justify-center">
-                      <Palette className="w-3.5 h-3.5 text-gray-600 dark:text-gray-300" />
+                      <Palette className="w-3.5 h-3.5 text-ink-600 dark:text-ink-300" />
                     </div>
                     <div className="flex-1">
-                      <span className="text-[10px] text-gray-500 dark:text-gray-400">{t('header.theme')}</span>
+                      <span className="text-[10px] text-ink-500 dark:text-ink-400">
+                        {t('header.theme')}
+                      </span>
                       <select
                         value={currentTheme}
                         onChange={(e) => handleThemeChange(e.target.value as ThemeColor)}
-                        className="w-full px-0 py-0 text-xs font-medium bg-transparent border-none text-gray-900 dark:text-white focus:outline-none focus:ring-0 cursor-pointer"
+                        className="w-full px-0 py-0 text-xs font-medium bg-transparent border-none text-ink-900 dark:text-white focus:outline-none focus:ring-0 cursor-pointer"
                       >
                         {Object.values(THEMES).map((theme) => (
                           <option key={theme.id} value={theme.id}>
@@ -495,24 +581,28 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription, isSi
 
                 {/* Data Section */}
                 <div className="p-3 space-y-1.5">
-                  <p className="text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-1">
+                  <p className="text-[10px] font-semibold text-ink-400 dark:text-ink-500 uppercase tracking-wider px-1">
                     Data
                   </p>
 
                   <div className="flex gap-2">
                     <button
                       onClick={handleBackupData}
-                      className="flex-1 flex items-center justify-center gap-1.5 p-2 rounded-lg bg-gray-50 dark:bg-slate-700/50 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors group"
+                      className="flex-1 flex items-center justify-center gap-1.5 p-2 rounded-lg bg-surface dark:bg-slate-700/50 hover:bg-surface-subtle dark:hover:bg-slate-700 transition-colors group"
                     >
-                      <Download className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200" />
-                      <span className="text-xs font-medium text-gray-600 dark:text-gray-300 group-hover:text-gray-800 dark:group-hover:text-white">Backup</span>
+                      <Download className="w-3.5 h-3.5 text-ink-500 dark:text-ink-400 group-hover:text-ink-700 dark:group-hover:text-ink-200" />
+                      <span className="text-xs font-medium text-ink-600 dark:text-ink-300 group-hover:text-ink-800 dark:group-hover:text-white">
+                        Backup
+                      </span>
                     </button>
                     <button
                       onClick={handleRestoreData}
-                      className="flex-1 flex items-center justify-center gap-1.5 p-2 rounded-lg bg-gray-50 dark:bg-slate-700/50 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors group"
+                      className="flex-1 flex items-center justify-center gap-1.5 p-2 rounded-lg bg-surface dark:bg-slate-700/50 hover:bg-surface-subtle dark:hover:bg-slate-700 transition-colors group"
                     >
-                      <Upload className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200" />
-                      <span className="text-xs font-medium text-gray-600 dark:text-gray-300 group-hover:text-gray-800 dark:group-hover:text-white">Restore</span>
+                      <Upload className="w-3.5 h-3.5 text-ink-500 dark:text-ink-400 group-hover:text-ink-700 dark:group-hover:text-ink-200" />
+                      <span className="text-xs font-medium text-ink-600 dark:text-ink-300 group-hover:text-ink-800 dark:group-hover:text-white">
+                        Restore
+                      </span>
                     </button>
                   </div>
                   <input
@@ -560,7 +650,6 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription, isSi
         onConfirm={handleConfirmRestore}
         timestamp={pendingBackup?.timestamp || ''}
       />
-
     </header>
   );
 };

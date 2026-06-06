@@ -22,16 +22,16 @@ const journalSlice = createSlice({
       state.entries.unshift(action.payload);
     },
     updateEntry: (state, action: PayloadAction<JournalEntry>) => {
-      const index = state.entries.findIndex(e => e.id === action.payload.id);
+      const index = state.entries.findIndex((e) => e.id === action.payload.id);
       if (index !== -1) {
         state.entries[index] = {
           ...action.payload,
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
         };
       }
     },
     deleteEntry: (state, action: PayloadAction<string>) => {
-      state.entries = state.entries.filter(e => e.id !== action.payload);
+      state.entries = state.entries.filter((e) => e.id !== action.payload);
     },
 
     // Goal actions
@@ -39,23 +39,23 @@ const journalSlice = createSlice({
       state.goals.push(action.payload);
     },
     updateGoal: (state, action: PayloadAction<JournalGoal>) => {
-      const index = state.goals.findIndex(g => g.id === action.payload.id);
+      const index = state.goals.findIndex((g) => g.id === action.payload.id);
       if (index !== -1) {
         state.goals[index] = action.payload;
       }
     },
     deleteGoal: (state, action: PayloadAction<string>) => {
-      state.goals = state.goals.filter(g => g.id !== action.payload);
+      state.goals = state.goals.filter((g) => g.id !== action.payload);
     },
     completeGoal: (state, action: PayloadAction<string>) => {
-      const goal = state.goals.find(g => g.id === action.payload);
+      const goal = state.goals.find((g) => g.id === action.payload);
       if (goal) {
         goal.completed = true;
         goal.completedAt = new Date().toISOString();
       }
     },
     updateGoalProgress: (state, action: PayloadAction<{ id: string; currentValue: number }>) => {
-      const goal = state.goals.find(g => g.id === action.payload.id);
+      const goal = state.goals.find((g) => g.id === action.payload.id);
       if (goal) {
         goal.currentValue = action.payload.currentValue;
 
@@ -85,14 +85,12 @@ export const selectJournalEntries = (state: RootState) => state.journal.entries;
 export const selectJournalGoals = (state: RootState) => state.journal.goals;
 
 // Memoized Selectors
-export const selectActiveGoals = createSelector(
-  [selectJournalGoals],
-  (goals) => goals.filter(g => !g.completed)
+export const selectActiveGoals = createSelector([selectJournalGoals], (goals) =>
+  goals.filter((g) => !g.completed)
 );
 
-export const selectCompletedGoals = createSelector(
-  [selectJournalGoals],
-  (goals) => goals.filter(g => g.completed)
+export const selectCompletedGoals = createSelector([selectJournalGoals], (goals) =>
+  goals.filter((g) => g.completed)
 );
 
 export default journalSlice.reducer;

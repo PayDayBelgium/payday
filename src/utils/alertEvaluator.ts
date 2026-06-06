@@ -4,7 +4,15 @@ import { formatNumber } from './numberFormat';
 import { isKaChingEligible } from './campaignDetector';
 import { isSpreadLeg, getSpreadId } from './spreadHelpers';
 import { computeCoveredCallCapacity } from './coveredCallEligibility';
-import type { Position, StockPosition, CallOption, PutOption, StrategyRule, Portfolio, Ticker } from '../types';
+import type {
+  Position,
+  StockPosition,
+  CallOption,
+  PutOption,
+  StrategyRule,
+  Portfolio,
+  Ticker,
+} from '../types';
 
 // Alert item interface
 export interface AlertItem {
@@ -17,7 +25,11 @@ export interface AlertItem {
 }
 
 // System alert types
-export type SystemAlertType = 'negative-cash' | 'expiring-option' | 'price-decrease' | 'price-increase';
+export type SystemAlertType =
+  | 'negative-cash'
+  | 'expiring-option'
+  | 'price-decrease'
+  | 'price-increase';
 
 // Configuration for system alerts
 export interface SystemAlertConfig {
@@ -37,7 +49,7 @@ export const getSystemAlertConfig = (): SystemAlertConfig => {
   if (saved) {
     try {
       return { ...defaultSystemAlertConfig, ...JSON.parse(saved) };
-    } catch (e) {
+    } catch {
       return defaultSystemAlertConfig;
     }
   }
@@ -49,13 +61,13 @@ export const saveSystemAlertConfig = (config: SystemAlertConfig): void => {
   localStorage.setItem('system-alert-config', JSON.stringify(config));
 };
 
-// Get strategy rules for a portfolio from localStorage
-export const getPortfolioStrategyRules = (portfolioName: string): StrategyRule[] => {
+// Get strategy rules from localStorage. Rules are global (not per-portfolio).
+export const getPortfolioStrategyRules = (): StrategyRule[] => {
   const allRules: StrategyRule[] = [];
 
   // Load from global strategy type keys (not per-portfolio)
   const strategyTypes = ['stocks-etfs', 'options', 'general'];
-  strategyTypes.forEach(strategyType => {
+  strategyTypes.forEach((strategyType) => {
     const saved = localStorage.getItem(`strategy-rules-${strategyType}`);
     if (saved) {
       try {
@@ -71,9 +83,8 @@ export const getPortfolioStrategyRules = (portfolioName: string): StrategyRule[]
 };
 
 // Get all strategy rules (global rules, not per-portfolio)
-export const getAllStrategyRules = (portfolios: Portfolio[]): StrategyRule[] => {
-  // Rules are now global, so just get them once
-  return getPortfolioStrategyRules('global');
+export const getAllStrategyRules = (): StrategyRule[] => {
+  return getPortfolioStrategyRules();
 };
 
 // Calculate portfolio free cash
@@ -82,23 +93,33 @@ export const calculatePortfolioFreeCash = (
   positions: Position[]
 ): { totalCash: number; allocatedCash: number; freeCash: number } => {
   const portfolioPositions = positions.filter(
-    p => p.portfolio === portfolio.name && p.status === 'open'
+    (p) => p.portfolio === portfolio.name && p.status === 'open'
   );
 
   // Calculate long value (stocks, ETFs, bought options)
   const stockEtfValue = portfolioPositions
-    .filter(p => p.type === 'stock' || p.type === 'etf')
+    .filter((p) => p.type === 'stock' || p.type === 'etf')
     .reduce((sum, pos) => sum + (pos.currentValue ?? 0), 0);
 
   const optionsLongValue = portfolioPositions
-    .filter(p => (p.type === 'call' || p.type === 'put') && 'action' in p && (p as CallOption | PutOption).action === 'buy')
+    .filter(
+      (p) =>
+        (p.type === 'call' || p.type === 'put') &&
+        'action' in p &&
+        (p as CallOption | PutOption).action === 'buy'
+    )
     .reduce((sum, pos) => sum + Math.abs(pos.currentValue ?? 0), 0);
 
   const longValue = stockEtfValue + optionsLongValue;
 
   // Calculate short value (sold options)
   const shortValue = portfolioPositions
-    .filter(p => (p.type === 'call' || p.type === 'put') && 'action' in p && (p as CallOption | PutOption).action === 'sell')
+    .filter(
+      (p) =>
+        (p.type === 'call' || p.type === 'put') &&
+        'action' in p &&
+        (p as CallOption | PutOption).action === 'sell'
+    )
     .reduce((sum, pos) => sum + Math.abs(pos.currentValue ?? 0), 0);
 
   // Cash = Total Value - Long + Short
@@ -132,26 +153,29 @@ export const evaluatePriceAlerts = (
 
   // Filter to stock/ETF positions
   const stockETFPositions = positions.filter(
-    p => p.status === 'open' &&
-         (p.type === 'stock' || p.type === 'etf') &&
-         (!portfolioFilter || p.portfolio === portfolioFilter)
+    (p) =>
+      p.status === 'open' &&
+      (p.type === 'stock' || p.type === 'etf') &&
+      (!portfolioFilter || p.portfolio === portfolioFilter)
   ) as StockPosition[];
 
-  stockETFPositions.forEach(position => {
-    const positionRules = portfolioRules.filter(r => r.portfolio === position.portfolio);
+  stockETFPositions.forEach((position) => {
+    const positionRules = portfolioRules.filter((r) => r.portfolio === position.portfolio);
 
-    positionRules.forEach(rule => {
+    positionRules.forEach((rule) => {
       let triggered = false;
       let message = '';
 
       if (rule.trigger === 'price_decrease' && rule.parameters?.percentage) {
-        const changePercent = ((position.currentPrice - position.purchasePrice) / position.purchasePrice) * 100;
+        const changePercent =
+          ((position.currentPrice - position.purchasePrice) / position.purchasePrice) * 100;
         if (changePercent <= -rule.parameters.percentage) {
           triggered = true;
           message = `${position.ticker} is ${formatNumber(Math.abs(changePercent), 1)}% gedaald (drempel: -${rule.parameters.percentage}%)`;
         }
       } else if (rule.trigger === 'price_increase' && rule.parameters?.percentage) {
-        const changePercent = ((position.currentPrice - position.purchasePrice) / position.purchasePrice) * 100;
+        const changePercent =
+          ((position.currentPrice - position.purchasePrice) / position.purchasePrice) * 100;
         if (changePercent >= rule.parameters.percentage) {
           triggered = true;
           message = `${position.ticker} is ${formatNumber(changePercent, 1)}% gestegen (drempel: +${rule.parameters.percentage}%)`;
@@ -193,10 +217,10 @@ export const evaluateNegativeCashAlerts = (
   const alerts: AlertItem[] = [];
 
   const filteredPortfolios = portfolioFilter
-    ? portfolios.filter(p => p.name === portfolioFilter)
+    ? portfolios.filter((p) => p.name === portfolioFilter)
     : portfolios;
 
-  filteredPortfolios.forEach(portfolio => {
+  filteredPortfolios.forEach((portfolio) => {
     const { freeCash } = calculatePortfolioFreeCash(portfolio, positions);
 
     if (freeCash < 0) {
@@ -247,13 +271,14 @@ export const evaluateExpiringOptionsAlerts = (
   if (!config.enabled) return alerts;
 
   const optionPositions = positions.filter(
-    p => p.status === 'open' &&
-         (p.type === 'call' || p.type === 'put') &&
-         (!portfolioFilter || p.portfolio === portfolioFilter) &&
-         !isSpreadLeg(p) // Skip spread legs - spread itself handles alerts
+    (p) =>
+      p.status === 'open' &&
+      (p.type === 'call' || p.type === 'put') &&
+      (!portfolioFilter || p.portfolio === portfolioFilter) &&
+      !isSpreadLeg(p) // Skip spread legs - spread itself handles alerts
   ) as (CallOption | PutOption)[];
 
-  optionPositions.forEach(option => {
+  optionPositions.forEach((option) => {
     if (option.expiration) {
       const daysToExpire = getDaysToExpiration(option.expiration);
 
@@ -262,10 +287,19 @@ export const evaluateExpiringOptionsAlerts = (
         if (!dismissedAlerts.has(alertId)) {
           const optionType = option.type === 'call' ? 'Call' : 'Put';
           const actionType = option.action === 'buy' ? 'Long' : 'Short';
-          const urgency = daysToExpire === 0 ? 'VANDAAG' : daysToExpire === 1 ? 'MORGEN' : daysToExpire <= 3 ? 'binnenkort' : 'deze week';
+          const urgency =
+            daysToExpire === 0
+              ? 'VANDAAG'
+              : daysToExpire === 1
+                ? 'MORGEN'
+                : daysToExpire <= 3
+                  ? 'binnenkort'
+                  : 'deze week';
 
           // Get current ticker price if available
-          const tickerData = tickers?.find(t => t.symbol.toUpperCase() === option.ticker.toUpperCase());
+          const tickerData = tickers?.find(
+            (t) => t.symbol.toUpperCase() === option.ticker.toUpperCase()
+          );
           const currentPrice = tickerData?.currentPrice;
           const priceInfo = currentPrice ? `\nKoers: $${formatNumber(currentPrice, 2)}` : '';
 
@@ -311,17 +345,19 @@ export const evaluateStockCoveredCallOpportunities = (
 
   // Filter stock/ETF positions
   const stockPositions = positions.filter(
-    p => p.status === 'open' &&
-         (p.type === 'stock' || p.type === 'etf') &&
-         (!portfolioFilter || p.portfolio === portfolioFilter)
+    (p) =>
+      p.status === 'open' &&
+      (p.type === 'stock' || p.type === 'etf') &&
+      (!portfolioFilter || p.portfolio === portfolioFilter)
   ) as StockPosition[];
 
   // Filter sold calls
   const soldCalls = positions.filter(
-    p => p.status === 'open' &&
-         p.type === 'call' &&
-         (p as CallOption).action === 'sell' &&
-         (!portfolioFilter || p.portfolio === portfolioFilter)
+    (p) =>
+      p.status === 'open' &&
+      p.type === 'call' &&
+      (p as CallOption).action === 'sell' &&
+      (!portfolioFilter || p.portfolio === portfolioFilter)
   ) as CallOption[];
 
   // Group stock lots by ticker+portfolio and iterate once per ticker
@@ -330,7 +366,9 @@ export const evaluateStockCoveredCallOpportunities = (
     const key = `${stock.portfolio}::${stock.ticker}`;
     const entry = groups.get(key) ?? {
       lots: [],
-      calls: soldCalls.filter(sc => sc.ticker === stock.ticker && sc.portfolio === stock.portfolio),
+      calls: soldCalls.filter(
+        (sc) => sc.ticker === stock.ticker && sc.portfolio === stock.portfolio
+      ),
     };
     entry.lots.push(stock);
     groups.set(key, entry);
@@ -396,14 +434,15 @@ export const evaluateLeapsOpportunities = (
 
   // Filter call options (exclude spread legs)
   const callOptions = positions.filter(
-    p => p.status === 'open' &&
-         p.type === 'call' &&
-         (!portfolioFilter || p.portfolio === portfolioFilter) &&
-         !isSpreadLeg(p) // Skip spread legs
+    (p) =>
+      p.status === 'open' &&
+      p.type === 'call' &&
+      (!portfolioFilter || p.portfolio === portfolioFilter) &&
+      !isSpreadLeg(p) // Skip spread legs
   ) as CallOption[];
 
   // Separate LEAPS (long calls with expiration > 1 year) from sold calls
-  const leapsPositions = callOptions.filter(call => {
+  const leapsPositions = callOptions.filter((call) => {
     if (call.action !== 'buy') return false;
     const expDate = new Date(call.expiration);
     const now = new Date();
@@ -411,16 +450,15 @@ export const evaluateLeapsOpportunities = (
     return daysToExp > 365;
   });
 
-  const soldCalls = callOptions.filter(call => call.action === 'sell');
+  const soldCalls = callOptions.filter((call) => call.action === 'sell');
 
   // Find LEAPS for PMCC opportunities
-  leapsPositions.forEach(leap => {
+  leapsPositions.forEach((leap) => {
     // Check existing sold calls for this ticker in the same portfolio
     // Only count calls that are linked to THIS LEAP position (underlyingId matches)
-    const existingCalls = soldCalls.filter(sc =>
-      sc.ticker === leap.ticker &&
-      sc.portfolio === leap.portfolio &&
-      sc.underlyingId === leap.id
+    const existingCalls = soldCalls.filter(
+      (sc) =>
+        sc.ticker === leap.ticker && sc.portfolio === leap.portfolio && sc.underlyingId === leap.id
     );
     const coveredContracts = existingCalls.reduce((sum, sc) => sum + sc.contracts, 0);
 
@@ -478,15 +516,16 @@ export const evaluateKaChingOpportunities = (
 
   // Filter long put options (exclude spread legs)
   const longPuts = positions.filter(
-    p => p.status === 'open' &&
-         p.type === 'put' &&
-         (p as PutOption).action === 'buy' &&
-         (!portfolioFilter || p.portfolio === portfolioFilter) &&
-         !isSpreadLeg(p) // Skip spread legs
+    (p) =>
+      p.status === 'open' &&
+      p.type === 'put' &&
+      (p as PutOption).action === 'buy' &&
+      (!portfolioFilter || p.portfolio === portfolioFilter) &&
+      !isSpreadLeg(p) // Skip spread legs
   ) as PutOption[];
 
   // Check each long put for KaChing eligibility
-  longPuts.forEach(put => {
+  longPuts.forEach((put) => {
     if (isKaChingEligible(put)) {
       const alertId = `kaching-opportunity-${put.id}`;
       if (!dismissedAlerts.has(alertId)) {
@@ -535,14 +574,15 @@ export const evaluateExpiringShortPutOpportunities = (
 
   // Filter short put options (exclude spread legs)
   const shortPuts = positions.filter(
-    p => p.status === 'open' &&
-         p.type === 'put' &&
-         (p as PutOption).action === 'sell' &&
-         (!portfolioFilter || p.portfolio === portfolioFilter) &&
-         !isSpreadLeg(p)
+    (p) =>
+      p.status === 'open' &&
+      p.type === 'put' &&
+      (p as PutOption).action === 'sell' &&
+      (!portfolioFilter || p.portfolio === portfolioFilter) &&
+      !isSpreadLeg(p)
   ) as PutOption[];
 
-  shortPuts.forEach(put => {
+  shortPuts.forEach((put) => {
     if (!put.expiration) return;
 
     const daysToExpire = getDaysToExpiration(put.expiration);
@@ -550,7 +590,7 @@ export const evaluateExpiringShortPutOpportunities = (
     // Check if expiring within the configured days
     if (daysToExpire <= config.expiringOptionDays && daysToExpire >= 0) {
       // Get current ticker price
-      const tickerData = tickers?.find(t => t.symbol.toUpperCase() === put.ticker.toUpperCase());
+      const tickerData = tickers?.find((t) => t.symbol.toUpperCase() === put.ticker.toUpperCase());
       const currentPrice = tickerData?.currentPrice;
 
       // Only show opportunity if put is OTM (stock price above strike)
@@ -559,9 +599,17 @@ export const evaluateExpiringShortPutOpportunities = (
         if (!dismissedAlerts.has(alertId)) {
           const premiumReceived = Math.abs(put.costBasis);
           const currentValue = Math.abs(put.currentValue ?? 0);
-          const profitPercent = premiumReceived > 0 ? ((premiumReceived - currentValue) / premiumReceived) * 100 : 0;
+          const profitPercent =
+            premiumReceived > 0 ? ((premiumReceived - currentValue) / premiumReceived) * 100 : 0;
 
-          const urgency = daysToExpire === 0 ? 'VANDAAG' : daysToExpire === 1 ? 'MORGEN' : daysToExpire <= 3 ? 'binnenkort' : 'deze week';
+          const urgency =
+            daysToExpire === 0
+              ? 'VANDAAG'
+              : daysToExpire === 1
+                ? 'MORGEN'
+                : daysToExpire <= 3
+                  ? 'binnenkort'
+                  : 'deze week';
 
           opportunities.push({
             id: alertId,
@@ -606,19 +654,22 @@ export const evaluatePutPositionAlerts = (
 
   // Filter put options (exclude spread legs - spread itself handles alerts)
   const putOptions = positions.filter(
-    p => p.status === 'open' &&
-         p.type === 'put' &&
-         (!portfolioFilter || p.portfolio === portfolioFilter) &&
-         !isSpreadLeg(p) // Skip spread legs
+    (p) =>
+      p.status === 'open' &&
+      p.type === 'put' &&
+      (!portfolioFilter || p.portfolio === portfolioFilter) &&
+      !isSpreadLeg(p) // Skip spread legs
   ) as PutOption[];
 
-  putOptions.forEach(put => {
+  putOptions.forEach((put) => {
     // For short puts: alert if stock price is below strike (ITM)
     if (put.action === 'sell') {
       const alertId = `put-position-alert-${put.id}`;
       if (!dismissedAlerts.has(alertId)) {
         // Get current ticker price
-        const tickerData = tickers?.find(t => t.symbol.toUpperCase() === put.ticker.toUpperCase());
+        const tickerData = tickers?.find(
+          (t) => t.symbol.toUpperCase() === put.ticker.toUpperCase()
+        );
         const currentPrice = tickerData?.currentPrice;
 
         // Check if put is ITM (stock price below strike)
@@ -671,15 +722,16 @@ export const evaluateExpiringSpreadAlerts = (
 
   // Filter options that are part of spreads
   const spreadOptions = positions.filter(
-    p => p.status === 'open' &&
-         (p.type === 'call' || p.type === 'put') &&
-         getSpreadId(p) !== null &&
-         (!portfolioFilter || p.portfolio === portfolioFilter)
+    (p) =>
+      p.status === 'open' &&
+      (p.type === 'call' || p.type === 'put') &&
+      getSpreadId(p) !== null &&
+      (!portfolioFilter || p.portfolio === portfolioFilter)
   ) as (CallOption | PutOption)[];
 
   // Group by spread ID
   const spreadGroups = new Map<string, (CallOption | PutOption)[]>();
-  spreadOptions.forEach(option => {
+  spreadOptions.forEach((option) => {
     const spreadId = getSpreadId(option);
     if (spreadId) {
       if (!spreadGroups.has(spreadId)) {
@@ -701,16 +753,26 @@ export const evaluateExpiringSpreadAlerts = (
       const alertId = `expiring-spread-${spreadId}`;
       if (!dismissedAlerts.has(alertId)) {
         const optionType = firstLeg.type === 'call' ? 'Call' : 'Put';
-        const urgency = daysToExpire === 0 ? 'VANDAAG' : daysToExpire === 1 ? 'MORGEN' : daysToExpire <= 3 ? 'binnenkort' : 'deze week';
+        const urgency =
+          daysToExpire === 0
+            ? 'VANDAAG'
+            : daysToExpire === 1
+              ? 'MORGEN'
+              : daysToExpire <= 3
+                ? 'binnenkort'
+                : 'deze week';
 
         // Get current ticker price if available
-        const tickerData = tickers?.find(t => t.symbol.toUpperCase() === firstLeg.ticker.toUpperCase());
+        const tickerData = tickers?.find(
+          (t) => t.symbol.toUpperCase() === firstLeg.ticker.toUpperCase()
+        );
         const currentPrice = tickerData?.currentPrice;
         const priceInfo = currentPrice ? `\nKoers: $${formatNumber(currentPrice, 2)}` : '';
 
         // Get strike info from legs
-        const strikes = legs.map(l => l.strike).sort((a, b) => a - b);
-        const strikeRange = strikes.length === 2 ? `$${strikes[0]}-$${strikes[1]}` : `$${strikes[0]}`;
+        const strikes = legs.map((l) => l.strike).sort((a, b) => a - b);
+        const strikeRange =
+          strikes.length === 2 ? `$${strikes[0]}-$${strikes[1]}` : `$${strikes[0]}`;
 
         alerts.push({
           id: alertId,
@@ -754,15 +816,16 @@ export const evaluatePutSpreadAlerts = (
 
   // Filter put options that are part of spreads
   const putOptions = positions.filter(
-    p => p.status === 'open' &&
-         p.type === 'put' &&
-         getSpreadId(p) !== null &&
-         (!portfolioFilter || p.portfolio === portfolioFilter)
+    (p) =>
+      p.status === 'open' &&
+      p.type === 'put' &&
+      getSpreadId(p) !== null &&
+      (!portfolioFilter || p.portfolio === portfolioFilter)
   ) as PutOption[];
 
   // Group puts by spread ID
   const spreadGroups = new Map<string, PutOption[]>();
-  putOptions.forEach(put => {
+  putOptions.forEach((put) => {
     const spreadId = getSpreadId(put);
     if (spreadId) {
       if (!spreadGroups.has(spreadId)) {
@@ -775,13 +838,15 @@ export const evaluatePutSpreadAlerts = (
   // Evaluate each spread
   spreadGroups.forEach((legs, spreadId) => {
     // Find short and long legs
-    const shortLeg = legs.find(leg => leg.action === 'sell');
-    const longLeg = legs.find(leg => leg.action === 'buy');
+    const shortLeg = legs.find((leg) => leg.action === 'sell');
+    const longLeg = legs.find((leg) => leg.action === 'buy');
 
     if (!shortLeg || !longLeg) return;
 
     // Get current stock price
-    const tickerData = tickers?.find(t => t.symbol.toUpperCase() === shortLeg.ticker.toUpperCase());
+    const tickerData = tickers?.find(
+      (t) => t.symbol.toUpperCase() === shortLeg.ticker.toUpperCase()
+    );
     const currentPrice = tickerData?.currentPrice;
 
     if (!currentPrice) return;
@@ -835,15 +900,16 @@ export const evaluateCallSpreadAlerts = (
 
   // Filter call options that are part of spreads
   const callOptions = positions.filter(
-    p => p.status === 'open' &&
-         p.type === 'call' &&
-         getSpreadId(p) !== null &&
-         (!portfolioFilter || p.portfolio === portfolioFilter)
+    (p) =>
+      p.status === 'open' &&
+      p.type === 'call' &&
+      getSpreadId(p) !== null &&
+      (!portfolioFilter || p.portfolio === portfolioFilter)
   ) as CallOption[];
 
   // Group calls by spread ID
   const spreadGroups = new Map<string, CallOption[]>();
-  callOptions.forEach(call => {
+  callOptions.forEach((call) => {
     const spreadId = getSpreadId(call);
     if (spreadId) {
       if (!spreadGroups.has(spreadId)) {
@@ -856,13 +922,15 @@ export const evaluateCallSpreadAlerts = (
   // Evaluate each spread
   spreadGroups.forEach((legs, spreadId) => {
     // Find short and long legs
-    const shortLeg = legs.find(leg => leg.action === 'sell');
-    const longLeg = legs.find(leg => leg.action === 'buy');
+    const shortLeg = legs.find((leg) => leg.action === 'sell');
+    const longLeg = legs.find((leg) => leg.action === 'buy');
 
     if (!shortLeg || !longLeg) return;
 
     // Get current stock price
-    const tickerData = tickers?.find(t => t.symbol.toUpperCase() === shortLeg.ticker.toUpperCase());
+    const tickerData = tickers?.find(
+      (t) => t.symbol.toUpperCase() === shortLeg.ticker.toUpperCase()
+    );
     const currentPrice = tickerData?.currentPrice;
 
     if (!currentPrice) return;
@@ -915,15 +983,16 @@ export const evaluateProfitOpportunities = (
 
   // First, handle spread profit opportunities
   const spreadOptions = positions.filter(
-    p => p.status === 'open' &&
-         (p.type === 'call' || p.type === 'put') &&
-         getSpreadId(p) !== null &&
-         (!portfolioFilter || p.portfolio === portfolioFilter)
+    (p) =>
+      p.status === 'open' &&
+      (p.type === 'call' || p.type === 'put') &&
+      getSpreadId(p) !== null &&
+      (!portfolioFilter || p.portfolio === portfolioFilter)
   ) as (CallOption | PutOption)[];
 
   // Group by spread ID
   const spreadGroups = new Map<string, (CallOption | PutOption)[]>();
-  spreadOptions.forEach(option => {
+  spreadOptions.forEach((option) => {
     const spreadId = getSpreadId(option);
     if (spreadId) {
       if (!spreadGroups.has(spreadId)) {
@@ -942,14 +1011,16 @@ export const evaluateProfitOpportunities = (
 
     const expDate = new Date(firstLeg.expiration);
     const now = new Date();
-    const daysToExpiration = Math.floor((expDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    const daysToExpiration = Math.floor(
+      (expDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+    );
 
     // Skip expired spreads
     if (daysToExpiration <= 0) return;
 
     // Find short and long legs
-    const shortLeg = legs.find(leg => leg.action === 'sell');
-    const longLeg = legs.find(leg => leg.action === 'buy');
+    const shortLeg = legs.find((leg) => leg.action === 'sell');
+    const longLeg = legs.find((leg) => leg.action === 'buy');
 
     if (!shortLeg || !longLeg) return;
 
@@ -970,8 +1041,8 @@ export const evaluateProfitOpportunities = (
     // Calculate P&L and max profit
     const totalPnL = totalCostBasis - totalCurrentValue;
     const maxProfit = isCredit
-      ? totalCostBasis  // Credit spread: max profit is premium received
-      : spreadWidth * shortLeg.contracts * 100 - Math.abs(totalCostBasis);  // Debit spread
+      ? totalCostBasis // Credit spread: max profit is premium received
+      : spreadWidth * shortLeg.contracts * 100 - Math.abs(totalCostBasis); // Debit spread
 
     // Calculate profit percentage
     const profitPercent = maxProfit !== 0 ? (totalPnL / maxProfit) * 100 : 0;
@@ -1014,16 +1085,19 @@ export const evaluateProfitOpportunities = (
 
   // Filter option positions (exclude spread legs)
   const optionPositions = positions.filter(
-    p => p.status === 'open' &&
-         (p.type === 'call' || p.type === 'put') &&
-         (!portfolioFilter || p.portfolio === portfolioFilter) &&
-         !isSpreadLeg(p) // Skip spread legs
+    (p) =>
+      p.status === 'open' &&
+      (p.type === 'call' || p.type === 'put') &&
+      (!portfolioFilter || p.portfolio === portfolioFilter) &&
+      !isSpreadLeg(p) // Skip spread legs
   ) as (CallOption | PutOption)[];
 
-  optionPositions.forEach(option => {
+  optionPositions.forEach((option) => {
     const expDate = new Date(option.expiration);
     const now = new Date();
-    const daysToExpiration = Math.floor((expDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    const daysToExpiration = Math.floor(
+      (expDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+    );
 
     // Skip expired options
     if (daysToExpiration <= 0) return;
@@ -1093,37 +1167,106 @@ export const evaluateAllAlerts = (
   tickers?: Ticker[]
 ): { alerts: AlertItem[]; opportunities: AlertItem[] } => {
   const config = getSystemAlertConfig();
-  const allRules = getAllStrategyRules(portfolios);
+  const allRules = getAllStrategyRules();
 
   // Evaluate price-based alerts
   const priceResults = evaluatePriceAlerts(positions, allRules, dismissedAlerts, portfolioFilter);
 
   // Evaluate system alerts
-  const negativeCashAlerts = evaluateNegativeCashAlerts(portfolios, positions, dismissedAlerts, portfolioFilter);
-  const expiringOptionsAlerts = evaluateExpiringOptionsAlerts(positions, dismissedAlerts, config, portfolioFilter, tickers);
-  const expiringSpreadAlerts = evaluateExpiringSpreadAlerts(positions, dismissedAlerts, config, portfolioFilter, tickers);
-  const putPositionAlerts = evaluatePutPositionAlerts(positions, dismissedAlerts, portfolioFilter, tickers);
-  const putSpreadAlerts = evaluatePutSpreadAlerts(positions, dismissedAlerts, portfolioFilter, tickers);
-  const callSpreadAlerts = evaluateCallSpreadAlerts(positions, dismissedAlerts, portfolioFilter, tickers);
+  const negativeCashAlerts = evaluateNegativeCashAlerts(
+    portfolios,
+    positions,
+    dismissedAlerts,
+    portfolioFilter
+  );
+  const expiringOptionsAlerts = evaluateExpiringOptionsAlerts(
+    positions,
+    dismissedAlerts,
+    config,
+    portfolioFilter,
+    tickers
+  );
+  const expiringSpreadAlerts = evaluateExpiringSpreadAlerts(
+    positions,
+    dismissedAlerts,
+    config,
+    portfolioFilter,
+    tickers
+  );
+  const putPositionAlerts = evaluatePutPositionAlerts(
+    positions,
+    dismissedAlerts,
+    portfolioFilter,
+    tickers
+  );
+  const putSpreadAlerts = evaluatePutSpreadAlerts(
+    positions,
+    dismissedAlerts,
+    portfolioFilter,
+    tickers
+  );
+  const callSpreadAlerts = evaluateCallSpreadAlerts(
+    positions,
+    dismissedAlerts,
+    portfolioFilter,
+    tickers
+  );
 
   // Evaluate LEAPS opportunities
-  const leapsOpportunities = evaluateLeapsOpportunities(positions, dismissedAlerts, portfolioFilter);
+  const leapsOpportunities = evaluateLeapsOpportunities(
+    positions,
+    dismissedAlerts,
+    portfolioFilter
+  );
 
   // Evaluate stock covered call opportunities
-  const stockCCOpportunities = evaluateStockCoveredCallOpportunities(positions, dismissedAlerts, portfolioFilter);
+  const stockCCOpportunities = evaluateStockCoveredCallOpportunities(
+    positions,
+    dismissedAlerts,
+    portfolioFilter
+  );
 
   // Evaluate KaChing opportunities
-  const kaChingOpportunities = evaluateKaChingOpportunities(positions, dismissedAlerts, portfolioFilter);
+  const kaChingOpportunities = evaluateKaChingOpportunities(
+    positions,
+    dismissedAlerts,
+    portfolioFilter
+  );
 
   // Evaluate profit opportunities
-  const profitOpportunities = evaluateProfitOpportunities(positions, dismissedAlerts, portfolioFilter);
+  const profitOpportunities = evaluateProfitOpportunities(
+    positions,
+    dismissedAlerts,
+    portfolioFilter
+  );
 
   // Evaluate expiring short put opportunities (OTM)
-  const expiringShortPutOpportunities = evaluateExpiringShortPutOpportunities(positions, dismissedAlerts, config, portfolioFilter, tickers);
+  const expiringShortPutOpportunities = evaluateExpiringShortPutOpportunities(
+    positions,
+    dismissedAlerts,
+    config,
+    portfolioFilter,
+    tickers
+  );
 
   return {
-    alerts: [...priceResults.alerts, ...negativeCashAlerts, ...expiringOptionsAlerts, ...expiringSpreadAlerts, ...putPositionAlerts, ...putSpreadAlerts, ...callSpreadAlerts],
-    opportunities: [...priceResults.opportunities, ...leapsOpportunities, ...stockCCOpportunities, ...kaChingOpportunities, ...profitOpportunities, ...expiringShortPutOpportunities],
+    alerts: [
+      ...priceResults.alerts,
+      ...negativeCashAlerts,
+      ...expiringOptionsAlerts,
+      ...expiringSpreadAlerts,
+      ...putPositionAlerts,
+      ...putSpreadAlerts,
+      ...callSpreadAlerts,
+    ],
+    opportunities: [
+      ...priceResults.opportunities,
+      ...leapsOpportunities,
+      ...stockCCOpportunities,
+      ...kaChingOpportunities,
+      ...profitOpportunities,
+      ...expiringShortPutOpportunities,
+    ],
   };
 };
 
@@ -1139,26 +1282,48 @@ export const getPortfolioAlertCounts = (
   positions: Position[],
   dismissedAlerts: Set<string>,
   tickers?: Ticker[]
-): Record<string, { alerts: number; opportunities: number; alertItems: AlertTooltipItem[]; opportunityItems: AlertTooltipItem[] }> => {
-  const result: Record<string, { alerts: number; opportunities: number; alertItems: AlertTooltipItem[]; opportunityItems: AlertTooltipItem[] }> = {};
+): Record<
+  string,
+  {
+    alerts: number;
+    opportunities: number;
+    alertItems: AlertTooltipItem[];
+    opportunityItems: AlertTooltipItem[];
+  }
+> => {
+  const result: Record<
+    string,
+    {
+      alerts: number;
+      opportunities: number;
+      alertItems: AlertTooltipItem[];
+      opportunityItems: AlertTooltipItem[];
+    }
+  > = {};
 
   // Initialize result for each portfolio
-  portfolios.forEach(portfolio => {
+  portfolios.forEach((portfolio) => {
     result[portfolio.name] = { alerts: 0, opportunities: 0, alertItems: [], opportunityItems: [] };
   });
 
   // Get all alerts and opportunities
-  const { alerts, opportunities } = evaluateAllAlerts(portfolios, positions, dismissedAlerts, undefined, tickers);
+  const { alerts, opportunities } = evaluateAllAlerts(
+    portfolios,
+    positions,
+    dismissedAlerts,
+    undefined,
+    tickers
+  );
 
   // Count per portfolio
-  alerts.forEach(alert => {
+  alerts.forEach((alert) => {
     if (result[alert.portfolio]) {
       result[alert.portfolio].alerts++;
       result[alert.portfolio].alertItems.push({ ticker: alert.ticker, message: alert.message });
     }
   });
 
-  opportunities.forEach(opp => {
+  opportunities.forEach((opp) => {
     if (result[opp.portfolio]) {
       result[opp.portfolio].opportunities++;
       result[opp.portfolio].opportunityItems.push({ ticker: opp.ticker, message: opp.message });

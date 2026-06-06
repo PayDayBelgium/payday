@@ -32,10 +32,12 @@ export const GoalsOverview: React.FC = () => {
 
       // Only update if value has changed significantly (> $1)
       if (Math.abs((goal.currentValue || 0) - newCurrentValue) > 1) {
-        dispatch(updateGoalProgress({
-          id: goal.id,
-          currentValue: newCurrentValue,
-        }));
+        dispatch(
+          updateGoalProgress({
+            id: goal.id,
+            currentValue: newCurrentValue,
+          })
+        );
       }
     });
   }, [activeGoals, totalPortfolioValue, dispatch]);
@@ -110,12 +112,12 @@ export const GoalsOverview: React.FC = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+    <div className="bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 shadow-sm">
+      <div className="p-6 border-b border-surface-line dark:border-trading-dark-600">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Target className="w-6 h-6 text-primary-700 dark:text-primary-300" />
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+            <h2 className="text-lg font-bold text-ink-900 dark:text-white">
               {t('dashboard.activeGoals')}
             </h2>
           </div>
@@ -136,7 +138,7 @@ export const GoalsOverview: React.FC = () => {
           return (
             <div
               key={goal.id}
-              className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-primary-300 dark:hover:border-primary-500 transition-colors cursor-pointer"
+              className="p-4 bg-surface dark:bg-trading-dark-700/50 rounded-lg border border-surface-line dark:border-trading-dark-500 hover:border-primary-300 dark:hover:border-primary-500 transition-colors cursor-pointer"
               onClick={() => navigate('/journal')}
             >
               {/* Header */}
@@ -152,11 +154,9 @@ export const GoalsOverview: React.FC = () => {
                       </span>
                     )}
                   </div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white">
-                    {goal.title}
-                  </h3>
+                  <h3 className="font-semibold text-ink-900 dark:text-white">{goal.title}</h3>
                   {goal.description && (
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
+                    <p className="text-xs text-ink-600 dark:text-ink-400 mt-1 line-clamp-2">
                       {goal.description}
                     </p>
                   )}
@@ -166,23 +166,23 @@ export const GoalsOverview: React.FC = () => {
               {/* Progress Bar */}
               <div className="mb-3">
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                  <span className="text-xs font-medium text-ink-700 dark:text-ink-300">
                     {t('journal.progress')}
                   </span>
-                  <span className="text-xs font-semibold text-gray-900 dark:text-white">
+                  <span className="text-xs font-semibold text-ink-900 dark:text-white">
                     {formatNumber(progress, 1)}%
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2 overflow-hidden">
+                <div className="w-full bg-surface-muted dark:bg-trading-dark-600 rounded-full h-2 overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all duration-500 ${
                       progress >= 100
                         ? 'bg-positive-500'
                         : progress >= 75
-                        ? 'bg-primary-500'
-                        : progress >= 50
-                        ? 'bg-caution-500'
-                        : 'bg-caution-500'
+                          ? 'bg-primary-500'
+                          : progress >= 50
+                            ? 'bg-caution-500'
+                            : 'bg-caution-500'
                     }`}
                     style={{ width: `${progress}%` }}
                   />
@@ -193,8 +193,8 @@ export const GoalsOverview: React.FC = () => {
               <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-1.5">
-                    <TrendingUp className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                    <span className="text-gray-700 dark:text-gray-300">
+                    <TrendingUp className="w-4 h-4 text-ink-500 dark:text-ink-400" />
+                    <span className="text-ink-700 dark:text-ink-300">
                       {goal.currentValue ? formatCurrency(goal.currentValue) : formatCurrency(0)}
                       {' / '}
                       {formatCurrency(goal.targetValue)}
@@ -202,16 +202,18 @@ export const GoalsOverview: React.FC = () => {
                   </div>
                   {goal.deadline && (
                     <div className="flex items-center gap-1.5">
-                      <Calendar className={`w-4 h-4 ${overdue ? 'text-negative-600' : 'text-gray-500 dark:text-gray-400'}`} />
-                      <span className={`${overdue ? 'text-negative-600 dark:text-negative-500 font-medium' : 'text-gray-700 dark:text-gray-300'}`}>
+                      <Calendar
+                        className={`w-4 h-4 ${overdue ? 'text-negative-600' : 'text-ink-500 dark:text-ink-400'}`}
+                      />
+                      <span
+                        className={`${overdue ? 'text-negative-600 dark:text-negative-500 font-medium' : 'text-ink-700 dark:text-ink-300'}`}
+                      >
                         {formatDate(goal.deadline)}
                       </span>
                     </div>
                   )}
                 </div>
-                {progress >= 100 && (
-                  <CheckCircle2 className="w-5 h-5 text-positive-600" />
-                )}
+                {progress >= 100 && <CheckCircle2 className="w-5 h-5 text-positive-600" />}
               </div>
             </div>
           );

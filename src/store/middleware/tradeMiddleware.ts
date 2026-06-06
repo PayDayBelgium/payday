@@ -5,7 +5,14 @@ import type { Trade, Position, StockPosition, CallOption, PutOption } from '../.
 
 type ClosePositionAction = UnknownAction & {
   type: 'positions/closePosition';
-  payload: { id: string; closeDate: string; closePrice?: number; closePremium?: number; realizedPnL?: number; notes?: string };
+  payload: {
+    id: string;
+    closeDate: string;
+    closePrice?: number;
+    closePremium?: number;
+    realizedPnL?: number;
+    notes?: string;
+  };
 };
 
 /**
@@ -22,7 +29,7 @@ export const tradeMiddleware: Middleware = (store) => (next) => (action) => {
   const a = action as UnknownAction;
   if (a.type === 'positions/closePosition') {
     const closeAction = a as ClosePositionAction;
-    const position = stateBefore.positions.positions.find(p => p.id === closeAction.payload.id);
+    const position = stateBefore.positions.positions.find((p) => p.id === closeAction.payload.id);
     if (position) {
       const trade = createTradeFromPosition(position, closeAction.payload);
       if (trade) {
@@ -77,8 +84,12 @@ function createTradeFromPosition(position: Position, closePayload: any): Trade |
       ticker: position.ticker,
       portfolio: position.portfolio,
       strategy: isSell
-        ? (option.type === 'call' ? 'Covered Calls' : 'Cash Secured Puts')
-        : (option.type === 'call' ? 'Long Calls' : 'Long Puts'),
+        ? option.type === 'call'
+          ? 'Covered Calls'
+          : 'Cash Secured Puts'
+        : option.type === 'call'
+          ? 'Long Calls'
+          : 'Long Puts',
       openDate: position.openDate,
       closeDate: closePayload.closeDate,
       entryPrice: option.premium,

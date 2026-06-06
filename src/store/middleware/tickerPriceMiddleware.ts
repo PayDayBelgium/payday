@@ -2,15 +2,19 @@ import type { Middleware } from '@reduxjs/toolkit';
 import type { RootState } from '../index';
 import { updatePosition, addPriceAlert } from '../slices/positionsSlice';
 import { addAlert } from '../slices/alertsSlice';
-import type { Position, StockPosition, CallOption, PutOption, PriceAlert, PositionAlert } from '../../types';
+import type {
+  Position,
+  StockPosition,
+  CallOption,
+  PutOption,
+  PriceAlert,
+  PositionAlert,
+} from '../../types';
 import { formatNumber } from '../../utils/numberFormat';
 
 // Helper to check if action is a ticker price update
 const isTickerPriceUpdate = (action: any): boolean => {
-  return (
-    action.type === 'tickers/updateTicker' ||
-    action.type === 'tickers/updateTickerPrice'
-  );
+  return action.type === 'tickers/updateTicker' || action.type === 'tickers/updateTickerPrice';
 };
 
 // Helper to get updated ticker info from action
@@ -67,7 +71,7 @@ export const tickerPriceMiddleware: Middleware = (store) => (next) => (action) =
   // Get old price BEFORE the action is processed
   const stateBefore = store.getState() as RootState;
   const oldTicker = stateBefore.tickers.tickers.find(
-    t => t.symbol.toUpperCase() === symbol.toUpperCase()
+    (t) => t.symbol.toUpperCase() === symbol.toUpperCase()
   );
   const oldPrice = oldTicker?.currentPrice;
 
@@ -79,7 +83,7 @@ export const tickerPriceMiddleware: Middleware = (store) => (next) => (action) =
 
   // Find all open positions for this ticker
   const positions = state.positions.positions.filter(
-    p => p.ticker.toUpperCase() === symbol.toUpperCase() && p.status === 'open'
+    (p) => p.ticker.toUpperCase() === symbol.toUpperCase() && p.status === 'open'
   );
 
   if (positions.length === 0) {
@@ -94,11 +98,13 @@ export const tickerPriceMiddleware: Middleware = (store) => (next) => (action) =
       const newCurrentValue = stockPosition.shares * newPrice;
 
       // Update position with new current value and price
-      store.dispatch(updatePosition({
-        ...stockPosition,
-        currentPrice: newPrice,
-        currentValue: newCurrentValue,
-      }));
+      store.dispatch(
+        updatePosition({
+          ...stockPosition,
+          currentPrice: newPrice,
+          currentValue: newCurrentValue,
+        })
+      );
 
       // Check for 10% price change from purchase price
       const purchasePrice = stockPosition.purchasePrice;
@@ -106,10 +112,10 @@ export const tickerPriceMiddleware: Middleware = (store) => (next) => (action) =
 
       // Check active price alert rules for this position
       const rules = state.positions.priceAlertRules.filter(
-        r => r.positionId === position.id && r.isActive
+        (r) => r.positionId === position.id && r.isActive
       );
 
-      rules.forEach(rule => {
+      rules.forEach((rule) => {
         let shouldTrigger = false;
 
         if (rule.type === 'price_increase' && priceChangePercent >= rule.percentage) {
@@ -121,8 +127,9 @@ export const tickerPriceMiddleware: Middleware = (store) => (next) => (action) =
         if (shouldTrigger) {
           // Check if already triggered recently (within last hour)
           const existingAlerts = state.positions.priceAlerts.filter(
-            a => a.ruleId === rule.id &&
-            new Date().getTime() - new Date(a.triggeredAt).getTime() < 3600000
+            (a) =>
+              a.ruleId === rule.id &&
+              new Date().getTime() - new Date(a.triggeredAt).getTime() < 3600000
           );
 
           if (existingAlerts.length === 0) {
@@ -156,9 +163,8 @@ export const tickerPriceMiddleware: Middleware = (store) => (next) => (action) =
       // Check if strike price was crossed
       if (didCrossStrike(option, oldPrice, newPrice)) {
         const isNowITM = isOptionITM(option, newPrice);
-        const direction = option.type === 'call'
-          ? (isNowITM ? 'boven' : 'onder')
-          : (isNowITM ? 'onder' : 'boven');
+        const direction =
+          option.type === 'call' ? (isNowITM ? 'boven' : 'onder') : isNowITM ? 'onder' : 'boven';
 
         // Determine severity based on position type
         // Sold options becoming ITM is a warning/danger
@@ -174,9 +180,10 @@ export const tickerPriceMiddleware: Middleware = (store) => (next) => (action) =
           severity: severity as 'warning' | 'info' | 'critical',
           message: `${symbol} ${option.type.toUpperCase()} $${option.strike} is nu ${isNowITM ? 'ITM' : 'OTM'} - prijs ${direction} strike ($${formatNumber(newPrice, 2)})`,
           actionable: true,
-          suggestedAction: isNowITM && isSoldOption
-            ? `Overweeg positie te sluiten of te rollen - ${option.contracts} contract(s) ${option.type} $${option.strike} exp ${option.expiration}`
-            : undefined,
+          suggestedAction:
+            isNowITM && isSoldOption
+              ? `Overweeg positie te sluiten of te rollen - ${option.contracts} contract(s) ${option.type} $${option.strike} exp ${option.expiration}`
+              : undefined,
         };
 
         store.dispatch(addAlert(alert));

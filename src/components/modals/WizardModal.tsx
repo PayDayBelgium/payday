@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight, Check } from 'lucide-react';
+import { Modal } from '../common/Modal';
 
 export interface WizardStep {
   id: string;
@@ -96,23 +97,34 @@ export const WizardModal: React.FC<WizardModalProps> = ({
   const canGoNext = currentStep.isValid !== false;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-[900px] h-[750px] overflow-hidden flex flex-col">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      // De wizard heeft een eigen header/footer; verberg de standaard chrome van Modal.
+      showCloseButton={false}
+      blur
+      // Identiek aan het origineel: niet sluiten via backdrop-klik of Escape.
+      closeOnBackdropClick={false}
+      closeOnEscape={false}
+      // Vaste breedte/hoogte i.p.v. een max-width, identiek aan de originele wizard.
+      sizeClassName="w-[900px] h-[750px]"
+      cardClassName="bg-white dark:bg-trading-dark-800 rounded-xl shadow-2xl overflow-hidden flex flex-col"
+      contentClassName="flex flex-col flex-1 overflow-hidden"
+    >
+      <>
         {/* Header */}
-        <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
+        <div className="sticky top-0 bg-white dark:bg-trading-dark-800 border-b border-surface-line dark:border-trading-dark-600 px-6 py-4 flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-              {title}
-            </h2>
+            <h2 className="text-xl font-bold text-ink-900 dark:text-white">{title}</h2>
             {currentStep.description && (
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              <p className="text-sm text-ink-600 dark:text-ink-400 mt-1">
                 {currentStep.description}
               </p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            className="text-ink-400 hover:text-ink-600 dark:hover:text-ink-300 transition-colors"
           >
             <X className="w-6 h-6" />
           </button>
@@ -120,7 +132,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
 
         {/* Step Indicator */}
         {showStepIndicator && steps.length > 1 && (
-          <div className="bg-gray-50 dark:bg-gray-900 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="bg-surface dark:bg-trading-dark-900 px-6 py-4 border-b border-surface-line dark:border-trading-dark-600">
             <div className="flex items-center justify-between">
               {steps.map((step, index) => {
                 const isActive = index === currentStepIndex;
@@ -141,8 +153,8 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                           isCompleted
                             ? 'bg-positive-600 text-white'
                             : isActive
-                            ? 'bg-primary-700 text-white'
-                            : 'bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-400'
+                              ? 'bg-primary-700 text-white'
+                              : 'bg-ink-200 dark:bg-trading-dark-600 text-ink-600 dark:text-ink-400'
                         }`}
                       >
                         {isCompleted ? <Check className="w-4 h-4" /> : index + 1}
@@ -153,8 +165,8 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                             isActive
                               ? 'text-primary-700 dark:text-primary-300'
                               : isCompleted
-                              ? 'text-positive-600 dark:text-positive-500'
-                              : 'text-gray-500 dark:text-gray-400'
+                                ? 'text-positive-600 dark:text-positive-500'
+                                : 'text-ink-500 dark:text-ink-400'
                           }`}
                         >
                           {step.title}
@@ -166,7 +178,7 @@ export const WizardModal: React.FC<WizardModalProps> = ({
                         className={`flex-1 h-0.5 mx-2 ${
                           index < currentStepIndex
                             ? 'bg-positive-600'
-                            : 'bg-gray-300 dark:bg-gray-600'
+                            : 'bg-ink-200 dark:bg-trading-dark-600'
                         }`}
                       />
                     )}
@@ -179,27 +191,25 @@ export const WizardModal: React.FC<WizardModalProps> = ({
 
         {/* Step Content */}
         <div className="flex-1 overflow-y-auto p-6">
-          <div className="max-w-3xl mx-auto">
-            {currentStep.component}
-          </div>
+          <div className="max-w-3xl mx-auto">{currentStep.component}</div>
         </div>
 
         {/* Footer with Navigation */}
-        <div className="sticky bottom-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
-          <div className="text-sm text-gray-600 dark:text-gray-400">
+        <div className="sticky bottom-0 bg-white dark:bg-trading-dark-800 border-t border-surface-line dark:border-trading-dark-600 px-6 py-4 flex items-center justify-between">
+          <div className="text-sm text-ink-600 dark:text-ink-400">
             Stap {currentStepIndex + 1} van {steps.length}
           </div>
           <div className="flex gap-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg font-medium transition-colors"
+              className="px-4 py-2 bg-surface-muted dark:bg-trading-dark-700 hover:bg-ink-200 dark:hover:bg-trading-dark-600 text-ink-700 dark:text-ink-200 rounded-lg font-medium transition-colors"
             >
               Annuleren
             </button>
             {!isFirstStep && (
               <button
                 onClick={handlePrevious}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg font-medium transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-surface-muted dark:bg-trading-dark-700 hover:bg-ink-200 dark:hover:bg-trading-dark-600 text-ink-700 dark:text-ink-200 rounded-lg font-medium transition-colors"
               >
                 <ChevronLeft className="w-4 h-4" />
                 Vorige
@@ -208,14 +218,14 @@ export const WizardModal: React.FC<WizardModalProps> = ({
             <button
               onClick={handleNext}
               disabled={!canGoNext}
-              className="flex items-center gap-2 px-4 py-2 bg-primary-700 hover:bg-primary-800 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-primary-700 hover:bg-primary-800 disabled:bg-ink-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
             >
               {isLastStep ? completeButtonLabel : 'Volgende'}
               {!isLastStep && <ChevronRight className="w-4 h-4" />}
             </button>
           </div>
         </div>
-      </div>
-    </div>
+      </>
+    </Modal>
   );
 };

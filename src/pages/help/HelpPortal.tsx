@@ -1,5 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { HelpCircle, ChevronRight, ChevronDown, Calculator, TrendingUp, DollarSign, Zap, WalletMinimal, Settings, Briefcase, BarChart3, BookOpen } from 'lucide-react';
+import {
+  HelpCircle,
+  ChevronRight,
+  ChevronDown,
+  Calculator,
+  TrendingUp,
+  DollarSign,
+  Zap,
+  WalletMinimal,
+  Settings,
+  Briefcase,
+  BarChart3,
+  BookOpen,
+} from 'lucide-react';
 import { usePageTitle } from '../../contexts/PageTitleContext';
 
 interface HelpSection {
@@ -30,7 +43,7 @@ const helpSections: HelpSection[] = [
       },
       {
         subtitle: "Poor Man's Covered Call",
-        text: "Een variant van de Covered Call waarbij je een LEAP (langlopende call optie) gebruikt als onderpand in plaats van aandelen. Dit verlaagt de kapitaalvereiste maar voegt het risico toe dat de LEAP waardeloos kan aflopen.",
+        text: 'Een variant van de Covered Call waarbij je een LEAP (langlopende call optie) gebruikt als onderpand in plaats van aandelen. Dit verlaagt de kapitaalvereiste maar voegt het risico toe dat de LEAP waardeloos kan aflopen.',
       },
       {
         subtitle: 'LEAP / LEAPS',
@@ -98,7 +111,7 @@ const helpSections: HelpSection[] = [
     content: [
       {
         subtitle: 'What is PayDay?',
-        text: 'PayDay is a powerful tool designed to help you track and manage your options trading strategies across multiple portfolios. Whether you\'re running Poor Man\'s Covered Calls, selling Cash Secured Puts, or managing complex spreads, PayDay keeps everything organized in one place.',
+        text: "PayDay is a powerful tool designed to help you track and manage your options trading strategies across multiple portfolios. Whether you're running Poor Man's Covered Calls, selling Cash Secured Puts, or managing complex spreads, PayDay keeps everything organized in one place.",
       },
       {
         subtitle: 'Key Features',
@@ -112,7 +125,7 @@ const helpSections: HelpSection[] = [
   },
   {
     id: 'pmcc',
-    title: 'Poor Man\'s Covered Call (PMCC)',
+    title: "Poor Man's Covered Call (PMCC)",
     icon: <WalletMinimal className="w-6 h-6" />,
     description: "Learn about the Poor Man's Covered Call strategy and how to track it",
     content: [
@@ -122,7 +135,7 @@ const helpSections: HelpSection[] = [
       },
       {
         subtitle: "How to Use Poor Man's Covered Call in PayDay",
-        text: "Navigate to your portfolio's Poor Man's Covered Call page to add LEAP positions. Each LEAP shows how many contracts are \"covered\" by short calls and which are uncovered. The system tracks your cost basis, current value, and warns you about approaching expirations.",
+        text: 'Navigate to your portfolio\'s Poor Man\'s Covered Call page to add LEAP positions. Each LEAP shows how many contracts are "covered" by short calls and which are uncovered. The system tracks your cost basis, current value, and warns you about approaching expirations.',
       },
       {
         subtitle: "Poor Man's Covered Call Calculator",
@@ -186,11 +199,11 @@ const helpSections: HelpSection[] = [
     content: [
       {
         subtitle: 'What is a Cash Secured Put?',
-        text: 'A Cash Secured Put involves selling a put option while keeping enough cash in your account to buy the stock if assigned. It\'s a way to generate income while potentially acquiring stock at a price you\'re happy with.',
+        text: "A Cash Secured Put involves selling a put option while keeping enough cash in your account to buy the stock if assigned. It's a way to generate income while potentially acquiring stock at a price you're happy with.",
       },
       {
         subtitle: 'Why Sell Cash Secured Puts?',
-        text: 'Cash Secured Puts are ideal when you\'re bullish on a stock and wouldn\'t mind owning it at a lower price. You collect premium immediately, and if the stock stays above your strike price, you keep the premium without buying the stock.',
+        text: "Cash Secured Puts are ideal when you're bullish on a stock and wouldn't mind owning it at a lower price. You collect premium immediately, and if the stock stays above your strike price, you keep the premium without buying the stock.",
       },
       {
         subtitle: 'Tracking Cash Secured Puts',
@@ -230,7 +243,7 @@ const helpSections: HelpSection[] = [
     content: [
       {
         subtitle: "Poor Man's Covered Call Calculator",
-        text: "Plan Poor Man's Covered Call trades by entering stock price, LEAP details, and expected premium from selling calls. The calculator shows ROI, annualized returns, and break-even analysis. Use the \"Create LEAP Position\" button to transfer data directly to your portfolio.",
+        text: 'Plan Poor Man\'s Covered Call trades by entering stock price, LEAP details, and expected premium from selling calls. The calculator shows ROI, annualized returns, and break-even analysis. Use the "Create LEAP Position" button to transfer data directly to your portfolio.',
       },
       {
         subtitle: 'KaChing Calculator',
@@ -290,7 +303,7 @@ const helpSections: HelpSection[] = [
       },
       {
         subtitle: 'Trade History',
-        text: 'Review past trades, analyze what worked and what didn\'t, and learn from your trading history. Filter by portfolio, strategy, or time period.',
+        text: "Review past trades, analyze what worked and what didn't, and learn from your trading history. Filter by portfolio, strategy, or time period.",
       },
     ],
   },
@@ -305,57 +318,52 @@ export const HelpPortal: React.FC = () => {
   }, [setPageTitle]);
 
   const toggleSection = (sectionId: string) => {
-    setExpandedSections(prev =>
-      prev.includes(sectionId)
-        ? prev.filter(id => id !== sectionId)
-        : [...prev, sectionId]
+    setExpandedSections((prev) =>
+      prev.includes(sectionId) ? prev.filter((id) => id !== sectionId) : [...prev, sectionId]
     );
   };
 
   return (
     <div className="space-y-6">
-
       {/* Help Sections */}
       <div className="space-y-4">
         {helpSections.map((section) => (
           <div
             key={section.id}
-            className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
+            className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 overflow-hidden"
           >
             {/* Section Header */}
             <button
               onClick={() => toggleSection(section.id)}
-              className="w-full flex items-center justify-between p-5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors text-left"
+              className="w-full flex items-center justify-between p-5 hover:bg-surface dark:hover:bg-trading-dark-700/50 transition-colors text-left"
             >
               <div className="flex items-center gap-4">
                 <div className="icon-bg-primary p-2 rounded-lg">
                   <div className="icon-text-primary">{section.icon}</div>
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  <h2 className="text-lg font-semibold text-ink-900 dark:text-white">
                     {section.title}
                   </h2>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {section.description}
-                  </p>
+                  <p className="text-sm text-ink-600 dark:text-ink-400">{section.description}</p>
                 </div>
               </div>
               {expandedSections.includes(section.id) ? (
-                <ChevronDown className="w-5 h-5 text-gray-400" />
+                <ChevronDown className="w-5 h-5 text-ink-400" />
               ) : (
-                <ChevronRight className="w-5 h-5 text-gray-400" />
+                <ChevronRight className="w-5 h-5 text-ink-400" />
               )}
             </button>
 
             {/* Section Content */}
             {expandedSections.includes(section.id) && (
-              <div className="px-5 pb-5 space-y-4 border-t border-gray-200 dark:border-gray-700 pt-4">
+              <div className="px-5 pb-5 space-y-4 border-t border-surface-line dark:border-trading-dark-600 pt-4">
                 {section.content.map((item, index) => (
                   <div key={index}>
-                    <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2">
+                    <h3 className="text-base font-semibold text-ink-900 dark:text-white mb-2">
                       {item.subtitle}
                     </h3>
-                    <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                    <p className="text-sm text-ink-700 dark:text-ink-300 leading-relaxed">
                       {item.text}
                     </p>
                   </div>
@@ -367,43 +375,55 @@ export const HelpPortal: React.FC = () => {
       </div>
 
       {/* Quick Tips */}
-      <div className="bg-primary-50 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-5">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
-          Quick Tips
-        </h2>
-        <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+      <div className="bg-primary-50 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-5">
+        <h2 className="text-lg font-semibold text-ink-900 dark:text-white mb-3">Quick Tips</h2>
+        <ul className="space-y-2 text-sm text-ink-700 dark:text-ink-300">
           <li className="flex items-start gap-2">
             <span className="icon-text-primary mt-0.5">•</span>
-            <span>Use the calculators to plan trades before executing them - they help you understand potential returns and risks.</span>
+            <span>
+              Use the calculators to plan trades before executing them - they help you understand
+              potential returns and risks.
+            </span>
           </li>
           <li className="flex items-start gap-2">
             <span className="icon-text-primary mt-0.5">•</span>
-            <span>Enable help cards from the user menu if you need reminders about how each strategy works.</span>
+            <span>
+              Enable help cards from the user menu if you need reminders about how each strategy
+              works.
+            </span>
           </li>
           <li className="flex items-start gap-2">
             <span className="icon-text-primary mt-0.5">•</span>
-            <span>Regularly update your position values to track accurate P&L and make informed decisions.</span>
+            <span>
+              Regularly update your position values to track accurate P&L and make informed
+              decisions.
+            </span>
           </li>
           <li className="flex items-start gap-2">
             <span className="icon-text-primary mt-0.5">•</span>
-            <span>Watch for yellow warning indicators - they highlight positions that need attention (approaching expiration, uncovered contracts, etc.).</span>
+            <span>
+              Watch for yellow warning indicators - they highlight positions that need attention
+              (approaching expiration, uncovered contracts, etc.).
+            </span>
           </li>
           <li className="flex items-start gap-2">
             <span className="icon-text-primary mt-0.5">•</span>
-            <span>Use the ticker overview to monitor concentration risk across all your positions.</span>
+            <span>
+              Use the ticker overview to monitor concentration risk across all your positions.
+            </span>
           </li>
         </ul>
       </div>
 
       {/* Need More Help */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-5 text-center">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+      <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-5 text-center">
+        <h2 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
           Need More Help?
         </h2>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+        <p className="text-sm text-ink-600 dark:text-ink-400 mb-4">
           Have a question that isn't covered here? We're here to help!
         </p>
-        <p className="text-xs text-gray-500 dark:text-gray-400">
+        <p className="text-xs text-ink-500 dark:text-ink-400">
           PayDay is constantly being improved based on user feedback.
         </p>
       </div>

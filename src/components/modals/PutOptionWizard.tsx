@@ -1,35 +1,28 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TrendingUp, TrendingDown, ArrowRightLeft, Info, BarChart3, RefreshCw } from 'lucide-react';
+import { TrendingUp, TrendingDown, ArrowRightLeft, BarChart3, RefreshCw } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useSelector } from 'react-redux';
 import { addPosition } from '../../store/slices/positionsSlice';
-import { addTransaction, addTicker } from '../../store/slices/portfoliosSlice';
+import { addTransaction } from '../../store/slices/portfoliosSlice';
 import { ensureTicker, selectAllTickers } from '../../store/slices/tickersSlice';
 import { selectActiveWheels, updateWheelPremium } from '../../store/slices/wheelsSlice';
 import { WizardModal, type WizardStep } from './WizardModal';
 import { TickerSelector } from '../widgets/TickerSelector';
 import { PnLCurve } from '../widgets/PnLCurve';
 import { FridayDatePicker } from '../common/FridayDatePicker';
-import { parseLocalizedNumber, formatNumber, getDecimalSeparator } from '../../utils/numberFormat';
+import { LocalizedNumberInput } from '../common/LocalizedNumberInput';
+import { NewTickerForm } from './NewTickerForm';
+import { formatNumber, getDecimalSeparator } from '../../utils/numberFormat';
 import type { PutOption, Ticker, PortfolioName, CurrencyType } from '../../types';
 import type { RootState } from '../../store';
 import {
   type OptionAction,
   type OptionLegData,
-  validateNumberInput,
+  type NewTickerData,
   calculateDTE,
   calculatePutBreakEven,
-  calculateSpreadCollateral,
-  calculateCashReserved,
   calculatePutValues,
-  validatePutSpread,
-  getPutPnLType,
-  calculatePutSpreadSummary,
-  generatePutOptionId,
-  generateSpreadId,
-  generateTransactionId,
-  DEFAULT_NEW_TICKER_DATA,
 } from './optionWizardUtils';
 
 interface PutOptionWizardProps {
@@ -71,7 +64,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
 
   // Wheel linking state
   const [selectedWheelId, setSelectedWheelId] = useState<string | null>(null);
-  const [showWheelLinking, setShowWheelLinking] = useState(false);
+  const [, setShowWheelLinking] = useState(false);
 
   // Controlled step index for pre-filling
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
@@ -79,10 +72,10 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
   // Step 2: Ticker selection
   const [selectedTicker, setSelectedTicker] = useState<Ticker | null>(null);
   const [isCreatingTicker, setIsCreatingTicker] = useState(false);
-  const [newTickerData, setNewTickerData] = useState({
+  const [newTickerData, setNewTickerData] = useState<NewTickerData>({
     symbol: '',
     name: '',
-    type: 'stock' as 'stock' | 'etf',
+    type: 'stock',
     optionsAvailable: true,
     miniContractsAvailable: false,
     hasDividend: false,
@@ -103,16 +96,8 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
     contracts: 1,
   });
 
-  const [purchaseDate, setPurchaseDate] = useState(
-    new Date().toISOString().split('T')[0]
-  );
+  const [purchaseDate, setPurchaseDate] = useState(new Date().toISOString().split('T')[0]);
   const [notes, setNotes] = useState('');
-
-  // Text representations for locale-based number formatting
-  const [longLegStrikeText, setLongLegStrikeText] = useState('');
-  const [longLegPremiumText, setLongLegPremiumText] = useState('');
-  const [shortLegStrikeText, setShortLegStrikeText] = useState('');
-  const [shortLegPremiumText, setShortLegPremiumText] = useState('');
 
   // Refs for autofocus
   const strikeInputRef = useRef<HTMLInputElement>(null);
@@ -141,7 +126,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
       currentPrice: 10, // Default price for new tickers
     };
 
-    dispatch(addTicker(ticker));
+    dispatch(ensureTicker(ticker));
     setSelectedTicker(ticker);
     setIsCreatingTicker(false);
     setNewTickerData({
@@ -230,13 +215,15 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
       };
 
       // Ensure ticker exists in central store
-      dispatch(ensureTicker({
-        symbol: selectedTicker.symbol,
-        name: selectedTicker.name,
-        type: 'stock',
-        optionsAvailable: selectedTicker.optionsAvailable,
-        miniContractsAvailable: selectedTicker.miniContractsAvailable,
-      }));
+      dispatch(
+        ensureTicker({
+          symbol: selectedTicker.symbol,
+          name: selectedTicker.name,
+          type: 'stock',
+          optionsAvailable: selectedTicker.optionsAvailable,
+          miniContractsAvailable: selectedTicker.miniContractsAvailable,
+        })
+      );
 
       dispatch(addPosition(longPosition));
       dispatch(addPosition(shortPosition));
@@ -291,21 +278,25 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
       // Update wheel premium if linked
       if (action === 'sell' && selectedWheelId) {
         const premiumCollected = longLeg.premium * longLeg.contracts * 100;
-        dispatch(updateWheelPremium({
-          id: selectedWheelId,
-          premiumCollected,
-          realizedPnL: 0, // P&L will be realized when the option closes
-        }));
+        dispatch(
+          updateWheelPremium({
+            id: selectedWheelId,
+            premiumCollected,
+            realizedPnL: 0, // P&L will be realized when the option closes
+          })
+        );
       }
 
       // Ensure ticker exists in central store
-      dispatch(ensureTicker({
-        symbol: selectedTicker.symbol,
-        name: selectedTicker.name,
-        type: 'stock',
-        optionsAvailable: selectedTicker.optionsAvailable,
-        miniContractsAvailable: selectedTicker.miniContractsAvailable,
-      }));
+      dispatch(
+        ensureTicker({
+          symbol: selectedTicker.symbol,
+          name: selectedTicker.name,
+          type: 'stock',
+          optionsAvailable: selectedTicker.optionsAvailable,
+          miniContractsAvailable: selectedTicker.miniContractsAvailable,
+        })
+      );
 
       dispatch(addPosition(newPosition));
 
@@ -349,11 +340,6 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
     setShortLeg({ strike: 0, expiration: '', premium: 0, contracts: 1 });
     setPurchaseDate(new Date().toISOString().split('T')[0]);
     setNotes('');
-    // Reset text states
-    setLongLegStrikeText('');
-    setLongLegPremiumText('');
-    setShortLegStrikeText('');
-    setShortLegPremiumText('');
     // Reset wheel linking
     setSelectedWheelId(null);
     setShowWheelLinking(false);
@@ -398,14 +384,14 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                 className={`p-3 rounded-lg border-2 transition-all ${
                   action === 'buy'
                     ? 'border-negative-600 bg-negative-50 dark:bg-negative-700/15'
-                    : 'border-gray-200 dark:border-gray-700 hover:border-negative-500/30'
+                    : 'border-surface-line dark:border-trading-dark-600 hover:border-negative-500/30'
                 }`}
               >
                 <TrendingDown className="w-6 h-6 mx-auto mb-1.5 text-negative-600 dark:text-negative-500" />
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-0.5">
+                <h3 className="text-sm font-semibold text-ink-900 dark:text-white mb-0.5">
                   {t('putWizard.actionStep.buyPut')}
                 </h3>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
+                <p className="text-xs text-ink-600 dark:text-ink-400">
                   {t('putWizard.actionStep.buyPutDesc')}
                 </p>
               </button>
@@ -415,14 +401,14 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                 className={`p-3 rounded-lg border-2 transition-all ${
                   action === 'sell'
                     ? 'border-positive-600 bg-positive-50 dark:bg-positive-700/15'
-                    : 'border-gray-200 dark:border-gray-700 hover:border-positive-500/30'
+                    : 'border-surface-line dark:border-trading-dark-600 hover:border-positive-500/30'
                 }`}
               >
                 <TrendingUp className="w-6 h-6 mx-auto mb-1.5 text-positive-600 dark:text-positive-500" />
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-0.5">
+                <h3 className="text-sm font-semibold text-ink-900 dark:text-white mb-0.5">
                   {t('putWizard.actionStep.sellPut')}
                 </h3>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
+                <p className="text-xs text-ink-600 dark:text-ink-400">
                   {t('putWizard.actionStep.sellPutDesc')}
                 </p>
               </button>
@@ -432,14 +418,14 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                 className={`p-3 rounded-lg border-2 transition-all ${
                   action === 'credit-spread'
                     ? 'border-ink-700 bg-surface-subtle dark:bg-trading-dark-700'
-                    : 'border-gray-200 dark:border-gray-700 hover:border-ink-300'
+                    : 'border-surface-line dark:border-trading-dark-600 hover:border-ink-300'
                 }`}
               >
                 <ArrowRightLeft className="w-6 h-6 mx-auto mb-1.5 text-ink-600 dark:text-ink-300" />
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-0.5">
+                <h3 className="text-sm font-semibold text-ink-900 dark:text-white mb-0.5">
                   {t('putWizard.actionStep.creditSpread')}
                 </h3>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
+                <p className="text-xs text-ink-600 dark:text-ink-400">
                   {t('putWizard.actionStep.creditSpreadDesc')}
                 </p>
               </button>
@@ -449,14 +435,14 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                 className={`p-3 rounded-lg border-2 transition-all ${
                   action === 'debit-spread'
                     ? 'border-primary-700 bg-primary-50 dark:bg-primary-900/20'
-                    : 'border-gray-200 dark:border-gray-700 hover:border-primary-300'
+                    : 'border-surface-line dark:border-trading-dark-600 hover:border-primary-300'
                 }`}
               >
                 <ArrowRightLeft className="w-6 h-6 mx-auto mb-1.5 text-primary-700 dark:text-primary-300" />
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-0.5">
+                <h3 className="text-sm font-semibold text-ink-900 dark:text-white mb-0.5">
                   {t('putWizard.actionStep.debitSpread')}
                 </h3>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
+                <p className="text-xs text-ink-600 dark:text-ink-400">
                   {t('putWizard.actionStep.debitSpreadDesc')}
                 </p>
               </button>
@@ -472,38 +458,58 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
               <p className="text-xs text-primary-700 dark:text-primary-300 mb-2">
                 {action === 'buy' && (
                   <>
-                    <strong>{t('putWizard.actionStep.buyPutInfo.when')}</strong> {t('putWizard.actionStep.buyPutInfo.whenText')}
-                    <br /><br />
-                    <strong>{t('putWizard.actionStep.buyPutInfo.how')}</strong> {t('putWizard.actionStep.buyPutInfo.howText')}
-                    <br /><br />
-                    <strong>{t('putWizard.actionStep.buyPutInfo.risk')}</strong> {t('putWizard.actionStep.buyPutInfo.riskText')}
+                    <strong>{t('putWizard.actionStep.buyPutInfo.when')}</strong>{' '}
+                    {t('putWizard.actionStep.buyPutInfo.whenText')}
+                    <br />
+                    <br />
+                    <strong>{t('putWizard.actionStep.buyPutInfo.how')}</strong>{' '}
+                    {t('putWizard.actionStep.buyPutInfo.howText')}
+                    <br />
+                    <br />
+                    <strong>{t('putWizard.actionStep.buyPutInfo.risk')}</strong>{' '}
+                    {t('putWizard.actionStep.buyPutInfo.riskText')}
                   </>
                 )}
                 {action === 'sell' && (
                   <>
-                    <strong>{t('putWizard.actionStep.sellPutInfo.when')}</strong> {t('putWizard.actionStep.sellPutInfo.whenText')}
-                    <br /><br />
-                    <strong>{t('putWizard.actionStep.sellPutInfo.how')}</strong> {t('putWizard.actionStep.sellPutInfo.howText')}
-                    <br /><br />
-                    <strong>{t('putWizard.actionStep.sellPutInfo.risk')}</strong> {t('putWizard.actionStep.sellPutInfo.riskText')}
+                    <strong>{t('putWizard.actionStep.sellPutInfo.when')}</strong>{' '}
+                    {t('putWizard.actionStep.sellPutInfo.whenText')}
+                    <br />
+                    <br />
+                    <strong>{t('putWizard.actionStep.sellPutInfo.how')}</strong>{' '}
+                    {t('putWizard.actionStep.sellPutInfo.howText')}
+                    <br />
+                    <br />
+                    <strong>{t('putWizard.actionStep.sellPutInfo.risk')}</strong>{' '}
+                    {t('putWizard.actionStep.sellPutInfo.riskText')}
                   </>
                 )}
                 {action === 'credit-spread' && (
                   <>
-                    <strong>{t('putWizard.actionStep.creditSpreadInfo.when')}</strong> {t('putWizard.actionStep.creditSpreadInfo.whenText')}
-                    <br /><br />
-                    <strong>{t('putWizard.actionStep.creditSpreadInfo.how')}</strong> {t('putWizard.actionStep.creditSpreadInfo.howText')}
-                    <br /><br />
-                    <strong>{t('putWizard.actionStep.creditSpreadInfo.risk')}</strong> {t('putWizard.actionStep.creditSpreadInfo.riskText')}
+                    <strong>{t('putWizard.actionStep.creditSpreadInfo.when')}</strong>{' '}
+                    {t('putWizard.actionStep.creditSpreadInfo.whenText')}
+                    <br />
+                    <br />
+                    <strong>{t('putWizard.actionStep.creditSpreadInfo.how')}</strong>{' '}
+                    {t('putWizard.actionStep.creditSpreadInfo.howText')}
+                    <br />
+                    <br />
+                    <strong>{t('putWizard.actionStep.creditSpreadInfo.risk')}</strong>{' '}
+                    {t('putWizard.actionStep.creditSpreadInfo.riskText')}
                   </>
                 )}
                 {action === 'debit-spread' && (
                   <>
-                    <strong>{t('putWizard.actionStep.debitSpreadInfo.when')}</strong> {t('putWizard.actionStep.debitSpreadInfo.whenText')}
-                    <br /><br />
-                    <strong>{t('putWizard.actionStep.debitSpreadInfo.how')}</strong> {t('putWizard.actionStep.debitSpreadInfo.howText')}
-                    <br /><br />
-                    <strong>{t('putWizard.actionStep.debitSpreadInfo.risk')}</strong> {t('putWizard.actionStep.debitSpreadInfo.riskText')}
+                    <strong>{t('putWizard.actionStep.debitSpreadInfo.when')}</strong>{' '}
+                    {t('putWizard.actionStep.debitSpreadInfo.whenText')}
+                    <br />
+                    <br />
+                    <strong>{t('putWizard.actionStep.debitSpreadInfo.how')}</strong>{' '}
+                    {t('putWizard.actionStep.debitSpreadInfo.howText')}
+                    <br />
+                    <br />
+                    <strong>{t('putWizard.actionStep.debitSpreadInfo.risk')}</strong>{' '}
+                    {t('putWizard.actionStep.debitSpreadInfo.riskText')}
                   </>
                 )}
               </p>
@@ -521,7 +527,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
             {!isCreatingTicker ? (
               <>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
                     {t('putWizard.tickerStep.tickerSymbol')}
                   </label>
                   <TickerSelector
@@ -552,7 +558,8 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                         {selectedTicker.optionsAvailable && (
                           <p className="text-xs text-positive-600 dark:text-positive-500">
                             {t('putWizard.tickerStep.optionsAvailable')}
-                            {selectedTicker.miniContractsAvailable && ` • ${t('putWizard.tickerStep.miniContracts')}`}
+                            {selectedTicker.miniContractsAvailable &&
+                              ` • ${t('putWizard.tickerStep.miniContracts')}`}
                           </p>
                         )}
                       </div>
@@ -561,128 +568,37 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                 )}
               </>
             ) : (
-              <div className="space-y-4">
-                <div className="p-4 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
-                  <h4 className="font-semibold text-primary-900 dark:text-primary-300 mb-2">
-                    {t('putWizard.tickerStep.newTicker')} {newTickerData.symbol}
-                  </h4>
-                  <p className="text-sm text-primary-700 dark:text-primary-300">
-                    {t('putWizard.tickerStep.newTickerDesc')}
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t('putWizard.tickerStep.companyName')}
-                  </label>
-                  <input
-                    type="text"
-                    value={newTickerData.name}
-                    onChange={(e) =>
-                      setNewTickerData({ ...newTickerData, name: e.target.value })
-                    }
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                    placeholder="Apple Inc."
-                    autoFocus
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Type *
-                  </label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      onClick={() => setNewTickerData({ ...newTickerData, type: 'stock' })}
-                      className={`p-3 rounded-lg border-2 transition-all ${
-                        newTickerData.type === 'stock'
-                          ? 'border-primary-700 bg-primary-50 dark:bg-primary-900/20'
-                          : 'border-gray-200 dark:border-gray-700'
-                      }`}
-                    >
-                      <p className="font-medium text-gray-900 dark:text-white">Aandeel</p>
-                    </button>
-                    <button
-                      onClick={() => setNewTickerData({ ...newTickerData, type: 'etf' })}
-                      className={`p-3 rounded-lg border-2 transition-all ${
-                        newTickerData.type === 'etf'
-                          ? 'border-positive-600 bg-positive-50 dark:bg-positive-700/15'
-                          : 'border-gray-200 dark:border-gray-700'
-                      }`}
-                    >
-                      <p className="font-medium text-gray-900 dark:text-white">ETF</p>
-                    </button>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={newTickerData.optionsAvailable}
-                      onChange={(e) =>
-                        setNewTickerData({
-                          ...newTickerData,
-                          optionsAvailable: e.target.checked,
-                        })
-                      }
-                      className="w-4 h-4 text-primary-700 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
-                    />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">
-                      Opties beschikbaar
-                    </span>
-                  </label>
-
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={newTickerData.miniContractsAvailable}
-                      onChange={(e) =>
-                        setNewTickerData({
-                          ...newTickerData,
-                          miniContractsAvailable: e.target.checked,
-                        })
-                      }
-                      className="w-4 h-4 text-primary-700 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
-                    />
-                    <span className="text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                      Mini contracts beschikbaar
-                      <div className="group relative">
-                        <Info className="w-4 h-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-help" />
-                        <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 z-50">
-                          Sommige aandelen hebben mini-contracten van 10 aandelen per contract in plaats van de standaard 100 aandelen per contract
-                        </div>
-                      </div>
-                    </span>
-                  </label>
-                </div>
-
-                <div className="flex gap-3">
-                  <button
-                    onClick={handleCreateTicker}
-                    disabled={!newTickerData.name}
-                    className="flex-1 px-4 py-2 bg-primary-700 hover:bg-primary-800 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
-                  >
-                    Ticker Toevoegen
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsCreatingTicker(false);
-                      setNewTickerData({
-                        symbol: '',
-                        name: '',
-                        type: 'stock',
-                        optionsAvailable: true,
-                        miniContractsAvailable: false,
-                        hasDividend: false,
-                      });
-                    }}
-                    className="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg font-medium transition-colors"
-                  >
-                    Annuleren
-                  </button>
-                </div>
-              </div>
+              <NewTickerForm
+                data={newTickerData}
+                onChange={setNewTickerData}
+                onSave={handleCreateTicker}
+                onCancel={() => {
+                  setIsCreatingTicker(false);
+                  setNewTickerData({
+                    symbol: '',
+                    name: '',
+                    type: 'stock',
+                    optionsAvailable: true,
+                    miniContractsAvailable: false,
+                    hasDividend: false,
+                  });
+                }}
+                labels={{
+                  newTickerHeading: t('putWizard.tickerStep.newTicker'),
+                  newTickerDesc: t('putWizard.tickerStep.newTickerDesc'),
+                  companyName: t('putWizard.tickerStep.companyName'),
+                  companyPlaceholder: 'Apple Inc.',
+                  type: 'Type *',
+                  stock: 'Aandeel',
+                  etf: 'ETF',
+                  optionsAvailableCheck: 'Opties beschikbaar',
+                  miniContractsCheck: 'Mini contracts beschikbaar',
+                  miniContractsTooltip:
+                    'Sommige aandelen hebben mini-contracten van 10 aandelen per contract in plaats van de standaard 100 aandelen per contract',
+                  addTicker: 'Ticker Toevoegen',
+                  cancel: 'Annuleren',
+                }}
+              />
             )}
           </div>
         ),
@@ -690,24 +606,25 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
       {
         id: 'details',
         title: 'Optie details',
-        description: isSpread ? 'Voer details in voor beide legs van de spread' : 'Voer de optie details in',
-        isValid:
-          isSpread
-            ? longLeg.strike > 0 &&
-              longLeg.expiration !== '' &&
-              longLeg.premium > 0 &&
-              longLeg.contracts > 0 &&
-              shortLeg.strike > 0 &&
-              shortLeg.expiration !== '' &&
-              shortLeg.premium > 0 &&
-              shortLeg.contracts > 0 &&
-              (action === 'credit-spread'
-                ? shortLeg.strike > longLeg.strike && shortLeg.premium > longLeg.premium // Credit: short higher, premium validates net credit
-                : longLeg.strike > shortLeg.strike && longLeg.premium > shortLeg.premium) // Debit: long higher, premium validates net debit
-            : longLeg.strike > 0 &&
-              longLeg.expiration !== '' &&
-              longLeg.premium > 0 &&
-              longLeg.contracts > 0,
+        description: isSpread
+          ? 'Voer details in voor beide legs van de spread'
+          : 'Voer de optie details in',
+        isValid: isSpread
+          ? longLeg.strike > 0 &&
+            longLeg.expiration !== '' &&
+            longLeg.premium > 0 &&
+            longLeg.contracts > 0 &&
+            shortLeg.strike > 0 &&
+            shortLeg.expiration !== '' &&
+            shortLeg.premium > 0 &&
+            shortLeg.contracts > 0 &&
+            (action === 'credit-spread'
+              ? shortLeg.strike > longLeg.strike && shortLeg.premium > longLeg.premium // Credit: short higher, premium validates net credit
+              : longLeg.strike > shortLeg.strike && longLeg.premium > shortLeg.premium) // Debit: long higher, premium validates net debit
+          : longLeg.strike > 0 &&
+            longLeg.expiration !== '' &&
+            longLeg.premium > 0 &&
+            longLeg.contracts > 0,
         component: (
           <div className="space-y-6">
             {isSpread ? (
@@ -723,40 +640,26 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                         </h4>
                         <div className="space-y-3">
                           <div>
-                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
                               Strike prijs *
                             </label>
-                            <input
+                            <LocalizedNumberInput
                               ref={strikeInputRef}
-                              type="text"
-                              value={shortLegStrikeText}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (validateNumberInput(value)) {
-                                  setShortLegStrikeText(value);
-                                  setShortLeg({ ...shortLeg, strike: parseLocalizedNumber(value) });
-                                }
-                              }}
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                              value={shortLeg.strike}
+                              onChange={(strike) => setShortLeg({ ...shortLeg, strike })}
+                              className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                               placeholder={`140${getDecimalSeparator()}00`}
                             />
                           </div>
 
                           <div>
-                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
                               Premuim per aandeel *
                             </label>
-                            <input
-                              type="text"
-                              value={shortLegPremiumText}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (validateNumberInput(value)) {
-                                  setShortLegPremiumText(value);
-                                  setShortLeg({ ...shortLeg, premium: parseLocalizedNumber(value) });
-                                }
-                              }}
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            <LocalizedNumberInput
+                              value={shortLeg.premium}
+                              onChange={(premium) => setShortLeg({ ...shortLeg, premium })}
+                              className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                               placeholder={`2${getDecimalSeparator()}50`}
                             />
                           </div>
@@ -770,39 +673,25 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                         </h4>
                         <div className="space-y-3">
                           <div>
-                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
                               Strike prijs *
                             </label>
-                            <input
-                              type="text"
-                              value={longLegStrikeText}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (validateNumberInput(value)) {
-                                  setLongLegStrikeText(value);
-                                  setLongLeg({ ...longLeg, strike: parseLocalizedNumber(value) });
-                                }
-                              }}
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            <LocalizedNumberInput
+                              value={longLeg.strike}
+                              onChange={(strike) => setLongLeg({ ...longLeg, strike })}
+                              className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                               placeholder={`30${getDecimalSeparator()}00`}
                             />
                           </div>
 
                           <div>
-                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
                               Premuim per aandeel *
                             </label>
-                            <input
-                              type="text"
-                              value={longLegPremiumText}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (validateNumberInput(value)) {
-                                  setLongLegPremiumText(value);
-                                  setLongLeg({ ...longLeg, premium: parseLocalizedNumber(value) });
-                                }
-                              }}
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            <LocalizedNumberInput
+                              value={longLeg.premium}
+                              onChange={(premium) => setLongLeg({ ...longLeg, premium })}
+                              className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                               placeholder={`0${getDecimalSeparator()}20`}
                             />
                           </div>
@@ -818,40 +707,26 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                         </h4>
                         <div className="space-y-3">
                           <div>
-                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
                               Strike prijs *
                             </label>
-                            <input
+                            <LocalizedNumberInput
                               ref={strikeInputRef}
-                              type="text"
-                              value={longLegStrikeText}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (validateNumberInput(value)) {
-                                  setLongLegStrikeText(value);
-                                  setLongLeg({ ...longLeg, strike: parseLocalizedNumber(value) });
-                                }
-                              }}
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                              value={longLeg.strike}
+                              onChange={(strike) => setLongLeg({ ...longLeg, strike })}
+                              className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                               placeholder={`140${getDecimalSeparator()}00`}
                             />
                           </div>
 
                           <div>
-                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
                               Premuim per aandeel *
                             </label>
-                            <input
-                              type="text"
-                              value={longLegPremiumText}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (validateNumberInput(value)) {
-                                  setLongLegPremiumText(value);
-                                  setLongLeg({ ...longLeg, premium: parseLocalizedNumber(value) });
-                                }
-                              }}
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            <LocalizedNumberInput
+                              value={longLeg.premium}
+                              onChange={(premium) => setLongLeg({ ...longLeg, premium })}
+                              className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                               placeholder={`2${getDecimalSeparator()}50`}
                             />
                           </div>
@@ -865,39 +740,25 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                         </h4>
                         <div className="space-y-3">
                           <div>
-                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
                               Strike prijs *
                             </label>
-                            <input
-                              type="text"
-                              value={shortLegStrikeText}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (validateNumberInput(value)) {
-                                  setShortLegStrikeText(value);
-                                  setShortLeg({ ...shortLeg, strike: parseLocalizedNumber(value) });
-                                }
-                              }}
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            <LocalizedNumberInput
+                              value={shortLeg.strike}
+                              onChange={(strike) => setShortLeg({ ...shortLeg, strike })}
+                              className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                               placeholder={`30${getDecimalSeparator()}00`}
                             />
                           </div>
 
                           <div>
-                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
                               Premuim per aandeel *
                             </label>
-                            <input
-                              type="text"
-                              value={shortLegPremiumText}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (validateNumberInput(value)) {
-                                  setShortLegPremiumText(value);
-                                  setShortLeg({ ...shortLeg, premium: parseLocalizedNumber(value) });
-                                }
-                              }}
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            <LocalizedNumberInput
+                              value={shortLeg.premium}
+                              onChange={(premium) => setShortLeg({ ...shortLeg, premium })}
+                              className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                               placeholder={`0${getDecimalSeparator()}20`}
                             />
                           </div>
@@ -908,13 +769,13 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                 </div>
 
                 {/* Shared Settings */}
-                <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm">
+                <div className="p-3 bg-surface dark:bg-trading-dark-700 rounded-lg border border-surface-line dark:border-trading-dark-500">
+                  <h4 className="font-semibold text-ink-900 dark:text-white mb-3 text-sm">
                     Spread instellingen
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
                         Expiratie datum *
                       </label>
                       <FridayDatePicker
@@ -923,17 +784,17 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                           setLongLeg({ ...longLeg, expiration: date });
                           setShortLeg({ ...shortLeg, expiration: date });
                         }}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                       />
                       {longLeg.expiration && (
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
                           DTE: {calculateDTE(longLeg.expiration)} dagen
                         </p>
                       )}
                     </div>
 
                     <div>
-                      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
                         Aantal contracten *
                       </label>
                       <input
@@ -945,10 +806,10 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                           setLongLeg({ ...longLeg, contracts });
                           setShortLeg({ ...shortLeg, contracts });
                         }}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                         placeholder="1"
                       />
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
                         = {longLeg.contracts * 100} aandelen
                       </p>
                     </div>
@@ -956,57 +817,90 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                 </div>
 
                 {/* Spread Summary */}
-                {longLeg.strike > 0 && shortLeg.strike > 0 && longLeg.premium > 0 && shortLeg.premium > 0 && (
-                  <div className="p-3 bg-surface-subtle dark:bg-trading-dark-700 rounded-lg border border-ink-200 dark:border-trading-dark-600">
-                    <h4 className="font-semibold text-purple-900 dark:text-ink-300 mb-3 text-sm flex items-center gap-2">
-                      <BarChart3 className="w-4 h-4" />
-                      Spread Overzicht
-                    </h4>
-                    <div className="grid grid-cols-2 gap-3 text-sm">
-                      <div>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                          {action === 'credit-spread' ? 'Netto Credit' : 'Netto Debit'}
-                        </p>
-                        <p className={`font-semibold ${action === 'credit-spread' ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}>
-                          {action === 'credit-spread' ? '+' : '-'}${formatNumber(Math.abs((shortLeg.premium - longLeg.premium) * longLeg.contracts * 100), 2)}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">Max Winst</p>
-                        <p className="font-semibold text-positive-600 dark:text-positive-500">
-                          ${action === 'credit-spread'
-                            ? formatNumber((shortLeg.premium - longLeg.premium) * longLeg.contracts * 100, 2)
-                            : formatNumber((Math.abs(shortLeg.strike - longLeg.strike) - (longLeg.premium - shortLeg.premium)) * longLeg.contracts * 100, 2)
-                          }
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">Max Verlies</p>
-                        <p className="font-semibold text-negative-600 dark:text-negative-500">
-                          -${action === 'credit-spread'
-                            ? formatNumber((Math.abs(shortLeg.strike - longLeg.strike) - (shortLeg.premium - longLeg.premium)) * longLeg.contracts * 100, 2)
-                            : formatNumber((longLeg.premium - shortLeg.premium) * longLeg.contracts * 100, 2)
-                          }
-                        </p>
-                        <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-0.5">
-                          {action === 'credit-spread'
-                            ? `($${formatNumber(Math.abs(shortLeg.strike - longLeg.strike), 2)} × 100 × ${longLeg.contracts}) - $${formatNumber((shortLeg.premium - longLeg.premium) * longLeg.contracts * 100, 2)}`
-                            : `Netto debit betaald`
-                          }
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">Spread Breedte</p>
-                        <p className="font-semibold text-gray-900 dark:text-white">
-                          ${formatNumber(Math.abs(shortLeg.strike - longLeg.strike), 2)}
-                        </p>
-                        <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-0.5">
-                          Max: ${formatNumber(Math.abs(shortLeg.strike - longLeg.strike) * 100 * longLeg.contracts, 2)} ({longLeg.contracts}×100)
-                        </p>
+                {longLeg.strike > 0 &&
+                  shortLeg.strike > 0 &&
+                  longLeg.premium > 0 &&
+                  shortLeg.premium > 0 && (
+                    <div className="p-3 bg-surface-subtle dark:bg-trading-dark-700 rounded-lg border border-ink-200 dark:border-trading-dark-600">
+                      <h4 className="font-semibold text-purple-900 dark:text-ink-300 mb-3 text-sm flex items-center gap-2">
+                        <BarChart3 className="w-4 h-4" />
+                        Spread Overzicht
+                      </h4>
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                          <p className="text-xs text-ink-600 dark:text-ink-400">
+                            {action === 'credit-spread' ? 'Netto Credit' : 'Netto Debit'}
+                          </p>
+                          <p
+                            className={`font-semibold ${action === 'credit-spread' ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
+                          >
+                            {action === 'credit-spread' ? '+' : '-'}$
+                            {formatNumber(
+                              Math.abs(
+                                (shortLeg.premium - longLeg.premium) * longLeg.contracts * 100
+                              ),
+                              2
+                            )}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-ink-600 dark:text-ink-400">Max Winst</p>
+                          <p className="font-semibold text-positive-600 dark:text-positive-500">
+                            $
+                            {action === 'credit-spread'
+                              ? formatNumber(
+                                  (shortLeg.premium - longLeg.premium) * longLeg.contracts * 100,
+                                  2
+                                )
+                              : formatNumber(
+                                  (Math.abs(shortLeg.strike - longLeg.strike) -
+                                    (longLeg.premium - shortLeg.premium)) *
+                                    longLeg.contracts *
+                                    100,
+                                  2
+                                )}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-ink-600 dark:text-ink-400">Max Verlies</p>
+                          <p className="font-semibold text-negative-600 dark:text-negative-500">
+                            -$
+                            {action === 'credit-spread'
+                              ? formatNumber(
+                                  (Math.abs(shortLeg.strike - longLeg.strike) -
+                                    (shortLeg.premium - longLeg.premium)) *
+                                    longLeg.contracts *
+                                    100,
+                                  2
+                                )
+                              : formatNumber(
+                                  (longLeg.premium - shortLeg.premium) * longLeg.contracts * 100,
+                                  2
+                                )}
+                          </p>
+                          <p className="text-[10px] text-ink-500 dark:text-ink-500 mt-0.5">
+                            {action === 'credit-spread'
+                              ? `($${formatNumber(Math.abs(shortLeg.strike - longLeg.strike), 2)} × 100 × ${longLeg.contracts}) - $${formatNumber((shortLeg.premium - longLeg.premium) * longLeg.contracts * 100, 2)}`
+                              : `Netto debit betaald`}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-ink-600 dark:text-ink-400">Spread Breedte</p>
+                          <p className="font-semibold text-ink-900 dark:text-white">
+                            ${formatNumber(Math.abs(shortLeg.strike - longLeg.strike), 2)}
+                          </p>
+                          <p className="text-[10px] text-ink-500 dark:text-ink-500 mt-0.5">
+                            Max: $
+                            {formatNumber(
+                              Math.abs(shortLeg.strike - longLeg.strike) * 100 * longLeg.contracts,
+                              2
+                            )}{' '}
+                            ({longLeg.contracts}×100)
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
               </>
             ) : (
               <>
@@ -1027,65 +921,51 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                 {/* Single Option Details */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
                       Strike prijs *
                     </label>
-                    <input
+                    <LocalizedNumberInput
                       ref={strikeInputRef}
-                      type="text"
-                      value={longLegStrikeText}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        if (validateNumberInput(value)) {
-                          setLongLegStrikeText(value);
-                          setLongLeg({ ...longLeg, strike: parseLocalizedNumber(value) });
-                        }
-                      }}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      value={longLeg.strike}
+                      onChange={(strike) => setLongLeg({ ...longLeg, strike })}
+                      className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                       placeholder={`150${getDecimalSeparator()}00`}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
                       Premuim per aandeel *
                     </label>
-                    <input
-                      type="text"
-                      value={longLegPremiumText}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        if (validateNumberInput(value)) {
-                          setLongLegPremiumText(value);
-                          setLongLeg({ ...longLeg, premium: parseLocalizedNumber(value) });
-                        }
-                      }}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    <LocalizedNumberInput
+                      value={longLeg.premium}
+                      onChange={(premium) => setLongLeg({ ...longLeg, premium })}
+                      className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                       placeholder={`5${getDecimalSeparator()}50`}
                     />
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
                       Totaal: ${formatNumber(longLeg.premium * longLeg.contracts * 100, 2)}
                     </p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
                       Expiratie datum *
                     </label>
                     <FridayDatePicker
                       value={longLeg.expiration}
                       onChange={(date) => setLongLeg({ ...longLeg, expiration: date })}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                     />
                     {longLeg.expiration && (
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
                         DTE: {calculateDTE(longLeg.expiration)} dagen
                       </p>
                     )}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
                       Aantal contracten *
                     </label>
                     <input
@@ -1095,10 +975,10 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                       onChange={(e) =>
                         setLongLeg({ ...longLeg, contracts: parseInt(e.target.value) || 1 })
                       }
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                       placeholder="1"
                     />
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
                       = {longLeg.contracts * 100} aandelen
                     </p>
                   </div>
@@ -1106,26 +986,33 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
 
                 {/* Break-even & Max Display */}
                 {longLeg.strike > 0 && longLeg.premium > 0 && (
-                  <div className={`p-4 rounded-lg border ${
-                    action === 'sell'
-                      ? 'bg-positive-50 dark:bg-positive-700/15 border-positive-500/20 dark:border-positive-700/30'
-                      : 'bg-negative-50 dark:bg-negative-700/15 border-negative-500/20 dark:border-negative-700/30'
-                  }`}>
+                  <div
+                    className={`p-4 rounded-lg border ${
+                      action === 'sell'
+                        ? 'bg-positive-50 dark:bg-positive-700/15 border-positive-500/20 dark:border-positive-700/30'
+                        : 'bg-negative-50 dark:bg-negative-700/15 border-negative-500/20 dark:border-negative-700/30'
+                    }`}
+                  >
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Break-even prijs</p>
-                        <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                        <p className="text-sm text-ink-600 dark:text-ink-400">Break-even prijs</p>
+                        <p className="text-lg font-semibold text-ink-900 dark:text-white">
                           ${formatNumber(calculatePutBreakEven(longLeg.strike, longLeg.premium), 2)}
                         </p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                        <p className="text-sm text-ink-600 dark:text-ink-400">
                           {action === 'buy' ? 'Max Verlies' : 'Max Winst'}
                         </p>
-                        <p className={`text-lg font-semibold ${
-                          action === 'buy' ? 'text-negative-600 dark:text-negative-500' : 'text-positive-600 dark:text-positive-500'
-                        }`}>
-                          {action === 'buy' ? '-' : '+'}${formatNumber(longLeg.premium * longLeg.contracts * 100, 2)}
+                        <p
+                          className={`text-lg font-semibold ${
+                            action === 'buy'
+                              ? 'text-negative-600 dark:text-negative-500'
+                              : 'text-positive-600 dark:text-positive-500'
+                          }`}
+                        >
+                          {action === 'buy' ? '-' : '+'}$
+                          {formatNumber(longLeg.premium * longLeg.contracts * 100, 2)}
                         </p>
                       </div>
                     </div>
@@ -1136,26 +1023,26 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
 
             {/* Common Fields */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
                 Aankoop datum
               </label>
               <input
                 type="date"
                 value={purchaseDate}
                 onChange={(e) => setPurchaseDate(e.target.value)}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
                 Notities
               </label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={3}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                 placeholder="Bijv. strategie notities, doelen, ..."
               />
             </div>
@@ -1170,8 +1057,12 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                       Wheel campagne Gevonden
                     </h4>
                     <p className="text-sm text-caution-600 dark:text-caution-500 mb-3">
-                      Er {matchingWheels.length === 1 ? 'is een actieve Wheel' : `zijn ${matchingWheels.length} actieve Wheels`} voor {selectedTicker?.symbol} in dit portfolio.
-                      Wil je deze CSP koppelen aan een Wheel?
+                      Er{' '}
+                      {matchingWheels.length === 1
+                        ? 'is een actieve Wheel'
+                        : `zijn ${matchingWheels.length} actieve Wheels`}{' '}
+                      voor {selectedTicker?.symbol} in dit portfolio. Wil je deze CSP koppelen aan
+                      een Wheel?
                     </p>
                     <div className="space-y-2">
                       {matchingWheels.map((wheel) => (
@@ -1180,7 +1071,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                           className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
                             selectedWheelId === wheel.id
                               ? 'border-caution-500 bg-caution-50 dark:bg-amber-900/40'
-                              : 'border-gray-200 dark:border-gray-700 hover:border-caution-500/40'
+                              : 'border-surface-line dark:border-trading-dark-600 hover:border-caution-500/40'
                           }`}
                         >
                           <input
@@ -1191,11 +1082,12 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                             className="w-4 h-4 text-caution-600"
                           />
                           <div className="flex-1">
-                            <p className="font-medium text-gray-900 dark:text-white text-sm">
+                            <p className="font-medium text-ink-900 dark:text-white text-sm">
                               Wheel - {wheel.ticker}
                             </p>
-                            <p className="text-xs text-gray-600 dark:text-gray-400">
-                              {wheel.targetContracts} contracten • Cycli: {wheel.cycles} • Premium: ${formatNumber(wheel.totalPremiumCollected, 2)}
+                            <p className="text-xs text-ink-600 dark:text-ink-400">
+                              {wheel.targetContracts} contracten • Cycli: {wheel.cycles} • Premium:
+                              ${formatNumber(wheel.totalPremiumCollected, 2)}
                             </p>
                           </div>
                         </label>
@@ -1203,8 +1095,8 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                       <label
                         className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
                           selectedWheelId === null
-                            ? 'border-gray-500 bg-gray-100 dark:bg-gray-700'
-                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                            ? 'border-ink-400 bg-surface-subtle dark:bg-trading-dark-700'
+                            : 'border-surface-line dark:border-trading-dark-600 hover:border-ink-200'
                         }`}
                       >
                         <input
@@ -1212,13 +1104,13 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                           name="wheel-link"
                           checked={selectedWheelId === null}
                           onChange={() => setSelectedWheelId(null)}
-                          className="w-4 h-4 text-gray-600"
+                          className="w-4 h-4 text-ink-600"
                         />
                         <div className="flex-1">
-                          <p className="font-medium text-gray-900 dark:text-white text-sm">
+                          <p className="font-medium text-ink-900 dark:text-white text-sm">
                             Niet koppelen
                           </p>
-                          <p className="text-xs text-gray-600 dark:text-gray-400">
+                          <p className="text-xs text-ink-600 dark:text-ink-400">
                             Deze CSP wordt een standalone positie
                           </p>
                         </div>
@@ -1230,31 +1122,35 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
             )}
 
             {/* P&L Curve */}
-            {isSpread ? (
-              // Spread P&L Curve
-              longLeg.strike > 0 && shortLeg.strike > 0 && longLeg.premium > 0 && shortLeg.premium > 0 && longLeg.contracts > 0 && (
-                <PnLCurve
-                  type="put-spread"
-                  longStrike={longLeg.strike}
-                  shortStrike={shortLeg.strike}
-                  longPremium={longLeg.premium}
-                  shortPremium={shortLeg.premium}
-                  contracts={longLeg.contracts}
-                  currency={portfolio.currency}
-                />
-              )
-            ) : (
-              // Single Option P&L Curve
-              longLeg.strike > 0 && longLeg.premium > 0 && longLeg.contracts > 0 && (
-                <PnLCurve
-                  type={action === 'buy' ? 'put-buy' : 'put-sell'}
-                  strike={longLeg.strike}
-                  premium={longLeg.premium}
-                  contracts={longLeg.contracts}
-                  currency={portfolio.currency}
-                />
-              )
-            )}
+            {isSpread
+              ? // Spread P&L Curve
+                longLeg.strike > 0 &&
+                shortLeg.strike > 0 &&
+                longLeg.premium > 0 &&
+                shortLeg.premium > 0 &&
+                longLeg.contracts > 0 && (
+                  <PnLCurve
+                    type="put-spread"
+                    longStrike={longLeg.strike}
+                    shortStrike={shortLeg.strike}
+                    longPremium={longLeg.premium}
+                    shortPremium={shortLeg.premium}
+                    contracts={longLeg.contracts}
+                    currency={portfolio.currency}
+                  />
+                )
+              : // Single Option P&L Curve
+                longLeg.strike > 0 &&
+                longLeg.premium > 0 &&
+                longLeg.contracts > 0 && (
+                  <PnLCurve
+                    type={action === 'buy' ? 'put-buy' : 'put-sell'}
+                    strike={longLeg.strike}
+                    premium={longLeg.premium}
+                    contracts={longLeg.contracts}
+                    currency={portfolio.currency}
+                  />
+                )}
           </div>
         ),
       },

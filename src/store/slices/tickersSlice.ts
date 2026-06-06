@@ -145,19 +145,16 @@ export const selectAllTickers = (state: RootState) => state.tickers.tickers;
 
 // Memoized selectors
 export const selectTickerBySymbol = (symbol: string) =>
-  createSelector(
-    [selectAllTickers],
-    (tickers) => tickers.find((t) => t.symbol.toUpperCase() === symbol.toUpperCase())
+  createSelector([selectAllTickers], (tickers) =>
+    tickers.find((t) => t.symbol.toUpperCase() === symbol.toUpperCase())
   );
 
-export const selectWatchlistTickers = createSelector(
-  [selectAllTickers],
-  (tickers) => tickers.filter((t) => t.isWatchlist)
+export const selectWatchlistTickers = createSelector([selectAllTickers], (tickers) =>
+  tickers.filter((t) => t.isWatchlist)
 );
 
-export const selectNonWatchlistTickers = createSelector(
-  [selectAllTickers],
-  (tickers) => tickers.filter((t) => !t.isWatchlist)
+export const selectNonWatchlistTickers = createSelector([selectAllTickers], (tickers) =>
+  tickers.filter((t) => !t.isWatchlist)
 );
 
 export const selectTickerPrice = (symbol: string) =>
@@ -167,16 +164,13 @@ export const selectTickerPrice = (symbol: string) =>
   );
 
 // Memoized selector for tickers sorted by last used
-export const selectTickersSorted = createSelector(
-  [selectAllTickers],
-  (tickers) => {
-    if (!tickers || !Array.isArray(tickers)) return [];
-    return [...tickers].sort((a, b) => {
-      if (!a.lastUsed) return 1;
-      if (!b.lastUsed) return -1;
-      return new Date(b.lastUsed).getTime() - new Date(a.lastUsed).getTime();
-    });
-  }
-);
+export const selectTickersSorted = createSelector([selectAllTickers], (tickers) => {
+  if (!tickers || !Array.isArray(tickers)) return [];
+  return [...tickers].sort((a, b) => {
+    if (!a.lastUsed) return 1;
+    if (!b.lastUsed) return -1;
+    return new Date(b.lastUsed).getTime() - new Date(a.lastUsed).getTime();
+  });
+});
 
 export default tickersSlice.reducer;

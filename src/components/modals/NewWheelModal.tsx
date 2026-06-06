@@ -1,12 +1,27 @@
 import React, { useState, useMemo } from 'react';
-import { X, RefreshCw, Info, ArrowLeft, TrendingUp, Building2, ArrowDownCircle, ArrowUpCircle, Plus, Check } from 'lucide-react';
+import {
+  X,
+  RefreshCw,
+  Info,
+  ArrowLeft,
+  TrendingUp,
+  Building2,
+  Plus,
+} from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
-import { addWheel, updateWheelPremium } from '../../store/slices/wheelsSlice';
+import { addWheel } from '../../store/slices/wheelsSlice';
 import { addPosition, selectPositions, updatePosition } from '../../store/slices/positionsSlice';
 import { ensureTicker } from '../../store/slices/tickersSlice';
 import { TickerSelector } from '../widgets/TickerSelector';
-import type { Ticker, PortfolioName, WheelCampaign, StockPosition, PutOption, Position } from '../../types';
+import type {
+  Ticker,
+  PortfolioName,
+  WheelCampaign,
+  StockPosition,
+  PutOption,
+  Position,
+} from '../../types';
 import { formatNumber } from '../../utils/numberFormat';
 
 interface NewWheelModalProps {
@@ -15,11 +30,7 @@ interface NewWheelModalProps {
   portfolioName: PortfolioName;
 }
 
-export const NewWheelModal: React.FC<NewWheelModalProps> = ({
-  isOpen,
-  onClose,
-  portfolioName,
-}) => {
+export const NewWheelModal: React.FC<NewWheelModalProps> = ({ isOpen, onClose, portfolioName }) => {
   const dispatch = useAppDispatch();
   const allPositions = useAppSelector(selectPositions);
 
@@ -28,12 +39,16 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
   const [notes, setNotes] = useState('');
 
   // Start position selection - what to link to the wheel
-  const [startOption, setStartOption] = useState<'new-csp' | 'existing-csp' | 'new-stock' | 'existing-stock' | null>(null);
+  const [startOption, setStartOption] = useState<
+    'new-csp' | 'existing-csp' | 'new-stock' | 'existing-stock' | null
+  >(null);
   const [selectedPositionId, setSelectedPositionId] = useState<string | null>(null);
 
   // New stock creation
   const [stockPurchasePrice, setStockPurchasePrice] = useState('');
-  const [stockPurchaseDate, setStockPurchaseDate] = useState(new Date().toISOString().split('T')[0]);
+  const [stockPurchaseDate, setStockPurchaseDate] = useState(
+    new Date().toISOString().split('T')[0]
+  );
 
   // New ticker creation state
   const [isCreatingTicker, setIsCreatingTicker] = useState(false);
@@ -51,18 +66,19 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
     if (!selectedTicker) return { csps: [], stocks: [] };
 
     const openPositions = allPositions.filter(
-      p => p.status === 'open' &&
-      p.ticker.toUpperCase() === selectedTicker.symbol.toUpperCase() &&
-      p.portfolio === portfolioName &&
-      !(p as { wheelId?: string }).wheelId // Not already linked to a wheel
+      (p) =>
+        p.status === 'open' &&
+        p.ticker.toUpperCase() === selectedTicker.symbol.toUpperCase() &&
+        p.portfolio === portfolioName &&
+        !(p as { wheelId?: string }).wheelId // Not already linked to a wheel
     );
 
     const csps = openPositions.filter(
-      p => p.type === 'put' && (p as PutOption).action === 'sell'
+      (p) => p.type === 'put' && (p as PutOption).action === 'sell'
     ) as PutOption[];
 
     const stocks = openPositions.filter(
-      p => p.type === 'stock' || p.type === 'etf'
+      (p) => p.type === 'stock' || p.type === 'etf'
     ) as StockPosition[];
 
     return { csps, stocks };
@@ -83,7 +99,7 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
     // Calculate initial premium if linking to existing CSP
     let initialPremium = 0;
     if (startOption === 'existing-csp' && selectedPositionId) {
-      const csp = existingPositions.csps.find(p => p.id === selectedPositionId);
+      const csp = existingPositions.csps.find((p) => p.id === selectedPositionId);
       if (csp) {
         initialPremium = csp.premium * csp.contracts * 100;
       }
@@ -134,21 +150,25 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
       dispatch(addPosition(stockPosition));
     } else if (startOption === 'existing-stock' && selectedPositionId) {
       // Link existing stock to wheel
-      const stock = existingPositions.stocks.find(p => p.id === selectedPositionId);
+      const stock = existingPositions.stocks.find((p) => p.id === selectedPositionId);
       if (stock) {
-        dispatch(updatePosition({
-          ...stock,
-          wheelId,
-        } as Position));
+        dispatch(
+          updatePosition({
+            ...stock,
+            wheelId,
+          } as Position)
+        );
       }
     } else if (startOption === 'existing-csp' && selectedPositionId) {
       // Link existing CSP to wheel
-      const csp = existingPositions.csps.find(p => p.id === selectedPositionId);
+      const csp = existingPositions.csps.find((p) => p.id === selectedPositionId);
       if (csp) {
-        dispatch(updatePosition({
-          ...csp,
-          wheelId,
-        } as Position));
+        dispatch(
+          updatePosition({
+            ...csp,
+            wheelId,
+          } as Position)
+        );
       }
     }
     // For 'new-csp', user will create the CSP manually after
@@ -230,26 +250,23 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex min-h-full items-center justify-center p-4">
         {/* Backdrop */}
-        <div
-          className="fixed inset-0 bg-black/50 transition-opacity"
-          onClick={handleClose}
-        />
+        <div className="fixed inset-0 bg-black/50 transition-opacity" onClick={handleClose} />
 
         {/* Modal */}
-        <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-2xl transform transition-all">
+        <div className="relative bg-white dark:bg-trading-dark-800 rounded-xl shadow-xl w-full max-w-2xl transform transition-all">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between p-4 border-b border-surface-line dark:border-trading-dark-600">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-teal-100 dark:bg-teal-900/30 rounded-lg">
                 <RefreshCw className="w-5 h-5 text-teal-600 dark:text-teal-400" />
               </div>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-lg font-semibold text-ink-900 dark:text-white">
                 Nieuw wheel starten
               </h2>
             </div>
             <button
               onClick={handleClose}
-              className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              className="p-1 text-ink-400 hover:text-ink-600 dark:hover:text-ink-300 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -262,7 +279,8 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
               <div className="flex items-start gap-2">
                 <Info className="w-4 h-4 text-teal-600 dark:text-teal-400 mt-0.5 flex-shrink-0" />
                 <p className="text-sm text-teal-700 dark:text-teal-300">
-                  Een Wheel is een cyclische strategie: verkoop CSP's tot assignment, schrijf dan covered calls tot verkoop, en herhaal.
+                  Een Wheel is een cyclische strategie: verkoop CSP's tot assignment, schrijf dan
+                  covered calls tot verkoop, en herhaal.
                 </p>
               </div>
             </div>
@@ -274,32 +292,32 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
                   <button
                     type="button"
                     onClick={handleCancelNewTicker}
-                    className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                    className="p-1 text-ink-400 hover:text-ink-600 dark:hover:text-ink-300"
                   >
                     <ArrowLeft className="w-4 h-4" />
                   </button>
-                  <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <h3 className="text-sm font-medium text-ink-700 dark:text-ink-300">
                     Nieuwe Ticker: {newTickerData.symbol}
                   </h3>
                 </div>
 
                 {/* Ticker Name */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
                     Bedrijfsnaam
                   </label>
                   <input
                     type="text"
                     value={newTickerData.name}
                     onChange={(e) => setNewTickerData({ ...newTickerData, name: e.target.value })}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                     placeholder={`Bijv. ${newTickerData.symbol} Inc.`}
                   />
                 </div>
 
                 {/* Ticker Type */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
                     Type
                   </label>
                   <div className="flex gap-3">
@@ -309,7 +327,7 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
                       className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
                         newTickerData.type === 'stock'
                           ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/20 text-teal-700 dark:text-teal-400'
-                          : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-300'
+                          : 'border-surface-line dark:border-trading-dark-500 text-ink-600 dark:text-ink-400 hover:border-ink-200'
                       }`}
                     >
                       <TrendingUp className="w-4 h-4" />
@@ -321,7 +339,7 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
                       className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
                         newTickerData.type === 'etf'
                           ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/20 text-teal-700 dark:text-teal-400'
-                          : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-300'
+                          : 'border-surface-line dark:border-trading-dark-500 text-ink-600 dark:text-ink-400 hover:border-ink-200'
                       }`}
                     >
                       <Building2 className="w-4 h-4" />
@@ -336,19 +354,30 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
                     <input
                       type="checkbox"
                       checked={newTickerData.optionsAvailable}
-                      onChange={(e) => setNewTickerData({ ...newTickerData, optionsAvailable: e.target.checked })}
-                      className="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 rounded focus:ring-teal-500 dark:bg-gray-700 dark:border-gray-600"
+                      onChange={(e) =>
+                        setNewTickerData({ ...newTickerData, optionsAvailable: e.target.checked })
+                      }
+                      className="w-4 h-4 text-teal-600 bg-surface-subtle border-ink-200 rounded focus:ring-teal-500 dark:bg-trading-dark-700 dark:border-trading-dark-500"
                     />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">Opties beschikbaar</span>
+                    <span className="text-sm text-ink-700 dark:text-ink-300">
+                      Opties beschikbaar
+                    </span>
                   </label>
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={newTickerData.miniContractsAvailable}
-                      onChange={(e) => setNewTickerData({ ...newTickerData, miniContractsAvailable: e.target.checked })}
-                      className="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 rounded focus:ring-teal-500 dark:bg-gray-700 dark:border-gray-600"
+                      onChange={(e) =>
+                        setNewTickerData({
+                          ...newTickerData,
+                          miniContractsAvailable: e.target.checked,
+                        })
+                      }
+                      className="w-4 h-4 text-teal-600 bg-surface-subtle border-ink-200 rounded focus:ring-teal-500 dark:bg-trading-dark-700 dark:border-trading-dark-500"
                     />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">Mini contracten beschikbaar</span>
+                    <span className="text-sm text-ink-700 dark:text-ink-300">
+                      Mini contracten beschikbaar
+                    </span>
                   </label>
                 </div>
 
@@ -363,7 +392,7 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
               </div>
             ) : (
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
                   Ticker
                 </label>
                 <TickerSelector
@@ -378,7 +407,7 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
             {/* Start Position Selection - only show when ticker is selected and not creating ticker */}
             {!isCreatingTicker && selectedTicker && (
               <div className="space-y-3">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label className="block text-sm font-medium text-ink-700 dark:text-ink-300">
                   Start Positie
                 </label>
 
@@ -386,7 +415,7 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
                 <div className="grid grid-cols-2 gap-4">
                   {/* CSP Options */}
                   <div className="space-y-2">
-                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                    <p className="text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wide">
                       CSP Fase (Cash-Secured Put)
                     </p>
 
@@ -397,7 +426,7 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
                         className={`flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer transition-all ${
                           startOption === 'existing-csp' && selectedPositionId === csp.id
                             ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/20'
-                            : 'border-gray-200 dark:border-gray-700 hover:border-teal-300'
+                            : 'border-surface-line dark:border-trading-dark-600 hover:border-teal-300'
                         }`}
                       >
                         <input
@@ -412,11 +441,12 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
                           className="w-4 h-4 text-teal-600 flex-shrink-0"
                         />
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium text-gray-900 dark:text-white text-sm truncate">
+                          <p className="font-medium text-ink-900 dark:text-white text-sm truncate">
                             {csp.contracts}x ${csp.strike} Put
                           </p>
-                          <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
-                            {new Date(csp.expiration).toLocaleDateString('nl-NL')} • ${formatNumber(csp.premium * csp.contracts * 100, 0)}
+                          <p className="text-xs text-ink-600 dark:text-ink-400 truncate">
+                            {new Date(csp.expiration).toLocaleDateString('nl-NL')} • $
+                            {formatNumber(csp.premium * csp.contracts * 100, 0)}
                           </p>
                         </div>
                       </label>
@@ -427,7 +457,7 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
                       className={`flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer transition-all ${
                         startOption === 'new-csp'
                           ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/20'
-                          : 'border-gray-200 dark:border-gray-700 hover:border-teal-300'
+                          : 'border-surface-line dark:border-trading-dark-600 hover:border-teal-300'
                       }`}
                     >
                       <input
@@ -441,20 +471,18 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
                         className="w-4 h-4 text-teal-600 flex-shrink-0"
                       />
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-gray-900 dark:text-white text-sm flex items-center gap-1">
+                        <p className="font-medium text-ink-900 dark:text-white text-sm flex items-center gap-1">
                           <Plus className="w-3 h-3" />
                           Nieuwe CSP
                         </p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                          Later toevoegen
-                        </p>
+                        <p className="text-xs text-ink-600 dark:text-ink-400">Later toevoegen</p>
                       </div>
                     </label>
                   </div>
 
                   {/* Stock Options */}
                   <div className="space-y-2">
-                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                    <p className="text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wide">
                       Aandelen Fase (Covered Calls)
                     </p>
 
@@ -465,13 +493,15 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
                         className={`flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer transition-all ${
                           startOption === 'existing-stock' && selectedPositionId === stock.id
                             ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/20'
-                            : 'border-gray-200 dark:border-gray-700 hover:border-teal-300'
+                            : 'border-surface-line dark:border-trading-dark-600 hover:border-teal-300'
                         }`}
                       >
                         <input
                           type="radio"
                           name="start-option"
-                          checked={startOption === 'existing-stock' && selectedPositionId === stock.id}
+                          checked={
+                            startOption === 'existing-stock' && selectedPositionId === stock.id
+                          }
                           onChange={() => {
                             setStartOption('existing-stock');
                             setSelectedPositionId(stock.id);
@@ -480,10 +510,10 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
                           className="w-4 h-4 text-teal-600 flex-shrink-0"
                         />
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium text-gray-900 dark:text-white text-sm truncate">
+                          <p className="font-medium text-ink-900 dark:text-white text-sm truncate">
                             {stock.shares} aandelen
                           </p>
-                          <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
+                          <p className="text-xs text-ink-600 dark:text-ink-400 truncate">
                             ${formatNumber(stock.purchasePrice, 2)}/aandeel
                           </p>
                         </div>
@@ -495,7 +525,7 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
                       className={`flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer transition-all ${
                         startOption === 'new-stock'
                           ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/20'
-                          : 'border-gray-200 dark:border-gray-700 hover:border-teal-300'
+                          : 'border-surface-line dark:border-trading-dark-600 hover:border-teal-300'
                       }`}
                     >
                       <input
@@ -509,13 +539,11 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
                         className="w-4 h-4 text-teal-600 flex-shrink-0"
                       />
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-gray-900 dark:text-white text-sm flex items-center gap-1">
+                        <p className="font-medium text-ink-900 dark:text-white text-sm flex items-center gap-1">
                           <Plus className="w-3 h-3" />
                           Nieuwe aandelen
                         </p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                          Invoeren
-                        </p>
+                        <p className="text-xs text-ink-600 dark:text-ink-400">Invoeren</p>
                       </div>
                     </label>
                   </div>
@@ -526,7 +554,7 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
             {/* Target Contracts - only show for new positions */}
             {!isCreatingTicker && (startOption === 'new-csp' || startOption === 'new-stock') && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
                   Aantal contracten
                 </label>
                 <div className="flex items-center gap-3">
@@ -536,13 +564,13 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
                     max="100"
                     value={targetContracts}
                     onChange={(e) => setTargetContracts(Math.max(1, parseInt(e.target.value) || 1))}
-                    className="w-24 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    className="w-24 bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                   />
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                  <span className="text-sm text-ink-500 dark:text-ink-400">
                     = {targetContracts * 100} aandelen
                   </span>
                 </div>
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                <p className="mt-1 text-xs text-ink-500 dark:text-ink-400">
                   {startOption === 'new-csp'
                     ? 'Dit bepaalt hoeveel CSPs je schrijft en hoeveel aandelen je eventueel koopt.'
                     : 'Dit bepaalt hoeveel aandelen je hebt en hoeveel covered calls je kunt schrijven.'}
@@ -558,37 +586,40 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
                 </h4>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
                       Aankoopprijs per aandeel
                     </label>
                     <div className="relative">
-                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500 text-sm">$</span>
+                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-ink-500 text-sm">
+                        $
+                      </span>
                       <input
                         type="number"
                         step="0.01"
                         value={stockPurchasePrice}
                         onChange={(e) => setStockPurchasePrice(e.target.value)}
-                        className="w-full pl-7 bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        className="w-full pl-7 bg-white border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 p-2 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                         placeholder="0.00"
                         required
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
                       Aankoopdatum
                     </label>
                     <input
                       type="date"
                       value={stockPurchaseDate}
                       onChange={(e) => setStockPurchaseDate(e.target.value)}
-                      className="w-full bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      className="w-full bg-white border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 p-2 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                     />
                   </div>
                 </div>
                 {stockPurchasePrice && (
                   <p className="text-xs text-teal-600 dark:text-teal-400">
-                    Totale waarde: ${formatNumber(parseFloat(stockPurchasePrice) * targetContracts * 100, 2)}
+                    Totale waarde: $
+                    {formatNumber(parseFloat(stockPurchasePrice) * targetContracts * 100, 2)}
                   </p>
                 )}
               </div>
@@ -597,14 +628,14 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
             {/* Notes - only show when start option is selected */}
             {!isCreatingTicker && startOption && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
                   Notities (optioneel)
                 </label>
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={2}
-                  className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  className="w-full bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                   placeholder="Bijv. doel strike, strategie notities..."
                 />
               </div>
@@ -616,14 +647,20 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-ink-700 dark:text-ink-300 hover:bg-surface-subtle dark:hover:bg-trading-dark-700 rounded-lg transition-colors"
                 >
                   Annuleren
                 </button>
                 <button
                   type="submit"
-                  disabled={!selectedTicker || !startOption || (startOption === 'new-stock' && !stockPurchasePrice) || ((startOption === 'existing-csp' || startOption === 'existing-stock') && !selectedPositionId)}
-                  className="px-4 py-2 text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 disabled:bg-gray-400 disabled:cursor-not-allowed rounded-lg transition-colors"
+                  disabled={
+                    !selectedTicker ||
+                    !startOption ||
+                    (startOption === 'new-stock' && !stockPurchasePrice) ||
+                    ((startOption === 'existing-csp' || startOption === 'existing-stock') &&
+                      !selectedPositionId)
+                  }
+                  className="px-4 py-2 text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 disabled:bg-ink-300 disabled:cursor-not-allowed rounded-lg transition-colors"
                 >
                   Wheel Starten
                 </button>

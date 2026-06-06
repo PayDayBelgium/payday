@@ -32,7 +32,7 @@ export const isSpreadLeg = (position: Position): boolean => {
 export const groupPositionsBySpread = (positions: Position[]): Map<string, Position[]> => {
   const spreadGroups = new Map<string, Position[]>();
 
-  positions.forEach(position => {
+  positions.forEach((position) => {
     const spreadId = getSpreadId(position);
     if (spreadId) {
       if (!spreadGroups.has(spreadId)) {

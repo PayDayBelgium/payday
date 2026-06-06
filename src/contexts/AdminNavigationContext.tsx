@@ -85,8 +85,6 @@ export const AdminNavigationProvider: React.FC<AdminNavigationProviderProps> = (
   };
 
   return (
-    <AdminNavigationContext.Provider value={value}>
-      {children}
-    </AdminNavigationContext.Provider>
+    <AdminNavigationContext.Provider value={value}>{children}</AdminNavigationContext.Provider>
   );
 };

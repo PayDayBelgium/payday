@@ -1,12 +1,12 @@
 import type { Ticker } from '../types';
 
 export interface MockOptionData {
-  ivRank: number;            // 0–100
-  openInterest: number;      // contracten
-  optionVolume: number;      // contracten/dag
-  bidAskSpreadPct: number;   // spread als % van de premie (lager = beter)
+  ivRank: number; // 0–100
+  openInterest: number; // contracten
+  optionVolume: number; // contracten/dag
+  bidAskSpreadPct: number; // spread als % van de premie (lager = beter)
   annualizedPremiumPct: number; // geannualiseerd premie-rendement %
-  daysToEarnings: number;    // dagen tot volgende earnings
+  daysToEarnings: number; // dagen tot volgende earnings
 }
 
 // FNV-1a string hash → 32-bit seed (deterministisch, geen Math.random).
@@ -50,7 +50,7 @@ export interface CriterionResult {
   key: 'optionable' | 'liquidity' | 'ivRank' | 'premium' | 'earnings';
   label: string;
   status: CriterionStatus;
-  score: number;   // 0–100
+  score: number; // 0–100
   detail: string;
 }
 
@@ -135,12 +135,12 @@ export function scoreOptionCandidate(ticker: Ticker, data: MockOptionData): Cand
   const verdict: Verdict = !ticker.optionsAvailable
     ? 'unsuitable'
     : totalScore >= 80
-    ? 'excellent'
-    : totalScore >= 60
-    ? 'suitable'
-    : totalScore >= 40
-    ? 'mediocre'
-    : 'unsuitable';
+      ? 'excellent'
+      : totalScore >= 60
+        ? 'suitable'
+        : totalScore >= 40
+          ? 'mediocre'
+          : 'unsuitable';
 
   return { totalScore, verdict, criteria };
 }

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { selectActiveTodos, addTodo, toggleTodo } from '../../store/slices/todosSlice';
-import { CheckCircle2, Circle, Plus } from 'lucide-react';
+import { Circle, Plus } from 'lucide-react';
 
 const TodoListWidget: React.FC = () => {
   const { t } = useTranslation();
@@ -24,8 +24,8 @@ const TodoListWidget: React.FC = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-      <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+    <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-lg p-6">
+      <h2 className="text-xl font-semibold text-ink-900 dark:text-white mb-4">
         {t('todos.title')}
       </h2>
 
@@ -37,7 +37,7 @@ const TodoListWidget: React.FC = () => {
             value={newTodoText}
             onChange={(e) => setNewTodoText(e.target.value)}
             placeholder={t('todos.addPlaceholder')}
-            className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="flex-1 px-3 py-2 text-sm border border-ink-200 dark:border-trading-dark-500 rounded-lg bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white placeholder-ink-500 dark:placeholder-ink-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
           />
           <button
             type="submit"
@@ -52,32 +52,30 @@ const TodoListWidget: React.FC = () => {
       {/* Todo list */}
       <div className="space-y-2">
         {activeTodos.length === 0 ? (
-          <p className="text-gray-500 dark:text-gray-400 text-sm text-center py-4">
+          <p className="text-ink-500 dark:text-ink-400 text-sm text-center py-4">
             {t('todos.noActiveTodos')}
           </p>
         ) : (
           activeTodos.map((todo) => (
             <div
               key={todo.id}
-              className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
+              className="flex items-start gap-3 p-3 rounded-lg hover:bg-surface dark:hover:bg-trading-dark-700 transition-colors group"
             >
               <button
                 onClick={() => handleToggleTodo(todo.id)}
-                className="flex-shrink-0 mt-0.5 text-gray-400 hover:text-positive-600 dark:hover:text-positive-500 transition-colors"
+                className="flex-shrink-0 mt-0.5 text-ink-400 hover:text-positive-600 dark:hover:text-positive-500 transition-colors"
               >
                 <Circle className="w-5 h-5" />
               </button>
-              <p className="flex-1 text-sm text-gray-700 dark:text-gray-300">
-                {todo.text}
-              </p>
+              <p className="flex-1 text-sm text-ink-700 dark:text-ink-300">{todo.text}</p>
             </div>
           ))
         )}
       </div>
 
       {activeTodos.length > 0 && (
-        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+        <div className="mt-4 pt-4 border-t border-surface-line dark:border-trading-dark-600">
+          <p className="text-xs text-ink-500 dark:text-ink-400">
             {t('todos.activeCount', { count: activeTodos.length })}
           </p>
         </div>

@@ -33,7 +33,11 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
   onDismissStrategyAlert,
   canWriteCoveredCallsOverride,
 }) => {
-  const [confirmDismiss, setConfirmDismiss] = useState<{ isOpen: boolean; alertId: string | null; message: string }>({
+  const [confirmDismiss, setConfirmDismiss] = useState<{
+    isOpen: boolean;
+    alertId: string | null;
+    message: string;
+  }>({
     isOpen: false,
     alertId: null,
     message: '',
@@ -47,13 +51,12 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
   // Determine if covered calls can be written
   const minShares = position.miniContractsSupported ? 10 : 100;
   const canWriteCoveredCalls =
-    canWriteCoveredCallsOverride ??
-    (position.shares >= minShares && position.optionsSupported);
+    canWriteCoveredCallsOverride ?? (position.shares >= minShares && position.optionsSupported);
 
   // Count unread alerts and separate by type
-  const unreadAlerts = alerts.filter(a => !a.isRead);
-  const ruleAlerts = strategyAlerts.filter(a => a.category === 'alert');
-  const ruleOpportunities = strategyAlerts.filter(a => a.category === 'opportunity');
+  const unreadAlerts = alerts.filter((a) => !a.isRead);
+  const ruleAlerts = strategyAlerts.filter((a) => a.category === 'alert');
+  const ruleOpportunities = strategyAlerts.filter((a) => a.category === 'opportunity');
 
   const handleDismissAlert = (e: React.MouseEvent, alertId: string, message: string) => {
     e.stopPropagation();
@@ -70,15 +73,17 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
   return (
     <div
       onClick={onEdit ? () => onEdit(position) : onCardClick}
-      className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-5 hover:shadow-md transition-all ${
-        onEdit || onCardClick ? 'cursor-pointer hover:border-primary-400 dark:hover:border-primary-500' : ''
+      className={`bg-white dark:bg-trading-dark-800 border border-surface-line dark:border-trading-dark-600 rounded-lg p-5 hover:shadow-md transition-all ${
+        onEdit || onCardClick
+          ? 'cursor-pointer hover:border-primary-400 dark:hover:border-primary-500'
+          : ''
       }`}
     >
       {/* Header with P&L on the right */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{position.ticker}</h3>
+            <h3 className="text-2xl font-bold text-ink-900 dark:text-white">{position.ticker}</h3>
             <span
               className={`px-2 py-0.5 rounded text-xs font-medium ${
                 position.type === 'etf'
@@ -89,7 +94,7 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
               {position.type === 'etf' ? 'ETF' : 'Stock'}
             </span>
           </div>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-sm text-ink-600 dark:text-ink-400 mt-1">
             {position.shares} shares @ {formatCurrency(position.purchasePrice, allPortfolios)}
           </p>
         </div>
@@ -98,17 +103,23 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
         <div className="text-right">
           <p
             className={`text-lg font-bold ${
-              isProfit ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'
+              isProfit
+                ? 'text-positive-600 dark:text-positive-500'
+                : 'text-negative-600 dark:text-negative-500'
             }`}
           >
-            {isProfit ? '+' : ''}{formatCurrency(Math.abs(profitLoss), allPortfolios)}
+            {isProfit ? '+' : ''}
+            {formatCurrency(Math.abs(profitLoss), allPortfolios)}
           </p>
           <p
             className={`text-sm font-medium ${
-              isProfit ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'
+              isProfit
+                ? 'text-positive-600 dark:text-positive-500'
+                : 'text-negative-600 dark:text-negative-500'
             }`}
           >
-            {isProfit ? '+' : ''}{formatNumber(profitLossPercentage, 2)}%
+            {isProfit ? '+' : ''}
+            {formatNumber(profitLossPercentage, 2)}%
           </p>
         </div>
       </div>
@@ -117,32 +128,35 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
       <div className="grid grid-cols-3 gap-3 mb-4">
         {/* Cost Basis */}
         <div>
-          <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Cost Basis</p>
-          <p className="text-base font-semibold text-gray-900 dark:text-white">
+          <p className="text-xs text-ink-600 dark:text-ink-400 mb-1">Cost Basis</p>
+          <p className="text-base font-semibold text-ink-900 dark:text-white">
             {formatCurrency(position.costBasis, allPortfolios)}
           </p>
         </div>
 
         {/* Current Value */}
         <div>
-          <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Current Value</p>
-          <p className="text-base font-semibold text-gray-900 dark:text-white">
+          <p className="text-xs text-ink-600 dark:text-ink-400 mb-1">Current Value</p>
+          <p className="text-base font-semibold text-ink-900 dark:text-white">
             {formatCurrency(position.currentValue, allPortfolios)}
           </p>
         </div>
 
         {/* Current Price */}
         <div>
-          <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Current Price</p>
-          <p className="text-base font-semibold text-gray-900 dark:text-white">
+          <p className="text-xs text-ink-600 dark:text-ink-400 mb-1">Current Price</p>
+          <p className="text-base font-semibold text-ink-900 dark:text-white">
             {formatCurrency(position.currentPrice, allPortfolios)}
           </p>
         </div>
       </div>
 
       {/* Badges at Bottom */}
-      {(unreadAlerts.length > 0 || ruleAlerts.length > 0 || ruleOpportunities.length > 0 || canWriteCoveredCalls) && (
-        <div className="flex items-center gap-2 pt-3 border-t border-gray-200 dark:border-gray-700">
+      {(unreadAlerts.length > 0 ||
+        ruleAlerts.length > 0 ||
+        ruleOpportunities.length > 0 ||
+        canWriteCoveredCalls) && (
+        <div className="flex items-center gap-2 pt-3 border-t border-surface-line dark:border-trading-dark-600">
           {/* Price Alerts Indicator */}
           {unreadAlerts.length > 0 && (
             <div
@@ -191,7 +205,7 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
 
       {/* Alerts Display */}
       {(unreadAlerts.length > 0 || strategyAlerts.length > 0) && (
-        <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 space-y-2">
+        <div className="mt-3 pt-3 border-t border-surface-line dark:border-trading-dark-600 space-y-2">
           {/* Price Alerts */}
           {unreadAlerts.slice(0, 2).map((alert) => (
             <div
@@ -230,10 +244,10 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
                 {onDismissStrategyAlert && (
                   <button
                     onClick={(e) => handleDismissAlert(e, alert.id, alert.message)}
-                    className="absolute top-1.5 right-1.5 p-0.5 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+                    className="absolute top-1.5 right-1.5 p-0.5 hover:bg-surface-muted dark:hover:bg-trading-dark-600 rounded transition-colors"
                     title="Sluiten"
                   >
-                    <X className="w-3 h-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" />
+                    <X className="w-3 h-3 text-ink-400 hover:text-ink-600 dark:hover:text-ink-300" />
                   </button>
                 )}
               </div>
@@ -241,7 +255,7 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
           })}
 
           {unreadAlerts.length > 2 && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+            <p className="text-xs text-ink-500 dark:text-ink-400 text-center">
               +{unreadAlerts.length - 2} more price alert{unreadAlerts.length - 2 !== 1 ? 's' : ''}
             </p>
           )}

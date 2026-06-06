@@ -21,7 +21,23 @@ export interface ModalProps {
   className?: string;
   /** Whether to show the backdrop blur effect */
   blur?: boolean;
+  /**
+   * Overschrijft de standaard breedte-/grootteklasse (afgeleid van `size`).
+   * Handig voor modals met een vaste breedte/hoogte i.p.v. een max-width.
+   */
+  sizeClassName?: string;
+  /**
+   * Overschrijft de standaard kaartstyling (rounding/shadow/border).
+   * Wordt gebruikt wanneer een afwijkende kaartvorm nodig is.
+   */
+  cardClassName?: string;
+  /** Overschrijft de standaard padding-wrapper rond de children (standaard `p-4`). */
+  contentClassName?: string;
 }
+
+/** Standaard kaartstyling (rounding, shadow, border, achtergrond). */
+const defaultCardClassName =
+  'bg-white dark:bg-trading-dark-800 rounded-lg shadow-xl border border-surface-line dark:border-trading-dark-600';
 
 const sizeClasses: Record<ModalSize, string> = {
   sm: 'max-w-sm',
@@ -48,6 +64,9 @@ export const Modal: React.FC<ModalProps> = ({
   footer,
   className = '',
   blur = false,
+  sizeClassName,
+  cardClassName = defaultCardClassName,
+  contentClassName = 'p-4',
 }) => {
   // Handle escape key
   const handleEscape = useCallback(
@@ -88,26 +107,23 @@ export const Modal: React.FC<ModalProps> = ({
       onClick={handleBackdropClick}
     >
       <div
-        className={`relative w-full ${sizeClasses[size]} bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 ${className}`}
+        className={`relative ${sizeClassName ?? `w-full ${sizeClasses[size]}`} ${cardClassName} ${className}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby={title ? 'modal-title' : undefined}
       >
         {/* Header */}
         {(title || showCloseButton) && (
-          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between p-4 border-b border-surface-line dark:border-trading-dark-600">
             {title && (
-              <h3
-                id="modal-title"
-                className="text-lg font-semibold text-gray-900 dark:text-white"
-              >
+              <h3 id="modal-title" className="text-lg font-semibold text-ink-900 dark:text-white">
                 {title}
               </h3>
             )}
             {showCloseButton && (
               <button
                 onClick={onClose}
-                className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                className="p-2 text-ink-500 hover:text-ink-700 dark:text-ink-400 dark:hover:text-ink-200 hover:bg-surface-subtle dark:hover:bg-trading-dark-700 rounded-lg transition-colors"
                 aria-label="Close modal"
               >
                 <X className="w-5 h-5" />
@@ -117,11 +133,11 @@ export const Modal: React.FC<ModalProps> = ({
         )}
 
         {/* Content */}
-        <div className="p-4">{children}</div>
+        <div className={contentClassName}>{children}</div>
 
         {/* Footer */}
         {footer && (
-          <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-end gap-3 p-4 border-t border-surface-line dark:border-trading-dark-600">
             {footer}
           </div>
         )}

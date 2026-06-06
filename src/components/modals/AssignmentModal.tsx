@@ -27,7 +27,9 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
   const contractMultiplier = 100;
 
   // Form state
-  const [assignmentDate, setAssignmentDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [assignmentDate, setAssignmentDate] = useState<string>(
+    new Date().toISOString().split('T')[0]
+  );
   const [assignmentPrice, setAssignmentPrice] = useState<string>(position.strike.toString());
   const [notes, setNotes] = useState<string>('');
 
@@ -35,14 +37,8 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
   const isPut = position.type === 'put';
   const isShort = position.action === 'sell';
 
-  // Only short options can be assigned
-  if (!isShort) {
-    return null;
-  }
-
   // Calculate assignment details
   const assignmentCalculation = useMemo(() => {
-    const price = parseFloat(assignmentPrice) || position.strike;
     const shares = position.contracts * contractMultiplier;
 
     if (isPut) {
@@ -92,7 +88,9 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
     });
   };
 
-  if (!isOpen) return null;
+  // Guard renders AFTER all hooks so hook order stays stable (rules-of-hooks).
+  // Only short options can be assigned.
+  if (!isOpen || !isShort) return null;
 
   const optionType = position.type === 'call' ? 'Call' : 'Put';
 
@@ -102,37 +100,39 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-white dark:bg-trading-dark-800 rounded-lg shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between p-6 border-b border-surface-line dark:border-trading-dark-600">
           <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-lg ${
-              isPut
-                ? 'bg-surface-muted dark:bg-trading-dark-600'
-                : 'bg-positive-50 dark:bg-positive-700/25'
-            }`}>
+            <div
+              className={`p-2 rounded-lg ${
+                isPut
+                  ? 'bg-surface-muted dark:bg-trading-dark-600'
+                  : 'bg-positive-50 dark:bg-positive-700/25'
+              }`}
+            >
               {isPut ? (
-                <ArrowDownLeft className={`w-5 h-5 ${
-                  isPut
-                    ? 'text-ink-600 dark:text-ink-300'
-                    : 'text-positive-600 dark:text-positive-500'
-                }`} />
+                <ArrowDownLeft
+                  className={`w-5 h-5 ${
+                    isPut
+                      ? 'text-ink-600 dark:text-ink-300'
+                      : 'text-positive-600 dark:text-positive-500'
+                  }`}
+                />
               ) : (
                 <ArrowUpRight className="w-5 h-5 text-positive-600 dark:text-positive-500" />
               )}
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                Assignment
-              </h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <h2 className="text-xl font-semibold text-ink-900 dark:text-white">Assignment</h2>
+              <p className="text-sm text-ink-500 dark:text-ink-400">
                 {position.ticker} Short {optionType} ${position.strike}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            className="p-2 text-ink-400 hover:text-ink-600 dark:hover:text-ink-300"
           >
             <X className="w-5 h-5" />
           </button>
@@ -141,57 +141,72 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Info box explaining what happens */}
-          <div className={`p-4 rounded-lg border ${
-            isPut
-              ? 'bg-surface-subtle dark:bg-trading-dark-700 border-ink-200 dark:border-trading-dark-600'
-              : 'bg-positive-50 dark:bg-positive-700/15 border-positive-500/20 dark:border-positive-700/30'
-          }`}>
+          <div
+            className={`p-4 rounded-lg border ${
+              isPut
+                ? 'bg-surface-subtle dark:bg-trading-dark-700 border-ink-200 dark:border-trading-dark-600'
+                : 'bg-positive-50 dark:bg-positive-700/15 border-positive-500/20 dark:border-positive-700/30'
+            }`}
+          >
             <div className="flex items-start gap-3">
-              <Info className={`w-5 h-5 mt-0.5 flex-shrink-0 ${
-                isPut
-                  ? 'text-ink-600 dark:text-ink-300'
-                  : 'text-positive-600 dark:text-positive-500'
-              }`} />
-              <div>
-                <p className={`font-medium ${
+              <Info
+                className={`w-5 h-5 mt-0.5 flex-shrink-0 ${
                   isPut
-                    ? 'text-purple-900 dark:text-purple-100'
-                    : 'text-positive-700 dark:text-green-100'
-                }`}>
+                    ? 'text-ink-600 dark:text-ink-300'
+                    : 'text-positive-600 dark:text-positive-500'
+                }`}
+              />
+              <div>
+                <p
+                  className={`font-medium ${
+                    isPut
+                      ? 'text-purple-900 dark:text-purple-100'
+                      : 'text-positive-700 dark:text-green-100'
+                  }`}
+                >
                   {assignmentCalculation.description}
                 </p>
-                <p className={`text-sm mt-1 ${
-                  isPut
-                    ? 'text-ink-700 dark:text-ink-300'
-                    : 'text-positive-700 dark:text-positive-500'
-                }`}>
-                  De optie wordt gesloten en de aandelen worden {isPut ? 'toegevoegd aan' : 'verwijderd uit'} je portfolio.
+                <p
+                  className={`text-sm mt-1 ${
+                    isPut
+                      ? 'text-ink-700 dark:text-ink-300'
+                      : 'text-positive-700 dark:text-positive-500'
+                  }`}
+                >
+                  De optie wordt gesloten en de aandelen worden{' '}
+                  {isPut ? 'toegevoegd aan' : 'verwijderd uit'} je portfolio.
                 </p>
               </div>
             </div>
           </div>
 
           {/* Current Position Info */}
-          <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Positie Details</h3>
+          <div className="p-4 bg-surface dark:bg-trading-dark-700/50 rounded-lg">
+            <h3 className="text-sm font-semibold text-ink-700 dark:text-ink-300 mb-2">
+              Positie Details
+            </h3>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="text-gray-500 dark:text-gray-400">Strike:</span>
-                <span className="ml-2 font-medium text-gray-900 dark:text-white">${position.strike}</span>
+                <span className="text-ink-500 dark:text-ink-400">Strike:</span>
+                <span className="ml-2 font-medium text-ink-900 dark:text-white">
+                  ${position.strike}
+                </span>
               </div>
               <div>
-                <span className="text-gray-500 dark:text-gray-400">Contracts:</span>
-                <span className="ml-2 font-medium text-gray-900 dark:text-white">{position.contracts}</span>
+                <span className="text-ink-500 dark:text-ink-400">Contracts:</span>
+                <span className="ml-2 font-medium text-ink-900 dark:text-white">
+                  {position.contracts}
+                </span>
               </div>
               <div>
-                <span className="text-gray-500 dark:text-gray-400">Premie ontvangen:</span>
+                <span className="text-ink-500 dark:text-ink-400">Premie ontvangen:</span>
                 <span className="ml-2 font-medium text-positive-600 dark:text-positive-500">
                   +{formatCurrency(Math.abs(position.costBasis), currencySymbol)}
                 </span>
               </div>
               <div>
-                <span className="text-gray-500 dark:text-gray-400">Aandelen:</span>
-                <span className="ml-2 font-medium text-gray-900 dark:text-white">
+                <span className="text-ink-500 dark:text-ink-400">Aandelen:</span>
+                <span className="ml-2 font-medium text-ink-900 dark:text-white">
                   {position.contracts * contractMultiplier}
                 </span>
               </div>
@@ -201,34 +216,34 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
           {/* Assignment Details */}
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
                 Assignment datum
               </label>
               <input
                 type="date"
                 value={assignmentDate}
                 onChange={(e) => setAssignmentDate(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
+                className="w-full px-4 py-2 border border-ink-200 dark:border-trading-dark-500 rounded-lg bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
                 Effectieve Prijs per Aandeel
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-500">$</span>
                 <input
                   type="number"
                   value={assignmentPrice}
                   onChange={(e) => setAssignmentPrice(e.target.value)}
-                  className="w-full pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
+                  className="w-full pl-8 pr-4 py-2 border border-ink-200 dark:border-trading-dark-500 rounded-lg bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                   step="0.01"
                   required
                 />
               </div>
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              <p className="mt-1 text-xs text-ink-500 dark:text-ink-400">
                 Normaal gelijk aan de strike prijs (${position.strike})
               </p>
             </div>
@@ -236,26 +251,28 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
 
           {/* Notes */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
               Notities (optioneel)
             </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
+              className="w-full px-4 py-2 border border-ink-200 dark:border-trading-dark-500 rounded-lg bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white focus:ring-2 focus:ring-primary-500"
               rows={2}
               placeholder="Bijv. vroege assignment, ex-dividend, etc."
             />
           </div>
 
           {/* Calculation Summary */}
-          <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Berekening</h3>
+          <div className="p-4 bg-surface dark:bg-trading-dark-700/50 rounded-lg">
+            <h3 className="text-sm font-semibold text-ink-700 dark:text-ink-300 mb-3">
+              Berekening
+            </h3>
             <div className="space-y-2 text-sm">
               {isPut ? (
                 <>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">
+                    <span className="text-ink-600 dark:text-ink-400">
                       Aankoopkosten ({assignmentCalculation.shares} x ${position.strike}):
                     </span>
                     <span className="font-medium text-negative-600 dark:text-negative-500">
@@ -263,26 +280,27 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Premie ontvangen:</span>
+                    <span className="text-ink-600 dark:text-ink-400">Premie ontvangen:</span>
                     <span className="font-medium text-positive-600 dark:text-positive-500">
                       +{formatCurrency(assignmentCalculation.premiumReceived, currencySymbol)}
                     </span>
                   </div>
-                  <div className="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2">
+                  <div className="border-t border-surface-line dark:border-trading-dark-500 pt-2 mt-2">
                     <div className="flex justify-between items-center">
-                      <span className="font-semibold text-gray-700 dark:text-gray-300">
+                      <span className="font-semibold text-ink-700 dark:text-ink-300">
                         Effectieve kost:
                       </span>
-                      <span className="text-lg font-bold text-gray-900 dark:text-white">
+                      <span className="text-lg font-bold text-ink-900 dark:text-white">
                         {formatCurrency(assignmentCalculation.effectiveCost ?? 0, currencySymbol)}
                       </span>
                     </div>
                     <div className="flex justify-between items-center mt-1">
-                      <span className="text-gray-600 dark:text-gray-400">
-                        Per aandeel:
-                      </span>
-                      <span className="font-medium text-gray-900 dark:text-white">
-                        {formatCurrency(assignmentCalculation.effectivePricePerShare, currencySymbol)}
+                      <span className="text-ink-600 dark:text-ink-400">Per aandeel:</span>
+                      <span className="font-medium text-ink-900 dark:text-white">
+                        {formatCurrency(
+                          assignmentCalculation.effectivePricePerShare,
+                          currencySymbol
+                        )}
                       </span>
                     </div>
                   </div>
@@ -290,7 +308,7 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
               ) : (
                 <>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">
+                    <span className="text-ink-600 dark:text-ink-400">
                       Verkoopopbrengst ({assignmentCalculation.shares} x ${position.strike}):
                     </span>
                     <span className="font-medium text-positive-600 dark:text-positive-500">
@@ -298,14 +316,14 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Premie ontvangen:</span>
+                    <span className="text-ink-600 dark:text-ink-400">Premie ontvangen:</span>
                     <span className="font-medium text-positive-600 dark:text-positive-500">
                       +{formatCurrency(assignmentCalculation.premiumReceived, currencySymbol)}
                     </span>
                   </div>
-                  <div className="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2">
+                  <div className="border-t border-surface-line dark:border-trading-dark-500 pt-2 mt-2">
                     <div className="flex justify-between items-center">
-                      <span className="font-semibold text-gray-700 dark:text-gray-300">
+                      <span className="font-semibold text-ink-700 dark:text-ink-300">
                         Totale opbrengst:
                       </span>
                       <span className="text-lg font-bold text-positive-600 dark:text-positive-500">
@@ -313,11 +331,12 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
                       </span>
                     </div>
                     <div className="flex justify-between items-center mt-1">
-                      <span className="text-gray-600 dark:text-gray-400">
-                        Per aandeel:
-                      </span>
+                      <span className="text-ink-600 dark:text-ink-400">Per aandeel:</span>
                       <span className="font-medium text-positive-600 dark:text-positive-500">
-                        {formatCurrency(assignmentCalculation.effectivePricePerShare, currencySymbol)}
+                        {formatCurrency(
+                          assignmentCalculation.effectivePricePerShare,
+                          currencySymbol
+                        )}
                       </span>
                     </div>
                   </div>
@@ -332,9 +351,7 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
               <div className="flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 text-caution-600 dark:text-caution-500 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="font-medium text-amber-900 dark:text-amber-100">
-                    Wheel campagne
-                  </p>
+                  <p className="font-medium text-amber-900 dark:text-amber-100">Wheel campagne</p>
                   <p className="text-sm text-caution-600 dark:text-caution-500">
                     {isPut
                       ? 'Na assignment gaat de Wheel naar de Stock fase. Je kunt dan covered calls schrijven.'
@@ -346,27 +363,21 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
           )}
 
           {/* Action Buttons */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex justify-end gap-3 pt-4 border-t border-surface-line dark:border-trading-dark-600">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              className="px-4 py-2 text-ink-700 dark:text-ink-300 hover:bg-surface-subtle dark:hover:bg-trading-dark-700 rounded-lg transition-colors"
             >
               Annuleren
             </button>
             <button
               type="submit"
               className={`px-4 py-2 text-white rounded-lg transition-colors flex items-center gap-2 ${
-                isPut
-                  ? 'bg-ink-700 hover:bg-purple-700'
-                  : 'bg-positive-600 hover:bg-positive-700'
+                isPut ? 'bg-ink-700 hover:bg-purple-700' : 'bg-positive-600 hover:bg-positive-700'
               }`}
             >
-              {isPut ? (
-                <ArrowDownLeft className="w-4 h-4" />
-              ) : (
-                <ArrowUpRight className="w-4 h-4" />
-              )}
+              {isPut ? <ArrowDownLeft className="w-4 h-4" /> : <ArrowUpRight className="w-4 h-4" />}
               Assignment Bevestigen
             </button>
           </div>

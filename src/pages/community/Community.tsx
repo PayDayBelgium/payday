@@ -47,7 +47,8 @@ export const Community: React.FC = () => {
                   : 'bg-white dark:bg-trading-dark-800 text-ink-500 border-[var(--line)]'
               } ${locked ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              {c.label}{locked ? ' 🔒' : ''}
+              {c.label}
+              {locked ? ' 🔒' : ''}
             </button>
           );
         })}

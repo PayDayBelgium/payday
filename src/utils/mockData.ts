@@ -11,10 +11,54 @@ import type {
 } from '../types';
 
 export const mockPortfolios: Portfolio[] = [
-  { id: '1', name: 'Lynx',      logo: '/src/assets/LogoLynx.png',      pricePerContract: 0.75, strategy: 'PMCC and KaChing',         hasOptions: true,  strategies: ['pmcc', 'kaching'],            currency: 'USD', initialCapital: 100000, currentValue: 172073 },
-  { id: '2', name: 'FreeStoxx', logo: '/src/assets/LogoFreestoxx.png', pricePerContract: 0.65, strategy: 'PMCC, Spreads, and CSP',  hasOptions: true,  strategies: ['pmcc', 'spreads', 'csp'],    currency: 'EUR', initialCapital: 150000, currentValue: 207500 },
-  { id: '3', name: 'DeGiro',    logo: '/src/assets/LogoDeGiro.png',    pricePerContract: 1.00, strategy: 'PMCC and Spreads',         hasOptions: false, strategies: ['pmcc', 'spreads'],           currency: 'EUR', initialCapital: 50000,  currentValue: 62887  },
-  { id: '4', name: 'SAXO',      logo: '/src/assets/LogoSaxo.png',      pricePerContract: 1.25, strategy: 'KaChing',                  hasOptions: true,  strategies: ['kaching'],                   currency: 'USD', initialCapital: 5000,   currentValue: 5049   },
+  {
+    id: '1',
+    name: 'Lynx',
+    logo: '/src/assets/LogoLynx.png',
+    pricePerContract: 0.75,
+    strategy: 'PMCC and KaChing',
+    hasOptions: true,
+    strategies: ['pmcc', 'kaching'],
+    currency: 'USD',
+    initialCapital: 100000,
+    currentValue: 172073,
+  },
+  {
+    id: '2',
+    name: 'FreeStoxx',
+    logo: '/src/assets/LogoFreestoxx.png',
+    pricePerContract: 0.65,
+    strategy: 'PMCC, Spreads, and CSP',
+    hasOptions: true,
+    strategies: ['pmcc', 'spreads', 'csp'],
+    currency: 'EUR',
+    initialCapital: 150000,
+    currentValue: 207500,
+  },
+  {
+    id: '3',
+    name: 'DeGiro',
+    logo: '/src/assets/LogoDeGiro.png',
+    pricePerContract: 1.0,
+    strategy: 'PMCC and Spreads',
+    hasOptions: false,
+    strategies: ['pmcc', 'spreads'],
+    currency: 'EUR',
+    initialCapital: 50000,
+    currentValue: 62887,
+  },
+  {
+    id: '4',
+    name: 'SAXO',
+    logo: '/src/assets/LogoSaxo.png',
+    pricePerContract: 1.25,
+    strategy: 'KaChing',
+    hasOptions: true,
+    strategies: ['kaching'],
+    currency: 'USD',
+    initialCapital: 5000,
+    currentValue: 5049,
+  },
 ];
 
 export const mockLeaps: LEAP[] = [
@@ -223,10 +267,5 @@ export const mockAlerts: PositionAlert[] = [
 ];
 
 export const getAllMockPositions = (): Position[] => {
-  return [
-    ...mockLeaps,
-    ...mockCoveredCalls,
-    ...mockStocks,
-    ...mockSpreads,
-  ];
+  return [...mockLeaps, ...mockCoveredCalls, ...mockStocks, ...mockSpreads];
 };

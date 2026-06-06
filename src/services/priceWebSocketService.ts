@@ -204,7 +204,7 @@ class PriceWebSocketService {
 
   private setStatus(newStatus: ConnectionStatus): void {
     this.status = newStatus;
-    this.statusHandlers.forEach(handler => handler(newStatus));
+    this.statusHandlers.forEach((handler) => handler(newStatus));
     // Also update Redux store
     try {
       const store = getStore();
@@ -216,7 +216,12 @@ class PriceWebSocketService {
     }
   }
 
-  private addLog(direction: WebSocketLogEntry['direction'], type: string, message: string, raw?: string): void {
+  private addLog(
+    direction: WebSocketLogEntry['direction'],
+    type: string,
+    message: string,
+    raw?: string
+  ): void {
     const entry: WebSocketLogEntry = {
       id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       timestamp: new Date(),
@@ -225,7 +230,7 @@ class PriceWebSocketService {
       message,
       raw,
     };
-    this.logHandlers.forEach(handler => handler(entry));
+    this.logHandlers.forEach((handler) => handler(entry));
   }
 
   connect(): Promise<void> {
@@ -274,7 +279,7 @@ class PriceWebSocketService {
           try {
             const message: IncomingMessage = JSON.parse(event.data);
             this.handleMessage(message, event.data);
-          } catch (error) {
+          } catch {
             this.addLog('incoming', 'parse_error', `Failed to parse message: ${event.data}`);
           }
         };
@@ -282,7 +287,11 @@ class PriceWebSocketService {
         this.ws.onclose = (event) => {
           console.log('[WebSocket] onclose fired, code:', event.code, 'reason:', event.reason);
           this.setStatus('disconnected');
-          this.addLog('system', 'disconnected', `Connection closed: ${event.reason || 'No reason provided'} (code: ${event.code})`);
+          this.addLog(
+            'system',
+            'disconnected',
+            `Connection closed: ${event.reason || 'No reason provided'} (code: ${event.code})`
+          );
           this.ws = null;
           this.attemptReconnect();
         };
@@ -320,12 +329,20 @@ class PriceWebSocketService {
 
   private attemptReconnect(): void {
     if (this.reconnectAttempts >= this.config.maxReconnectAttempts) {
-      this.addLog('system', 'reconnect_failed', `Max reconnection attempts (${this.config.maxReconnectAttempts}) reached`);
+      this.addLog(
+        'system',
+        'reconnect_failed',
+        `Max reconnection attempts (${this.config.maxReconnectAttempts}) reached`
+      );
       return;
     }
 
     this.reconnectAttempts++;
-    this.addLog('system', 'reconnecting', `Reconnecting in ${this.config.reconnectInterval / 1000}s (attempt ${this.reconnectAttempts}/${this.config.maxReconnectAttempts})`);
+    this.addLog(
+      'system',
+      'reconnecting',
+      `Reconnecting in ${this.config.reconnectInterval / 1000}s (attempt ${this.reconnectAttempts}/${this.config.maxReconnectAttempts})`
+    );
 
     this.reconnectTimer = setTimeout(() => {
       this.connect().catch(() => {
@@ -354,7 +371,7 @@ class PriceWebSocketService {
     }
 
     // Notify all message handlers
-    this.messageHandlers.forEach(handler => handler(message));
+    this.messageHandlers.forEach((handler) => handler(message));
   }
 
   private formatMessageForLog(message: IncomingMessage): string {
@@ -386,10 +403,12 @@ class PriceWebSocketService {
     try {
       const store = getStore();
       console.log('[WebSocket] Store instance:', store ? 'found' : 'NOT FOUND');
-      store.dispatch(updateTickerPrice({
-        symbol: message.symbol,
-        price: message.price,
-      }));
+      store.dispatch(
+        updateTickerPrice({
+          symbol: message.symbol,
+          price: message.price,
+        })
+      );
       console.log('[WebSocket] Dispatch completed');
     } catch (error) {
       console.error('[WebSocket] Error dispatching ticker price:', error);
@@ -398,14 +417,16 @@ class PriceWebSocketService {
 
   private handleOptionPrice(message: OptionPriceMessage): void {
     // Update option premium and delta via Redux
-    getStore().dispatch(updateOptionPremium({
-      symbol: message.symbol,
-      strike: message.strike,
-      expiration: message.expiration,
-      optionType: message.optionType,
-      premium: message.premium,
-      delta: message.delta,
-    }));
+    getStore().dispatch(
+      updateOptionPremium({
+        symbol: message.symbol,
+        strike: message.strike,
+        expiration: message.expiration,
+        optionType: message.optionType,
+        premium: message.premium,
+        delta: message.delta,
+      })
+    );
   }
 
   // Legacy method - use subscribeTickers or subscribeOptions instead
@@ -432,7 +453,7 @@ class PriceWebSocketService {
     };
 
     this.send(message);
-    symbols.forEach(s => this.subscribedTickers.add(s.toUpperCase()));
+    symbols.forEach((s) => this.subscribedTickers.add(s.toUpperCase()));
     getStore().dispatch(addSubscribedTickers(symbols));
   }
 
@@ -446,7 +467,7 @@ class PriceWebSocketService {
     this.send(message);
 
     if (symbols) {
-      symbols.forEach(s => this.subscribedTickers.delete(s.toUpperCase()));
+      symbols.forEach((s) => this.subscribedTickers.delete(s.toUpperCase()));
       getStore().dispatch(removeSubscribedTickers(symbols));
     } else {
       this.subscribedTickers.clear();
@@ -463,7 +484,7 @@ class PriceWebSocketService {
 
     this.send(message);
 
-    options.forEach(opt => {
+    options.forEach((opt) => {
       this.subscribedOptions.set(this.getOptionKey(opt), opt);
     });
     getStore().dispatch(setOptionsSubscribed(this.subscribedOptions.size > 0));
@@ -478,7 +499,7 @@ class PriceWebSocketService {
 
     this.send(message);
 
-    options.forEach(opt => {
+    options.forEach((opt) => {
       this.subscribedOptions.delete(this.getOptionKey(opt));
     });
     getStore().dispatch(setOptionsSubscribed(this.subscribedOptions.size > 0));

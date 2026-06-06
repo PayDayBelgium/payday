@@ -1,7 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { createSelector } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import type { Portfolio, PortfolioSummary, DailyPortfolioData, PortfolioTransaction, Ticker } from '../../types';
+import type {
+  Portfolio,
+  PortfolioSummary,
+  DailyPortfolioData,
+  PortfolioTransaction,
+} from '../../types';
 import type { RootState } from '../index';
 
 interface PortfoliosState {
@@ -9,7 +14,6 @@ interface PortfoliosState {
   summaries: PortfolioSummary[];
   dailyData: DailyPortfolioData[];
   transactions: PortfolioTransaction[]; // Portfolio transacties per portfolio
-  tickers: Ticker[]; // Ticker database voor autocomplete
 }
 
 const initialState: PortfoliosState = {
@@ -17,7 +21,6 @@ const initialState: PortfoliosState = {
   summaries: [],
   dailyData: [],
   transactions: [],
-  tickers: [],
 };
 
 const portfoliosSlice = createSlice({
@@ -27,7 +30,15 @@ const portfoliosSlice = createSlice({
     setInitialState: (state, action: PayloadAction<Portfolio[]>) => {
       state.portfolios = action.payload;
     },
-    loadMockData: (state, action: PayloadAction<{ portfolios: Portfolio[]; summaries: PortfolioSummary[]; dailyData: DailyPortfolioData[]; transactions?: PortfolioTransaction[] }>) => {
+    loadMockData: (
+      state,
+      action: PayloadAction<{
+        portfolios: Portfolio[];
+        summaries: PortfolioSummary[];
+        dailyData: DailyPortfolioData[];
+        transactions?: PortfolioTransaction[];
+      }>
+    ) => {
       state.portfolios = action.payload.portfolios;
       state.summaries = action.payload.summaries;
       state.dailyData = action.payload.dailyData;
@@ -53,18 +64,14 @@ const portfoliosSlice = createSlice({
           // Update summaries (ensure array exists)
           if (state.summaries && Array.isArray(state.summaries)) {
             state.summaries = state.summaries.map((summary) =>
-              summary.portfolio === oldName
-                ? { ...summary, portfolio: newName }
-                : summary
+              summary.portfolio === oldName ? { ...summary, portfolio: newName } : summary
             );
           }
 
           // Update dailyData (ensure array exists)
           if (state.dailyData && Array.isArray(state.dailyData)) {
             state.dailyData = state.dailyData.map((data) =>
-              data.portfolio === oldName
-                ? { ...data, portfolio: newName }
-                : data
+              data.portfolio === oldName ? { ...data, portfolio: newName } : data
             );
           }
 
@@ -117,7 +124,7 @@ const portfoliosSlice = createSlice({
 
       // Update portfolio currentValue if transaction includes newValue
       if (action.payload.newValue !== undefined) {
-        const portfolio = state.portfolios.find(b => b.name === action.payload.portfolio);
+        const portfolio = state.portfolios.find((b) => b.name === action.payload.portfolio);
         if (portfolio) {
           portfolio.currentValue = action.payload.newValue;
         }
@@ -130,7 +137,7 @@ const portfoliosSlice = createSlice({
 
         // Calculate total transactions for this date
         const transactionsOnDate = state.transactions.filter(
-          t => t.portfolio === action.payload.portfolio && t.date === transactionDate
+          (t) => t.portfolio === action.payload.portfolio && t.date === transactionDate
         );
 
         // Sum up all transaction amounts for dailyPnL
@@ -154,46 +161,23 @@ const portfoliosSlice = createSlice({
       }
     },
     updateTransaction: (state, action: PayloadAction<PortfolioTransaction>) => {
-      const index = state.transactions.findIndex(t => t.id === action.payload.id);
+      const index = state.transactions.findIndex((t) => t.id === action.payload.id);
       if (index !== -1) {
         state.transactions[index] = action.payload;
       }
     },
     deleteTransaction: (state, action: PayloadAction<string>) => {
-      state.transactions = state.transactions.filter(t => t.id !== action.payload);
+      state.transactions = state.transactions.filter((t) => t.id !== action.payload);
     },
     updatePortfolioValue: (state, action: PayloadAction<{ portfolio: string; value: number }>) => {
-      const portfolio = state.portfolios.find(b => b.name === action.payload.portfolio);
+      const portfolio = state.portfolios.find((b) => b.name === action.payload.portfolio);
       if (portfolio) {
         portfolio.currentValue = action.payload.value;
       }
     },
-    // Ticker Management Actions
-    addTicker: (state, action: PayloadAction<Ticker>) => {
-      // Initialize tickers array if it doesn't exist
-      if (!state.tickers) {
-        state.tickers = [];
-      }
-      const exists = state.tickers.find(t => t.symbol === action.payload.symbol);
-      if (!exists) {
-        state.tickers.push(action.payload);
-      } else {
-        // Update lastUsed timestamp
-        const index = state.tickers.findIndex(t => t.symbol === action.payload.symbol);
-        if (index !== -1) {
-          state.tickers[index] = { ...state.tickers[index], lastUsed: new Date().toISOString() };
-        }
-      }
-    },
-    updateTicker: (state, action: PayloadAction<Ticker>) => {
-      const index = state.tickers.findIndex(t => t.symbol === action.payload.symbol);
-      if (index !== -1) {
-        state.tickers[index] = action.payload;
-      }
-    },
-    deleteTicker: (state, action: PayloadAction<string>) => {
-      state.tickers = state.tickers.filter(t => t.symbol !== action.payload);
-    },
+    // NOTE: Ticker management lives entirely in tickersSlice (single source of truth).
+    // The legacy ticker reducers/selectors that used to live here were removed; see
+    // tickerMigration.ts for the one-time migration of older persisted data.
     resetPortfoliosState: () => initialState,
   },
 });
@@ -213,9 +197,6 @@ export const {
   updateTransaction,
   deleteTransaction,
   updatePortfolioValue,
-  addTicker,
-  updateTicker,
-  deleteTicker,
   resetPortfoliosState,
 } = portfoliosSlice.actions;
 
@@ -223,28 +204,11 @@ export const {
 export const selectPortfolios = (state: RootState) => state.portfolios.portfolios;
 export const selectDailyData = (state: RootState) => state.portfolios.dailyData;
 export const selectTransactions = (state: RootState) => state.portfolios.transactions;
-export const selectTickers = (state: RootState) => state.portfolios.tickers;
 
 // Memoized selector for transactions by portfolio
 export const selectTransactionsByPortfolio = createSelector(
-  [
-    selectTransactions,
-    (_state: RootState, portfolioName: string) => portfolioName
-  ],
-  (transactions, portfolioName) => (transactions || []).filter(t => t.portfolio === portfolioName)
-);
-
-// Memoized selector for tickers sorted by last used
-export const selectTickersSorted = createSelector(
-  [selectTickers],
-  (tickers) => {
-    if (!tickers || !Array.isArray(tickers)) return [];
-    return [...tickers].sort((a, b) => {
-      if (!a.lastUsed) return 1;
-      if (!b.lastUsed) return -1;
-      return new Date(b.lastUsed).getTime() - new Date(a.lastUsed).getTime();
-    });
-  }
+  [selectTransactions, (_state: RootState, portfolioName: string) => portfolioName],
+  (transactions, portfolioName) => (transactions || []).filter((t) => t.portfolio === portfolioName)
 );
 
 // Memoized selector to calculate portfolio summaries
@@ -259,7 +223,7 @@ export const selectPortfolioSummaries = createSelector(
 
       // Calculate positions value and cash from actual positions
       const portfolioPositions = positions.filter(
-        p => p.portfolio === portfolio.name && p.status === 'open'
+        (p) => p.portfolio === portfolio.name && p.status === 'open'
       );
 
       // Calculate Long and Short values for proper cash calculation
@@ -275,7 +239,7 @@ export const selectPortfolioSummaries = createSelector(
       const strategySet = new Set<string>();
       let allocatedCash = 0;
 
-      portfolioPositions.forEach(pos => {
+      portfolioPositions.forEach((pos) => {
         if (pos.type === 'stock' || pos.type === 'etf') {
           // Stocks and ETFs: always long positions
           longValue += pos.currentValue ?? 0;
@@ -338,9 +302,7 @@ export const selectPortfolioSummaries = createSelector(
         const oneYearAgo = new Date();
         oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
 
-        const yearAgoData = sortedData.find(
-          d => new Date(d.date) <= oneYearAgo
-        );
+        const yearAgoData = sortedData.find((d) => new Date(d.date) <= oneYearAgo);
 
         if (yearAgoData && yearAgoData.totalValue > 0) {
           yearlyReturn = ((totalValue - yearAgoData.totalValue) / yearAgoData.totalValue) * 100;
@@ -381,10 +343,11 @@ export const selectDailyDataByPortfolio = (portfolioName: string) => (state: Roo
 export const selectPortfolioValueBreakdown = (portfolioName: string) =>
   createSelector(
     [
-      (state: RootState) => state.portfolios.portfolios.find(p => p.name === portfolioName),
-      (state: RootState) => state.positions.positions.filter(
-        p => p.portfolio === portfolioName && p.status === 'open'
-      ),
+      (state: RootState) => state.portfolios.portfolios.find((p) => p.name === portfolioName),
+      (state: RootState) =>
+        state.positions.positions.filter(
+          (p) => p.portfolio === portfolioName && p.status === 'open'
+        ),
     ],
     (portfolio, positions) => {
       if (!portfolio) {
@@ -406,7 +369,7 @@ export const selectPortfolioValueBreakdown = (portfolioName: string) =>
       let optionsLongValue = 0;
       let optionsShortValue = 0;
 
-      positions.forEach(pos => {
+      positions.forEach((pos) => {
         if (pos.type === 'stock' || pos.type === 'etf') {
           stockEtfValue += pos.currentValue ?? 0;
         } else if (pos.type === 'call' || pos.type === 'put') {
@@ -437,10 +400,8 @@ export const selectPortfolioValueBreakdown = (portfolioName: string) =>
   );
 
 // Selector for total portfolio value across all portfolios
-export const selectTotalPortfolioValue = createSelector(
-  [selectPortfolios],
-  (portfolios) => portfolios.reduce((sum, p) => sum + (p.currentValue || 0), 0)
+export const selectTotalPortfolioValue = createSelector([selectPortfolios], (portfolios) =>
+  portfolios.reduce((sum, p) => sum + (p.currentValue || 0), 0)
 );
 
 export default portfoliosSlice.reducer;
-

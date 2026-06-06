@@ -14,6 +14,40 @@ export const nl = {
     reset: 'Resetten',
   },
 
+  // AI-assistent
+  ai: {
+    title: 'Assistent',
+    emptyState: 'Stel me een vraag over PayDay of je portefeuille.',
+    inputPlaceholder: 'Typ een bericht…',
+    send: 'Versturen',
+    stop: 'Stoppen',
+    settingsTab: 'AI-assistent',
+    settingsHeading: 'AI-assistent',
+    provider: 'Provider',
+    model: 'Model',
+    apiKey: 'API-sleutel',
+    apiKeySet: '✓ Ingesteld',
+    apiKeyHelp: 'Je sleutel wordt alleen in deze browser bewaard. Prima voor persoonlijk gebruik, niet voor publieke productie.',
+    saved: 'Opgeslagen',
+    noKeyError: 'Geen API-sleutel ingesteld. Ga naar Instellingen → AI-assistent om er een toe te voegen.',
+    providerUnavailable: 'Deze provider is nog niet beschikbaar.',
+    attach: 'Screenshot toevoegen',
+    examples: [
+      'Ik wil een broker toevoegen — ik upload zo een screenshot ervan.',
+      'Leg uit wat een covered call is.',
+      'Wat is het verschil tussen een call en een put?',
+      'Hoe werkt de wheel-strategie?',
+    ],
+    proposalTitle: 'Voorgestelde wijzigingen — bevestig om aan te maken:',
+    confirmCreate: 'Aanmaken',
+    created: 'Aangemaakt:',
+    cancelled: 'Geannuleerd.',
+    newChat: 'Nieuw gesprek',
+    errorOverloaded: 'De AI-service is even overbelast. Probeer het zo meteen opnieuw.',
+    errorRateLimit: 'Limiet bereikt. Wacht even en probeer opnieuw.',
+    errorAuth: 'Ongeldige API-sleutel. Controleer Instellingen → AI-assistent.',
+  },
+
   // Login
   login: {
     title: 'Welkom terug',

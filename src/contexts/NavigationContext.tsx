@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { createContext, useContext, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface NavigationEntry {
   path: string;
@@ -31,7 +31,6 @@ interface NavigationProviderProps {
 }
 
 export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children }) => {
-  const location = useLocation();
   const navigate = useNavigate();
   const [navigationStack, setNavigationStack] = useState<NavigationEntry[]>([]);
   const [lastMenuPath, setLastMenuPath] = useState<string>('/');
@@ -81,8 +80,8 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
     setNavigationStack([]);
   }, []);
 
-  const canGoBack = navigationStack.length > 1 ||
-    (navigationStack.length === 1 && !navigationStack[0].fromMenu);
+  const canGoBack =
+    navigationStack.length > 1 || (navigationStack.length === 1 && !navigationStack[0].fromMenu);
 
   const value: NavigationContextType = {
     navigationStack,
@@ -93,9 +92,5 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
     setMenuNavigation,
   };
 
-  return (
-    <NavigationContext.Provider value={value}>
-      {children}
-    </NavigationContext.Provider>
-  );
+  return <NavigationContext.Provider value={value}>{children}</NavigationContext.Provider>;
 };

@@ -8,12 +8,24 @@ import { OnboardingWizard, shouldShowWizard } from '../onboarding/OnboardingWiza
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { selectCurrentLevel } from '../../store/slices/userProgressSlice';
 import type { UserLevel } from '../../types';
+import { AIAssistantProvider } from '../../contexts/AIAssistantContext';
+import { AIAssistantFab } from '../ai/AIAssistantFab';
 
 const LayoutContent: React.FC = () => {
-  const { pageTitle, pageDescription, showInfoIcon, isInfoActive, onInfoClick, showWarningIcon, isWarningActive, onWarningClick, titleIcon } = usePageTitle();
+  const {
+    pageTitle,
+    pageDescription,
+    showInfoIcon,
+    isInfoActive,
+    onInfoClick,
+    showWarningIcon,
+    isWarningActive,
+    onWarningClick,
+    titleIcon,
+  } = usePageTitle();
   const currentLevel = useAppSelector(selectCurrentLevel);
 
-  const [isDarkMode, setIsDarkMode] = useState(() => {
+  const [isDarkMode] = useState(() => {
     // Check localStorage or system preference
     const saved = localStorage.getItem('darkMode');
     if (saved !== null) {
@@ -93,11 +105,10 @@ const LayoutContent: React.FC = () => {
         onWarningClick={onWarningClick || undefined}
         titleIcon={titleIcon || undefined}
       />
-      <Sidebar
-        isCollapsed={isSidebarCollapsed}
-        onToggleCollapse={toggleSidebar}
-      />
-      <main className={`flex-1 ${isSidebarCollapsed ? 'ml-16' : 'ml-64'} mt-16 p-6 bg-surface dark:bg-trading-dark-900 transition-all duration-300`}>
+      <Sidebar isCollapsed={isSidebarCollapsed} onToggleCollapse={toggleSidebar} />
+      <main
+        className={`flex-1 ${isSidebarCollapsed ? 'ml-16' : 'ml-64'} mt-16 p-6 bg-surface dark:bg-trading-dark-900 transition-all duration-300`}
+      >
         <Outlet />
       </main>
 
@@ -108,6 +119,7 @@ const LayoutContent: React.FC = () => {
         onClose={handleWizardClose}
         onComplete={handleWizardComplete}
       />
+      <AIAssistantFab />
     </div>
   );
 };
@@ -116,7 +128,9 @@ export const Layout: React.FC = () => {
   return (
     <PageTitleProvider>
       <NavigationProvider>
-        <LayoutContent />
+        <AIAssistantProvider>
+          <LayoutContent />
+        </AIAssistantProvider>
       </NavigationProvider>
     </PageTitleProvider>
   );

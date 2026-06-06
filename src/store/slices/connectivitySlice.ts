@@ -40,12 +40,12 @@ const connectivitySlice = createSlice({
       state.url = action.payload;
     },
     addSubscribedTickers: (state, action: PayloadAction<string[]>) => {
-      const newTickers = action.payload.map(t => t.toUpperCase());
+      const newTickers = action.payload.map((t) => t.toUpperCase());
       state.subscribedTickers = [...new Set([...state.subscribedTickers, ...newTickers])];
     },
     removeSubscribedTickers: (state, action: PayloadAction<string[]>) => {
-      const toRemove = action.payload.map(t => t.toUpperCase());
-      state.subscribedTickers = state.subscribedTickers.filter(t => !toRemove.includes(t));
+      const toRemove = action.payload.map((t) => t.toUpperCase());
+      state.subscribedTickers = state.subscribedTickers.filter((t) => !toRemove.includes(t));
     },
     clearSubscribedTickers: (state) => {
       state.subscribedTickers = [];

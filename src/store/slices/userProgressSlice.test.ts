@@ -21,8 +21,8 @@ describe('userProgressSlice levels', () => {
   it('getFeaturesForLevel("offpiste") includes all lower features plus quant_trading', () => {
     const feats = getFeaturesForLevel('offpiste');
     expect(feats).toContain('quant_trading');
-    expect(feats).toContain('stocks');      // beginner
-    expect(feats).toContain('kaching');     // expert
+    expect(feats).toContain('stocks'); // beginner
+    expect(feats).toContain('kaching'); // expert
   });
 
   it('quant_trading is only available when offpiste is unlocked', () => {
@@ -42,7 +42,10 @@ describe('userProgressSlice levels', () => {
 
   it('unlockLevel("offpiste") promotes currentLevel to offpiste', () => {
     const state: any = {
-      progress: { currentLevel: 'expert', unlockedLevels: ['beginner', 'medior', 'senior', 'expert'] },
+      progress: {
+        currentLevel: 'expert',
+        unlockedLevels: ['beginner', 'medior', 'senior', 'expert'],
+      },
       creditHistory: [],
       isLoading: false,
     };

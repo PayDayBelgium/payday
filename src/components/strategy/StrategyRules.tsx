@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, AlertCircle, Target, Trash2 } from 'lucide-react';
+import { AlertCircle, Target, Trash2 } from 'lucide-react';
 import type { StrategyRule, StrategyType, PortfolioName } from '../../types';
 import { ConfirmModal } from '../modals/ConfirmModal';
 
@@ -14,21 +14,26 @@ interface StrategyRulesProps {
 }
 
 export const StrategyRules: React.FC<StrategyRulesProps> = ({
-  strategyType,
-  portfolio,
   rules,
   onAddRule,
   onEditRule,
   onDeleteRule,
   onToggleRule,
 }) => {
-  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; rule: StrategyRule | null }>({
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    isOpen: boolean;
+    rule: StrategyRule | null;
+  }>({
     isOpen: false,
     rule: null,
   });
 
   const getCategoryIcon = (category: string) => {
-    return category === 'alert' ? <AlertCircle className="w-5 h-5" /> : <Target className="w-5 h-5" />;
+    return category === 'alert' ? (
+      <AlertCircle className="w-5 h-5" />
+    ) : (
+      <Target className="w-5 h-5" />
+    );
   };
 
   const getCategoryColor = (category: string) => {
@@ -42,14 +47,14 @@ export const StrategyRules: React.FC<StrategyRulesProps> = ({
       {/* Rules List */}
       <div className="space-y-3">
         {rules.length === 0 ? (
-          <div className="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
+          <div className="text-center py-12 bg-surface dark:bg-trading-dark-800/50 rounded-lg border border-surface-line dark:border-trading-dark-600">
             <div className="inline-flex p-3 rounded-full mb-3 bg-primary-50 dark:bg-primary-900/30">
               <AlertCircle className="w-5 h-5 text-primary-700 dark:text-primary-300" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
               Geen regels
             </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
+            <p className="text-ink-600 dark:text-ink-400 mb-4">
               Voeg regels toe om automatisch waarschuwingen en kansen te ontvangen
             </p>
             <button
@@ -60,10 +65,10 @@ export const StrategyRules: React.FC<StrategyRulesProps> = ({
             </button>
           </div>
         ) : (
-          rules.map(rule => (
+          rules.map((rule) => (
             <div
               key={rule.id}
-              className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:border-primary-300 dark:hover:border-primary-700 transition-all ${
+              className={`bg-white dark:bg-trading-dark-800 border border-surface-line dark:border-trading-dark-600 rounded-lg overflow-hidden hover:border-primary-300 dark:hover:border-primary-700 transition-all ${
                 !rule.enabled ? 'opacity-50' : ''
               }`}
             >
@@ -74,16 +79,13 @@ export const StrategyRules: React.FC<StrategyRulesProps> = ({
                 </div>
 
                 {/* Content - Clickable area */}
-                <div
-                  className="flex-1 min-w-0 cursor-pointer"
-                  onClick={() => onEditRule(rule)}
-                >
+                <div className="flex-1 min-w-0 cursor-pointer" onClick={() => onEditRule(rule)}>
                   <div className="flex items-start justify-between mb-2">
                     <div>
-                      <h4 className="text-base font-semibold text-gray-900 dark:text-white">
+                      <h4 className="text-base font-semibold text-ink-900 dark:text-white">
                         {rule.name}
                       </h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
+                      <p className="text-sm text-ink-600 dark:text-ink-400 mt-0.5">
                         {rule.description}
                       </p>
                     </div>
@@ -93,12 +95,12 @@ export const StrategyRules: React.FC<StrategyRulesProps> = ({
                   {rule.parameters && Object.keys(rule.parameters).length > 0 && (
                     <div className="flex flex-wrap gap-2 mb-3">
                       {rule.parameters.percentage && (
-                        <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-xs">
+                        <span className="px-2 py-1 bg-surface-subtle dark:bg-trading-dark-700 text-ink-700 dark:text-ink-300 rounded text-xs">
                           {rule.parameters.percentage}%
                         </span>
                       )}
                       {rule.parameters.threshold && (
-                        <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-xs">
+                        <span className="px-2 py-1 bg-surface-subtle dark:bg-trading-dark-700 text-ink-700 dark:text-ink-300 rounded text-xs">
                           Drempel: {rule.parameters.threshold}
                         </span>
                       )}
@@ -106,7 +108,7 @@ export const StrategyRules: React.FC<StrategyRulesProps> = ({
                   )}
 
                   {/* Actions */}
-                  <div className="flex flex-wrap gap-2 text-xs text-gray-600 dark:text-gray-400">
+                  <div className="flex flex-wrap gap-2 text-xs text-ink-600 dark:text-ink-400">
                     {rule.actions.showOnDashboard && (
                       <span className="flex items-center gap-1 px-2 py-1 bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300 rounded">
                         Dashboard
@@ -136,9 +138,9 @@ export const StrategyRules: React.FC<StrategyRulesProps> = ({
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                       rule.enabled
                         ? 'bg-primary-700 dark:bg-primary-500'
-                        : 'bg-gray-200 dark:bg-gray-700'
+                        : 'bg-surface-muted dark:bg-trading-dark-700'
                     }`}
-                    title={rule.enabled ? "Deactiveren" : "Activeren"}
+                    title={rule.enabled ? 'Deactiveren' : 'Activeren'}
                   >
                     <span
                       className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${

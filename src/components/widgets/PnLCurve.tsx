@@ -51,12 +51,17 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
 }) => {
   const currencySymbol = getCurrencySymbol(currency);
   const svgRef = useRef<SVGSVGElement>(null);
-  const [hoverPoint, setHoverPoint] = useState<{ x: number; y: number; price: number; pnl: number } | null>(null);
+  const [hoverPoint, setHoverPoint] = useState<{
+    x: number;
+    y: number;
+    price: number;
+    pnl: number;
+  } | null>(null);
 
   // Calculate P&L curve data points
   const { points, breakEven, maxProfit, maxLoss, currentPrice } = useMemo(() => {
     const contractMultiplier = 100;
-    let points: PnLPoint[] = [];
+    const points: PnLPoint[] = [];
     let breakEven: number | number[] | null = null;
     let maxProfit: number | null = null;
     let maxLoss: number | null = null;
@@ -238,18 +243,33 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
 
         breakEven = shortStrike - (shortPremium - longPremium);
         maxProfit = netCredit;
-        maxLoss = -(Math.abs(shortStrike - longStrike) - (shortPremium - longPremium)) * contracts * contractMultiplier;
+        maxLoss =
+          -(Math.abs(shortStrike - longStrike) - (shortPremium - longPremium)) *
+          contracts *
+          contractMultiplier;
         break;
       }
     }
 
     return { points, breakEven, maxProfit, maxLoss, currentPrice };
-  }, [type, purchasePrice, shares, strike, premium, contracts, longStrike, shortStrike, longPremium, shortPremium, actualCurrentPrice]);
+  }, [
+    type,
+    purchasePrice,
+    shares,
+    strike,
+    premium,
+    contracts,
+    longStrike,
+    shortStrike,
+    longPremium,
+    shortPremium,
+    actualCurrentPrice,
+  ]);
 
   if (points.length === 0) {
     return (
-      <div className={`p-8 text-center bg-gray-50 dark:bg-gray-900 rounded-lg ${className}`}>
-        <p className="text-gray-500 dark:text-gray-400">
+      <div className={`p-8 text-center bg-surface dark:bg-trading-dark-900 rounded-lg ${className}`}>
+        <p className="text-ink-500 dark:text-ink-400">
           Vul alle velden in om de P&L curve te zien
         </p>
       </div>
@@ -257,10 +277,10 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
   }
 
   // Calculate chart dimensions and scaling
-  const minPrice = Math.min(...points.map(p => p.price));
-  const maxPrice = Math.max(...points.map(p => p.price));
-  const minPnL = Math.min(...points.map(p => p.pnl), 0);
-  const maxPnL = Math.max(...points.map(p => p.pnl), 0);
+  const minPrice = Math.min(...points.map((p) => p.price));
+  const maxPrice = Math.max(...points.map((p) => p.price));
+  const minPnL = Math.min(...points.map((p) => p.pnl), 0);
+  const maxPnL = Math.max(...points.map((p) => p.pnl), 0);
 
   const chartWidth = 600;
   const chartHeight = 300;
@@ -271,15 +291,19 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
   };
 
   const yScale = (pnl: number) => {
-    return chartHeight - padding - ((pnl - minPnL) / (maxPnL - minPnL)) * (chartHeight - 2 * padding);
+    return (
+      chartHeight - padding - ((pnl - minPnL) / (maxPnL - minPnL)) * (chartHeight - 2 * padding)
+    );
   };
 
   // Create SVG path for the curve
-  const curvePath = points.map((point, i) => {
-    const x = xScale(point.price);
-    const y = yScale(point.pnl);
-    return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
-  }).join(' ');
+  const curvePath = points
+    .map((point, i) => {
+      const x = xScale(point.price);
+      const y = yScale(point.pnl);
+      return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
+    })
+    .join(' ');
 
   // Zero line (break-even)
   const zeroY = yScale(0);
@@ -293,18 +317,17 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
 
     // Convert screen coordinates to SVG coordinates
     const scaleX = chartWidth / rect.width;
-    const scaleY = chartHeight / rect.height;
     const x = (e.clientX - rect.left) * scaleX;
-    const y = (e.clientY - rect.top) * scaleY;
 
     // Find closest point on the curve
-    const priceAtMouse = minPrice + ((x - padding) / (chartWidth - 2 * padding)) * (maxPrice - minPrice);
+    const priceAtMouse =
+      minPrice + ((x - padding) / (chartWidth - 2 * padding)) * (maxPrice - minPrice);
 
     // Find closest data point
     let closestPoint = points[0];
     let minDistance = Math.abs(points[0].price - priceAtMouse);
 
-    points.forEach(point => {
+    points.forEach((point) => {
       const distance = Math.abs(point.price - priceAtMouse);
       if (distance < minDistance) {
         minDistance = distance;
@@ -325,36 +348,41 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
   };
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 ${className}`}>
+    <div
+      className={`bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 p-4 ${className}`}
+    >
       {/* Header */}
       <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+        <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
           Profit & Loss curve
         </h3>
         <div className="flex items-center gap-4 text-sm">
           {breakEven !== null && !Array.isArray(breakEven) && (
             <div className="flex items-center gap-1">
-              <span className="text-gray-600 dark:text-gray-400">Break-even:</span>
-              <span className="font-semibold text-gray-900 dark:text-white">
-                {currencySymbol}{formatNumber(breakEven, 2)}
+              <span className="text-ink-600 dark:text-ink-400">Break-even:</span>
+              <span className="font-semibold text-ink-900 dark:text-white">
+                {currencySymbol}
+                {formatNumber(breakEven, 2)}
               </span>
             </div>
           )}
           {maxProfit !== null && maxProfit !== Infinity && (
             <div className="flex items-center gap-1">
               <TrendingUp className="w-4 h-4 text-positive-600 dark:text-positive-500" />
-              <span className="text-gray-600 dark:text-gray-400">Max:</span>
+              <span className="text-ink-600 dark:text-ink-400">Max:</span>
               <span className="font-semibold text-positive-600 dark:text-positive-500">
-                +{currencySymbol}{formatNumber(maxProfit, 2)}
+                +{currencySymbol}
+                {formatNumber(maxProfit, 2)}
               </span>
             </div>
           )}
           {maxLoss !== null && maxLoss !== -Infinity && (
             <div className="flex items-center gap-1">
               <TrendingDown className="w-4 h-4 text-negative-600 dark:text-negative-500" />
-              <span className="text-gray-600 dark:text-gray-400">Max:</span>
+              <span className="text-ink-600 dark:text-ink-400">Max:</span>
               <span className="font-semibold text-negative-600 dark:text-negative-500">
-                -{currencySymbol}{formatNumber(Math.abs(maxLoss), 2)}
+                -{currencySymbol}
+                {formatNumber(Math.abs(maxLoss), 2)}
               </span>
             </div>
           )}
@@ -380,7 +408,7 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="0.5"
-                className="text-gray-200 dark:text-gray-700"
+                className="text-ink-200 dark:text-ink-700"
                 opacity="0.3"
               />
             </pattern>
@@ -396,14 +424,17 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
             stroke="currentColor"
             strokeWidth="2"
             strokeDasharray="5,5"
-            className="text-gray-400 dark:text-gray-600"
+            className="text-ink-400 dark:text-ink-600"
           />
 
           {/* Profit area fill */}
           <path
             d={`
               M ${padding} ${zeroY}
-              ${points.filter(p => p.pnl >= 0).map(p => `L ${xScale(p.price)} ${yScale(p.pnl)}`).join(' ')}
+              ${points
+                .filter((p) => p.pnl >= 0)
+                .map((p) => `L ${xScale(p.price)} ${yScale(p.pnl)}`)
+                .join(' ')}
               L ${xScale(points[points.length - 1].price)} ${zeroY}
               Z
             `}
@@ -415,7 +446,10 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
           <path
             d={`
               M ${padding} ${zeroY}
-              ${points.filter(p => p.pnl < 0).map(p => `L ${xScale(p.price)} ${yScale(p.pnl)}`).join(' ')}
+              ${points
+                .filter((p) => p.pnl < 0)
+                .map((p) => `L ${xScale(p.price)} ${yScale(p.pnl)}`)
+                .join(' ')}
               L ${xScale(points[points.length - 1].price)} ${zeroY}
               Z
             `}
@@ -507,7 +541,8 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
             textAnchor="middle"
             className="text-xs fill-gray-600 dark:fill-gray-400"
           >
-            {currencySymbol}{formatNumber(minPrice, 0)}
+            {currencySymbol}
+            {formatNumber(minPrice, 0)}
           </text>
           <text
             x={chartWidth - padding}
@@ -515,7 +550,8 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
             textAnchor="middle"
             className="text-xs fill-gray-600 dark:fill-gray-400"
           >
-            {currencySymbol}{formatNumber(maxPrice, 0)}
+            {currencySymbol}
+            {formatNumber(maxPrice, 0)}
           </text>
 
           {/* P&L labels */}
@@ -525,7 +561,8 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
             textAnchor="end"
             className="text-xs fill-green-600 dark:fill-green-400"
           >
-            +{currencySymbol}{formatNumber(maxPnL, 0)}
+            +{currencySymbol}
+            {formatNumber(maxPnL, 0)}
           </text>
           <text
             x={padding - 5}
@@ -533,7 +570,8 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
             textAnchor="end"
             className="text-xs fill-red-600 dark:fill-red-400"
           >
-            {currencySymbol}{formatNumber(minPnL, 0)}
+            {currencySymbol}
+            {formatNumber(minPnL, 0)}
           </text>
           <text
             x={padding - 5}
@@ -590,7 +628,7 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
                   height="30"
                   rx="4"
                   fill="currentColor"
-                  className="text-gray-900 dark:text-gray-100"
+                  className="text-ink-900 dark:text-ink-100"
                   opacity="0.95"
                 />
                 <text
@@ -598,7 +636,8 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
                   y={hoverPoint.y - 22}
                   className="text-xs font-semibold fill-white dark:fill-gray-900"
                 >
-                  Prijs: {currencySymbol}{formatNumber(hoverPoint.price, 2)}
+                  Prijs: {currencySymbol}
+                  {formatNumber(hoverPoint.price, 2)}
                 </text>
                 <text
                   x={hoverPoint.x + 15}
@@ -609,7 +648,9 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
                       : 'fill-red-400 dark:fill-red-300'
                   }`}
                 >
-                  P&L: {hoverPoint.pnl >= 0 ? '+' : ''}{currencySymbol}{formatNumber(hoverPoint.pnl, 2)}
+                  P&L: {hoverPoint.pnl >= 0 ? '+' : ''}
+                  {currencySymbol}
+                  {formatNumber(hoverPoint.pnl, 2)}
                 </text>
               </g>
             </g>
@@ -621,17 +662,26 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
       <div className="mt-4 flex items-center justify-center gap-6 text-xs">
         {currentPrice > 0 && (
           <div className="flex items-center gap-2">
-            <div className="w-8 h-0.5 bg-ink-600 dark:bg-purple-400" style={{ borderTop: '2px dashed' }} />
-            <span className="text-gray-600 dark:text-gray-400">Huidige Prijs</span>
+            <div
+              className="w-8 h-0.5 bg-ink-600 dark:bg-purple-400"
+              style={{ borderTop: '2px dashed' }}
+            />
+            <span className="text-ink-600 dark:text-ink-400">Huidige Prijs</span>
           </div>
         )}
         <div className="flex items-center gap-2">
-          <div className="w-8 h-0.5 bg-caution-500 dark:bg-caution-500" style={{ borderTop: '2px dashed' }} />
-          <span className="text-gray-600 dark:text-gray-400">Break-even</span>
+          <div
+            className="w-8 h-0.5 bg-caution-500 dark:bg-caution-500"
+            style={{ borderTop: '2px dashed' }}
+          />
+          <span className="text-ink-600 dark:text-ink-400">Break-even</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-8 h-0.5 bg-gray-400 dark:bg-gray-600" style={{ borderTop: '2px dashed' }} />
-          <span className="text-gray-600 dark:text-gray-400">Zero Line</span>
+          <div
+            className="w-8 h-0.5 bg-ink-300 dark:bg-trading-dark-600"
+            style={{ borderTop: '2px dashed' }}
+          />
+          <span className="text-ink-600 dark:text-ink-400">Zero Line</span>
         </div>
       </div>
     </div>

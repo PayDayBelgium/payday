@@ -27,9 +27,7 @@ export interface Holding {
  * portfolio's open sold calls for that ticker.
  */
 export function groupHoldings(positions: Position[], portfolio: PortfolioName): Holding[] {
-  const openInPortfolio = positions.filter(
-    p => p.portfolio === portfolio && p.status === 'open'
-  );
+  const openInPortfolio = positions.filter((p) => p.portfolio === portfolio && p.status === 'open');
 
   const stockLots = openInPortfolio.filter(
     (p): p is StockPosition => p.type === 'stock' || p.type === 'etf'
@@ -51,7 +49,7 @@ export function groupHoldings(positions: Position[], portfolio: PortfolioName): 
     const sorted = [...lots].sort(
       (a, b) => new Date(a.openDate).getTime() - new Date(b.openDate).getTime()
     );
-    const tickerSoldCalls = soldCalls.filter(c => c.ticker === ticker);
+    const tickerSoldCalls = soldCalls.filter((c) => c.ticker === ticker);
     const capacity = computeCoveredCallCapacity(sorted, tickerSoldCalls);
 
     const totalCostBasis = sorted.reduce((sum, l) => sum + l.costBasis, 0);

@@ -5,6 +5,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { createAppStore } from './store';
 import { ToastProvider } from './contexts/ToastContext';
 import { initializeWebSocketService } from './services/priceWebSocketService';
+import { initializeIBWebSocketService } from './services/ibWebSocketService';
 import './i18n/config'; // Initialize i18n
 import { getSavedTheme, applyTheme } from './constants/themes';
 import './index.css';
@@ -27,8 +28,9 @@ const getCurrentUsername = (): string | undefined => {
 const username = getCurrentUsername();
 const { store, persistor } = createAppStore(username);
 
-// Initialize WebSocket service with store reference
+// Initialize WebSocket services with store reference
 initializeWebSocketService(store);
+initializeIBWebSocketService(store);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

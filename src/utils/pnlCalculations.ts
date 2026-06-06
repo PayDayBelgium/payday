@@ -14,27 +14,27 @@
 
 export interface OptionPnLParams {
   action: 'buy' | 'sell';
-  costBasis: number;      // Total cost basis (positive for long, negative for short)
-  currentValue: number;   // Current total value (follows same sign convention)
+  costBasis: number; // Total cost basis (positive for long, negative for short)
+  currentValue: number; // Current total value (follows same sign convention)
 }
 
 export interface OptionClosePnLParams {
   action: 'buy' | 'sell';
-  costBasis: number;      // Total cost basis
-  closePremium: number;   // Close premium per share (always positive)
-  contracts: number;      // Number of contracts
+  costBasis: number; // Total cost basis
+  closePremium: number; // Close premium per share (always positive)
+  contracts: number; // Number of contracts
   contractMultiplier?: number; // Usually 100
 }
 
 export interface StockPnLParams {
-  costBasis: number;      // Total cost basis (always positive for stocks)
-  currentValue: number;   // Current total value
+  costBasis: number; // Total cost basis (always positive for stocks)
+  currentValue: number; // Current total value
 }
 
 export interface StockClosePnLParams {
-  costBasis: number;      // Total cost basis
-  closePrice: number;     // Close price per share
-  shares: number;         // Number of shares
+  costBasis: number; // Total cost basis
+  closePrice: number; // Close price per share
+  shares: number; // Number of shares
 }
 
 /**
@@ -151,7 +151,7 @@ export function calculateCampaignTotalPnL(params: {
  */
 export function calculateCostBasis(params: {
   action: 'buy' | 'sell';
-  premium: number;       // Premium per share
+  premium: number; // Premium per share
   contracts: number;
   contractMultiplier?: number;
 }): number {

@@ -17,7 +17,12 @@ describe('communityActions', () => {
 
   it('submitPost forwards a tradeIdea onto the post', () => {
     const dispatch = vi.fn();
-    const tradeIdea: TradeIdea = { ticker: 'TSLA', strategy: 'cash_secured_puts', expiry: '2026-06-21', ivRank: 70 };
+    const tradeIdea: TradeIdea = {
+      ticker: 'TSLA',
+      strategy: 'cash_secured_puts',
+      expiry: '2026-06-21',
+      ivRank: 70,
+    };
     submitPost({ author, channel: 'ideas', text: 'x', tradeIdea })(dispatch as any);
     const postCall = dispatch.mock.calls.find((c) => c[0].type === 'community/addPost');
     expect(postCall![0].payload.tradeIdea).toEqual(tradeIdea);

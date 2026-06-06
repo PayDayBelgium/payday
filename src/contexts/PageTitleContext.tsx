@@ -52,21 +52,23 @@ export const PageTitleProvider: React.FC<{ children: ReactNode }> = ({ children 
   };
 
   return (
-    <PageTitleContext.Provider value={{
-      pageTitle,
-      pageDescription,
-      setPageTitle,
-      showInfoIcon,
-      isInfoActive,
-      onInfoClick,
-      setInfoIcon,
-      showWarningIcon,
-      isWarningActive,
-      onWarningClick,
-      setWarningIcon,
-      titleIcon,
-      setTitleIcon
-    }}>
+    <PageTitleContext.Provider
+      value={{
+        pageTitle,
+        pageDescription,
+        setPageTitle,
+        showInfoIcon,
+        isInfoActive,
+        onInfoClick,
+        setInfoIcon,
+        showWarningIcon,
+        isWarningActive,
+        onWarningClick,
+        setWarningIcon,
+        titleIcon,
+        setTitleIcon,
+      }}
+    >
       {children}
     </PageTitleContext.Provider>
   );

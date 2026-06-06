@@ -84,10 +84,20 @@ export const FridayDatePicker: React.FC<FridayDatePickerProps> = ({
   };
 
   // Check if previous button should be disabled
-  const isPrevDisabled = Boolean(disabled || !value || (min && getPreviousFriday(new Date(value)).toISOString().split('T')[0] < min));
+  const isPrevDisabled = Boolean(
+    disabled ||
+    !value ||
+    (min && getPreviousFriday(new Date(value)).toISOString().split('T')[0] < min)
+  );
 
   // Check if next button should be disabled
-  const isNextDisabled = Boolean(disabled || (max && getNextFriday(value ? new Date(value) : new Date()).toISOString().split('T')[0] > max));
+  const isNextDisabled = Boolean(
+    disabled ||
+    (max &&
+      getNextFriday(value ? new Date(value) : new Date())
+        .toISOString()
+        .split('T')[0] > max)
+  );
 
   return (
     <div className="flex items-stretch">
@@ -102,12 +112,13 @@ export const FridayDatePicker: React.FC<FridayDatePickerProps> = ({
         max={max}
       />
 
-      <div className="flex border border-gray-300 dark:border-gray-600 rounded-r-lg overflow-hidden">
+      <div className="flex border border-ink-200 dark:border-trading-dark-500 rounded-r-lg overflow-hidden">
         <button
           type="button"
           onClick={handlePreviousFriday}
           disabled={isPrevDisabled}
-          className="w-8 flex items-center justify-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 bg-gray-50 dark:bg-gray-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-gray-50 dark:disabled:hover:bg-gray-700 border-r border-gray-300 dark:border-gray-600"
+          className="w-8 flex items-center justify-center text-ink-500 hover:text-ink-700 dark:text-ink-400 dark:hover:text-ink-200 hover:bg-surface-subtle dark:hover:bg-trading-dark-700 bg-surface dark:bg-trading-dark-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-surface dark:disabled:hover:bg-trading-dark-700 border-r border-ink-200 dark:border-trading-dark-500"
+          aria-label="Vorige vrijdag"
           title="Vorige vrijdag"
         >
           <ChevronLeft className="w-4 h-4" />
@@ -117,7 +128,8 @@ export const FridayDatePicker: React.FC<FridayDatePickerProps> = ({
           type="button"
           onClick={handleNextFriday}
           disabled={isNextDisabled}
-          className="w-9 flex items-center justify-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 bg-gray-50 dark:bg-gray-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-gray-50 dark:disabled:hover:bg-gray-700"
+          className="w-9 flex items-center justify-center text-ink-500 hover:text-ink-700 dark:text-ink-400 dark:hover:text-ink-200 hover:bg-surface-subtle dark:hover:bg-trading-dark-700 bg-surface dark:bg-trading-dark-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-surface dark:disabled:hover:bg-trading-dark-700"
+          aria-label="Volgende vrijdag"
           title="Volgende vrijdag"
         >
           <ChevronRight className="w-4 h-4" />

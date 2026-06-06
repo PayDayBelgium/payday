@@ -20,7 +20,10 @@ const baseReq = (over: Partial<MentorshipRequest> = {}): MentorshipRequest => ({
 
 describe('mentorshipSlice', () => {
   it('submitRequest prepends the request', () => {
-    const state = reducer({ requests: [baseReq({ id: 'old' })] }, submitRequest(baseReq({ id: 'new' })));
+    const state = reducer(
+      { requests: [baseReq({ id: 'old' })] },
+      submitRequest(baseReq({ id: 'new' }))
+    );
     expect(state.requests[0].id).toBe('new');
     expect(state.requests).toHaveLength(2);
   });

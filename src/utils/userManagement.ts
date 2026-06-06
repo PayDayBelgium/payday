@@ -17,7 +17,7 @@ export const createUser = (username: string): void => {
   const users = getAllUsers();
 
   // Check if user already exists
-  if (users.some(u => u.username === username)) {
+  if (users.some((u) => u.username === username)) {
     throw new Error('User already exists');
   }
 
@@ -33,7 +33,7 @@ export const createUser = (username: string): void => {
 
 export const deleteUser = (username: string): void => {
   const users = getAllUsers();
-  const filteredUsers = users.filter(u => u.username !== username);
+  const filteredUsers = users.filter((u) => u.username !== username);
   localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(filteredUsers));
 
   // Also clean up user's data
@@ -42,7 +42,7 @@ export const deleteUser = (username: string): void => {
 
 export const updateUserLastLogin = (username: string): void => {
   const users = getAllUsers();
-  const user = users.find(u => u.username === username);
+  const user = users.find((u) => u.username === username);
 
   if (user) {
     user.lastLogin = new Date().toISOString();
@@ -63,12 +63,12 @@ export const getUserStats = (): UserStats => {
 
   return {
     totalUsers: users.length,
-    activeToday: users.filter(u => {
+    activeToday: users.filter((u) => {
       if (!u.lastLogin) return false;
       const loginDate = new Date(u.lastLogin);
       return loginDate >= todayStart;
     }).length,
-    activeThisWeek: users.filter(u => {
+    activeThisWeek: users.filter((u) => {
       if (!u.lastLogin) return false;
       const loginDate = new Date(u.lastLogin);
       return loginDate >= weekStart;

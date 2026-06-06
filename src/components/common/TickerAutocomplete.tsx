@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useId } from 'react';
 import { Search } from 'lucide-react';
 import type { TickerSuggestion } from './TickerAutocomplete.types';
 
@@ -30,6 +30,10 @@ export const TickerAutocomplete: React.FC<TickerAutocompleteProps> = ({
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Stabiele ids voor de WAI-ARIA combobox-structuur
+  const listboxId = useId();
+  const optionId = (index: number) => `${listboxId}-option-${index}`;
 
   // Filter suggestions based on input
   useEffect(() => {
@@ -79,9 +83,7 @@ export const TickerAutocomplete: React.FC<TickerAutocompleteProps> = ({
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
-        setSelectedIndex((prev) =>
-          prev < filteredSuggestions.length - 1 ? prev + 1 : prev
-        );
+        setSelectedIndex((prev) => (prev < filteredSuggestions.length - 1 ? prev + 1 : prev));
         break;
       case 'ArrowUp':
         e.preventDefault();
@@ -104,7 +106,7 @@ export const TickerAutocomplete: React.FC<TickerAutocompleteProps> = ({
     <div className="space-y-4">
       {/* Ticker Input with Autocomplete */}
       <div ref={wrapperRef} className="relative">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
           Ticker symbool {required && <span className="text-negative-600">*</span>}
         </label>
         <div className="relative">
@@ -120,40 +122,50 @@ export const TickerAutocomplete: React.FC<TickerAutocompleteProps> = ({
                 setIsOpen(true);
               }
             }}
-            className={`w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent ${className}`}
+            className={`w-full px-3 py-2 pr-10 border border-ink-200 dark:border-trading-dark-500 rounded-lg bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent ${className}`}
             placeholder={placeholder}
             autoComplete="off"
+            role="combobox"
+            aria-expanded={isOpen && filteredSuggestions.length > 0}
+            aria-controls={listboxId}
+            aria-autocomplete="list"
+            aria-activedescendant={selectedIndex >= 0 ? optionId(selectedIndex) : undefined}
           />
-          <Search className="absolute right-3 top-2.5 w-5 h-5 text-gray-400" />
+          <Search className="absolute right-3 top-2.5 w-5 h-5 text-ink-400" />
         </div>
 
         {/* Dropdown Suggestions */}
         {isOpen && filteredSuggestions.length > 0 && (
-          <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+          <div
+            id={listboxId}
+            role="listbox"
+            className="absolute z-50 w-full mt-1 bg-white dark:bg-trading-dark-800 border border-ink-200 dark:border-trading-dark-500 rounded-lg shadow-lg max-h-60 overflow-y-auto"
+          >
             {filteredSuggestions.map((suggestion, index) => (
               <button
                 key={`${suggestion.ticker}-${index}`}
+                id={optionId(index)}
+                role="option"
+                aria-selected={index === selectedIndex}
                 type="button"
                 onClick={() => handleSelectSuggestion(suggestion)}
                 onMouseEnter={() => setSelectedIndex(index)}
                 className={`w-full text-left px-4 py-2 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors ${
-                  index === selectedIndex
-                    ? 'bg-primary-50 dark:bg-primary-900/20'
-                    : ''
+                  index === selectedIndex ? 'bg-primary-50 dark:bg-primary-900/20' : ''
                 } ${
                   index === 0
                     ? 'rounded-t-lg'
                     : index === filteredSuggestions.length - 1
-                    ? 'rounded-b-lg'
-                    : ''
+                      ? 'rounded-b-lg'
+                      : ''
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-semibold text-gray-900 dark:text-white">
+                    <div className="font-semibold text-ink-900 dark:text-white">
                       {suggestion.ticker}
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                    <div className="text-sm text-ink-600 dark:text-ink-400">
                       {suggestion.name}
                     </div>
                   </div>
@@ -166,14 +178,14 @@ export const TickerAutocomplete: React.FC<TickerAutocompleteProps> = ({
 
       {/* Name Input */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
           Naam (Optioneel)
         </label>
         <input
           type="text"
           value={name}
           onChange={(e) => onNameChange(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          className="w-full px-3 py-2 border border-ink-200 dark:border-trading-dark-500 rounded-lg bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           placeholder="Apple Inc."
         />
       </div>

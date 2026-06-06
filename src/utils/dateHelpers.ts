@@ -25,7 +25,9 @@ export const getDaysToExpiration = (expirationDate: string): number => {
 /**
  * Get expiration warning level based on days remaining
  */
-export const getExpirationWarningLevel = (daysToExpiration: number): 'critical' | 'warning' | 'normal' => {
+export const getExpirationWarningLevel = (
+  daysToExpiration: number
+): 'critical' | 'warning' | 'normal' => {
   if (daysToExpiration <= 7) return 'critical';
   if (daysToExpiration <= 14) return 'warning';
   return 'normal';
@@ -39,6 +41,6 @@ export const formatDateString = (dateString: string): string => {
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
-    day: 'numeric'
+    day: 'numeric',
   });
 };

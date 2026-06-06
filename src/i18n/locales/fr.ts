@@ -14,6 +14,40 @@ export const fr = {
     reset: 'Réinitialiser',
   },
 
+  // Assistant IA
+  ai: {
+    title: 'Assistant',
+    emptyState: 'Posez-moi une question sur PayDay ou votre portefeuille.',
+    inputPlaceholder: 'Tapez un message…',
+    send: 'Envoyer',
+    stop: 'Arrêter',
+    settingsTab: 'Assistant IA',
+    settingsHeading: 'Assistant IA',
+    provider: 'Fournisseur',
+    model: 'Modèle',
+    apiKey: 'Clé API',
+    apiKeySet: '✓ Définie',
+    apiKeyHelp: 'Votre clé est stockée uniquement dans ce navigateur. Convient à un usage personnel, pas à une production publique.',
+    saved: 'Enregistré',
+    noKeyError: 'Aucune clé API définie. Ouvrez Paramètres → Assistant IA pour en ajouter une.',
+    providerUnavailable: "Ce fournisseur n'est pas encore disponible.",
+    attach: 'Ajouter une capture',
+    examples: [
+      "Je veux ajouter un courtier — je vais téléverser une capture d'écran.",
+      "Expliquez ce qu'est un covered call.",
+      'Quelle est la différence entre un call et un put ?',
+      'Comment fonctionne la stratégie wheel ?',
+    ],
+    proposalTitle: 'Modifications proposées — confirmez pour créer :',
+    confirmCreate: 'Créer',
+    created: 'Créé :',
+    cancelled: 'Annulé.',
+    newChat: 'Nouvelle conversation',
+    errorOverloaded: 'Le service IA est momentanément surchargé. Réessayez dans un instant.',
+    errorRateLimit: 'Limite atteinte. Patientez un instant puis réessayez.',
+    errorAuth: 'Clé API invalide. Vérifiez Paramètres → Assistant IA.',
+  },
+
   // Login
   login: {
     title: 'Bienvenue',

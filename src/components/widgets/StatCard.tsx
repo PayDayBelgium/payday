@@ -53,7 +53,8 @@ export const StatCard: React.FC<StatCardProps> = ({
     }
   }, [showInfoTooltip]);
 
-  const defaultAlertMessage = 'Kritiek: Je vrije cash is negatief. Dit betekent dat je meer collateral nodig hebt dan je beschikbare cash. Overweeg posities te sluiten of extra kapitaal toe te voegen.';
+  const defaultAlertMessage =
+    'Kritiek: Je vrije cash is negatief. Dit betekent dat je meer collateral nodig hebt dan je beschikbare cash. Overweeg posities te sluiten of extra kapitaal toe te voegen.';
 
   return (
     <div
@@ -74,24 +75,30 @@ export const StatCard: React.FC<StatCardProps> = ({
           >
             <AlertTriangle className="w-4 h-4 text-negative-500" strokeWidth={1.75} />
           </div>
-          {showAlertTooltip && createPortal(
-            <div
-              className="fixed w-72 p-3 bg-white dark:bg-trading-dark-800 border border-negative-500/40 rounded-lg shadow-xl z-[9999]"
-              style={{ top: alertTooltipPosition.top, right: alertTooltipPosition.right }}
-              onMouseEnter={() => setShowAlertTooltip(true)}
-              onMouseLeave={() => setShowAlertTooltip(false)}
-            >
-              <div className="absolute -top-1.5 right-3 w-3 h-3 bg-white dark:bg-trading-dark-800 border-l border-t border-negative-500/40 transform rotate-45"></div>
-              <div className="flex items-start gap-2">
-                <AlertTriangle className="w-4 h-4 text-negative-500 flex-shrink-0 mt-0.5" strokeWidth={1.75} />
-                <div>
-                  <p className="font-semibold text-sm text-negative-600 mb-1">Kritiek</p>
-                  <p className="text-xs text-ink-700 dark:text-ink-300">{alertMessage || defaultAlertMessage}</p>
+          {showAlertTooltip &&
+            createPortal(
+              <div
+                className="fixed w-72 p-3 bg-white dark:bg-trading-dark-800 border border-negative-500/40 rounded-lg shadow-xl z-[9999]"
+                style={{ top: alertTooltipPosition.top, right: alertTooltipPosition.right }}
+                onMouseEnter={() => setShowAlertTooltip(true)}
+                onMouseLeave={() => setShowAlertTooltip(false)}
+              >
+                <div className="absolute -top-1.5 right-3 w-3 h-3 bg-white dark:bg-trading-dark-800 border-l border-t border-negative-500/40 transform rotate-45"></div>
+                <div className="flex items-start gap-2">
+                  <AlertTriangle
+                    className="w-4 h-4 text-negative-500 flex-shrink-0 mt-0.5"
+                    strokeWidth={1.75}
+                  />
+                  <div>
+                    <p className="font-semibold text-sm text-negative-600 mb-1">Kritiek</p>
+                    <p className="text-xs text-ink-700 dark:text-ink-300">
+                      {alertMessage || defaultAlertMessage}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </div>,
-            document.body
-          )}
+              </div>,
+              document.body
+            )}
         </>
       )}
 
@@ -103,34 +110,45 @@ export const StatCard: React.FC<StatCardProps> = ({
             onMouseEnter={() => setShowInfoTooltip(true)}
             onMouseLeave={() => setShowInfoTooltip(false)}
           >
-            <Info className="w-4 h-4 text-ink-400 hover:text-ink-700 transition-colors" strokeWidth={1.75} />
+            <Info
+              className="w-4 h-4 text-ink-400 hover:text-ink-700 transition-colors"
+              strokeWidth={1.75}
+            />
           </div>
-          {showInfoTooltip && createPortal(
-            <div
-              className="fixed w-64 p-3 bg-white dark:bg-trading-dark-800 border border-[var(--line)] rounded-lg shadow-xl z-[9999]"
-              style={{ top: infoTooltipPosition.top, right: infoTooltipPosition.right }}
-              onMouseEnter={() => setShowInfoTooltip(true)}
-              onMouseLeave={() => setShowInfoTooltip(false)}
-            >
-              <div className="absolute -top-1.5 right-3 w-3 h-3 bg-white dark:bg-trading-dark-800 border-l border-t border-[var(--line)] transform rotate-45"></div>
-              <div className="flex items-start gap-2">
-                <Info className="w-4 h-4 text-primary-700 flex-shrink-0 mt-0.5" strokeWidth={1.75} />
-                <div>
-                  <p className="font-semibold text-sm text-ink-900 dark:text-white mb-1">Info</p>
-                  <p className="text-xs text-ink-700 dark:text-ink-300">{tooltip}</p>
+          {showInfoTooltip &&
+            createPortal(
+              <div
+                className="fixed w-64 p-3 bg-white dark:bg-trading-dark-800 border border-[var(--line)] rounded-lg shadow-xl z-[9999]"
+                style={{ top: infoTooltipPosition.top, right: infoTooltipPosition.right }}
+                onMouseEnter={() => setShowInfoTooltip(true)}
+                onMouseLeave={() => setShowInfoTooltip(false)}
+              >
+                <div className="absolute -top-1.5 right-3 w-3 h-3 bg-white dark:bg-trading-dark-800 border-l border-t border-[var(--line)] transform rotate-45"></div>
+                <div className="flex items-start gap-2">
+                  <Info
+                    className="w-4 h-4 text-primary-700 flex-shrink-0 mt-0.5"
+                    strokeWidth={1.75}
+                  />
+                  <div>
+                    <p className="font-semibold text-sm text-ink-900 dark:text-white mb-1">Info</p>
+                    <p className="text-xs text-ink-700 dark:text-ink-300">{tooltip}</p>
+                  </div>
                 </div>
-              </div>
-            </div>,
-            document.body
-          )}
+              </div>,
+              document.body
+            )}
         </>
       )}
 
       <div className="p-5">
         <div className="flex items-start justify-between gap-3 mb-4">
           <p className="eyebrow text-ink-500">{title}</p>
-          <div className={`w-9 h-9 rounded-md flex items-center justify-center ${isWarning ? 'bg-caution-50 text-caution-600' : 'bg-primary-50 text-primary-700 dark:text-primary-100'}`}>
-            <div className="[&_svg]:w-[18px] [&_svg]:h-[18px]" style={{ strokeWidth: 1.75 }}>{icon}</div>
+          <div
+            className={`w-9 h-9 rounded-md flex items-center justify-center ${isWarning ? 'bg-caution-50 text-caution-600' : 'bg-primary-50 text-primary-700 dark:text-primary-100'}`}
+          >
+            <div className="[&_svg]:w-[18px] [&_svg]:h-[18px]" style={{ strokeWidth: 1.75 }}>
+              {icon}
+            </div>
           </div>
         </div>
 
@@ -152,7 +170,11 @@ export const StatCard: React.FC<StatCardProps> = ({
                 : 'bg-negative-50 text-negative-600'
             }`}
           >
-            {trend === 'up' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+            {trend === 'up' ? (
+              <TrendingUp className="w-3 h-3" />
+            ) : (
+              <TrendingDown className="w-3 h-3" />
+            )}
             {trendValue}
           </div>
         )}

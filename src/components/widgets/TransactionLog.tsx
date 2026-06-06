@@ -1,5 +1,15 @@
 import React, { useMemo } from 'react';
-import { TrendingUp, TrendingDown, Edit3, ShoppingCart, DollarSign, Gift, Receipt, Calendar, RefreshCw } from 'lucide-react';
+import {
+  TrendingUp,
+  TrendingDown,
+  Edit3,
+  ShoppingCart,
+  DollarSign,
+  Gift,
+  Receipt,
+  Calendar,
+  RefreshCw,
+} from 'lucide-react';
 import type { PortfolioTransaction, CurrencyType } from '../../types';
 import { getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency } from '../../utils/numberFormat';
@@ -54,7 +64,7 @@ const getTransactionColor = (type: PortfolioTransaction['type']) => {
     case 'option_roll':
       return 'text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/30';
     default:
-      return 'text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-900/30';
+      return 'text-ink-600 dark:text-ink-400 bg-surface-subtle dark:bg-trading-dark-900/30';
   }
 };
 
@@ -116,10 +126,12 @@ export const TransactionLog: React.FC<TransactionLogProps> = ({
 
   if (transactions.length === 0) {
     return (
-      <div className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-8 text-center ${className}`}>
-        <Calendar className="w-12 h-12 mx-auto mb-3 text-gray-400 dark:text-gray-500" />
-        <p className="text-gray-600 dark:text-gray-400">Nog geen transacties</p>
-        <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
+      <div
+        className={`bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 p-8 text-center ${className}`}
+      >
+        <Calendar className="w-12 h-12 mx-auto mb-3 text-ink-400 dark:text-ink-500" />
+        <p className="text-ink-600 dark:text-ink-400">Nog geen transacties</p>
+        <p className="text-sm text-ink-500 dark:text-ink-500 mt-1">
           Transacties worden hier getoond zodra je deposits, withdrawals of trades maakt
         </p>
       </div>
@@ -127,9 +139,11 @@ export const TransactionLog: React.FC<TransactionLogProps> = ({
   }
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 ${className}`}>
+    <div
+      className={`bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 ${className}`}
+    >
       {/* Transaction List */}
-      <div className="divide-y divide-gray-200 dark:divide-gray-700 max-h-[600px] overflow-y-auto">
+      <div className="divide-y divide-surface-line dark:divide-trading-dark-600 max-h-[600px] overflow-y-auto">
         {sortedTransactions.map((transaction) => {
           const isPositive = transaction.amount >= 0;
           const color = getTransactionColor(transaction.type);
@@ -137,7 +151,7 @@ export const TransactionLog: React.FC<TransactionLogProps> = ({
           return (
             <div
               key={transaction.id}
-              className="px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+              className="px-6 py-4 hover:bg-surface dark:hover:bg-trading-dark-700/50 transition-colors"
             >
               <div className="flex items-start gap-4">
                 {/* Icon */}
@@ -154,15 +168,15 @@ export const TransactionLog: React.FC<TransactionLogProps> = ({
                         <span className={`text-xs font-medium px-2 py-0.5 rounded ${color}`}>
                           {getTransactionLabel(transaction.type)}
                         </span>
-                        <span className="text-sm text-gray-500 dark:text-gray-400">
+                        <span className="text-sm text-ink-500 dark:text-ink-400">
                           {formatDate(transaction.date)}
                         </span>
                       </div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                      <p className="text-sm font-medium text-ink-900 dark:text-white truncate">
                         {transaction.description}
                       </p>
                       {transaction.notes && (
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
+                        <p className="text-xs text-ink-500 dark:text-ink-400 mt-1 line-clamp-2">
                           {transaction.notes}
                         </p>
                       )}
@@ -170,15 +184,18 @@ export const TransactionLog: React.FC<TransactionLogProps> = ({
 
                     {/* Amount */}
                     <div className="text-right flex-shrink-0">
-                      <p className={`text-lg font-bold ${
-                        isPositive
-                          ? 'text-positive-600 dark:text-positive-500'
-                          : 'text-negative-600 dark:text-negative-500'
-                      }`}>
-                        {isPositive ? '+' : ''}{formatCurrency(Math.abs(transaction.amount), currencySymbol)}
+                      <p
+                        className={`text-lg font-bold ${
+                          isPositive
+                            ? 'text-positive-600 dark:text-positive-500'
+                            : 'text-negative-600 dark:text-negative-500'
+                        }`}
+                      >
+                        {isPositive ? '+' : ''}
+                        {formatCurrency(Math.abs(transaction.amount), currencySymbol)}
                       </p>
                       {transaction.newValue !== undefined && (
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
                           Nieuwe waarde: {formatCurrency(transaction.newValue, currencySymbol)}
                         </p>
                       )}

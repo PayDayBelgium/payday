@@ -3,6 +3,7 @@ import DeGiroLogo from '../assets/portfolios/DeGiro.png';
 import LynxLogo from '../assets/portfolios/Lynx.png';
 import IBKRLogo from '../assets/portfolios/IBKR.jpeg';
 import BoleroLogo from '../assets/portfolios/Bolero.png';
+import PaydayLogo from '../assets/app/logo.png';
 
 export interface DefaultPortfolio {
   id: string;
@@ -11,6 +12,11 @@ export interface DefaultPortfolio {
 }
 
 export const DEFAULT_PORTFOLIOS: DefaultPortfolio[] = [
+  {
+    id: 'payday',
+    name: 'PayDay',
+    logo: PaydayLogo,
+  },
   {
     id: 'saxo',
     name: 'Saxo Bank',

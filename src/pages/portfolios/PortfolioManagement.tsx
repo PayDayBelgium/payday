@@ -1,12 +1,30 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Trash2, Save, X, Upload, GripVertical, Briefcase, Image as ImageIcon, ChevronDown, ExternalLink } from 'lucide-react';
+import {
+  Plus,
+  Trash2,
+  Save,
+  X,
+  Upload,
+  GripVertical,
+  Briefcase,
+  Image as ImageIcon,
+  ChevronDown,
+  ExternalLink,
+} from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { usePageTitle } from '../../contexts/PageTitleContext';
 import { useNavigation } from '../../contexts/NavigationContext';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
-import { addPortfolio, updatePortfolio, deletePortfolio, reorderPortfolios, selectPortfolios, addTransaction } from '../../store/slices/portfoliosSlice';
+import {
+  addPortfolio,
+  updatePortfolio,
+  deletePortfolio,
+  reorderPortfolios,
+  selectPortfolios,
+  addTransaction,
+} from '../../store/slices/portfoliosSlice';
 import { updatePortfolioName } from '../../store/slices/positionsSlice';
 import { updateWheelPortfolioName } from '../../store/slices/wheelsSlice';
 import type { Portfolio, CurrencyType, ImageMetadata } from '../../types';
@@ -38,14 +56,16 @@ export const PortfolioManagement: React.FC = () => {
     startDate: new Date().toISOString().split('T')[0], // Default to today
     url: '',
     initialCapital: 0,
-    currentValue: 0
+    currentValue: 0,
   });
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [logoOriginal, setLogoOriginal] = useState<string | null>(null);
   const [logoMetadata, setLogoMetadata] = useState<ImageMetadata | undefined>(undefined);
   const [draggedPortfolioId, setDraggedPortfolioId] = useState<string | null>(null);
   const [dragOverPortfolioId, setDragOverPortfolioId] = useState<string | null>(null);
-  const [portfolioToDelete, setPortfolioToDelete] = useState<{ id: string; name: string } | null>(null);
+  const [portfolioToDelete, setPortfolioToDelete] = useState<{ id: string; name: string } | null>(
+    null
+  );
   const [imageToCrop, setImageToCrop] = useState<string | null>(null);
   const [showDefaultPortfolios, setShowDefaultPortfolios] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -83,7 +103,7 @@ export const PortfolioManagement: React.FC = () => {
     if (location.state?.addPortfolio && !editingPortfolioId) {
       setEditingPortfolioId('new');
     } else if (location.state?.editPortfolioId && !editingPortfolioId) {
-      const portfolio = portfolios.find(b => b.id === location.state.editPortfolioId);
+      const portfolio = portfolios.find((b) => b.id === location.state.editPortfolioId);
       if (portfolio) {
         handleEditPortfolio(portfolio);
       }
@@ -93,7 +113,18 @@ export const PortfolioManagement: React.FC = () => {
   const handleAddPortfolio = () => {
     setEditingPortfolioId('new');
     setOriginalPortfolioName(null);
-    setFormData({ name: '', logo: '', pricePerContract: 0, strategy: '', description: '', currency: 'USD', startDate: new Date().toISOString().split('T')[0], url: '', initialCapital: 0, currentValue: 0 });
+    setFormData({
+      name: '',
+      logo: '',
+      pricePerContract: 0,
+      strategy: '',
+      description: '',
+      currency: 'USD',
+      startDate: new Date().toISOString().split('T')[0],
+      url: '',
+      initialCapital: 0,
+      currentValue: 0,
+    });
     setLogoPreview(null);
     setLogoOriginal(null);
     setLogoMetadata(undefined);
@@ -114,7 +145,7 @@ export const PortfolioManagement: React.FC = () => {
       startDate: portfolio.startDate || new Date().toISOString().split('T')[0],
       url: portfolio.url || '',
       initialCapital: portfolio.initialCapital || 0,
-      currentValue: portfolio.currentValue || 0
+      currentValue: portfolio.currentValue || 0,
     });
     setLogoPreview(portfolio.logo);
     setLogoOriginal(portfolio.logoOriginal || portfolio.logo); // Use original if available, otherwise use logo
@@ -205,7 +236,7 @@ export const PortfolioManagement: React.FC = () => {
           previousValue: 0,
           newValue: formData.initialCapital,
           createdAt: new Date().toISOString(),
-          notes: 'Automatisch gelogd bij aanmaken portfolio'
+          notes: 'Automatisch gelogd bij aanmaken portfolio',
         };
         dispatch(addTransaction(depositTransaction));
         console.log('Initial deposit logged:', depositTransaction);
@@ -219,24 +250,39 @@ export const PortfolioManagement: React.FC = () => {
       // If name changed, update positions and wheels first
       if (originalPortfolioName && originalPortfolioName !== formData.name) {
         dispatch(updatePortfolioName({ oldName: originalPortfolioName, newName: formData.name }));
-        dispatch(updateWheelPortfolioName({ oldName: originalPortfolioName, newName: formData.name }));
+        dispatch(
+          updateWheelPortfolioName({ oldName: originalPortfolioName, newName: formData.name })
+        );
       }
 
-      dispatch(updatePortfolio({
-        id: editingPortfolioId,
-        hasOptions: true,
-        strategies: [],
-        ...formData,
-        logoOriginal: logoOriginal ?? undefined,
-        logoMetadata,
-        oldName: originalPortfolioName || undefined
-      }));
+      dispatch(
+        updatePortfolio({
+          id: editingPortfolioId,
+          hasOptions: true,
+          strategies: [],
+          ...formData,
+          logoOriginal: logoOriginal ?? undefined,
+          logoMetadata,
+          oldName: originalPortfolioName || undefined,
+        })
+      );
       console.log('Portfolio updated in Redux');
     }
 
     setEditingPortfolioId(null);
     setOriginalPortfolioName(null);
-    setFormData({ name: '', logo: '', pricePerContract: 0, strategy: '', description: '', currency: 'USD', startDate: new Date().toISOString().split('T')[0], url: '', initialCapital: 0, currentValue: 0 });
+    setFormData({
+      name: '',
+      logo: '',
+      pricePerContract: 0,
+      strategy: '',
+      description: '',
+      currency: 'USD',
+      startDate: new Date().toISOString().split('T')[0],
+      url: '',
+      initialCapital: 0,
+      currentValue: 0,
+    });
     setLogoPreview(null);
     setLogoOriginal(null);
     setLogoMetadata(undefined);
@@ -251,7 +297,18 @@ export const PortfolioManagement: React.FC = () => {
     }
     setEditingPortfolioId(null);
     setOriginalPortfolioName(null);
-    setFormData({ name: '', logo: '', pricePerContract: 0, strategy: '', description: '', currency: 'USD', startDate: new Date().toISOString().split('T')[0], url: '', initialCapital: 0, currentValue: 0 });
+    setFormData({
+      name: '',
+      logo: '',
+      pricePerContract: 0,
+      strategy: '',
+      description: '',
+      currency: 'USD',
+      startDate: new Date().toISOString().split('T')[0],
+      url: '',
+      initialCapital: 0,
+      currentValue: 0,
+    });
     setLogoPreview(null);
     setLogoOriginal(null);
     setLogoMetadata(undefined);
@@ -299,8 +356,8 @@ export const PortfolioManagement: React.FC = () => {
       return;
     }
 
-    const draggedIndex = portfolios.findIndex(b => b.id === draggedPortfolioId);
-    const targetIndex = portfolios.findIndex(b => b.id === targetPortfolioId);
+    const draggedIndex = portfolios.findIndex((b) => b.id === draggedPortfolioId);
+    const targetIndex = portfolios.findIndex((b) => b.id === targetPortfolioId);
 
     if (draggedIndex === -1 || targetIndex === -1) return;
 
@@ -323,32 +380,32 @@ export const PortfolioManagement: React.FC = () => {
     return (
       <div className="-m-6 min-h-[calc(100vh-4rem)]">
         {/* Edit Form - Full page layout */}
-        <div className="bg-white dark:bg-gray-800 p-6 min-h-full">
+        <div className="bg-white dark:bg-trading-dark-800 p-6 min-h-full">
           <div className="space-y-6 max-w-4xl">
             {/* Basic Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <label className="block mb-2 text-sm font-medium text-ink-900 dark:text-white">
                   {t('portfolios.name')}
                 </label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                  className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:placeholder-ink-400 dark:text-white"
                   placeholder={t('portfolios.namePlaceholder')}
                 />
               </div>
 
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <label className="block mb-2 text-sm font-medium text-ink-900 dark:text-white">
                   {t('portfolios.logo')}
                 </label>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     {/* Logo Preview or Placeholder */}
                     <div
-                      className={`w-16 h-16 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center bg-gray-50 dark:bg-gray-900 ${logoPreview ? 'cursor-pointer hover:border-primary-500 dark:hover:border-primary-400 transition-colors' : ''}`}
+                      className={`w-16 h-16 rounded-lg border-2 border-dashed border-ink-200 dark:border-trading-dark-500 flex items-center justify-center bg-surface dark:bg-trading-dark-900 ${logoPreview ? 'cursor-pointer hover:border-primary-500 dark:hover:border-primary-400 transition-colors' : ''}`}
                       onClick={logoPreview ? handleLogoClick : undefined}
                       title={logoPreview ? t('imageCrop.title') : undefined}
                     >
@@ -359,14 +416,14 @@ export const PortfolioManagement: React.FC = () => {
                           className="w-full h-full rounded-lg object-cover"
                         />
                       ) : (
-                        <Briefcase className="w-8 h-8 text-gray-400 dark:text-gray-600" />
+                        <Briefcase className="w-8 h-8 text-ink-400 dark:text-ink-600" />
                       )}
                     </div>
 
                     {/* Action Buttons */}
                     <div className="flex gap-2">
                       <label
-                        className="p-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg transition-colors cursor-pointer"
+                        className="p-2.5 bg-surface-subtle dark:bg-trading-dark-700 hover:bg-surface-muted dark:hover:bg-trading-dark-600 text-ink-700 dark:text-ink-200 rounded-lg transition-colors cursor-pointer"
                         title={t('portfolios.uploadCustom')}
                       >
                         <Upload className="w-5 h-5" />
@@ -387,12 +444,14 @@ export const PortfolioManagement: React.FC = () => {
                           title={t('portfolios.useDefault')}
                         >
                           <ImageIcon className="w-5 h-5" />
-                          <ChevronDown className={`w-3 h-3 transition-transform ${showDefaultPortfolios ? 'rotate-180' : ''}`} />
+                          <ChevronDown
+                            className={`w-3 h-3 transition-transform ${showDefaultPortfolios ? 'rotate-180' : ''}`}
+                          />
                         </button>
 
                         {showDefaultPortfolios && (
-                          <div className="absolute top-full left-0 mt-2 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-lg z-50 min-w-max">
-                            <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 px-1">
+                          <div className="absolute top-full left-0 mt-2 p-3 bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 shadow-lg z-50 min-w-max">
+                            <p className="text-xs font-medium text-ink-500 dark:text-ink-400 mb-2 px-1">
                               {t('portfolios.selectDefault')}
                             </p>
                             <div className="flex gap-2">
@@ -401,7 +460,7 @@ export const PortfolioManagement: React.FC = () => {
                                   key={portfolio.id}
                                   type="button"
                                   onClick={() => handleDefaultPortfolioSelect(portfolio.logo)}
-                                  className="flex flex-col items-center gap-1.5 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                                  className="flex flex-col items-center gap-1.5 p-2 hover:bg-surface-subtle dark:hover:bg-trading-dark-700 rounded-lg transition-colors"
                                   title={portfolio.name}
                                 >
                                   <img
@@ -409,7 +468,7 @@ export const PortfolioManagement: React.FC = () => {
                                     alt={portfolio.name}
                                     className="w-10 h-10 rounded-lg object-cover"
                                   />
-                                  <span className="text-[10px] text-gray-500 dark:text-gray-400 text-center max-w-[60px] truncate">
+                                  <span className="text-[10px] text-ink-500 dark:text-ink-400 text-center max-w-[60px] truncate">
                                     {portfolio.name}
                                   </span>
                                 </button>
@@ -424,25 +483,27 @@ export const PortfolioManagement: React.FC = () => {
               </div>
 
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <label className="block mb-2 text-sm font-medium text-ink-900 dark:text-white">
                   {t('portfolios.contractPrice')}
                 </label>
                 <NumberInput
                   value={formData.pricePerContract || 0}
                   onChange={(value) => setFormData({ ...formData, pricePerContract: value })}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                  className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:placeholder-ink-400 dark:text-white"
                   placeholder={t('portfolios.contractPricePlaceholder')}
                 />
               </div>
 
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <label className="block mb-2 text-sm font-medium text-ink-900 dark:text-white">
                   {t('portfolios.currency')}
                 </label>
                 <select
                   value={formData.currency}
-                  onChange={(e) => setFormData({ ...formData, currency: e.target.value as CurrencyType })}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                  onChange={(e) =>
+                    setFormData({ ...formData, currency: e.target.value as CurrencyType })
+                  }
+                  className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:placeholder-ink-400 dark:text-white"
                 >
                   <option value="USD">USD ($)</option>
                   <option value="EUR">EUR (€)</option>
@@ -450,20 +511,20 @@ export const PortfolioManagement: React.FC = () => {
               </div>
 
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <label className="block mb-2 text-sm font-medium text-ink-900 dark:text-white">
                   {t('portfolios.portfolioUrl')}
                 </label>
                 <input
                   type="url"
                   value={formData.url}
                   onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                  className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:placeholder-ink-400 dark:text-white"
                   placeholder="https://portfolio.com/login"
                 />
               </div>
 
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <label className="block mb-2 text-sm font-medium text-ink-900 dark:text-white">
                   Start Date
                 </label>
                 <input
@@ -471,15 +532,15 @@ export const PortfolioManagement: React.FC = () => {
                   value={formData.startDate}
                   onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
                   max={new Date().toISOString().split('T')[0]}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                  className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:placeholder-ink-400 dark:text-white"
                 />
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                <p className="mt-1 text-xs text-ink-500 dark:text-ink-400">
                   First day to track data for this portfolio
                 </p>
               </div>
 
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <label className="block mb-2 text-sm font-medium text-ink-900 dark:text-white">
                   Startkapitaal ({getCurrencySymbol(formData.currency)})
                 </label>
                 <NumberInput
@@ -488,9 +549,9 @@ export const PortfolioManagement: React.FC = () => {
                   min={0}
                   allowDecimals={false}
                   placeholder="0"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                  className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:placeholder-ink-400 dark:text-white"
                 />
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                <p className="mt-1 text-xs text-ink-500 dark:text-ink-400">
                   Initieel kapitaal (0 = geen storting)
                 </p>
               </div>
@@ -498,13 +559,13 @@ export const PortfolioManagement: React.FC = () => {
 
             {/* Short Description */}
             <div>
-              <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+              <label className="block mb-2 text-sm font-medium text-ink-900 dark:text-white">
                 Short Description
               </label>
               <textarea
                 value={formData.strategy}
                 onChange={(e) => setFormData({ ...formData, strategy: e.target.value })}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:placeholder-ink-400 dark:text-white"
                 placeholder="Brief description for card views..."
                 rows={2}
               />
@@ -512,24 +573,24 @@ export const PortfolioManagement: React.FC = () => {
 
             {/* Long Description - Extra Information and Goals */}
             <div>
-              <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+              <label className="block mb-2 text-sm font-medium text-ink-900 dark:text-white">
                 Extra Information & Goals
               </label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:placeholder-ink-400 dark:text-white"
                 placeholder="Detailed information, strategies, and goals for this portfolio account..."
                 rows={4}
               />
             </div>
 
             {/* Action Buttons */}
-            <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex justify-end gap-3 pt-6 border-t border-surface-line dark:border-trading-dark-600">
               {portfolios.length > 0 && (
                 <button
                   onClick={handleCancelEdit}
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg font-medium transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-surface-muted dark:bg-trading-dark-700 hover:bg-ink-200 dark:hover:bg-trading-dark-600 text-ink-700 dark:text-ink-200 rounded-lg font-medium transition-colors"
                 >
                   <X className="w-4 h-4" />
                   {t('common.cancel')}
@@ -538,7 +599,7 @@ export const PortfolioManagement: React.FC = () => {
               <button
                 onClick={handleSavePortfolio}
                 disabled={!formData.name || !formData.logo}
-                className="flex items-center gap-2 px-4 py-2 bg-primary-700 hover:bg-primary-800 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-primary-700 hover:bg-primary-800 disabled:bg-ink-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
               >
                 <Save className="w-4 h-4" />
                 {t('portfolios.savePortfolio')}
@@ -565,15 +626,15 @@ export const PortfolioManagement: React.FC = () => {
     <div className="space-y-6">
       {/* Empty State */}
       {portfolios.length === 0 ? (
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-12 text-center">
+        <div className="bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 p-12 text-center">
           <div className="max-w-md mx-auto">
             <div className="mb-4">
-              <Briefcase className="w-16 h-16 mx-auto text-gray-400 dark:text-gray-500" />
+              <Briefcase className="w-16 h-16 mx-auto text-ink-400 dark:text-ink-500" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+            <h3 className="text-xl font-bold text-ink-900 dark:text-white mb-2">
               {t('portfolios.noPortfoliosYet')}
             </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
+            <p className="text-ink-600 dark:text-ink-400 mb-6">
               {t('portfolios.noPortfoliosDescription')}
             </p>
             <button
@@ -590,96 +651,101 @@ export const PortfolioManagement: React.FC = () => {
           {/* Portfolios List */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {portfolios.map((portfolio) => (
-          <div
-            key={portfolio.id}
-            draggable
-            onDragStart={(e) => handleDragStart(e, portfolio.id)}
-            onDragOver={(e) => handleDragOver(e, portfolio.id)}
-            onDragLeave={handleDragLeave}
-            onDrop={(e) => handleDrop(e, portfolio.id)}
-            onDragEnd={handleDragEnd}
-            onClick={() => handleEditPortfolio(portfolio)}
-            className={`bg-white dark:bg-gray-800 rounded-lg border ${
-              dragOverPortfolioId === portfolio.id
-                ? 'border-primary-500 dark:border-primary-400 border-2'
-                : 'border-gray-200 dark:border-gray-700'
-            } p-4 flex flex-col justify-between hover:shadow-lg transition-all cursor-pointer ${
-              draggedPortfolioId === portfolio.id ? 'opacity-50' : ''
-            }`}
-          >
-            <div>
-              <div className="flex items-start gap-3 mb-3">
-                <div className="flex items-center gap-1.5">
-                  <div className="cursor-grab active:cursor-grabbing text-gray-400 dark:text-gray-500">
-                    <GripVertical className="w-4 h-4" />
+              <div
+                key={portfolio.id}
+                draggable
+                onDragStart={(e) => handleDragStart(e, portfolio.id)}
+                onDragOver={(e) => handleDragOver(e, portfolio.id)}
+                onDragLeave={handleDragLeave}
+                onDrop={(e) => handleDrop(e, portfolio.id)}
+                onDragEnd={handleDragEnd}
+                onClick={() => handleEditPortfolio(portfolio)}
+                className={`bg-white dark:bg-trading-dark-800 rounded-lg border ${
+                  dragOverPortfolioId === portfolio.id
+                    ? 'border-primary-500 dark:border-primary-400 border-2'
+                    : 'border-surface-line dark:border-trading-dark-600'
+                } p-4 flex flex-col justify-between hover:shadow-lg transition-all cursor-pointer ${
+                  draggedPortfolioId === portfolio.id ? 'opacity-50' : ''
+                }`}
+              >
+                <div>
+                  <div className="flex items-start gap-3 mb-3">
+                    <div className="flex items-center gap-1.5">
+                      <div className="cursor-grab active:cursor-grabbing text-ink-400 dark:text-ink-500">
+                        <GripVertical className="w-4 h-4" />
+                      </div>
+                      <img
+                        src={portfolio.logo}
+                        alt={portfolio.name}
+                        className="w-12 h-12 rounded-lg object-contain bg-surface-subtle dark:bg-trading-dark-700 p-0.5 border border-surface-line dark:border-trading-dark-500"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-bold text-ink-900 dark:text-white truncate">
+                        {portfolio.name}
+                      </h3>
+                      <p className="text-xs text-ink-600 dark:text-ink-400 line-clamp-2">
+                        {portfolio.strategy || t('portfolios.noDescription')}
+                      </p>
+                    </div>
                   </div>
-                  <img
-                    src={portfolio.logo}
-                    alt={portfolio.name}
-                    className="w-12 h-12 rounded-lg object-contain bg-gray-100 dark:bg-gray-700 p-0.5 border border-gray-200 dark:border-gray-600"
-                  />
+
+                  {/* Contract Price & Currency */}
+                  <div className="flex items-center gap-3 mb-3">
+                    <div>
+                      <p className="text-xs text-ink-500 dark:text-ink-400">
+                        {t('portfolios.contractPrice')}
+                      </p>
+                      <p className="text-xs font-medium text-ink-900 dark:text-white">
+                        {getCurrencySymbol(portfolio.currency)}
+                        {formatNumber(portfolio.pricePerContract, 2)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-ink-500 dark:text-ink-400">
+                        {t('portfolios.currency')}
+                      </p>
+                      <p className="text-xs font-medium text-ink-900 dark:text-white">
+                        {portfolio.currency}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-sm font-bold text-gray-900 dark:text-white truncate">
-                    {portfolio.name}
-                  </h3>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
-                    {portfolio.strategy || t('portfolios.noDescription')}
-                  </p>
+
+                <div className="flex justify-end gap-1 border-t border-surface-line dark:border-trading-dark-600 pt-3">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/portfolio/${encodeURIComponent(portfolio.name)}`);
+                    }}
+                    className="p-1.5 text-primary-700 dark:text-primary-300 hover:bg-primary-50 dark:hover:bg-primary-900/25 rounded-full transition-colors"
+                    title={t('portfolios.viewPortfolio')}
+                  >
+                    <Briefcase className="w-3.5 h-3.5" />
+                  </button>
+                  {portfolio.url && (
+                    <a
+                      href={portfolio.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="p-1.5 text-positive-600 dark:text-positive-500 hover:bg-positive-50 dark:hover:bg-positive-700/25 rounded-full transition-colors"
+                      title={t('portfolioDetail.openPortal')}
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                  )}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeletePortfolio(portfolio.id, portfolio.name);
+                    }}
+                    className="p-1.5 text-negative-600 dark:text-negative-500 hover:bg-negative-50 dark:hover:bg-negative-700/25 rounded-full transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               </div>
-
-              {/* Contract Price & Currency */}
-              <div className="flex items-center gap-3 mb-3">
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{t('portfolios.contractPrice')}</p>
-                  <p className="text-xs font-medium text-gray-900 dark:text-white">
-                    {getCurrencySymbol(portfolio.currency)}{formatNumber(portfolio.pricePerContract, 2)}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{t('portfolios.currency')}</p>
-                  <p className="text-xs font-medium text-gray-900 dark:text-white">
-                    {portfolio.currency}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-1 border-t border-gray-200 dark:border-gray-700 pt-3">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate(`/portfolio/${encodeURIComponent(portfolio.name)}`);
-                }}
-                className="p-1.5 text-primary-700 dark:text-primary-300 hover:bg-primary-50 dark:hover:bg-primary-900/25 rounded-full transition-colors"
-                title={t('portfolios.viewPortfolio')}
-              >
-                <Briefcase className="w-3.5 h-3.5" />
-              </button>
-              {portfolio.url && (
-                <a
-                  href={portfolio.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="p-1.5 text-positive-600 dark:text-positive-500 hover:bg-positive-50 dark:hover:bg-positive-700/25 rounded-full transition-colors"
-                  title={t('portfolioDetail.openPortal')}
-                >
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
-              )}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDeletePortfolio(portfolio.id, portfolio.name);
-                }}
-                className="p-1.5 text-negative-600 dark:text-negative-500 hover:bg-negative-50 dark:hover:bg-negative-700/25 rounded-full transition-colors"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
             ))}
           </div>
 
@@ -700,7 +766,11 @@ export const PortfolioManagement: React.FC = () => {
       <ConfirmDialog
         isOpen={portfolioToDelete !== null}
         title={t('portfolios.deleteConfirm')}
-        message={portfolioToDelete ? `Are you sure you want to delete ${portfolioToDelete.name}? This action cannot be undone.` : ''}
+        message={
+          portfolioToDelete
+            ? `Are you sure you want to delete ${portfolioToDelete.name}? This action cannot be undone.`
+            : ''
+        }
         confirmText={t('common.delete')}
         cancelText={t('common.cancel')}
         onConfirm={confirmDeletePortfolio}

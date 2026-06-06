@@ -9,7 +9,9 @@ const DailyRoutineForm: React.FC = () => {
   const portfolios = useAppSelector((state) => state.portfolios.summaries);
 
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [selectedPortfolio, setSelectedPortfolio] = useState<PortfolioName>(portfolios[0]?.portfolio || 'Lynx');
+  const [selectedPortfolio, setSelectedPortfolio] = useState<PortfolioName>(
+    portfolios[0]?.portfolio || 'Lynx'
+  );
   const [totalValue, setTotalValue] = useState('');
   const [cash, setCash] = useState('');
 
@@ -38,12 +40,17 @@ const DailyRoutineForm: React.FC = () => {
   };
 
   return (
-    <div className="p-4 border rounded-lg shadow-md bg-white dark:bg-gray-800">
-      <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Daily Portfolio Update</h2>
+    <div className="p-4 border rounded-lg shadow-md bg-white dark:bg-trading-dark-800">
+      <h2 className="text-xl font-bold mb-4 text-ink-900 dark:text-white">
+        Daily Portfolio Update
+      </h2>
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
-            <label htmlFor="date" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label
+              htmlFor="date"
+              className="block mb-2 text-sm font-medium text-ink-900 dark:text-white"
+            >
               Date
             </label>
             <input
@@ -51,19 +58,22 @@ const DailyRoutineForm: React.FC = () => {
               id="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+              className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:placeholder-ink-400 dark:text-white"
               required
             />
           </div>
           <div>
-            <label htmlFor="portfolio" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label
+              htmlFor="portfolio"
+              className="block mb-2 text-sm font-medium text-ink-900 dark:text-white"
+            >
               Portfolio
             </label>
             <select
               id="portfolio"
               value={selectedPortfolio}
               onChange={(e) => setSelectedPortfolio(e.target.value as PortfolioName)}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
             >
               {portfolios.map((b) => (
                 <option key={b.portfolio} value={b.portfolio}>
@@ -73,7 +83,10 @@ const DailyRoutineForm: React.FC = () => {
             </select>
           </div>
           <div>
-            <label htmlFor="totalValue" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label
+              htmlFor="totalValue"
+              className="block mb-2 text-sm font-medium text-ink-900 dark:text-white"
+            >
               Total Value
             </label>
             <input
@@ -81,13 +94,16 @@ const DailyRoutineForm: React.FC = () => {
               id="totalValue"
               value={totalValue}
               onChange={(e) => setTotalValue(e.target.value)}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+              className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:placeholder-ink-400 dark:text-white"
               placeholder="e.g., 150000"
               required
             />
           </div>
           <div>
-            <label htmlFor="cash" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label
+              htmlFor="cash"
+              className="block mb-2 text-sm font-medium text-ink-900 dark:text-white"
+            >
               Cash
             </label>
             <input
@@ -95,7 +111,7 @@ const DailyRoutineForm: React.FC = () => {
               id="cash"
               value={cash}
               onChange={(e) => setCash(e.target.value)}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+              className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:placeholder-ink-400 dark:text-white"
               placeholder="e.g., 25000"
               required
             />
