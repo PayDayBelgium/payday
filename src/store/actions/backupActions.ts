@@ -1,5 +1,4 @@
 import type { Dispatch } from 'redux';
-import type { RootState } from '../index';
 import type { BackupData } from '../../utils/backup';
 import { loadMockData } from '../slices/portfoliosSlice';
 import { loadPositions } from '../slices/positionsSlice';

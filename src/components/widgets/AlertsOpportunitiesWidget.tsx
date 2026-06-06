@@ -3,7 +3,7 @@ import { AlertCircle, Target, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useNavigation } from '../../contexts/NavigationContext';
 import { ConfirmModal } from '../modals/ConfirmModal';
-import { useAlerts, DISMISSED_ALERTS_STORAGE_KEY } from '../../hooks/useAlerts';
+import { useAlerts } from '../../hooks/useAlerts';
 
 interface AlertsOpportunitiesWidgetProps {
   type?: 'alerts' | 'opportunities' | 'both';

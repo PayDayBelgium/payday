@@ -221,7 +221,7 @@ export const Header: React.FC<HeaderProps> = ({
         parsed.auth = JSON.stringify({ isAuthenticated: false, user: null });
         localStorage.setItem('persist:payday-root', JSON.stringify(parsed));
       }
-    } catch (e) {
+    } catch {
       // If there's an error, just remove the whole store
       localStorage.removeItem('persist:payday-root');
     }

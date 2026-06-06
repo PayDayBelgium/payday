@@ -216,11 +216,6 @@ export const PerformanceAnalysis: React.FC = () => {
     return Array.from(map.values()).sort((a, b) => b.pnl - a.pnl);
   }, [periodTrades]);
 
-  const fmt = (v: number) =>
-    display === 'nominal'
-      ? formatCurrency(v)
-      : formatPercent(stats.totalCost > 0 ? (v / stats.totalCost) * 100 : 0);
-
   const kpis: KPI[] = [
     {
       label: 'Netto P&L',

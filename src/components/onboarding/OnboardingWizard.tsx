@@ -270,7 +270,7 @@ const OFFPISTE_TERMS: GlossaryTerm[] = [
 ];
 
 // Intro step content (same for all levels, but styled per level)
-const createIntroStep = (level: UserLevel): WizardStep => ({
+const createIntroStep = (): WizardStep => ({
   id: 'intro',
   title: 'Welkom bij PayDay',
   shortTitle: 'Intro',
@@ -329,7 +329,7 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
     slopeIcon: '🟢',
     slopeColor: 'green',
     steps: [
-      createIntroStep('beginner'),
+      createIntroStep(),
       {
         id: 'portfolio',
         title: 'Jouw Portfolio Beheren',
@@ -424,7 +424,7 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
     slopeIcon: '🔵',
     slopeColor: 'blue',
     steps: [
-      createIntroStep('medior'),
+      createIntroStep(),
       {
         id: 'options-intro',
         title: 'Introductie Opties',
@@ -563,7 +563,7 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
     slopeIcon: '🔴',
     slopeColor: 'red',
     steps: [
-      createIntroStep('senior'),
+      createIntroStep(),
       {
         id: 'leaps',
         title: 'LEAPS Opties',
@@ -685,7 +685,7 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
     slopeIcon: '⚫',
     slopeColor: 'black',
     steps: [
-      createIntroStep('expert'),
+      createIntroStep(),
       {
         id: 'spreads',
         title: 'Spreads',
@@ -823,7 +823,7 @@ const WIZARD_CONTENT: LevelWizardContent[] = [
     slopeIcon: '🟠',
     slopeColor: 'orange',
     steps: [
-      createIntroStep('offpiste'),
+      createIntroStep(),
       {
         id: 'quant-intro',
         title: 'Wat is Quant Trading?',

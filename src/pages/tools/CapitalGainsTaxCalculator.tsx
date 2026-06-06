@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { usePageTitle } from '../../contexts/PageTitleContext';
-import { Calculator, Info, ArrowRight } from 'lucide-react';
+import { Info, ArrowRight } from 'lucide-react';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { formatNumber } from '../../utils/numberFormat';
 

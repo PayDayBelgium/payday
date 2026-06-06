@@ -22,16 +22,7 @@ import {
   validateNumberInput,
   calculateDTE,
   calculateCallBreakEven,
-  calculateSpreadCollateral,
-  calculateCashReserved,
   calculateCallValues,
-  validateCallSpread,
-  getCallPnLType,
-  calculateCallSpreadSummary,
-  generateCallOptionId,
-  generateSpreadId,
-  generateTransactionId,
-  DEFAULT_NEW_TICKER_DATA,
 } from './optionWizardUtils';
 
 interface CallOptionWizardProps {

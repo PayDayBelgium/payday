@@ -20,16 +20,7 @@ import {
   validateNumberInput,
   calculateDTE,
   calculatePutBreakEven,
-  calculateSpreadCollateral,
-  calculateCashReserved,
   calculatePutValues,
-  validatePutSpread,
-  getPutPnLType,
-  calculatePutSpreadSummary,
-  generatePutOptionId,
-  generateSpreadId,
-  generateTransactionId,
-  DEFAULT_NEW_TICKER_DATA,
 } from './optionWizardUtils';
 
 interface PutOptionWizardProps {
@@ -71,7 +62,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
 
   // Wheel linking state
   const [selectedWheelId, setSelectedWheelId] = useState<string | null>(null);
-  const [showWheelLinking, setShowWheelLinking] = useState(false);
+  const [, setShowWheelLinking] = useState(false);
 
   // Controlled step index for pre-filling
   const [currentStepIndex, setCurrentStepIndex] = useState(0);

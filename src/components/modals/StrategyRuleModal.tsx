@@ -70,7 +70,6 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
   strategyType,
   portfolio,
   existingRule,
-  activeCategory,
 }) => {
   // Filter trigger options based on strategy type only (show all categories)
   const triggerOptions = allTriggerOptions.filter((option) => {

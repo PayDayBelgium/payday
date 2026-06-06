@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { usePageTitle } from '../../contexts/PageTitleContext';
 import { useNavigation } from '../../contexts/NavigationContext';
@@ -49,7 +49,6 @@ import { PutOptionWizard } from '../../components/modals/PutOptionWizard';
 import { getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency, formatNumber } from '../../utils/numberFormat';
 import { getSpreadId } from '../../utils/spreadHelpers';
-import { ConfirmModal } from '../../components/modals/ConfirmModal';
 
 type TabType =
   | 'portfolio'
@@ -98,7 +97,6 @@ export const PortfolioDetail: React.FC = () => {
   const { t } = useTranslation();
   const { portfolioName } = useParams<{ portfolioName: string }>();
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const { setPageTitle, setTitleIcon } = usePageTitle();
   const { canGoBack, pushNavigation } = useNavigation();
   const portfolios = useAppSelector((state) => state.portfolios.portfolios);

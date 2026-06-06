@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import Cropper from 'react-easy-crop';
 import type { Area } from 'react-easy-crop';
-import { X, RotateCw, ZoomIn, ZoomOut } from 'lucide-react';
+import { X, RotateCw, ZoomIn } from 'lucide-react';
 import type { ImageMetadata } from '../../types';
 
 interface ImageCropModalProps {

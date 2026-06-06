@@ -49,7 +49,7 @@ export const getSystemAlertConfig = (): SystemAlertConfig => {
   if (saved) {
     try {
       return { ...defaultSystemAlertConfig, ...JSON.parse(saved) };
-    } catch (e) {
+    } catch {
       return defaultSystemAlertConfig;
     }
   }

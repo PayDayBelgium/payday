@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Calculator, TrendingUp, Info, DollarSign, Percent, Calendar, Target } from 'lucide-react';
-import { useAppSelector } from '../../hooks/useAppSelector';
+import { Calculator, TrendingUp, Info, DollarSign, Percent, Target } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { usePageTitle } from '../../contexts/PageTitleContext';
 import { FridayDatePicker } from '../../components/common/FridayDatePicker';
 import { TickerSelector } from '../../components/widgets/TickerSelector';
 import { addTicker } from '../../store/slices/tickersSlice';
 import { PortalTooltip } from '../../components/common/PortalTooltip';
-import { formatNumber, formatCurrency } from '../../utils/numberFormat';
+import { formatNumber } from '../../utils/numberFormat';
 import type { Ticker } from '../../types';
 
 interface CCInputs {

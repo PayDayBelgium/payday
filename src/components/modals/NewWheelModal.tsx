@@ -6,14 +6,11 @@ import {
   ArrowLeft,
   TrendingUp,
   Building2,
-  ArrowDownCircle,
-  ArrowUpCircle,
   Plus,
-  Check,
 } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
-import { addWheel, updateWheelPremium } from '../../store/slices/wheelsSlice';
+import { addWheel } from '../../store/slices/wheelsSlice';
 import { addPosition, selectPositions, updatePosition } from '../../store/slices/positionsSlice';
 import { ensureTicker } from '../../store/slices/tickersSlice';
 import { TickerSelector } from '../widgets/TickerSelector';

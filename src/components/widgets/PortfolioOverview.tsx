@@ -16,7 +16,6 @@ import {
   Plus,
   Settings,
 } from 'lucide-react';
-import type { CallOption, PutOption } from '../../types';
 
 type TimePeriod = '1W' | '1M' | '3M' | 'YTD' | '1Y' | 'ALL';
 

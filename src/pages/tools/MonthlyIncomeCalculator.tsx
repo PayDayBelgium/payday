@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DollarSign, Plus, Trash2, TrendingUp, Info } from 'lucide-react';
+import { Plus, Trash2, TrendingUp, Info } from 'lucide-react';
 import { TickerSelector } from '../../components/widgets/TickerSelector';
 import { usePageTitle } from '../../contexts/PageTitleContext';
 import type { PortfolioName, Ticker } from '../../types';

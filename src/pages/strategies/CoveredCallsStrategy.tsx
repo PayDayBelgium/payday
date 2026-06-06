@@ -16,11 +16,10 @@ import {
 import { StrategyRules } from '../../components/strategy/StrategyRules';
 import { StrategyRuleModal } from '../../components/modals/StrategyRuleModal';
 import { useStrategyRules } from '../../hooks/useStrategyRules';
-import type { StrategyRule } from '../../types';
 
 export const CoveredCallsStrategy: React.FC = () => {
   const { portfolio } = useParams<{ portfolio: string }>();
-  const { setPageTitle, setInfoIcon } = usePageTitle();
+  const { setPageTitle } = usePageTitle();
   const navigate = useNavigate();
   const { pushNavigation } = useNavigation();
   const [activeTab, setActiveTab] = useState<'positions' | 'rules' | 'info'>('positions');

@@ -23,7 +23,6 @@ export const NumberInput: React.FC<NumberInputProps> = ({
   onChange,
   min,
   max,
-  step = 0.01,
   placeholder = '0',
   className = '',
   required = false,
@@ -70,13 +69,13 @@ export const NumberInput: React.FC<NumberInputProps> = ({
       }
     } else {
       // Allow digits, comma, period, and minus sign
-      const regex = /^-?[\d,\.]*$/;
+      const regex = /^-?[\d,.]*$/;
       if (!regex.test(input)) {
         return; // Reject invalid input
       }
 
       // Only allow one decimal separator
-      const separatorCount = (input.match(/[,\.]/g) || []).length;
+      const separatorCount = (input.match(/[,.]/g) || []).length;
       if (separatorCount > 1) {
         return;
       }

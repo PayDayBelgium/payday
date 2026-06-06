@@ -92,7 +92,7 @@ export const ConnectivitySettings: React.FC = () => {
   const handleConnect = async () => {
     try {
       await priceWebSocketService.connect();
-    } catch (error) {
+    } catch {
       // Error is logged by the service
     }
   };
@@ -108,7 +108,7 @@ export const ConnectivitySettings: React.FC = () => {
     try {
       priceWebSocketService.updateConfig(config);
       setSaveMessage({ type: 'success', text: 'Configuration saved!' });
-    } catch (error) {
+    } catch {
       setSaveMessage({ type: 'error', text: 'Failed to save configuration' });
     } finally {
       setIsSaving(false);

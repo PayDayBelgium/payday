@@ -166,32 +166,36 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
 
   // Get position display info
   const getPositionDisplayInfo = (position: Position) => {
-    let label = position.ticker;
+    const label = position.ticker;
     let details = '';
     let value = 0;
 
     switch (position.type) {
       case 'stock':
-      case 'etf':
+      case 'etf': {
         const stockPos = position as StockPosition;
         details = `${stockPos.shares} shares`;
         value = stockPos.currentValue;
         break;
-      case 'call':
+      }
+      case 'call': {
         const callPos = position as CallOption;
         details = `${callPos.action === 'buy' ? 'Long' : 'Short'} Call $${callPos.strike} ${callPos.expiration}`;
         value = callPos.currentValue;
         break;
-      case 'put':
+      }
+      case 'put': {
         const putPos = position as PutOption;
         details = `${putPos.action === 'buy' ? 'Long' : 'Short'} Put $${putPos.strike} ${putPos.expiration}`;
         value = putPos.currentValue;
         break;
-      case 'leap':
+      }
+      case 'leap': {
         const leapPos = position as LEAP;
         details = `LEAP $${leapPos.strike} ${leapPos.expiration}`;
         value = leapPos.currentValue;
         break;
+      }
       default:
         value = 'currentValue' in position ? (position as any).currentValue : 0;
     }

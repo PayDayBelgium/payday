@@ -394,10 +394,6 @@ function createKaChingCampaign(
     ? `Je kunt nog ${protectivePut.contracts - totalCoveredContracts} put(s) schrijven deze week`
     : undefined;
 
-  // Calculate if we've recovered the cost of the protective put
-  const costRecovered = historicalPnL >= protectivePut.costBasis;
-  const profitAfterRecovery = costRecovered ? historicalPnL - protectivePut.costBasis : 0;
-
   return {
     id: `kaching-${protectivePut.id}`,
     type: 'kaching',

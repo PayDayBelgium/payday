@@ -7,7 +7,6 @@ import {
   Info,
   ArrowRight,
   Wallet,
-  X,
   ListTodo,
   DollarSign,
   GraduationCap,
@@ -17,15 +16,14 @@ import { StrategyRules } from '../../components/strategy/StrategyRules';
 import { StrategyRuleModal } from '../../components/modals/StrategyRuleModal';
 // import { AddCSPModal } from '../../components/modals/AddCSPModal';
 import { useStrategyRules } from '../../hooks/useStrategyRules';
-import type { StrategyRule } from '../../types';
 
 export const CSPStrategy: React.FC = () => {
   const { portfolio } = useParams<{ portfolio: string }>();
-  const { setPageTitle, setInfoIcon } = usePageTitle();
+  const { setPageTitle } = usePageTitle();
   const navigate = useNavigate();
   const { pushNavigation } = useNavigation();
   const [activeTab, setActiveTab] = useState<'positions' | 'rules' | 'info'>('positions');
-  const [isCSPModalOpen, setIsCSPModalOpen] = useState(false);
+  const [, setIsCSPModalOpen] = useState(false);
   const {
     strategyRules,
     isRuleModalOpen,

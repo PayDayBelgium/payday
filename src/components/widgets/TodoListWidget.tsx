@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { selectActiveTodos, addTodo, toggleTodo } from '../../store/slices/todosSlice';
-import { CheckCircle2, Circle, Plus } from 'lucide-react';
+import { Circle, Plus } from 'lucide-react';
 
 const TodoListWidget: React.FC = () => {
   const { t } = useTranslation();

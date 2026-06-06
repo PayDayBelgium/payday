@@ -9,7 +9,6 @@ import {
   Star,
   Lock,
   Gift,
-  ShoppingCart,
 } from 'lucide-react';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import {
@@ -20,7 +19,6 @@ import {
 import {
   LEVEL_RESOURCES,
   getTipsUpToLevel,
-  getBooksUpToLevel,
 } from '../../config/learningResources';
 import type {
   UserLevel,
@@ -333,7 +331,7 @@ interface LearningResourcesProps {
   showAllLevels?: boolean; // Show resources from all levels (locked ones will be blurred)
 }
 
-export const LearningResources: React.FC<LearningResourcesProps> = ({ showAllLevels = false }) => {
+export const LearningResources: React.FC<LearningResourcesProps> = () => {
   const unlockedLevels = useAppSelector(selectUnlockedLevels);
   const currentLevel = useAppSelector(selectCurrentLevel);
   const [activeLevel, setActiveLevel] = useState<UserLevel | 'all'>(currentLevel);

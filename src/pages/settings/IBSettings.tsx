@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Wifi, Save, RotateCcw } from 'lucide-react';
+import { Save, RotateCcw } from 'lucide-react';
 import { IBConnectionStatus } from '../../components/common/IBConnectionStatus';
 import { ibWebSocketService } from '../../services/ibWebSocketService';
 import { usePageTitle } from '../../contexts/PageTitleContext';
@@ -34,7 +34,7 @@ export const IBSettings: React.FC = () => {
       await ibWebSocketService.connect();
 
       setSaveMessage({ type: 'success', text: 'Settings saved and connection established!' });
-    } catch (error) {
+    } catch {
       setSaveMessage({
         type: 'error',
         text: 'Settings saved but connection failed. Check if TWS is running.',

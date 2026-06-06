@@ -6,12 +6,9 @@ import {
   Target,
   Lightbulb,
   TrendingUp,
-  TrendingDown,
   Calendar,
-  Banknote,
   Settings,
 } from 'lucide-react';
-import { useAppSelector } from '../../hooks/useAppSelector';
 import { ConfirmModal } from '../../components/modals/ConfirmModal';
 import type {
   StrategyRule,

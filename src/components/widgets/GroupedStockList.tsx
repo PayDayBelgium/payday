@@ -5,10 +5,7 @@ import {
   AlertCircle,
   CheckCircle,
   Search,
-  Edit2,
-  Check,
   X,
-  TrendingDown,
   Target,
 } from 'lucide-react';
 import type { StockPosition, PriceAlert, Portfolio, CallOption } from '../../types';
@@ -18,7 +15,6 @@ import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import {
   updatePosition,
-  markPriceAlertAsRead,
   selectPositions,
 } from '../../store/slices/positionsSlice';
 import { updateTickerPrice } from '../../store/slices/tickersSlice';
@@ -79,14 +75,14 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [editingTicker, setEditingTicker] = useState<string | null>(null);
   const [editPrice, setEditPrice] = useState('');
-  const [dismissConfirm, setDismissConfirm] = useState<{
+  const [, setDismissConfirm] = useState<{
     isOpen: boolean;
     alert: PriceAlert | null;
   }>({
     isOpen: false,
     alert: null,
   });
-  const [dismissStrategyConfirm, setDismissStrategyConfirm] = useState<{
+  const [, setDismissStrategyConfirm] = useState<{
     isOpen: boolean;
     alertId: string | null;
     message: string;
@@ -218,21 +214,9 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
     }
   };
 
-  const handleDismissAlert = (alert: PriceAlert) => {
-    dispatch(markPriceAlertAsRead(alert.id));
-    setDismissConfirm({ isOpen: false, alert: null });
-  };
-
   const handleDismissStrategyAlert = (e: React.MouseEvent, alertId: string, message: string) => {
     e.stopPropagation();
     setDismissStrategyConfirm({ isOpen: true, alertId, message });
-  };
-
-  const confirmDismissStrategyAlert = () => {
-    if (dismissStrategyConfirm.alertId && onDismissStrategyAlert) {
-      onDismissStrategyAlert(dismissStrategyConfirm.alertId);
-    }
-    setDismissStrategyConfirm({ isOpen: false, alertId: null, message: '' });
   };
 
   return (

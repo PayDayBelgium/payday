@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, AlertCircle, Target, Trash2 } from 'lucide-react';
+import { AlertCircle, Target, Trash2 } from 'lucide-react';
 import type { StrategyRule, StrategyType, PortfolioName } from '../../types';
 import { ConfirmModal } from '../modals/ConfirmModal';
 
@@ -14,8 +14,6 @@ interface StrategyRulesProps {
 }
 
 export const StrategyRules: React.FC<StrategyRulesProps> = ({
-  strategyType,
-  portfolio,
   rules,
   onAddRule,
   onEditRule,

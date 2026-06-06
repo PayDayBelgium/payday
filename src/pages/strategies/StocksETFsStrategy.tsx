@@ -8,7 +8,6 @@ import {
   Plus,
   Info,
   ArrowRight,
-  X,
   ListTodo,
   GraduationCap,
   Lightbulb,
@@ -32,18 +31,13 @@ import { formatNumber } from '../../utils/numberFormat';
 
 export const StocksETFsStrategy: React.FC = () => {
   const { portfolio } = useParams<{ portfolio: string }>();
-  const { setPageTitle, setInfoIcon } = usePageTitle();
+  const { setPageTitle } = usePageTitle();
   const navigate = useNavigate();
   const { pushNavigation } = useNavigation();
   const [activeTab, setActiveTab] = useState<'positions' | 'rules' | 'info'>('positions');
-  const [showInfo, setShowInfo] = useState(() => {
-    const saved = localStorage.getItem('stocks-etfs-show-info');
-    // First time: show info (saved will be null), otherwise use saved value
-    return saved === null ? true : saved === 'true';
-  });
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedPosition, setSelectedPosition] = useState<StockPosition | null>(null);
+  const [, setIsModalOpen] = useState(false);
+  const [, setIsEditModalOpen] = useState(false);
+  const [, setSelectedPosition] = useState<StockPosition | null>(null);
   const [isRuleModalOpen, setIsRuleModalOpen] = useState(false);
   const [selectedRule, setSelectedRule] = useState<StrategyRule | null>(null);
   const [activeRuleCategory, setActiveRuleCategory] = useState<'alert' | 'opportunity' | undefined>(
@@ -56,7 +50,7 @@ export const StocksETFsStrategy: React.FC = () => {
     if (saved) {
       try {
         return new Set(JSON.parse(saved));
-      } catch (e) {
+      } catch {
         return new Set();
       }
     }
@@ -183,14 +177,6 @@ export const StocksETFsStrategy: React.FC = () => {
   const totalValue = openPositions.reduce((sum, pos) => sum + pos.currentValue, 0);
   const totalPositions = openPositions.length;
   const availableForCC = holdings.filter((h) => h.canWriteCoveredCall).length;
-
-  const handleToggleInfo = useCallback(() => {
-    setShowInfo((prev) => {
-      const newValue = !prev;
-      localStorage.setItem('stocks-etfs-show-info', String(newValue));
-      return newValue;
-    });
-  }, []);
 
   useEffect(() => {
     setPageTitle('Aandelen & ETFs', `De basis van je portfolio - long-term holdings`);

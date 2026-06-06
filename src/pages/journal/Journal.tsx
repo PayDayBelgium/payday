@@ -9,7 +9,6 @@ import {
   addGoal,
   updateGoal,
   deleteGoal,
-  completeGoal,
   selectJournalEntries,
   selectActiveGoals,
   selectCompletedGoals,
@@ -24,11 +23,9 @@ import {
   Edit,
   Trash2,
   Check,
-  X,
   TrendingUp,
   DollarSign,
   Coins,
-  Filter,
   Tag,
   Smile,
   Meh,
@@ -794,8 +791,6 @@ export const Journal: React.FC = () => {
                   {showCompletedGoals && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                       {completedGoals.map((goal) => {
-                        const goalType = GOAL_TYPES.find((t) => t.id === goal.type);
-
                         return (
                           <div
                             key={goal.id}

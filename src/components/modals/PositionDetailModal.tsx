@@ -3,7 +3,6 @@ import {
   X,
   Save,
   TrendingUp,
-  TrendingDown,
   ArrowUpCircle,
   ArrowDownCircle,
   Calendar,
@@ -407,10 +406,6 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
                 (position.type === 'stock' || position.type === 'etf') &&
                 (() => {
                   const stock = position as any;
-                  const profitLoss = stock.currentValue - stock.costBasis;
-                  const profitLossPercentage =
-                    stock.costBasis > 0 ? (profitLoss / stock.costBasis) * 100 : 0;
-                  const isProfitable = profitLoss >= 0;
                   const pricePerShare = currentPrice
                     ? parseNumberInput(currentPrice)
                     : stock.currentPrice;

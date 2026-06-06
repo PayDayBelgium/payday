@@ -36,7 +36,6 @@ const calculatePortfolioValue = (state: RootState, portfolioName: string): numbe
 
   // Calculate total position value and cost basis
   let totalCurrentValue = 0;
-  let totalCostBasis = 0;
 
   portfolioPositions.forEach((pos) => {
     if (pos.type === 'stock' || pos.type === 'etf') {
@@ -47,19 +46,16 @@ const calculatePortfolioValue = (state: RootState, portfolioName: string): numbe
       );
       const currentPrice = ticker?.currentPrice || stockPos.currentPrice || stockPos.purchasePrice;
       totalCurrentValue += stockPos.shares * currentPrice;
-      totalCostBasis += stockPos.costBasis; // Cost basis is positive for stocks
     } else if (pos.type === 'call' || pos.type === 'put') {
       const option = pos as CallOption | PutOption;
       if (option.action === 'buy') {
         // Long options: positive cost basis (money paid)
         totalCurrentValue += Math.abs(option.currentValue || option.costBasis);
-        totalCostBasis += option.costBasis;
       } else {
         // Short options: negative cost basis (money received)
         // Current value is also negative (liability)
         // Add the negative value directly (which subtracts the liability from total)
         totalCurrentValue += option.currentValue ?? option.costBasis;
-        totalCostBasis += option.costBasis; // Already negative
       }
     }
   });

@@ -8,7 +8,6 @@ import {
   AlertCircle,
   Info,
   ArrowRight,
-  X,
   ListTodo,
   GraduationCap,
   Lightbulb,
@@ -16,11 +15,10 @@ import {
 import { StrategyRules } from '../../components/strategy/StrategyRules';
 import { StrategyRuleModal } from '../../components/modals/StrategyRuleModal';
 import { useStrategyRules } from '../../hooks/useStrategyRules';
-import type { StrategyRule } from '../../types';
 
 export const LEAPSStrategy: React.FC = () => {
   const { portfolio } = useParams<{ portfolio: string }>();
-  const { setPageTitle, setInfoIcon, setWarningIcon } = usePageTitle();
+  const { setPageTitle } = usePageTitle();
   const navigate = useNavigate();
   const { pushNavigation } = useNavigation();
   const [activeTab, setActiveTab] = useState<'positions' | 'rules' | 'info'>('positions');

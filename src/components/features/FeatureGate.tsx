@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, Mountain, Star, ArrowRight } from 'lucide-react';
 import { useFeatureAccess } from '../../hooks/useFeatureAccess';
-import { LEVEL_CONFIGS, getLevelConfig } from '../../store/slices/userProgressSlice';
+import { getLevelConfig } from '../../store/slices/userProgressSlice';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { selectCredits } from '../../store/slices/userProgressSlice';
 import type { FeatureId } from '../../types';

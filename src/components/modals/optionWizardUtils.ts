@@ -105,7 +105,7 @@ export const calculateCallBreakEven = (strike: number, premium: number): number 
 export const calculatePutBreakEven = (
   strike: number,
   premium: number,
-  isBuy: boolean = false
+  _isBuy: boolean = false
 ): number => {
   // For puts, break-even is always strike - premium
   // Whether it's profit or loss depends on direction

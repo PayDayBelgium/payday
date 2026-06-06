@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import {
-  BookOpen,
   ChevronRight,
   ChevronDown,
   CheckCircle,
   Clock,
   Gift,
   Lock,
-  Play,
   Info,
   AlertTriangle,
   Lightbulb,
@@ -24,7 +22,6 @@ import {
   LEVEL_CONFIGS,
 } from '../../store/slices/userProgressSlice';
 import {
-  EDUCATION_CURRICULUM,
   getChaptersForLevel,
   getLessonById,
 } from '../../config/educationCurriculum';
@@ -34,7 +31,6 @@ import type {
   EducationLesson,
   EducationContent,
   EducationQuiz,
-  QuizQuestion,
 } from '../../types';
 
 // =====================================================
@@ -419,8 +415,8 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
   prevLesson,
   onNavigate,
 }) => {
-  const [quizCompleted, setQuizCompleted] = useState(false);
-  const [quizScore, setQuizScore] = useState<number | null>(null);
+  const [, setQuizCompleted] = useState(false);
+  const [, setQuizScore] = useState<number | null>(null);
 
   const handleQuizComplete = (score: number) => {
     setQuizScore(score);

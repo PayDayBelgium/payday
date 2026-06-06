@@ -32,7 +32,6 @@ export const StockRow: React.FC<StockRowProps> = ({
   currency,
   onClose,
   onView,
-  onWriteCoveredCall,
   showActions = true,
   showOpportunityBadge = true,
   coveredCallContracts = 0,

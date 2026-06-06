@@ -6,7 +6,6 @@ import {
   CheckCircle,
   Clock,
   Calculator,
-  WalletMinimal,
   Shield,
   X,
 } from 'lucide-react';
@@ -34,9 +33,9 @@ export const PMCCStrategy: React.FC = () => {
     tickers.forEach((t) => map.set(t.symbol.toUpperCase(), t.currentPrice ?? 0));
     return map;
   }, [tickers]);
-  const [isAddLeapModalOpen, setIsAddLeapModalOpen] = useState(false);
-  const [isAddCoveredCallModalOpen, setIsAddCoveredCallModalOpen] = useState(false);
-  const [selectedLeapId, setSelectedLeapId] = useState<string | undefined>(undefined);
+  const [, setIsAddLeapModalOpen] = useState(false);
+  const [, setIsAddCoveredCallModalOpen] = useState(false);
+  const [, setSelectedLeapId] = useState<string | undefined>(undefined);
   const [showInfoCard, setShowInfoCard] = useState(() => {
     const saved = localStorage.getItem('pmcc-show-info');
     return saved !== 'false'; // Default to true if not set

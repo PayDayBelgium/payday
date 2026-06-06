@@ -248,31 +248,15 @@ export const PnLSimulator: React.FC = () => {
 
     // Analyze strategy structure to determine theoretical max profit/loss
     // Check if we have uncovered positions that lead to unlimited risk/reward
-    let hasLongCall = false;
-    let hasShortCall = false;
-    let hasLongPut = false;
-    let hasShortPut = false;
     let longCallContracts = 0;
     let shortCallContracts = 0;
-    let longPutContracts = 0;
-    let shortPutContracts = 0;
 
     legs.forEach((leg) => {
       if (leg.type === 'call' && leg.action === 'buy') {
-        hasLongCall = true;
         longCallContracts += leg.contracts;
       }
       if (leg.type === 'call' && leg.action === 'sell') {
-        hasShortCall = true;
         shortCallContracts += leg.contracts;
-      }
-      if (leg.type === 'put' && leg.action === 'buy') {
-        hasLongPut = true;
-        longPutContracts += leg.contracts;
-      }
-      if (leg.type === 'put' && leg.action === 'sell') {
-        hasShortPut = true;
-        shortPutContracts += leg.contracts;
       }
     });
 

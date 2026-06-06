@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { createContext, useContext, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface NavigationEntry {
   path: string;
@@ -31,7 +31,6 @@ interface NavigationProviderProps {
 }
 
 export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children }) => {
-  const location = useLocation();
   const navigate = useNavigate();
   const [navigationStack, setNavigationStack] = useState<NavigationEntry[]>([]);
   const [lastMenuPath, setLastMenuPath] = useState<string>('/');

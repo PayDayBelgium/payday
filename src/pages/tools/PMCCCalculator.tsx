@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Calculator, TrendingUp, AlertTriangle, ArrowRight, Plus, X, Info } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { usePageTitle } from '../../contexts/PageTitleContext';

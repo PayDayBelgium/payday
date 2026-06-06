@@ -39,7 +39,6 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
 
   // Calculate assignment details
   const assignmentCalculation = useMemo(() => {
-    const price = parseFloat(assignmentPrice) || position.strike;
     const shares = position.contracts * contractMultiplier;
 
     if (isPut) {

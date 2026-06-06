@@ -4,9 +4,6 @@ import {
   TrendingUp,
   Building2,
   X as XIcon,
-  ArrowUpCircle,
-  ArrowDownCircle,
-  MessageSquare,
   ChevronDown,
   ChevronUp,
   ChevronRight,
@@ -15,8 +12,6 @@ import {
   Lightbulb,
   Filter,
   Redo2,
-  Layers,
-  ArrowDownLeft,
 } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
@@ -47,14 +42,12 @@ import type { StockPosition } from '../../types';
 import type { Position, CurrencyType, CallOption, PutOption } from '../../types';
 import { getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency, formatNumber } from '../../utils/numberFormat';
-import { parseNumberInput, validateNumberInput } from '../../utils/inputFormat';
 import { getSpreadId } from '../../utils/spreadHelpers';
 import { computeCoveredCallCapacity } from '../../utils/coveredCallEligibility';
 import { StockRow } from './StockRow';
 import { GroupedStockList } from './GroupedStockList';
 import { OptionRow } from './OptionRow';
 import type { CollateralType } from './OptionRow';
-import { calculateOptionUnrealizedPnL, calculatePnLPercentage } from '../../utils/pnlCalculations';
 import { AlertTooltipContent } from '../common/AlertTooltipContent';
 import { PortalTooltip } from '../common/PortalTooltip';
 
@@ -98,7 +91,6 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   const dispatch = useAppDispatch();
   const tickers = useAppSelector(selectAllTickers);
   const portfolios = useAppSelector((state) => state.portfolios.portfolios);
-  const storePositions = useAppSelector((state) => state.positions.positions);
   const priceAlerts = useAppSelector(selectAllPriceAlerts);
   const unlockedLevels = useAppSelector(selectUnlockedLevels);
   const hasOptionsAccess = isFeatureAvailable('covered_calls', unlockedLevels);
@@ -388,11 +380,12 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
       let compareValue = 0;
 
       switch (sortField) {
-        case 'expiration':
+        case 'expiration': {
           const dateA = optionA.expiration ? new Date(optionA.expiration).getTime() : 0;
           const dateB = optionB.expiration ? new Date(optionB.expiration).getTime() : 0;
           compareValue = dateA - dateB;
           break;
+        }
         case 'ticker':
           compareValue = optionA.ticker.localeCompare(optionB.ticker);
           break;
@@ -402,16 +395,18 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
         case 'premium':
           compareValue = optionA.premium - optionB.premium;
           break;
-        case 'dte':
+        case 'dte': {
           const dteA = optionA.expiration ? getDaysToExpiration(optionA.expiration) : 0;
           const dteB = optionB.expiration ? getDaysToExpiration(optionB.expiration) : 0;
           compareValue = dteA - dteB;
           break;
-        case 'pnl':
+        }
+        case 'pnl': {
           const pnlA = optionA.currentValue - optionA.costBasis;
           const pnlB = optionB.currentValue - optionB.costBasis;
           compareValue = pnlA - pnlB;
           break;
+        }
       }
 
       return sortDirection === 'asc' ? compareValue : -compareValue;
@@ -523,7 +518,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   }, [allPositions, tickerSearch, filterExpiration, filterOpportunities, filterAlerts, positions]);
 
   // Pre-process positions to identify spreads
-  const { spreads, standalonePositions } = useMemo(() => {
+  const { spreads } = useMemo(() => {
     const spreadMap = new Map<string, Position[]>();
     const standalone: Position[] = [];
 
@@ -1492,8 +1487,6 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
         {/* Remove old grouped stocks display - now integrated in table below */}
         {false &&
           groupedPositions.map((group) => {
-            const isProfitable = group.unrealizedPnL >= 0;
-
             return (
               <div
                 key={group.ticker}
@@ -1601,7 +1594,6 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
                       const positionPnL = position.currentValue - position.costBasis;
                       const positionPnLPercent = (positionPnL / position.costBasis) * 100;
-                      const isProfitable = positionPnL >= 0;
 
                       return (
                         <div
@@ -1775,10 +1767,6 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
                   if (position.type === 'call' || position.type === 'put') {
                     const option = position as CallOption | PutOption;
-                    const tickerData = tickers.find(
-                      (t) => t.symbol.toUpperCase() === option.ticker.toUpperCase()
-                    );
-                    const currentPrice = tickerData?.currentPrice || 0;
 
                     // Check for opportunity (80% profit)
                     if (groupFilter.opportunities) {
@@ -1976,10 +1964,6 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                 ? getDaysToExpiration(summary.expiration)
                                 : 0;
 
-                              // Get the short leg to calculate stock price difference
-                              const shortLeg = spread.legs.find(
-                                (leg) => (leg as CallOption | PutOption).action === 'sell'
-                              ) as CallOption | PutOption | undefined;
                               // Get stock price from tickers store for live updates
                               const spreadTickerData = tickers.find(
                                 (t) => t.symbol.toUpperCase() === summary.ticker.toUpperCase()

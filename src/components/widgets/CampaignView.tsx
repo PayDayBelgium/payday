@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import {
   TrendingUp,
-  TrendingDown,
   Target,
   Lightbulb,
   ChevronDown,
@@ -12,11 +11,9 @@ import {
   Zap,
   Shield,
   Plus,
-  Redo2,
   X as XIcon,
   RefreshCw,
   Trash2,
-  ArrowDownLeft,
   ArrowUpCircle,
 } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';

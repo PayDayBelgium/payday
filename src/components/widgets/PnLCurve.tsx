@@ -61,7 +61,7 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
   // Calculate P&L curve data points
   const { points, breakEven, maxProfit, maxLoss, currentPrice } = useMemo(() => {
     const contractMultiplier = 100;
-    let points: PnLPoint[] = [];
+    const points: PnLPoint[] = [];
     let breakEven: number | number[] | null = null;
     let maxProfit: number | null = null;
     let maxLoss: number | null = null;
@@ -317,9 +317,7 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
 
     // Convert screen coordinates to SVG coordinates
     const scaleX = chartWidth / rect.width;
-    const scaleY = chartHeight / rect.height;
     const x = (e.clientX - rect.left) * scaleX;
-    const y = (e.clientY - rect.top) * scaleY;
 
     // Find closest point on the curve
     const priceAtMouse =

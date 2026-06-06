@@ -279,7 +279,7 @@ class PriceWebSocketService {
           try {
             const message: IncomingMessage = JSON.parse(event.data);
             this.handleMessage(message, event.data);
-          } catch (error) {
+          } catch {
             this.addLog('incoming', 'parse_error', `Failed to parse message: ${event.data}`);
           }
         };

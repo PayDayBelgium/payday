@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Wifi, WifiOff, RefreshCw, AlertCircle, Settings } from 'lucide-react';
+import React, { useState } from 'react';
+import { Wifi, WifiOff, RefreshCw, AlertCircle } from 'lucide-react';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { ibWebSocketService } from '../../services/ibWebSocketService';
 import type { ConnectionStatus } from '../../store/slices/ibConnectionSlice';
@@ -16,7 +16,6 @@ export const IBConnectionStatus: React.FC<IBConnectionStatusProps> = ({
   const { status, error, lastConnected, reconnectAttempts, maxReconnectAttempts } = useAppSelector(
     (state) => state.ibConnection
   );
-  const [showSettings, setShowSettings] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
 
   const handleRetry = async () => {

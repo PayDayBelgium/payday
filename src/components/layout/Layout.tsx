@@ -25,7 +25,7 @@ const LayoutContent: React.FC = () => {
   } = usePageTitle();
   const currentLevel = useAppSelector(selectCurrentLevel);
 
-  const [isDarkMode, setIsDarkMode] = useState(() => {
+  const [isDarkMode] = useState(() => {
     // Check localStorage or system preference
     const saved = localStorage.getItem('darkMode');
     if (saved !== null) {

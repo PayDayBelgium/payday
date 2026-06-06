@@ -3,7 +3,6 @@ import {
   Plus,
   AlertCircle,
   DollarSign,
-  ShieldAlert,
   Banknote,
   TrendingUp,
   TrendingDown,
@@ -26,7 +25,7 @@ import { PortfolioValueChart } from '../../components/widgets/PortfolioValueChar
 import { MultiPortfolioChart } from '../../components/widgets/MultiPortfolioChart';
 import { PortfolioOverview } from '../../components/widgets/PortfolioOverview';
 import { selectPortfolioSummaries } from '../../store/slices/portfoliosSlice';
-import { formatCurrency, formatNumber } from '../../utils/numberFormat';
+import { formatCurrency } from '../../utils/numberFormat';
 import logo from '../../assets/app/logo.png';
 
 export const Dashboard: React.FC = () => {

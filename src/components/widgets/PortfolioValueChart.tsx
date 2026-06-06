@@ -7,7 +7,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from 'recharts';
 import type { DailyPortfolioData, CurrencyType } from '../../types';
 import { getCurrencySymbol } from '../../utils/currency';
@@ -29,7 +28,6 @@ type ViewMode = 'chart' | 'table';
 export const PortfolioValueChart: React.FC<PortfolioValueChartProps> = ({
   data,
   currency,
-  portfolioName,
   className = '',
   title,
   subtitle,
@@ -54,30 +52,6 @@ export const PortfolioValueChart: React.FC<PortfolioValueChartProps> = ({
         dailyPnL: d.dailyPnL,
       }));
   }, [data]);
-
-  // Calculate stats
-  const stats = useMemo(() => {
-    if (chartData.length === 0) {
-      return {
-        startValue: 0,
-        currentValue: 0,
-        change: 0,
-        changePercent: 0,
-      };
-    }
-
-    const startValue = chartData[0].totalValue;
-    const currentValue = chartData[chartData.length - 1].totalValue;
-    const change = currentValue - startValue;
-    const changePercent = startValue === 0 ? 0 : (change / startValue) * 100;
-
-    return {
-      startValue,
-      currentValue,
-      change,
-      changePercent,
-    };
-  }, [chartData]);
 
   // Copy table data to clipboard for Excel
   const handleCopyToClipboard = async () => {
@@ -249,7 +223,7 @@ export const PortfolioValueChart: React.FC<PortfolioValueChartProps> = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {chartData.map((row, index) => (
+              {chartData.map((row) => (
                 <tr key={row.fullDate} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                   <td className="px-6 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                     {new Date(row.fullDate).toLocaleDateString('nl-NL', {

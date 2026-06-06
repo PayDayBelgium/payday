@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ArrowUpCircle, ArrowDownCircle, MessageSquare, Target, AlertCircle } from 'lucide-react';
-import type { CallOption, PutOption, CurrencyType, Ticker } from '../../types';
+import type { CallOption, PutOption, Ticker } from '../../types';
 import { formatCurrency, formatNumber } from '../../utils/numberFormat';
 import { getDaysToExpiration } from '../../utils/dateHelpers';
 import { calculateOptionUnrealizedPnL, calculatePnLPercentage } from '../../utils/pnlCalculations';
