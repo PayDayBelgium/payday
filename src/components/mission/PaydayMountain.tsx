@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import type { UserLevel } from '../../types';
 
 interface PaydayMountainProps {
@@ -17,6 +18,7 @@ export const PaydayMountain: React.FC<PaydayMountainProps> = ({
   onOpenMentorship,
   mentorshipRequested,
 }) => {
+  const { t } = useTranslation();
   const offpisteUnlocked = unlockedLevels.includes('offpiste');
 
   return (
@@ -209,14 +211,14 @@ export const PaydayMountain: React.FC<PaydayMountainProps> = ({
             <rect x="-32" y="-9" width="64" height="18" rx="9" fill="#fff" stroke="#E3E8EF" />
             <circle cx="-19" cy="0" r="4.5" fill="#0F9D58" />
             <text x="6" y="3" textAnchor="middle">
-              GROEN
+              {t('mountain.green')}
             </text>
           </g>
           <g transform="translate(300 224)" filter="url(#pm-soft)">
             <rect x="-32" y="-9" width="64" height="18" rx="9" fill="#fff" stroke="#E3E8EF" />
             <rect x="-23.5" y="-4.5" width="9" height="9" fill="#2F6CAE" />
             <text x="6" y="3" textAnchor="middle">
-              BLAUW
+              {t('mountain.blue')}
             </text>
           </g>
           <g transform="translate(431 164)" filter="url(#pm-soft)">
@@ -230,7 +232,7 @@ export const PaydayMountain: React.FC<PaydayMountainProps> = ({
               transform="rotate(45 -15.5 0)"
             />
             <text x="6" y="3" textAnchor="middle">
-              ROOD
+              {t('mountain.red')}
             </text>
           </g>
           <g transform="translate(560 104)" filter="url(#pm-soft)">
@@ -254,7 +256,7 @@ export const PaydayMountain: React.FC<PaydayMountainProps> = ({
               />
             </g>
             <text x="7" y="3" textAnchor="middle">
-              ZWART
+              {t('mountain.black')}
             </text>
           </g>
           <g
@@ -283,7 +285,7 @@ export const PaydayMountain: React.FC<PaydayMountainProps> = ({
               />
             </g>
             <text x="6" y="3" textAnchor="middle" fill="#9A3412">
-              OFF-PISTE
+              {t('mountain.offPiste')}
             </text>
           </g>
           {!offpisteUnlocked && (
@@ -312,7 +314,7 @@ export const PaydayMountain: React.FC<PaydayMountainProps> = ({
                 textAnchor="middle"
                 letterSpacing="0.04em"
               >
-                ONTGRENDELEN
+                {t('mountain.unlock')}
               </text>
             </g>
           )}
@@ -398,7 +400,7 @@ export const PaydayMountain: React.FC<PaydayMountainProps> = ({
           <g transform="translate(0 30)" filter="url(#pm-soft)">
             <rect x="-78" y="-9" width="156" height="18" rx="9" fill="#fff" stroke="#E3E8EF" />
             <text y="3" fontSize="9.5" fontWeight="700" fill="#9A3412" textAnchor="middle">
-              SKI-SCHOOL · MENTORSHIP
+              {t('mountain.mentorship')}
             </text>
           </g>
           {/* status: requested */}
@@ -422,7 +424,7 @@ export const PaydayMountain: React.FC<PaydayMountainProps> = ({
                 textAnchor="middle"
                 letterSpacing="0.04em"
               >
-                AANGEVRAAGD
+                {t('mountain.requested')}
               </text>
             </g>
           )}
@@ -496,7 +498,7 @@ export const PaydayMountain: React.FC<PaydayMountainProps> = ({
           <g transform="translate(0 76)" filter="url(#pm-soft)">
             <rect x="-72" y="-9" width="144" height="18" rx="9" fill="#fff" stroke="#E3E8EF" />
             <text y="3" fontSize="9.5" fontWeight="700" fill="#9A3412" textAnchor="middle">
-              APRÈS-SKI · COMMUNITY
+              {t('mountain.community')}
             </text>
           </g>
         </g>

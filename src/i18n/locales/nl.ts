@@ -846,4 +846,15 @@ export const nl = {
     viewPmccCampaign: "Bekijk Poor Man's Covered Call-campagne",
     viewKachingCampaign: 'Bekijk KaChing-campagne',
   },
+  mountain: {
+    green: 'GROEN',
+    blue: 'BLAUW',
+    red: 'ROOD',
+    black: 'ZWART',
+    offPiste: 'OFF-PISTE',
+    unlock: 'ONTGRENDELEN',
+    requested: 'AANGEVRAAGD',
+    mentorship: 'SKI-SCHOOL · MENTORSHIP',
+    community: 'APRÈS-SKI · COMMUNITY',
+  },
 };
