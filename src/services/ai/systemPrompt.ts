@@ -8,7 +8,7 @@ export interface SystemPromptContext {
   unlockedLevels?: UserLevel[];
 }
 
-// Bouwt de systeemprompt op uit een vaste beschrijving + de agent-policy + niveau-context.
+// Builds the system prompt from a fixed description + the agent policy + level context.
 export const buildSystemPrompt = (ctx: SystemPromptContext): string => {
   const unlocked =
     ctx.unlockedLevels && ctx.unlockedLevels.length > 0 ? ctx.unlockedLevels : [ctx.userLevel];

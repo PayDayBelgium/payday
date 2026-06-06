@@ -2,11 +2,11 @@ import type { Position, CallOption, PutOption } from '../types';
 import { getDaysToExpiration } from './dateHelpers';
 
 /**
- * Bereken het aantal dagen tot expiratie (DTE) voor een optie.
+ * Calculate the number of days to expiration (DTE) for an option.
  *
- * LET OP: dit is een PortfolioView-specifieke variant die `undefined` afhandelt
- * en delegeert naar `getDaysToExpiration`. Bewust NIET hergebruikt uit
- * optionWizardUtils.calculateDTE — die implementatie wijkt af (eigen Math.max/ceil).
+ * NOTE: this is a PortfolioView-specific variant that handles `undefined`
+ * and delegates to `getDaysToExpiration`. Deliberately NOT reused from
+ * optionWizardUtils.calculateDTE — that implementation differs (its own Math.max/ceil).
  */
 export const calculateDTE = (expiration: string | undefined): number => {
   if (!expiration) return 0;
@@ -14,11 +14,11 @@ export const calculateDTE = (expiration: string | undefined): number => {
 };
 
 /**
- * Controleer of een optie een LEAP is (>90 dagen / 3 maanden tot expiratie).
+ * Check whether an option is a LEAP (>90 days / 3 months to expiration).
  *
- * LET OP: dit is een PortfolioView-specifieke variant die uitsluitend calls
- * beschouwt en DTE vanaf vandaag meet. Bewust NIET hergebruikt uit
- * campaignDetector.isLEAPS — die meet vanaf openDate en kijkt naar calls + puts.
+ * NOTE: this is a PortfolioView-specific variant that considers calls
+ * only and measures DTE from today. Deliberately NOT reused from
+ * campaignDetector.isLEAPS — that one measures from openDate and looks at calls + puts.
  */
 export const isLEAPS = (position: Position): boolean => {
   if (position.type !== 'call') return false;
@@ -27,7 +27,7 @@ export const isLEAPS = (position: Position): boolean => {
 };
 
 /**
- * Bereken de samenvatting van een spread (2 legs: long + short).
+ * Calculate the summary of a spread (2 legs: long + short).
  */
 export const calculateSpreadSummary = (legs: Position[]) => {
   if (legs.length !== 2) return null;
@@ -47,9 +47,7 @@ export const calculateSpreadSummary = (legs: Position[]) => {
 
   const maxProfit = isCredit
     ? netPremium
-    : (spreadWidth - Math.abs(netPremium / (shortLeg.contracts * 100))) *
-      shortLeg.contracts *
-      100;
+    : (spreadWidth - Math.abs(netPremium / (shortLeg.contracts * 100))) * shortLeg.contracts * 100;
 
   const maxLoss = isCredit
     ? (spreadWidth - Math.abs(netPremium / (shortLeg.contracts * 100))) * shortLeg.contracts * 100

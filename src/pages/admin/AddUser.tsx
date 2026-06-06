@@ -124,7 +124,9 @@ export const AddUser: React.FC = () => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className={`w-full pl-10 pr-4 py-2 bg-white dark:bg-trading-dark-700 border ${
-                    errors.username ? 'border-negative-500' : 'border-ink-200 dark:border-trading-dark-500'
+                    errors.username
+                      ? 'border-negative-500'
+                      : 'border-ink-200 dark:border-trading-dark-500'
                   } rounded-lg text-ink-900 dark:text-white placeholder-ink-500 dark:placeholder-ink-400 focus:outline-none focus:ring-2 focus:ring-primary-500`}
                   placeholder="Enter username"
                   autoFocus
@@ -153,7 +155,9 @@ export const AddUser: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className={`w-full pl-10 pr-4 py-2 bg-white dark:bg-trading-dark-700 border ${
-                    errors.email ? 'border-negative-500' : 'border-ink-200 dark:border-trading-dark-500'
+                    errors.email
+                      ? 'border-negative-500'
+                      : 'border-ink-200 dark:border-trading-dark-500'
                   } rounded-lg text-ink-900 dark:text-white placeholder-ink-500 dark:placeholder-ink-400 focus:outline-none focus:ring-2 focus:ring-primary-500`}
                   placeholder="Enter email address"
                 />
@@ -181,7 +185,9 @@ export const AddUser: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className={`w-full pl-10 pr-4 py-2 bg-white dark:bg-trading-dark-700 border ${
-                    errors.password ? 'border-negative-500' : 'border-ink-200 dark:border-trading-dark-500'
+                    errors.password
+                      ? 'border-negative-500'
+                      : 'border-ink-200 dark:border-trading-dark-500'
                   } rounded-lg text-ink-900 dark:text-white placeholder-ink-500 dark:placeholder-ink-400 focus:outline-none focus:ring-2 focus:ring-primary-500`}
                   placeholder="Enter password (min. 6 characters)"
                 />

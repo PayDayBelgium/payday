@@ -234,7 +234,10 @@ export const MonthlyIncomeCalculator: React.FC = () => {
                       const netIncome = grossIncome - fees;
 
                       return (
-                        <tr key={pos.id} className="hover:bg-surface dark:hover:bg-trading-dark-700/50">
+                        <tr
+                          key={pos.id}
+                          className="hover:bg-surface dark:hover:bg-trading-dark-700/50"
+                        >
                           <td className="px-4 py-3">
                             <div className="w-32">
                               <TickerSelector

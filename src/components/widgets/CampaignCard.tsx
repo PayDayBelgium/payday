@@ -26,39 +26,39 @@ import type { CollateralType } from './OptionRow';
 import { POSITION_GRID_COLS, POSITION_GRID_COLS_COMPACT } from './positionGrid';
 
 interface CampaignCardProps {
-  /** De campagne die gerenderd wordt */
+  /** The campaign being rendered */
   campaign: Campaign;
-  /** Valutasymbool voor weergave */
+  /** Currency symbol for display */
   currencySymbol: string;
-  /** Beschikbare tickers (voor live koersen) */
+  /** Available tickers (for live prices) */
   tickers: Ticker[];
-  /** Is de campagne uitgeklapt */
+  /** Whether the campaign is expanded */
   isExpanded: boolean;
-  /** Is de basis-positie sectie uitgeklapt */
+  /** Whether the basis-position section is expanded */
   isBasisExpanded: boolean;
-  /** Is de actieve-opties sectie uitgeklapt */
+  /** Whether the active-options section is expanded */
   isActiveExpanded: boolean;
-  /** Wordt de geschiedenis getoond */
+  /** Whether the history is being shown */
   showingHistory: boolean;
-  /** Klap de campagne in/uit */
+  /** Expand/collapse the campaign */
   onToggleCampaign: (id: string) => void;
-  /** Klap de basis-positie sectie in/uit */
+  /** Expand/collapse the basis-position section */
   onToggleBasisPosition: (campaignId: string) => void;
-  /** Klap de actieve-opties sectie in/uit */
+  /** Expand/collapse the active-options section */
   onToggleActiveOptions: (campaignId: string) => void;
-  /** Toon/verberg de geschiedenis */
+  /** Show/hide the history */
   onToggleHistory: (id: string) => void;
-  /** Verwijder de wheel (wheelId al uit campaign.id geëxtraheerd) */
+  /** Delete the wheel (wheelId already extracted from campaign.id) */
   onDeleteWheel: (wheelId: string) => void;
-  /** Open roll-modal voor een optie */
+  /** Open the roll modal for an option */
   onRoll: (option: CallOption | PutOption) => void;
-  /** Open close-modal voor een positie */
+  /** Open the close modal for a position */
   onClose: (option: Position) => void;
-  /** Open assignment-modal voor een optie */
+  /** Open the assignment modal for an option */
   onAssign: (option: CallOption | PutOption) => void;
-  /** Open detail-modal voor een positie */
+  /** Open the detail modal for a position */
   onView: (option: Position) => void;
-  /** Open de juiste wizard vanuit de opportunity-knop */
+  /** Open the appropriate wizard from the opportunity button */
   onOpportunityAction: (campaign: Campaign) => void;
 }
 
@@ -217,7 +217,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
             </>
           ) : (
             <>
-              {/* Aankoopkost - for non-Wheel campaigns */}
+              {/* Purchase cost - for non-Wheel campaigns */}
               <div className="text-right">
                 <p className="text-xs text-ink-500 dark:text-ink-400">Aankoopkost</p>
                 <p className="font-semibold text-ink-900 dark:text-white">
@@ -225,7 +225,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                 </p>
               </div>
 
-              {/* Ontvangen premies - for non-Wheel campaigns */}
+              {/* Premiums received - for non-Wheel campaigns */}
               <div className="text-right">
                 <p className="text-xs text-ink-500 dark:text-ink-400">Ontvangen premies</p>
                 <p className="font-semibold text-positive-600 dark:text-positive-500">
@@ -319,7 +319,9 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                     <div className="border border-surface-line dark:border-trading-dark-600 rounded-lg overflow-hidden bg-surface dark:bg-trading-dark-800/50">
                       {/* Column Headers */}
                       <div className="px-6 py-2 bg-surface-subtle dark:bg-trading-dark-900/50 border-b border-surface-line dark:border-trading-dark-600">
-                        <div className={`grid ${POSITION_GRID_COLS_COMPACT} gap-2 text-xs font-semibold text-ink-600 dark:text-ink-400 items-center`}>
+                        <div
+                          className={`grid ${POSITION_GRID_COLS_COMPACT} gap-2 text-xs font-semibold text-ink-600 dark:text-ink-400 items-center`}
+                        >
                           <div></div> {/* Icon */}
                           <div>Ticker</div>
                           <div>Expiratie</div>
@@ -375,7 +377,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                             )}
                           </div>
 
-                          {/* Expiratie - only for LEAPS */}
+                          {/* Expiration - only for LEAPS */}
                           <div>
                             {campaign.root.type === 'leaps-call' ? (
                               <>
@@ -426,7 +428,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                             )}
                           </div>
 
-                          {/* Stock prijs */}
+                          {/* Stock price */}
                           <div>
                             {currentPrice ? (
                               <p className="text-sm font-medium text-ink-900 dark:text-white">
@@ -437,7 +439,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                             )}
                           </div>
 
-                          {/* Verschil */}
+                          {/* Difference */}
                           <div>
                             {currentPrice && campaign.root.type !== 'leaps-call' ? (
                               <p
@@ -448,14 +450,17 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                                 }`}
                               >
                                 {currentPrice > purchasePricePerShare ? '+' : ''}
-                                {formatCurrency(currentPrice - purchasePricePerShare, currencySymbol)}
+                                {formatCurrency(
+                                  currentPrice - purchasePricePerShare,
+                                  currencySymbol
+                                )}
                               </p>
                             ) : (
                               <p className="text-sm text-ink-400 dark:text-ink-600">-</p>
                             )}
                           </div>
 
-                          {/* Open (Kostprijs) */}
+                          {/* Open (Cost basis) */}
                           <div>
                             <p className="text-sm font-medium text-ink-900 dark:text-white">
                               {formatCurrency(purchasePricePerShare, currencySymbol)}
@@ -465,7 +470,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                             </p>
                           </div>
 
-                          {/* Huidige */}
+                          {/* Current */}
                           <div>
                             <p className="text-sm font-medium text-ink-900 dark:text-white">
                               {currentPrice
@@ -477,7 +482,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                             </p>
                           </div>
 
-                          {/* Winst/Verlies */}
+                          {/* Profit/Loss */}
                           <div>
                             <p
                               className={`text-sm font-medium ${
@@ -505,7 +510,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                             </p>
                           </div>
 
-                          {/* Aangepast */}
+                          {/* Modified */}
                           <div>
                             <p
                               className={`text-sm font-medium ${
@@ -565,7 +570,9 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                     <div className="border border-surface-line dark:border-trading-dark-600 rounded-lg overflow-hidden bg-surface dark:bg-trading-dark-800/50">
                       {/* Column Headers */}
                       <div className="px-6 py-2 bg-surface-subtle dark:bg-trading-dark-900/50 border-b border-surface-line dark:border-trading-dark-600">
-                        <div className={`grid ${POSITION_GRID_COLS} gap-2 text-xs font-semibold text-ink-600 dark:text-ink-400 items-center`}>
+                        <div
+                          className={`grid ${POSITION_GRID_COLS} gap-2 text-xs font-semibold text-ink-600 dark:text-ink-400 items-center`}
+                        >
                           <div></div> {/* Icon */}
                           <div>Ticker</div>
                           <div>Expiratie</div>

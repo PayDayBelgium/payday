@@ -244,9 +244,7 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
       <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-surface-line dark:border-trading-dark-600">
-          <h2 className="text-xl font-bold text-ink-900 dark:text-white">
-            {t('imageCrop.title')}
-          </h2>
+          <h2 className="text-xl font-bold text-ink-900 dark:text-white">{t('imageCrop.title')}</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-surface-subtle dark:hover:bg-trading-dark-700 rounded-lg transition-colors"

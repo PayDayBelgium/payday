@@ -277,7 +277,7 @@ export const OptionRow: React.FC<OptionRowProps> = ({
           )}
         </div>
 
-        {/* Expiratie */}
+        {/* Expiration */}
         <div>
           <p className="text-sm font-medium text-ink-900 dark:text-white">
             {new Date(option.expiration).toLocaleDateString('nl-NL')}
@@ -306,7 +306,7 @@ export const OptionRow: React.FC<OptionRowProps> = ({
           </p>
         </div>
 
-        {/* Stock prijs */}
+        {/* Stock price */}
         <div>
           {stockPrice > 0 ? (
             <p className="text-sm font-medium text-ink-700 dark:text-ink-300">
@@ -317,7 +317,7 @@ export const OptionRow: React.FC<OptionRowProps> = ({
           )}
         </div>
 
-        {/* Verschil (stock price - strike) */}
+        {/* Difference (stock price - strike) */}
         <div>
           {stockPrice > 0 ? (
             <p
@@ -347,7 +347,7 @@ export const OptionRow: React.FC<OptionRowProps> = ({
           )}
         </div>
 
-        {/* Aankoopwaarde */}
+        {/* Purchase value */}
         <div>
           <p className="text-sm font-semibold text-ink-900 dark:text-white">
             {formatCurrency(option.premium, currencySymbol)}
@@ -357,7 +357,7 @@ export const OptionRow: React.FC<OptionRowProps> = ({
           </p>
         </div>
 
-        {/* Huidige Waarde */}
+        {/* Current Value */}
         <div>
           <p className="text-sm font-semibold text-ink-900 dark:text-white">
             {formatCurrency(pricePerContract, currencySymbol)}
@@ -367,7 +367,7 @@ export const OptionRow: React.FC<OptionRowProps> = ({
           </p>
         </div>
 
-        {/* Winst (nominaal en %) */}
+        {/* Profit (nominal and %) */}
         <div>
           <p
             className={`text-sm font-bold ${
@@ -395,7 +395,7 @@ export const OptionRow: React.FC<OptionRowProps> = ({
           </p>
         </div>
 
-        {/* Onderpand */}
+        {/* Collateral */}
         <div>
           {collateralType !== 'none' && collateralValue > 0 ? (
             <>

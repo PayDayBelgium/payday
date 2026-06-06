@@ -90,7 +90,7 @@ export const OptionCheck: React.FC = () => {
         </span>
       </div>
 
-      {/* Ticker keuze / toevoegen */}
+      {/* Ticker selection / add */}
       <div className="surface-card p-5">
         <p className="text-xs font-semibold text-ink-500 mb-1.5">Ticker</p>
         {isCreatingTicker ? (
@@ -162,7 +162,7 @@ export const OptionCheck: React.FC = () => {
 
       {assessment ? (
         <div className="grid gap-6 lg:grid-cols-2">
-          {/* Linkerkolom: verdict + cijfers */}
+          {/* Left column: verdict + figures */}
           <div className="space-y-6">
             {/* Verdict */}
             <div className="surface-card p-6">
@@ -193,7 +193,7 @@ export const OptionCheck: React.FC = () => {
               </div>
             </div>
 
-            {/* Cijferkaart — gesimuleerde optie-data */}
+            {/* Figures card — simulated option data */}
             <div className="surface-card p-5">
               <div className="flex items-center justify-between mb-3">
                 <p className="eyebrow">Optie-cijfers</p>
@@ -227,7 +227,7 @@ export const OptionCheck: React.FC = () => {
             </div>
           </div>
 
-          {/* Rechterkolom: criteria */}
+          {/* Right column: criteria */}
           <div className="surface-card divide-y divide-[var(--line)]">
             {assessment.result.criteria.map((c) => (
               <div key={c.key} className="flex items-start justify-between gap-3 p-4">

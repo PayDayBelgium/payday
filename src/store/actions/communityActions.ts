@@ -8,7 +8,7 @@ import {
 } from '../slices/communitySlice';
 import { addCredits } from '../slices/userProgressSlice';
 
-// Deterministische id-helper (geen Date.now in reducers/seed nodig in tests).
+// Deterministic id helper (no Date.now needed in reducers/seed for tests).
 const makeId = (prefix: string) => `${prefix}-${Math.random().toString(36).slice(2, 9)}`;
 
 export const submitPost =

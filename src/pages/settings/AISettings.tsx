@@ -16,7 +16,7 @@ export const AISettings: React.FC = () => {
   const [justSaved, setJustSaved] = useState(false);
 
   const configured = isProviderConfigured(config, 'anthropic');
-  // persistKey ontbreekt => standaardgedrag (persistent). 'Alleen deze sessie' is de inverse.
+  // persistKey missing => default behavior (persistent). 'This session only' is the inverse.
   const sessionOnly = config.persistKey === false;
 
   const save = () => {
@@ -28,8 +28,8 @@ export const AISettings: React.FC = () => {
     window.setTimeout(() => setJustSaved(false), 2000);
   };
 
-  // Toggle wisselt de opslagkeuze. We hersaven de huidige config zodat een reeds
-  // ingestelde key zonder verlies tussen localStorage en sessionStorage migreert.
+  // Toggle switches the storage choice. We re-save the current config so an already
+  // set key migrates between localStorage and sessionStorage without loss.
   const toggleSessionOnly = (nextSessionOnly: boolean) => {
     const next = { ...config, persistKey: !nextSessionOnly };
     saveAIConfig(next);

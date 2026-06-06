@@ -1,14 +1,6 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import {
-  Plus,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  Calculator,
-  Shield,
-  X,
-} from 'lucide-react';
+import { Plus, AlertTriangle, CheckCircle, Clock, Calculator, Shield, X } from 'lucide-react';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { usePageTitle } from '../../contexts/PageTitleContext';
 import { useNavigation } from '../../contexts/NavigationContext';

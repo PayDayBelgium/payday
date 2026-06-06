@@ -268,10 +268,10 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
 
   if (points.length === 0) {
     return (
-      <div className={`p-8 text-center bg-surface dark:bg-trading-dark-900 rounded-lg ${className}`}>
-        <p className="text-ink-500 dark:text-ink-400">
-          Vul alle velden in om de P&L curve te zien
-        </p>
+      <div
+        className={`p-8 text-center bg-surface dark:bg-trading-dark-900 rounded-lg ${className}`}
+      >
+        <p className="text-ink-500 dark:text-ink-400">Vul alle velden in om de P&L curve te zien</p>
       </div>
     );
   }

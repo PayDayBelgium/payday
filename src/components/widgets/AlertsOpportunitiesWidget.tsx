@@ -76,7 +76,9 @@ export const AlertsOpportunitiesWidget: React.FC<AlertsOpportunitiesWidgetProps>
       const Icon = type === 'alerts' ? AlertCircle : Target;
 
       return (
-        <div className={`bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border ${borderColor} p-6`}>
+        <div
+          className={`bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border ${borderColor} p-6`}
+        >
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Icon className={`w-5 h-5 ${iconColor}`} />

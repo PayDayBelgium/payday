@@ -2,7 +2,7 @@ import type { Dispatch } from '@reduxjs/toolkit';
 import type { MentorshipFocus, MentorStyle, UserLevel } from '../../types';
 import { submitRequest } from '../slices/mentorshipSlice';
 
-// Deterministische id-helper (consistent met communityActions).
+// Deterministic id helper (consistent with communityActions).
 const makeId = (prefix: string) => `${prefix}-${Math.random().toString(36).slice(2, 9)}`;
 
 export const submitMentorshipRequest =

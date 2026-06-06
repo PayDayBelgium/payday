@@ -1,6 +1,6 @@
 import type { Position, CallOption, PutOption, StockPosition, WheelCampaign } from '../types';
 import { differenceInDays, parseISO } from 'date-fns';
-import { computeCoveredCallCapacity } from './coveredCallEligibility';
+import { allocateCallCoverage, type ParentAllocation } from './coverageAllocation';
 
 export type CampaignType = 'covered-call' | 'pmcc' | 'kaching' | 'wheel';
 
@@ -66,9 +66,16 @@ export function isKaChingEligible(option: PutOption): boolean {
 }
 
 /**
- * Detect all campaigns in a portfolio
+ * Detect all campaigns in a portfolio.
+ *
+ * @param getPrice Optional: current price per ticker, used for the 15%-OTM weighting
+ *                 when assigning short calls to their parent.
  */
-export function detectCampaigns(positions: Position[], closedPositions: Position[]): Campaign[] {
+export function detectCampaigns(
+  positions: Position[],
+  closedPositions: Position[],
+  getPrice?: (ticker: string) => number | undefined
+): Campaign[] {
   const campaigns: Campaign[] = [];
   const openPositions = positions.filter((p) => p.status === 'open');
 
@@ -97,20 +104,32 @@ export function detectCampaigns(positions: Position[], closedPositions: Position
     const portfolio = tickerPositions[0]?.portfolio || '';
     const closedTickerPositions = closedByTicker.get(ticker) || [];
 
-    // 1. Check for Covered Call campaigns (stock + short calls)
-    // Exclude positions that are already linked to a wheel
+    // Covered Call + PMCC share a single deterministic allocation so that a short
+    // call never gets double-counted (shares before LEAPS). Wheel-linked positions
+    // belong to their own wheel campaign and are excluded here.
     const stocks = tickerPositions.filter(
       (p) => (p.type === 'stock' || p.type === 'etf') && !p.wheelId
     ) as StockPosition[];
     const shortCalls = tickerPositions.filter(
       (p) => p.type === 'call' && (p as CallOption).action === 'sell' && !p.wheelId
     ) as CallOption[];
+    const longCalls = tickerPositions.filter(
+      (p) => p.type === 'call' && (p as CallOption).action === 'buy' && !p.wheelId
+    ) as CallOption[];
+    const leaps = longCalls.filter((c) => isLEAPS(c));
 
-    const capacity = computeCoveredCallCapacity(stocks, shortCalls);
-    if (capacity.maxContracts >= 1) {
+    const allocation = allocateCallCoverage({
+      stocks,
+      leaps,
+      shortCalls,
+      currentPrice: getPrice?.(ticker),
+    });
+
+    // 1. Covered Call campaign (shares + assigned short calls)
+    if (allocation.stock && allocation.stock.capacity >= 1) {
       const campaign = createCoveredCallCampaign(
         stocks,
-        shortCalls,
+        allocation.stock,
         closedTickerPositions,
         ticker,
         portfolio
@@ -120,24 +139,19 @@ export function detectCampaigns(positions: Position[], closedPositions: Position
       }
     }
 
-    // 2. Check for PMCC campaigns (LEAPS call + short calls)
-    // Exclude positions that are already linked to a wheel
-    const longCalls = tickerPositions.filter(
-      (p) => p.type === 'call' && (p as CallOption).action === 'buy' && !p.wheelId
-    ) as CallOption[];
-
-    longCalls.forEach((longCall) => {
-      if (isLEAPS(longCall)) {
-        const campaign = createPMCCCampaign(
-          longCall,
-          shortCalls,
-          closedTickerPositions,
-          ticker,
-          portfolio
-        );
-        if (campaign) {
-          campaigns.push(campaign);
-        }
+    // 2. PMCC campaign per LEAPS (with the short calls assigned to that LEAPS)
+    leaps.forEach((leapsCall) => {
+      const leapAlloc = allocation.leaps.find((l) => l.parentId === leapsCall.id);
+      if (!leapAlloc) return;
+      const campaign = createPMCCCampaign(
+        leapsCall,
+        leapAlloc,
+        closedTickerPositions,
+        ticker,
+        portfolio
+      );
+      if (campaign) {
+        campaigns.push(campaign);
       }
     });
 
@@ -171,7 +185,7 @@ export function detectCampaigns(positions: Position[], closedPositions: Position
 
 function createCoveredCallCampaign(
   stocks: StockPosition[],
-  shortCalls: CallOption[],
+  stockAlloc: ParentAllocation,
   closedPositions: Position[],
   ticker: string,
   portfolio: string
@@ -181,17 +195,14 @@ function createCoveredCallCampaign(
   const representative = [...stocks].sort(
     (a, b) => new Date(a.openDate).getTime() - new Date(b.openDate).getTime()
   )[0];
-  const capacity = computeCoveredCallCapacity(stocks, shortCalls);
-  const totalShares = capacity.totalShares;
-  const contractsNeeded = capacity.maxContracts;
+  const totalShares = stocks.reduce((sum, s) => sum + s.shares, 0);
+  const contractsNeeded = stockAlloc.capacity;
   const totalCostBasis = stocks.reduce((sum, s) => sum + s.costBasis, 0);
   const lotIds = new Set(stocks.map((s) => s.id));
 
-  // Include calls linked to ANY lot of this ticker, or calls with no underlyingId
-  const relevantShortCalls = shortCalls.filter((c) =>
-    c.underlyingId ? lotIds.has(c.underlyingId) : true
-  );
-  const totalCoveredContracts = relevantShortCalls.reduce((sum, c) => sum + c.contracts, 0);
+  // Short calls that the allocator has assigned to the shares.
+  const relevantShortCalls = stockAlloc.assigned;
+  const totalCoveredContracts = stockAlloc.coveredContracts;
 
   // Get historical covered calls for all lots of this ticker
   const historicalCalls = closedPositions.filter((p) => {
@@ -257,22 +268,14 @@ function createCoveredCallCampaign(
 
 function createPMCCCampaign(
   leapsCall: CallOption,
-  shortCalls: CallOption[],
+  leapAlloc: ParentAllocation,
   closedPositions: Position[],
   ticker: string,
   portfolio: string
 ): Campaign | null {
-  // Filter short calls that belong to this LEAPS position
-  // - If underlyingId matches this LEAPS, include it
-  // - If no underlyingId is set, include it based on strike/contracts (backwards compatibility)
-  const relevantShortCalls = shortCalls.filter((c) => {
-    if (c.underlyingId) {
-      return c.underlyingId === leapsCall.id;
-    }
-    // No underlyingId set - use original logic for backwards compatibility
-    return c.strike > leapsCall.strike && c.contracts <= leapsCall.contracts;
-  });
-  const totalCoveredContracts = relevantShortCalls.reduce((sum, c) => sum + c.contracts, 0);
+  // Short calls that the allocator has assigned to this LEAPS.
+  const relevantShortCalls = leapAlloc.assigned;
+  const totalCoveredContracts = leapAlloc.coveredContracts;
 
   // Get historical covered calls for this LEAPS
   const historicalCalls = closedPositions.filter((p) => {

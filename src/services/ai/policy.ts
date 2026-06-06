@@ -1,6 +1,6 @@
 // src/services/ai/policy.ts
-// Centrale gedragsregels voor de AI-assistent (spec §6.4).
-// In Fase A zijn er nog geen tools; de regels over tools sturen al wel het gedrag.
+// Central behavioral rules for the AI assistant (spec §6.4).
+// In Phase A there are no tools yet; the rules about tools already steer the behavior.
 
 export const AGENT_RULES: string[] = [
   'Voer nooit zelf een datawijziging uit; je stelt wijzigingen voor en wacht op bevestiging van de gebruiker.',

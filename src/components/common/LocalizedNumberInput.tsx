@@ -1,45 +1,41 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  parseLocalizedNumber,
-  getDecimalSeparator,
-  formatNumber,
-} from '../../utils/numberFormat';
+import { parseLocalizedNumber, getDecimalSeparator, formatNumber } from '../../utils/numberFormat';
 import { validateNumberInput } from '../modals/optionWizardUtils';
 
 interface LocalizedNumberInputProps {
-  /** De numerieke (geparseerde) waarde. */
+  /** The numeric (parsed) value. */
   value: number;
-  /** Geeft de GEPARSEERDE numerieke waarde terug bij geldige invoer. */
+  /** Returns the PARSED numeric value on valid input. */
   onChange: (value: number) => void;
   placeholder?: string;
   className?: string;
 }
 
 /**
- * Herbruikbare locale-bewuste getal-input.
+ * Reusable locale-aware number input.
  *
- * Beheert intern een "text-shadow" state (de rauwe invoer van de gebruiker) zodat de
- * gebruiker vrij kan typen met locale-separators, terwijl naar buiten toe altijd de
- * geparseerde number wordt teruggegeven via onChange.
+ * Internally manages a "text-shadow" state (the user's raw input) so the user can
+ * type freely with locale separators, while externally the parsed number is always
+ * returned via onChange.
  *
- * - validateNumberInput weert ongeldige invoer (zoals voorheen in de wizards).
- * - parseLocalizedNumber zet de tekst om naar een number.
- * - Wanneer de numerieke prop-waarde van buitenaf wijzigt (bv. reset naar 0 of een
- *   geïmporteerde waarde) en niet meer overeenkomt met de huidige tekst, wordt de
- *   tekst-state daarop gesynchroniseerd.
+ * - validateNumberInput rejects invalid input (as previously done in the wizards).
+ * - parseLocalizedNumber converts the text into a number.
+ * - When the numeric prop value changes externally (e.g. reset to 0 or an imported
+ *   value) and no longer matches the current text, the text state is synchronized
+ *   to it.
  */
 export const LocalizedNumberInput = React.forwardRef<HTMLInputElement, LocalizedNumberInputProps>(
   ({ value, onChange, placeholder, className }, ref) => {
-    // Interne text-shadow state, geïnitialiseerd vanuit de prop value.
+    // Internal text-shadow state, initialized from the prop value.
     const [text, setText] = useState(() => (value ? formatNumber(value, 2) : ''));
 
-    // Houd de laatste numerieke waarde bij die wij zelf naar buiten stuurden,
-    // zodat we externe wijzigingen (reset/import) kunnen onderscheiden van eigen typen.
+    // Track the last numeric value we ourselves emitted, so we can distinguish
+    // external changes (reset/import) from the user's own typing.
     const lastEmittedRef = useRef(value);
 
     useEffect(() => {
-      // Alleen synchroniseren als de externe waarde echt afwijkt van wat wij laatst
-      // hebben uitgestuurd (bv. parent reset naar 0 of zet een geïmporteerde waarde).
+      // Only synchronize if the external value really differs from what we last
+      // emitted (e.g. parent resets to 0 or sets an imported value).
       if (value !== lastEmittedRef.current) {
         lastEmittedRef.current = value;
         setText(value ? formatNumber(value, 2) : '');

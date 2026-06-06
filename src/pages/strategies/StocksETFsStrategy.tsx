@@ -179,7 +179,7 @@ export const StocksETFsStrategy: React.FC = () => {
     setIsEditModalOpen(true);
   };
 
-  // Rules handlers: wrap de hook zodat de extra categorie-state mee gereset wordt
+  // Rules handlers: wrap the hook so the extra category state is reset along with it
   const handleAddRule = () => {
     setActiveRuleCategory(undefined);
     openAddRule();

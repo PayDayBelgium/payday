@@ -100,13 +100,13 @@ export const WizardModal: React.FC<WizardModalProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      // De wizard heeft een eigen header/footer; verberg de standaard chrome van Modal.
+      // The wizard has its own header/footer; hide Modal's default chrome.
       showCloseButton={false}
       blur
-      // Identiek aan het origineel: niet sluiten via backdrop-klik of Escape.
+      // Same as the original: don't close via backdrop click or Escape.
       closeOnBackdropClick={false}
       closeOnEscape={false}
-      // Vaste breedte/hoogte i.p.v. een max-width, identiek aan de originele wizard.
+      // Fixed width/height instead of a max-width, same as the original wizard.
       sizeClassName="w-[900px] h-[750px]"
       cardClassName="bg-white dark:bg-trading-dark-800 rounded-xl shadow-2xl overflow-hidden flex flex-col"
       contentClassName="flex flex-col flex-1 overflow-hidden"

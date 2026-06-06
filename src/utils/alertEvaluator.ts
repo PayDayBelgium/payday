@@ -1,9 +1,9 @@
 import { getDaysToExpiration } from './dateHelpers';
 import { getCurrencySymbol } from './currency';
 import { formatNumber } from './numberFormat';
-import { isKaChingEligible } from './campaignDetector';
+import { isKaChingEligible, isLEAPS } from './campaignDetector';
 import { isSpreadLeg, getSpreadId } from './spreadHelpers';
-import { computeCoveredCallCapacity } from './coveredCallEligibility';
+import { allocateCallCoverage, suggestCoveredCallStrike } from './coverageAllocation';
 import type {
   Position,
   StockPosition,
@@ -335,76 +335,106 @@ export const evaluateExpiringOptionsAlerts = (
   return alerts;
 };
 
-// Evaluate stock covered call opportunities
+// Group open positions per ticker+portfolio for coverage allocation.
+// Wheel-linked positions belong to their own wheel campaign and are excluded
+// here, just like in campaignDetector.
+interface CallCoverageGroup {
+  ticker: string;
+  portfolio: string;
+  stocks: StockPosition[];
+  leaps: CallOption[];
+  shortCalls: CallOption[];
+}
+
+const buildCallCoverageGroups = (
+  positions: Position[],
+  portfolioFilter?: string
+): CallCoverageGroup[] => {
+  const groups = new Map<string, CallCoverageGroup>();
+  const ensure = (ticker: string, portfolio: string): CallCoverageGroup => {
+    const key = `${portfolio}::${ticker.toUpperCase()}`;
+    let g = groups.get(key);
+    if (!g) {
+      g = { ticker: ticker.toUpperCase(), portfolio, stocks: [], leaps: [], shortCalls: [] };
+      groups.set(key, g);
+    }
+    return g;
+  };
+
+  for (const p of positions) {
+    if (p.status !== 'open') continue;
+    if (portfolioFilter && p.portfolio !== portfolioFilter) continue;
+    if ((p as { wheelId?: string }).wheelId) continue;
+    if (p.type === 'stock' || p.type === 'etf') {
+      ensure(p.ticker, p.portfolio).stocks.push(p as StockPosition);
+    } else if (p.type === 'call') {
+      const call = p as CallOption;
+      if (isSpreadLeg(call)) continue;
+      if (call.action === 'sell') {
+        ensure(p.ticker, p.portfolio).shortCalls.push(call);
+      } else if (call.action === 'buy' && isLEAPS(call)) {
+        ensure(p.ticker, p.portfolio).leaps.push(call);
+      }
+    }
+  }
+
+  return [...groups.values()];
+};
+
+const priceFor = (tickers: Ticker[] | undefined, ticker: string): number | undefined =>
+  tickers?.find((t) => t.symbol.toUpperCase() === ticker.toUpperCase())?.currentPrice;
+
+// Evaluate stock covered call opportunities (via the shared coverage allocator)
 export const evaluateStockCoveredCallOpportunities = (
   positions: Position[],
   dismissedAlerts: Set<string>,
-  portfolioFilter?: string
+  portfolioFilter?: string,
+  tickers?: Ticker[]
 ): AlertItem[] => {
   const opportunities: AlertItem[] = [];
 
-  // Filter stock/ETF positions
-  const stockPositions = positions.filter(
-    (p) =>
-      p.status === 'open' &&
-      (p.type === 'stock' || p.type === 'etf') &&
-      (!portfolioFilter || p.portfolio === portfolioFilter)
-  ) as StockPosition[];
+  for (const g of buildCallCoverageGroups(positions, portfolioFilter)) {
+    if (g.stocks.length === 0) continue;
 
-  // Filter sold calls
-  const soldCalls = positions.filter(
-    (p) =>
-      p.status === 'open' &&
-      p.type === 'call' &&
-      (p as CallOption).action === 'sell' &&
-      (!portfolioFilter || p.portfolio === portfolioFilter)
-  ) as CallOption[];
+    const price = priceFor(tickers, g.ticker);
+    const alloc = allocateCallCoverage({
+      stocks: g.stocks,
+      leaps: g.leaps,
+      shortCalls: g.shortCalls,
+      currentPrice: price,
+    });
+    const stock = alloc.stock;
+    if (!stock || stock.capacity < 1) continue;
 
-  // Group stock lots by ticker+portfolio and iterate once per ticker
-  const groups = new Map<string, { lots: StockPosition[]; calls: CallOption[] }>();
-  for (const stock of stockPositions) {
-    const key = `${stock.portfolio}::${stock.ticker}`;
-    const entry = groups.get(key) ?? {
-      lots: [],
-      calls: soldCalls.filter(
-        (sc) => sc.ticker === stock.ticker && sc.portfolio === stock.portfolio
-      ),
-    };
-    entry.lots.push(stock);
-    groups.set(key, entry);
-  }
+    const optionsSupported = g.stocks.every((s) => s.optionsSupported);
+    if (!optionsSupported && stock.coveredContracts === 0) continue;
 
-  for (const { lots, calls } of groups.values()) {
-    const stock = lots[0];
-    const capacity = computeCoveredCallCapacity(lots, calls);
+    const free = stock.freeContracts;
+    if (free <= 0) continue;
 
-    const hasExistingCalls = capacity.coveredContracts > 0;
-    if (!capacity.optionsSupported && !hasExistingCalls) continue;
-
-    const uncoveredContracts = capacity.freeContracts;
-    if (uncoveredContracts <= 0) continue;
-
-    const coveredContracts = capacity.coveredContracts;
-    const totalShares = capacity.totalShares;
-
-    const alertId = `stock-cc-opportunity-${stock.ticker}-${stock.portfolio}`;
+    const alertId = `stock-cc-opportunity-${g.ticker}-${g.portfolio}`;
     if (dismissedAlerts.has(alertId)) continue;
 
-    let message = `Verkoop ${uncoveredContracts} covered call${uncoveredContracts > 1 ? 's' : ''} op ${stock.ticker} (${totalShares} aandelen)`;
-    if (coveredContracts > 0) {
-      message += `\n${coveredContracts} covered call${coveredContracts > 1 ? 's' : ''} actief`;
+    const totalShares = g.stocks.reduce((sum, lot) => sum + lot.shares, 0);
+    let message = `Verkoop ${free} covered call${free > 1 ? 's' : ''} op ${g.ticker} (${totalShares} aandelen)`;
+    if (stock.coveredContracts > 0) {
+      message += `\n${stock.coveredContracts} covered call${stock.coveredContracts > 1 ? 's' : ''} actief`;
+    }
+    if (price && price > 0) {
+      const target = suggestCoveredCallStrike(stock.breakEven, price);
+      message += `\nRichtstrike ~$${formatNumber(target, 2)} (±15% OTM, ≥ break-even)`;
     }
 
     opportunities.push({
       id: alertId,
-      ticker: stock.ticker,
-      portfolio: stock.portfolio,
+      ticker: g.ticker,
+      portfolio: g.portfolio,
       message,
       type: 'opportunity',
       rule: {
         id: 'stock-cc-opportunity',
         strategyType: 'options',
-        portfolio: stock.portfolio,
+        portfolio: g.portfolio,
         name: 'Stock Covered Call Opportunity',
         description: 'Opportunity om covered calls te verkopen op aandelen positie',
         category: 'opportunity',
@@ -428,64 +458,51 @@ export const evaluateStockCoveredCallOpportunities = (
 export const evaluateLeapsOpportunities = (
   positions: Position[],
   dismissedAlerts: Set<string>,
-  portfolioFilter?: string
+  portfolioFilter?: string,
+  tickers?: Ticker[]
 ): AlertItem[] => {
   const opportunities: AlertItem[] = [];
 
-  // Filter call options (exclude spread legs)
-  const callOptions = positions.filter(
-    (p) =>
-      p.status === 'open' &&
-      p.type === 'call' &&
-      (!portfolioFilter || p.portfolio === portfolioFilter) &&
-      !isSpreadLeg(p) // Skip spread legs
-  ) as CallOption[];
+  for (const g of buildCallCoverageGroups(positions, portfolioFilter)) {
+    if (g.leaps.length === 0) continue;
 
-  // Separate LEAPS (long calls with expiration > 1 year) from sold calls
-  const leapsPositions = callOptions.filter((call) => {
-    if (call.action !== 'buy') return false;
-    const expDate = new Date(call.expiration);
-    const now = new Date();
-    const daysToExp = Math.floor((expDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-    return daysToExp > 365;
-  });
+    const price = priceFor(tickers, g.ticker);
+    const alloc = allocateCallCoverage({
+      stocks: g.stocks,
+      leaps: g.leaps,
+      shortCalls: g.shortCalls,
+      currentPrice: price,
+    });
 
-  const soldCalls = callOptions.filter((call) => call.action === 'sell');
+    for (const leap of g.leaps) {
+      const leapAlloc = alloc.leaps.find((l) => l.parentId === leap.id);
+      if (!leapAlloc) continue;
 
-  // Find LEAPS for PMCC opportunities
-  leapsPositions.forEach((leap) => {
-    // Check existing sold calls for this ticker in the same portfolio
-    // Only count calls that are linked to THIS LEAP position (underlyingId matches)
-    const existingCalls = soldCalls.filter(
-      (sc) =>
-        sc.ticker === leap.ticker && sc.portfolio === leap.portfolio && sc.underlyingId === leap.id
-    );
-    const coveredContracts = existingCalls.reduce((sum, sc) => sum + sc.contracts, 0);
+      const free = leapAlloc.freeContracts;
+      if (free <= 0) continue;
 
-    // Calculate uncovered contracts
-    const uncoveredContracts = leap.contracts - coveredContracts;
+      const alertId = `leaps-cc-opportunity-${leap.id}`;
+      if (dismissedAlerts.has(alertId)) continue;
 
-    // Only show opportunity if there are uncovered contracts available
-    // If all LEAPS contracts are covered by active calls, no opportunity exists
-    if (uncoveredContracts <= 0) return;
-
-    const alertId = `leaps-cc-opportunity-${leap.id}`;
-    if (!dismissedAlerts.has(alertId)) {
-      let message = `PMCC: Verkoop ${uncoveredContracts} covered call${uncoveredContracts > 1 ? 's' : ''} op ${leap.ticker} LEAPS (${leap.contracts} contracts @ $${leap.strike})`;
-      if (coveredContracts > 0) {
-        message += `\n${coveredContracts} covered call${coveredContracts > 1 ? 's' : ''} actief`;
+      let message = `PMCC: Verkoop ${free} covered call${free > 1 ? 's' : ''} op ${g.ticker} LEAPS (${leap.contracts} contracts @ $${leap.strike})`;
+      if (leapAlloc.coveredContracts > 0) {
+        message += `\n${leapAlloc.coveredContracts} covered call${leapAlloc.coveredContracts > 1 ? 's' : ''} actief`;
+      }
+      if (price && price > 0) {
+        const target = suggestCoveredCallStrike(leapAlloc.breakEven, price);
+        message += `\nRichtstrike ~$${formatNumber(target, 2)} (±15% OTM, ≥ LEAPS break-even)`;
       }
 
       opportunities.push({
         id: alertId,
-        ticker: leap.ticker,
-        portfolio: leap.portfolio,
+        ticker: g.ticker,
+        portfolio: g.portfolio,
         message,
         type: 'opportunity',
         rule: {
           id: 'leaps-cc-opportunity',
           strategyType: 'options',
-          portfolio: leap.portfolio,
+          portfolio: g.portfolio,
           name: 'LEAPS Covered Call Opportunity',
           description: 'Opportunity om covered calls te verkopen op LEAPS posities',
           category: 'opportunity',
@@ -501,7 +518,7 @@ export const evaluateLeapsOpportunities = (
         },
       });
     }
-  });
+  }
 
   return opportunities;
 };
@@ -1216,14 +1233,16 @@ export const evaluateAllAlerts = (
   const leapsOpportunities = evaluateLeapsOpportunities(
     positions,
     dismissedAlerts,
-    portfolioFilter
+    portfolioFilter,
+    tickers
   );
 
   // Evaluate stock covered call opportunities
   const stockCCOpportunities = evaluateStockCoveredCallOpportunities(
     positions,
     dismissedAlerts,
-    portfolioFilter
+    portfolioFilter,
+    tickers
   );
 
   // Evaluate KaChing opportunities

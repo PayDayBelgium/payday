@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useAIAssistant } from '../../contexts/AIAssistantContext';
 import { describeChange } from '../../services/ai/tools';
 
-// Toont de voorgestelde wijzigingen met bevestig/annuleer-knoppen.
+// Shows the proposed changes with confirm/cancel buttons.
 export const ProposedChangesCard: React.FC = () => {
   const { pendingChanges, confirmChanges, cancelChanges } = useAIAssistant();
   const { t } = useTranslation();

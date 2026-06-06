@@ -1,6 +1,6 @@
 // src/services/ai/tools.ts
-// Tooldefinities voor de agent + vertaling van tool-calls naar voorstellen,
-// en het toepassen van bevestigde voorstellen op de Redux-store.
+// Tool definitions for the agent + translation of tool calls into proposals,
+// and applying confirmed proposals to the Redux store.
 import type { RootState, AppDispatch } from '../../store';
 import type {
   Portfolio,
@@ -10,17 +10,20 @@ import type {
   Ticker,
   PortfolioTransaction,
   CurrencyType,
+  UserLevel,
 } from '../../types';
 import { addPortfolio, addTransaction } from '../../store/slices/portfoliosSlice';
 import { addPosition } from '../../store/slices/positionsSlice';
 import { addTicker, updateTickerPrice } from '../../store/slices/tickersSlice';
 import { selectPortfolios } from '../../store/slices/portfoliosSlice';
 import { selectAllTickers } from '../../store/slices/tickersSlice';
+import { selectUnlockedLevels, isFeatureAvailable } from '../../store/slices/userProgressSlice';
+import { getOptionActionFeature } from '../../utils/optionFeatureAccess';
 import type { ToolSchema } from './types';
 import PaydayLogo from '../../assets/app/logo.png';
 
 // ---------------------------------------------------------------------------
-// Tooldefinities (JSON-schema's) die naar het model gaan.
+// Tool definitions (JSON schemas) that are sent to the model.
 // ---------------------------------------------------------------------------
 export const TOOL_SCHEMAS: ToolSchema[] = [
   {
@@ -129,12 +132,12 @@ export const TOOL_SCHEMAS: ToolSchema[] = [
 
 export const isReadTool = (name: string): boolean => name === 'get_portfolios';
 
-// Standaardlogo voor automatisch aangemaakte portefeuilles: het PayDay-logo,
-// zodat het portefeuille-icoon nooit ontbreekt.
+// Default logo for automatically created portfolios: the PayDay logo,
+// so the portfolio icon is never missing.
 export const DEFAULT_PORTFOLIO_LOGO = PaydayLogo;
 
 // ---------------------------------------------------------------------------
-// Voorgestelde wijzigingen (verzameld tot de gebruiker bevestigt).
+// Proposed changes (collected until the user confirms).
 // ---------------------------------------------------------------------------
 export type ProposedChange =
   | {
@@ -188,7 +191,7 @@ const asString = (v: unknown, fallback = ''): string =>
 const asOptionalString = (v: unknown): string | undefined =>
   typeof v === 'string' && v.trim() !== '' ? v : undefined;
 
-// Vertaalt een propose-tool-call naar een ProposedChange (of null bij read-tool/onbekend).
+// Translates a propose tool call into a ProposedChange (or null for a read tool/unknown).
 export const parseProposedChange = (
   name: string,
   input: unknown,
@@ -238,7 +241,7 @@ export const parseProposedChange = (
   }
 };
 
-// Korte, leesbare samenvatting van een voorstel voor de bevestigingskaart.
+// Short, readable summary of a proposal for the confirmation card.
 export const describeChange = (c: ProposedChange): string => {
   switch (c.kind) {
     case 'portfolio':
@@ -253,7 +256,7 @@ export const describeChange = (c: ProposedChange): string => {
 };
 
 // ---------------------------------------------------------------------------
-// Read-tool uitvoeren.
+// Execute read tool.
 // ---------------------------------------------------------------------------
 export const executeReadTool = (name: string, getState: () => RootState): string => {
   if (name === 'get_portfolios') {
@@ -268,7 +271,7 @@ export const executeReadTool = (name: string, getState: () => RootState): string
 };
 
 // ---------------------------------------------------------------------------
-// Bevestigde voorstellen toepassen op de store.
+// Apply confirmed proposals to the store.
 // ---------------------------------------------------------------------------
 let seq = 0;
 const uid = (prefix: string): string => `${prefix}-${Date.now()}-${++seq}`;
@@ -301,7 +304,7 @@ const ensureTicker = (
   dispatch(addTicker(ticker));
 };
 
-// Huidige waarde van een positie (voor de totale-storting-berekening).
+// Current value of a position (for the total-deposit calculation).
 const positionValue = (c: ProposedChange): number => {
   if (c.kind === 'stock') return c.shares * (c.currentPrice ?? c.purchasePrice);
   if (c.kind === 'option') {
@@ -330,7 +333,7 @@ const createPortfolio = (
     currentValue: deposit,
   };
   dispatch(addPortfolio(portfolio));
-  // Totale storting over tijd = beschikbare cash + waarde van de posities.
+  // Total deposit over time = available cash + value of the positions.
   if (deposit > 0) {
     const txn: PortfolioTransaction = {
       id: uid('txn'),
@@ -354,8 +357,8 @@ const applyStock = (
 ): void => {
   const price = c.currentPrice ?? c.purchasePrice;
   ensureTicker(getState, dispatch, c.ticker, c.name, c.assetType, price);
-  // Werk de huidige koers op de ticker bij (ook als de ticker al bestond),
-  // want de huidige waarde van aandelenposities komt van de ticker-prijs.
+  // Update the current price on the ticker (even if the ticker already existed),
+  // since the current value of stock positions comes from the ticker price.
   if (c.currentPrice !== undefined) {
     dispatch(updateTickerPrice({ symbol: c.ticker, price: c.currentPrice }));
   }
@@ -398,11 +401,11 @@ const applyOption = (
   getState: () => RootState,
   dispatch: AppDispatch
 ): void => {
-  // Onderliggende ticker aanmaken indien nodig (naam vragen gebeurt door de agent).
+  // Create the underlying ticker if needed (asking for the name is done by the agent).
   ensureTicker(getState, dispatch, c.ticker, c.tickerName ?? c.ticker, 'stock');
   const openTotal = c.premium * c.contracts * 100;
   const costBasis = c.action === 'buy' ? openTotal : -openTotal;
-  // Huidige premie (last price) bepaalt de huidige waarde; valt terug op de open-premie.
+  // Current premium (last price) determines the current value; falls back to the open premium.
   const curPremium = c.currentPremium ?? c.premium;
   const curTotal = curPremium * c.contracts * 100;
   const currentValue = c.action === 'buy' ? curTotal : -curTotal;
@@ -448,30 +451,57 @@ const applyOption = (
   dispatch(addTransaction(txn));
 };
 
-// Past alle voorstellen toe: eerst portefeuilles (met totale storting = cash +
-// waarde van de bijbehorende posities), daarna de posities zelf.
+// Level gating for AI proposals: an option proposal may only be applied
+// once the associated strategy has been unlocked knowledge-wise. This prevents the assistant
+// from creating a position beyond the user's knowledge level.
+export const isOptionChangeAllowed = (
+  c: Extract<ProposedChange, { kind: 'option' }>,
+  unlockedLevels: UserLevel[]
+): boolean => {
+  const feature = getOptionActionFeature(c.optionType, c.action);
+  return isFeatureAvailable(feature, unlockedLevels);
+};
+
+// Applies all proposals: first portfolios (with total deposit = cash +
+// value of the associated positions), then the positions themselves.
+// Option proposals for not-yet-unlocked strategies are skipped;
+// these are returned as `skipped` so the caller can inform the user.
 export const applyChanges = (
   changes: ProposedChange[],
   getState: () => RootState,
   dispatch: AppDispatch
-): void => {
-  // Totale storting per nieuw aangemaakte portefeuille bepalen.
+): { applied: ProposedChange[]; skipped: ProposedChange[] } => {
+  const unlockedLevels = selectUnlockedLevels(getState());
+
+  // Filter out option proposals that go beyond the user's knowledge level.
+  const skipped: ProposedChange[] = [];
+  const applied = changes.filter((c) => {
+    if (c.kind === 'option' && !isOptionChangeAllowed(c, unlockedLevels)) {
+      skipped.push(c);
+      return false;
+    }
+    return true;
+  });
+
+  // Determine the total deposit per newly created portfolio.
   const deposits = new Map<string, number>();
-  for (const c of changes) {
+  for (const c of applied) {
     if (c.kind === 'portfolio') deposits.set(c.name, c.availableCash);
   }
-  for (const c of changes) {
+  for (const c of applied) {
     if (c.kind !== 'portfolio' && deposits.has(c.portfolio)) {
       deposits.set(c.portfolio, (deposits.get(c.portfolio) ?? 0) + positionValue(c));
     }
   }
 
-  for (const c of changes) {
+  for (const c of applied) {
     if (c.kind === 'portfolio')
       createPortfolio(c, deposits.get(c.name) ?? c.availableCash, dispatch);
   }
-  for (const c of changes) {
+  for (const c of applied) {
     if (c.kind === 'stock') applyStock(c, getState, dispatch);
     else if (c.kind === 'option') applyOption(c, getState, dispatch);
   }
+
+  return { applied, skipped };
 };

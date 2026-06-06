@@ -214,9 +214,7 @@ export const CashOnderpandAnalysis: React.FC = () => {
           <p className="text-2xl font-bold text-ink-900 dark:text-white">
             {formatCurrency(totalAnalysis.totalCash, portfolios)}
           </p>
-          <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
-            Alle portfolios met opties
-          </p>
+          <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">Alle portfolios met opties</p>
         </div>
 
         <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
@@ -326,7 +324,10 @@ export const CashOnderpandAnalysis: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-surface-line dark:divide-trading-dark-600">
                   {portfolio.positions.map((position) => (
-                    <tr key={position.id} className="hover:bg-surface dark:hover:bg-trading-dark-700/50">
+                    <tr
+                      key={position.id}
+                      className="hover:bg-surface dark:hover:bg-trading-dark-700/50"
+                    >
                       <td className="px-4 py-3 whitespace-nowrap">
                         <span className="font-medium text-ink-900 dark:text-white">
                           {position.ticker}
@@ -395,9 +396,7 @@ export const CashOnderpandAnalysis: React.FC = () => {
                             </span>
                           </div>
                         ) : (
-                          <span className="text-xs text-ink-500 dark:text-ink-400">
-                            Aanhouden
-                          </span>
+                          <span className="text-xs text-ink-500 dark:text-ink-400">Aanhouden</span>
                         )}
                       </td>
                     </tr>

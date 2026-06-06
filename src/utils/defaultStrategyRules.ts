@@ -4,7 +4,7 @@ export const getDefaultStocksETFsRules = (portfolio: PortfolioName): StrategyRul
   const timestamp = new Date().toISOString();
 
   return [
-    // Alert: 10% waarde daling
+    // Alert: 10% drop in value
     {
       id: `stocks-etfs-alert-decline-${Date.now()}`,
       strategyType: 'stocks-etfs',
@@ -25,7 +25,7 @@ export const getDefaultStocksETFsRules = (portfolio: PortfolioName): StrategyRul
       },
       createdAt: timestamp,
     },
-    // Opportunity: 10% waarde stijging
+    // Opportunity: 10% rise in value
     {
       id: `stocks-etfs-opp-increase-${Date.now() + 1}`,
       strategyType: 'stocks-etfs',
@@ -47,7 +47,7 @@ export const getDefaultStocksETFsRules = (portfolio: PortfolioName): StrategyRul
       },
       createdAt: timestamp,
     },
-    // Alert: 20% waarde daling
+    // Alert: 20% drop in value
     {
       id: `stocks-etfs-alert-decline-20-${Date.now() + 2}`,
       strategyType: 'stocks-etfs',
@@ -68,7 +68,7 @@ export const getDefaultStocksETFsRules = (portfolio: PortfolioName): StrategyRul
       },
       createdAt: timestamp,
     },
-    // Opportunity: 20% waarde stijging
+    // Opportunity: 20% rise in value
     {
       id: `stocks-etfs-opp-increase-20-${Date.now() + 3}`,
       strategyType: 'stocks-etfs',

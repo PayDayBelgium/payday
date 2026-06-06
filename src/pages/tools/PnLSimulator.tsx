@@ -352,9 +352,7 @@ export const PnLSimulator: React.FC = () => {
 
     return (
       <div className="bg-white dark:bg-trading-dark-800 border border-surface-line dark:border-trading-dark-600 rounded-lg shadow-lg p-3">
-        <p className="font-medium text-ink-900 dark:text-white">
-          Prijs: ${formatNumber(label, 2)}
-        </p>
+        <p className="font-medium text-ink-900 dark:text-white">Prijs: ${formatNumber(label, 2)}</p>
         <p
           className={`font-bold ${pnl >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
         >

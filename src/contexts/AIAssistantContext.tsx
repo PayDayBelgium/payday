@@ -26,8 +26,8 @@ export interface ImageAttachment {
 
 export interface ChatMessage extends AIMessage {
   id: string;
-  pending?: boolean; // antwoord is nog aan het streamen
-  error?: string; // foutmelding i.p.v. inhoud
+  pending?: boolean; // answer is still streaming
+  error?: string; // error message instead of content
 }
 
 interface AIAssistantContextValue {
@@ -49,7 +49,7 @@ const AIAssistantContext = createContext<AIAssistantContextValue | null>(null);
 
 const MAX_TOOL_ROUNDS = 8;
 
-// Vertaalt foutcodes van de provider naar leesbare gebruikerstekst.
+// Translates provider error codes into readable user-facing text.
 const errorToMessage = (code: string): string => {
   switch (code) {
     case 'NO_API_KEY':
@@ -76,7 +76,7 @@ export const AIAssistantProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [isStreaming, setIsStreaming] = useState(false);
   const [pendingChanges, setPendingChanges] = useState<ProposedChange[]>([]);
   const abortRef = useRef<AbortController | null>(null);
-  const convoRef = useRef<AIMessage[]>([]); // volledige provider-conversatie (incl. tools)
+  const convoRef = useRef<AIMessage[]>([]); // full provider conversation (incl. tools)
   const userLevel = useAppSelector(selectCurrentLevel);
   const unlockedLevels = useAppSelector(selectUnlockedLevels);
   const dispatch = useAppDispatch();
@@ -96,7 +96,7 @@ export const AIAssistantProvider: React.FC<{ children: React.ReactNode }> = ({ c
     abortRef.current?.abort();
   }, []);
 
-  // Voegt een assistent-tekstbericht toe in de UI en geeft de id terug.
+  // Adds an assistant text message to the UI and returns its id.
   const addAssistantBubble = useCallback((): string => {
     const id = nextId();
     setMessages((prev) => [
@@ -111,7 +111,7 @@ export const AIAssistantProvider: React.FC<{ children: React.ReactNode }> = ({ c
       const trimmed = text.trim();
       if ((!trimmed && images.length === 0) || isStreaming) return;
 
-      // Gebruikersbericht opbouwen.
+      // Build the user message.
       const userContent: ContentBlock[] = [];
       if (trimmed) userContent.push({ kind: 'text', text: trimmed });
       for (const img of images) {
@@ -172,7 +172,7 @@ export const AIAssistantProvider: React.FC<{ children: React.ReactNode }> = ({ c
             }
           }
 
-          // Assistent-turn vastleggen in de provider-conversatie.
+          // Record the assistant turn in the provider conversation.
           const assistantContent: ContentBlock[] = [];
           if (assistantText) assistantContent.push({ kind: 'text', text: assistantText });
           for (const tu of toolUses) {
@@ -182,14 +182,14 @@ export const AIAssistantProvider: React.FC<{ children: React.ReactNode }> = ({ c
             convoRef.current.push({ role: 'assistant', content: assistantContent });
           }
 
-          // UI-bubble afronden: lege bubbles (alleen tools) weghalen.
+          // Finalize the UI bubble: remove empty bubbles (tools only).
           if (errored) break;
           if (assistantText) updateBubble(bubbleId, () => ({ pending: false }));
           else removeBubble(bubbleId);
 
-          if (toolUses.length === 0) break; // model is klaar
+          if (toolUses.length === 0) break; // model is done
 
-          // Tools afhandelen.
+          // Handle tools.
           const resultBlocks: ContentBlock[] = [];
           let proposedThisRound = false;
           for (const tu of toolUses) {
@@ -218,9 +218,9 @@ export const AIAssistantProvider: React.FC<{ children: React.ReactNode }> = ({ c
           }
           convoRef.current.push({ role: 'user', content: resultBlocks });
 
-          // Na een voorstel stoppen we de beurt: de gebruiker moet eerst
-          // bevestigen/annuleren (via de kaart). Zo blijft het model niet
-          // doorpraten en geeft de knop weer 'versturen' i.p.v. 'stop'.
+          // After a proposal we end the turn: the user must first
+          // confirm/cancel (via the card). This keeps the model from
+          // continuing and makes the button show 'send' again instead of 'stop'.
           if (proposedThisRound) break;
         }
       } catch (err) {
@@ -245,17 +245,25 @@ export const AIAssistantProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   const confirmChanges = useCallback(() => {
     if (pendingChanges.length === 0) return;
-    applyChanges(pendingChanges, () => store.getState(), dispatch);
-    const summary = pendingChanges.map((c) => `• ${describeChange(c)}`).join('\n');
+    const { applied, skipped } = applyChanges(pendingChanges, () => store.getState(), dispatch);
+    const parts: string[] = [];
+    if (applied.length > 0) {
+      const summary = applied.map((c) => `• ${describeChange(c)}`).join('\n');
+      parts.push(`${i18n.t('ai.created')}\n${summary}`);
+    }
+    if (skipped.length > 0) {
+      const skippedSummary = skipped.map((c) => `• ${describeChange(c)}`).join('\n');
+      parts.push(`${i18n.t('ai.skippedLocked')}\n${skippedSummary}`);
+    }
     setMessages((prev) => [
       ...prev,
       {
         id: nextId(),
         role: 'assistant',
-        content: [{ kind: 'text', text: `${i18n.t('ai.created')}\n${summary}` }],
+        content: [{ kind: 'text', text: parts.join('\n\n') }],
       },
     ]);
-    // Houd de gesprekscontext op de hoogte voor een volgende beurt.
+    // Keep the conversation context up to date for a subsequent turn.
     convoRef.current.push({
       role: 'user',
       content: [

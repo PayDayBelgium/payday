@@ -8,7 +8,7 @@ import { AlertTooltipContent } from '../common/AlertTooltipContent';
 import { PortalTooltip } from '../common/PortalTooltip';
 import { POSITION_GRID_COLS } from './positionGrid';
 
-/** Resultaat van calculateSpreadSummary (niet-null). */
+/** Result of calculateSpreadSummary (non-null). */
 type SpreadSummary = NonNullable<ReturnType<typeof calculateSpreadSummary>>;
 
 interface SpreadSummaryRowProps {
@@ -37,8 +37,8 @@ interface SpreadSummaryRowProps {
 }
 
 /**
- * Samenvattingsrij voor een spread (2 legs). Geëxtraheerd uit PortfolioView zonder
- * gedragswijziging; alle afgeleide waarden en callbacks komen via props binnen.
+ * Summary row for a spread (2 legs). Extracted from PortfolioView without
+ * behavioral change; all derived values and callbacks come in via props.
  */
 export const SpreadSummaryRow: React.FC<SpreadSummaryRowProps> = React.memo(
   ({
@@ -180,7 +180,7 @@ export const SpreadSummaryRow: React.FC<SpreadSummaryRowProps> = React.memo(
               </p>
             </div>
 
-            {/* Expiratie */}
+            {/* Expiration */}
             <div>
               <p className="text-sm font-medium text-ink-900 dark:text-white">
                 {summary.expiration
@@ -212,7 +212,7 @@ export const SpreadSummaryRow: React.FC<SpreadSummaryRowProps> = React.memo(
               </p>
             </div>
 
-            {/* Stock prijs */}
+            {/* Stock price */}
             <div>
               {currentStockPrice > 0 ? (
                 <p className="text-sm font-medium text-ink-700 dark:text-ink-300">
@@ -223,7 +223,7 @@ export const SpreadSummaryRow: React.FC<SpreadSummaryRowProps> = React.memo(
               )}
             </div>
 
-            {/* Verschil (stock price - short strike) */}
+            {/* Difference (stock price - short strike) */}
             <div>
               {currentStockPrice > 0 ? (
                 <p
@@ -248,7 +248,7 @@ export const SpreadSummaryRow: React.FC<SpreadSummaryRowProps> = React.memo(
               )}
             </div>
 
-            {/* Net Premium (Aankoop) */}
+            {/* Net Premium (Purchase) */}
             <div>
               {(() => {
                 // Calculate per-contract premium: short - long

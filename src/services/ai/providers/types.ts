@@ -11,6 +11,6 @@ export interface StreamChatInput {
 
 export interface AIProvider {
   readonly id: 'anthropic' | 'openai' | 'gemini';
-  // Stuurt het gesprek en levert een stream van genormaliseerde events.
+  // Sends the conversation and yields a stream of normalized events.
   streamChat(input: StreamChatInput): AsyncIterable<AIStreamEvent>;
 }

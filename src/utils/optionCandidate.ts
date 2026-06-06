@@ -2,14 +2,14 @@ import type { Ticker } from '../types';
 
 export interface MockOptionData {
   ivRank: number; // 0–100
-  openInterest: number; // contracten
-  optionVolume: number; // contracten/dag
-  bidAskSpreadPct: number; // spread als % van de premie (lager = beter)
-  annualizedPremiumPct: number; // geannualiseerd premie-rendement %
-  daysToEarnings: number; // dagen tot volgende earnings
+  openInterest: number; // contracts
+  optionVolume: number; // contracts/day
+  bidAskSpreadPct: number; // spread as % of the premium (lower = better)
+  annualizedPremiumPct: number; // annualized premium yield %
+  daysToEarnings: number; // days until next earnings
 }
 
-// FNV-1a string hash → 32-bit seed (deterministisch, geen Math.random).
+// FNV-1a string hash → 32-bit seed (deterministic, no Math.random).
 function hashSeed(str: string): number {
   let h = 2166136261 >>> 0;
   for (let i = 0; i < str.length; i++) {
@@ -19,7 +19,7 @@ function hashSeed(str: string): number {
   return h >>> 0;
 }
 
-// mulberry32 PRNG — deterministisch op basis van de seed.
+// mulberry32 PRNG — deterministic based on the seed.
 function mulberry32(seed: number): () => number {
   let a = seed >>> 0;
   return () => {
@@ -66,7 +66,7 @@ const liquidityStatusFromScore = (score: number): CriterionStatus =>
   score >= 75 ? 'good' : score >= 45 ? 'ok' : 'bad';
 
 export function scoreOptionCandidate(ticker: Ticker, data: MockOptionData): CandidateAssessment {
-  // 1. Optionable (echte ticker-vlag).
+  // 1. Optionable (real ticker flag).
   const optionableScore = ticker.optionsAvailable ? 100 : 0;
   const optionable: CriterionResult = {
     key: 'optionable',
@@ -78,7 +78,7 @@ export function scoreOptionCandidate(ticker: Ticker, data: MockOptionData): Cand
       : 'Geen genoteerde opties — niet bruikbaar voor optiestrategieën.',
   };
 
-  // 2. Optie-liquiditeit (OI + volume + spread).
+  // 2. Option liquidity (OI + volume + spread).
   const oiPts = data.openInterest >= 1000 ? 100 : data.openInterest >= 250 ? 50 : 0;
   const volPts = data.optionVolume >= 500 ? 100 : data.optionVolume >= 100 ? 50 : 0;
   const spreadPts = data.bidAskSpreadPct <= 5 ? 100 : data.bidAskSpreadPct <= 10 ? 50 : 0;
@@ -91,7 +91,7 @@ export function scoreOptionCandidate(ticker: Ticker, data: MockOptionData): Cand
     detail: `OI ${data.openInterest}, volume ${data.optionVolume}/dag, spread ${data.bidAskSpreadPct}%.`,
   };
 
-  // 3. IV-rank (hoog = rijke premie voor verkopers).
+  // 3. IV rank (high = rich premium for sellers).
   const ivScore = Math.max(0, Math.min(100, data.ivRank));
   const ivStatus: CriterionStatus = data.ivRank > 50 ? 'good' : data.ivRank >= 25 ? 'ok' : 'bad';
   const ivRank: CriterionResult = {
@@ -102,7 +102,7 @@ export function scoreOptionCandidate(ticker: Ticker, data: MockOptionData): Cand
     detail: `IV-rank ${data.ivRank}/100 — ${data.ivRank > 50 ? 'rijke' : data.ivRank >= 25 ? 'redelijke' : 'magere'} premie.`,
   };
 
-  // 4. Premie-rendement (geannualiseerd %).
+  // 4. Premium yield (annualized %).
   const p = data.annualizedPremiumPct;
   const premiumScore = p >= 20 ? 100 : p >= 10 ? 60 : p >= 5 ? 30 : 10;
   const premiumStatus: CriterionStatus = p >= 20 ? 'good' : p >= 10 ? 'ok' : 'bad';
@@ -114,7 +114,7 @@ export function scoreOptionCandidate(ticker: Ticker, data: MockOptionData): Cand
     detail: `~${data.annualizedPremiumPct}% geannualiseerd.`,
   };
 
-  // 5. Earnings-nabijheid (<7 dagen = risico op IV-crush/gap).
+  // 5. Earnings proximity (<7 days = risk of IV crush/gap).
   const d = data.daysToEarnings;
   const earningsScore = d >= 21 ? 100 : d >= 7 ? 60 : 20;
   const earningsStatus: CriterionStatus = d >= 21 ? 'good' : d >= 7 ? 'ok' : 'bad';

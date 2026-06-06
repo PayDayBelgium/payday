@@ -179,9 +179,7 @@ export const IBSettings: React.FC = () => {
               </div>
 
               <div>
-                <p className="font-semibold text-ink-900 dark:text-white mb-1">
-                  2. Configure Port
-                </p>
+                <p className="font-semibold text-ink-900 dark:text-white mb-1">2. Configure Port</p>
                 <p>Set Socket Port to 7497 (paper) or 7496 (live)</p>
               </div>
 

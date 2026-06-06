@@ -230,9 +230,7 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <Layers className="w-5 h-5 text-ink-600 dark:text-ink-400" />
-          <h3 className="text-lg font-semibold text-ink-900 dark:text-white">
-            Trading Strategies
-          </h3>
+          <h3 className="text-lg font-semibold text-ink-900 dark:text-white">Trading Strategies</h3>
         </div>
         <button
           onClick={() => setIsCreating(true)}
@@ -420,9 +418,7 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
                                 <p className="text-sm font-medium text-ink-900 dark:text-white">
                                   {label}
                                 </p>
-                                <p className="text-xs text-ink-500 dark:text-ink-400">
-                                  {details}
-                                </p>
+                                <p className="text-xs text-ink-500 dark:text-ink-400">{details}</p>
                               </div>
                               <div className="flex items-center gap-3">
                                 <span className="text-sm font-medium text-ink-900 dark:text-white">

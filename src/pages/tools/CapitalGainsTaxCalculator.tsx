@@ -59,9 +59,7 @@ export const CapitalGainsTaxCalculator: React.FC = () => {
           <div className="flex items-start gap-3">
             <Info className="w-5 h-5 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
             <div>
-              <h4 className="font-medium text-ink-900 dark:text-white mb-1">
-                Niet van toepassing
-              </h4>
+              <h4 className="font-medium text-ink-900 dark:text-white mb-1">Niet van toepassing</h4>
               <p className="text-sm text-ink-700 dark:text-ink-300">
                 Deze calculator is specifiek voor Belgische belastingplichtigen. Je huidige
                 nationaliteit is ingesteld op {nationality}. Deze regels zijn mogelijk niet van

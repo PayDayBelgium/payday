@@ -324,13 +324,13 @@ export const PaydayMountain: React.FC<PaydayMountainProps> = ({
           onClick={onOpenMentorship}
           style={{ cursor: onOpenMentorship ? 'pointer' : 'default' }}
         >
-          {/* schaduw */}
+          {/* shadow */}
           <ellipse cx="0" cy="20" rx="34" ry="5" fill="#0B4A8F" opacity="0.10" />
-          {/* leraar (instructeur, rood) */}
+          {/* teacher (instructor, red) */}
           <g filter="url(#pm-soft)">
             <circle cx="-9" cy="-14" r="4" fill="#F4C9A0" />
             <rect x="-12.5" y="-10" width="7" height="15" rx="3" fill="#D14343" />
-            {/* arm met stok, wijzend */}
+            {/* arm with pole, pointing */}
             <line
               x1="-6"
               y1="-6"
@@ -349,7 +349,7 @@ export const PaydayMountain: React.FC<PaydayMountainProps> = ({
               strokeWidth="1.2"
               strokeLinecap="round"
             />
-            {/* benen + ski */}
+            {/* legs + ski */}
             <line
               x1="-10.5"
               y1="5"
@@ -370,7 +370,7 @@ export const PaydayMountain: React.FC<PaydayMountainProps> = ({
             />
             <rect x="-18" y="13" width="18" height="2.4" rx="1.2" fill="#2F6CAE" />
           </g>
-          {/* leerling (kleiner, blauw) */}
+          {/* student (smaller, blue) */}
           <g filter="url(#pm-soft)">
             <circle cx="11" cy="-7" r="3.3" fill="#F4C9A0" />
             <rect x="8" y="-3.5" width="6" height="12" rx="2.6" fill="#2F6CAE" />
@@ -401,7 +401,7 @@ export const PaydayMountain: React.FC<PaydayMountainProps> = ({
               SKI-SCHOOL · MENTORSHIP
             </text>
           </g>
-          {/* status: aangevraagd */}
+          {/* status: requested */}
           {mentorshipRequested && (
             <g transform="translate(0 45)" filter="url(#pm-soft)">
               <rect

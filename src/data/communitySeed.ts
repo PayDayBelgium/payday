@@ -1,6 +1,6 @@
 import type { CommunityPost } from '../types';
 
-// Mock seed-posts voor de community. Frontend-only; vervangt later een API.
+// Mock seed posts for the community. Frontend-only; will later replace an API.
 export const COMMUNITY_SEED: CommunityPost[] = [
   {
     id: 'post-tsla-csp',

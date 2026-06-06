@@ -455,9 +455,7 @@ export const ConnectivitySettings: React.FC = () => {
               {/* Subscribed Tickers */}
               {subscribedTickers.length > 0 && (
                 <div className="mt-3">
-                  <p className="text-xs text-ink-500 dark:text-ink-400 mb-2">
-                    Subscribed tickers:
-                  </p>
+                  <p className="text-xs text-ink-500 dark:text-ink-400 mb-2">Subscribed tickers:</p>
                   <div className="flex flex-wrap gap-1">
                     {subscribedTickers.map((symbol) => (
                       <span
@@ -502,9 +500,7 @@ export const ConnectivitySettings: React.FC = () => {
                 {subscribedOptions.length > 0 && (
                   <div className="mt-2">
                     <div className="flex items-center justify-between mb-2">
-                      <p className="text-xs text-ink-500 dark:text-ink-400">
-                        Subscribed options:
-                      </p>
+                      <p className="text-xs text-ink-500 dark:text-ink-400">Subscribed options:</p>
                       <button
                         onClick={handleUnsubscribeAllOptions}
                         disabled={status !== 'connected'}

@@ -3,8 +3,8 @@ import type { AIConfig } from '../config';
 import { createAnthropicProvider } from './anthropicProvider';
 import type { AIProvider } from './types';
 
-// Maakt de juiste provider op basis van de config.
-// Gooit een leesbare fout als er geen key is, of de provider nog niet bestaat (Fase F).
+// Creates the appropriate provider based on the config.
+// Throws a readable error if there is no key, or the provider does not exist yet (Phase F).
 export const createProvider = (config: AIConfig): AIProvider => {
   const key = config.keys[config.provider];
   if (!key) {

@@ -78,7 +78,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
         isOpen={isOpen}
         onClose={handleClose}
         showCloseButton={false}
-        // Identiek aan het origineel: wel sluiten via backdrop-klik, niet via Escape.
+        // Same as the original: do close via backdrop click, not via Escape.
         closeOnEscape={false}
         size="md"
         contentClassName="p-6"
@@ -120,11 +120,11 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
       onClose={handleClose}
       showCloseButton={false}
       blur
-      // Identiek aan het origineel: wel sluiten via backdrop-klik, niet via Escape.
+      // Same as the original: do close via backdrop click, not via Escape.
       closeOnEscape={false}
       size="md"
       cardClassName="bg-white dark:bg-trading-dark-800 rounded-lg shadow-2xl overflow-hidden border border-surface-line dark:border-trading-dark-600"
-      // De secties brengen hun eigen padding mee; geen extra content-wrapper.
+      // The sections bring their own padding; no extra content wrapper.
       contentClassName=""
     >
       {/* Header with colored background */}

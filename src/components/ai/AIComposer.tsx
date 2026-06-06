@@ -4,7 +4,7 @@ import { Send, Square, ImagePlus, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAIAssistant, type ImageAttachment } from '../../contexts/AIAssistantContext';
 
-// Leest een afbeeldingsbestand in als base64 (zonder de data:-prefix).
+// Reads an image file as base64 (without the data: prefix).
 const fileToAttachment = (file: File): Promise<ImageAttachment> =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();

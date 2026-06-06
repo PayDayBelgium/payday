@@ -69,16 +69,8 @@ export const LEVEL_CONFIGS: LevelConfig[] = [
     slopeName: 'Zwarte Piste',
     slopeColor: 'black',
     icon: '⚫',
-    description:
-      'Toegang tot alle strategieën inclusief spreads, iron condors, KaChing en AI-assistent.',
-    features: [
-      'spreads',
-      'iron_condors',
-      'kaching',
-      'complex_strategies',
-      'paper_trading',
-      'ai_assistant',
-    ],
+    description: 'Toegang tot alle strategieën inclusief spreads, iron condors en KaChing.',
+    features: ['spreads', 'iron_condors', 'kaching', 'complex_strategies', 'paper_trading'],
     creditsRequired: 0,
     priceEUR: 0,
   },
