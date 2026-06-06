@@ -28,9 +28,7 @@ jobs:
       - name: Build
         run: npm run build
 
-      # Lint is reporting-only for now: there is a backlog of pre-existing
-      # errors (see docs/CODE-REVIEW-2026-06.md, Q1). Remove continue-on-error
-      # once the backlog is cleared so lint becomes a hard gate.
-      - name: Lint (non-blocking)
+      # Lint backlog is cleared (0 errors; remaining items are tracked as warnings).
+      # eslint exits non-zero on any error, so this is now a hard gate.
+      - name: Lint
         run: npm run lint
-        continue-on-error: true
