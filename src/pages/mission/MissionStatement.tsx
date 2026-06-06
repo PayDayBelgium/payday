@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
   Target,
@@ -49,6 +50,7 @@ const LevelCard: React.FC<{
   onRestartWizard: () => void;
   userCredits: number;
 }> = ({ config, isUnlocked, isCurrent, onUnlock, onRestartWizard, userCredits }) => {
+  const { t } = useTranslation();
   const canAfford = userCredits >= config.creditsRequired;
 
   const getSlopeColorClasses = () => {
@@ -118,7 +120,9 @@ const LevelCard: React.FC<{
         {isUnlocked ? (
           <div className="flex items-center gap-1 bg-white/20 dark:bg-black/20 px-2 py-1 rounded-full">
             <Check className="w-4 h-4 text-white dark:text-ink-900" />
-            <span className="text-xs font-medium text-white dark:text-ink-900">Ontgrendeld</span>
+            <span className="text-xs font-medium text-white dark:text-ink-900">
+              {t('learnFeat.levelUnlocked')}
+            </span>
           </div>
         ) : (
           <Lock className="w-5 h-5 text-ink-400" />
@@ -132,7 +136,7 @@ const LevelCard: React.FC<{
         {/* Features */}
         <div className="space-y-2 mb-4">
           <h4 className="text-xs font-semibold text-ink-500 dark:text-ink-400 uppercase tracking-wide">
-            Features
+            {t('learnFeat.levelFeatures')}
           </h4>
           <div className="flex flex-wrap gap-1">
             {config.features.slice(0, 4).map((feature) => (
@@ -152,7 +156,7 @@ const LevelCard: React.FC<{
             ))}
             {config.features.length > 4 && (
               <span className="text-xs text-ink-400 dark:text-ink-500">
-                +{config.features.length - 4} meer
+                {t('learnFeat.levelMore', { count: config.features.length - 4 })}
               </span>
             )}
           </div>
@@ -166,7 +170,7 @@ const LevelCard: React.FC<{
               className="flex items-center gap-2 text-sm text-ink-600 dark:text-ink-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
             >
               <RefreshCw className="w-4 h-4" />
-              Herstart introductie wizard
+              {t('learnFeat.levelRestartWizard')}
             </button>
           </div>
         )}
@@ -176,7 +180,9 @@ const LevelCard: React.FC<{
           <div className="border-t border-surface-line dark:border-trading-dark-500 pt-4 space-y-3">
             {config.creditsRequired > 0 && (
               <div className="flex items-center justify-between text-sm">
-                <span className="text-ink-500 dark:text-ink-400">Credits nodig:</span>
+                <span className="text-ink-500 dark:text-ink-400">
+                  {t('learnFeat.levelCreditsNeeded')}
+                </span>
                 <span
                   className={`font-bold ${canAfford ? 'text-positive-600' : 'text-ink-600 dark:text-ink-300'}`}
                 >
@@ -187,7 +193,9 @@ const LevelCard: React.FC<{
 
             {config.priceEUR && config.priceEUR > 0 && (
               <div className="flex items-center justify-between text-sm">
-                <span className="text-ink-500 dark:text-ink-400">Of direct kopen:</span>
+                <span className="text-ink-500 dark:text-ink-400">
+                  {t('learnFeat.levelBuyDirectly')}
+                </span>
                 <span className="font-bold text-ink-600 dark:text-ink-300">€{config.priceEUR}</span>
               </div>
             )}
@@ -199,13 +207,15 @@ const LevelCard: React.FC<{
                   className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium text-sm transition-colors"
                 >
                   <Star className="w-4 h-4" />
-                  {config.creditsRequired === 0 ? 'Ontgrendel nu' : 'Ontgrendel met credits'}
+                  {config.creditsRequired === 0
+                    ? t('learnFeat.levelUnlockNow')
+                    : t('learnFeat.levelUnlockWithCredits')}
                 </button>
               )}
               {config.priceEUR && config.priceEUR > 0 && (
                 <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border border-ink-200 dark:border-trading-dark-500 hover:bg-surface dark:hover:bg-trading-dark-700 rounded-lg font-medium text-sm transition-colors text-ink-700 dark:text-ink-300">
                   <CreditCard className="w-4 h-4" />
-                  Kopen €{config.priceEUR}
+                  {t('learnFeat.levelBuy', { price: config.priceEUR })}
                 </button>
               )}
             </div>
@@ -219,24 +229,22 @@ const LevelCard: React.FC<{
 // Free modules (no level/credits) — activating them shows them in the sidebar.
 const MODULE_CONFIGS: {
   id: ModuleId;
-  name: string;
-  description: string;
+  nameKey: string;
+  descriptionKey: string;
   path: string;
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
 }[] = [
   {
     id: 'community',
-    name: 'Community',
-    description:
-      'Deel trading ideas en ga in gesprek met andere PayDay-traders in de après-ski bar.',
+    nameKey: 'learnFeat.moduleCommunityName',
+    descriptionKey: 'learnFeat.moduleCommunityDesc',
     path: '/community',
     icon: MessageSquare,
   },
   {
     id: 'mentorship',
-    name: 'Mentorship',
-    description:
-      'Vraag persoonlijke begeleiding aan via de ski-school. Opleiding op maat, los van credits.',
+    nameKey: 'learnFeat.moduleMentorshipName',
+    descriptionKey: 'learnFeat.moduleMentorshipDesc',
     path: '/mentorship',
     icon: GraduationCap,
   },
@@ -249,6 +257,7 @@ const ModuleCard: React.FC<{
   onActivate: () => void;
   onOpen: () => void;
 }> = ({ config, isActivated, onActivate, onOpen }) => {
+  const { t } = useTranslation();
   const Icon = config.icon;
   return (
     <div
@@ -263,29 +272,31 @@ const ModuleCard: React.FC<{
             <Icon className="w-[18px] h-[18px]" strokeWidth={1.75} />
           </div>
           <div>
-            <h3 className="font-bold text-ink-900 dark:text-white tracking-tight">{config.name}</h3>
-            <p className="text-xs text-ink-500 dark:text-ink-400">Module</p>
+            <h3 className="font-bold text-ink-900 dark:text-white tracking-tight">
+              {t(config.nameKey)}
+            </h3>
+            <p className="text-xs text-ink-500 dark:text-ink-400">{t('learnFeat.moduleLabel')}</p>
           </div>
           {isActivated && (
             <span className="ml-auto flex items-center gap-1 bg-primary-700 text-white px-2 py-1 rounded-full text-xs font-medium">
-              <Check className="w-3.5 h-3.5" /> Actief
+              <Check className="w-3.5 h-3.5" /> {t('learnFeat.moduleActive')}
             </span>
           )}
         </div>
-        <p className="text-sm text-ink-600 dark:text-ink-300 mb-4">{config.description}</p>
+        <p className="text-sm text-ink-600 dark:text-ink-300 mb-4">{t(config.descriptionKey)}</p>
         {isActivated ? (
           <button
             onClick={onOpen}
             className="flex items-center gap-2 text-sm font-medium text-primary-700 dark:text-primary-300 hover:underline"
           >
-            Openen <ChevronRight className="w-4 h-4" />
+            {t('learnFeat.moduleOpen')} <ChevronRight className="w-4 h-4" />
           </button>
         ) : (
           <button
             onClick={onActivate}
             className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium text-sm transition-colors"
           >
-            <Star className="w-4 h-4" /> Activeren
+            <Star className="w-4 h-4" /> {t('learnFeat.moduleActivate')}
           </button>
         )}
       </div>
@@ -294,6 +305,7 @@ const ModuleCard: React.FC<{
 };
 
 export const MissionStatement: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { pushNavigation } = useNavigation();
@@ -305,8 +317,8 @@ export const MissionStatement: React.FC = () => {
   const activatedModules = useAppSelector(selectActivatedModules);
 
   useEffect(() => {
-    setPageTitle('Jouw Reis', 'Curriculum, niveaus en leertraject');
-  }, [setPageTitle]);
+    setPageTitle(t('learnFeat.pageTitle'), t('learnFeat.pageSubtitle'));
+  }, [setPageTitle, t]);
 
   // Wizard state
   const [wizardOpen, setWizardOpen] = useState(false);
@@ -323,7 +335,7 @@ export const MissionStatement: React.FC = () => {
       dispatch(
         spendCredits({
           amount: config.creditsRequired,
-          reason: `Level ${config.name} ontgrendeld`,
+          reason: t('learnFeat.levelUnlockedReason', { name: config.name }),
           levelId: level,
         })
       );
@@ -351,19 +363,18 @@ export const MissionStatement: React.FC = () => {
       <div className="relative overflow-hidden rounded-xl border border-[var(--line)] bg-white dark:bg-trading-dark-800">
         <div className="grid md:grid-cols-[1.1fr_1fr] gap-0">
           <div className="p-8 md:p-10">
-            <p className="eyebrow mb-3">Jouw Reis · Curriculum</p>
+            <p className="eyebrow mb-3">{t('learnFeat.heroEyebrow')}</p>
             <h1 className="text-2xl md:text-[1.75rem] leading-[1.15] font-semibold tracking-tight text-ink-900 dark:text-white mb-3">
-              Van groene piste naar de zwarte top
+              {t('learnFeat.heroTitle')}
             </h1>
             <p className="text-sm text-ink-500 dark:text-ink-300 leading-relaxed max-w-md mb-5">
-              Net als een skischool begeleidt PayDay je stap voor stap. Beheers eerst de basis, klim
-              daarna naar premium-inkomen, spreads en uiteindelijk mastery.
+              {t('learnFeat.heroLead')}
             </p>
             <div className="flex flex-wrap items-center gap-2">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 border border-[var(--line)] rounded-md bg-surface">
                 <Award className="w-4 h-4 text-primary-700" strokeWidth={1.75} />
                 <span className="text-xs">
-                  <span className="text-ink-500">Niveau · </span>
+                  <span className="text-ink-500">{t('learnFeat.heroLevel')}</span>
                   <span className="font-semibold text-ink-900 dark:text-white">
                     {currentLevelConfig.name}
                   </span>
@@ -375,14 +386,14 @@ export const MissionStatement: React.FC = () => {
                   <span className="font-semibold text-ink-900 dark:text-white text-sm">
                     {progress.credits}
                   </span>{' '}
-                  <span className="text-ink-500">credits</span>
+                  <span className="text-ink-500">{t('learnFeat.heroCredits')}</span>
                 </span>
               </div>
             </div>
           </div>
           {/* Right side — piste-progressie als editorial strip */}
           <div className="relative bg-sky-fade border-l border-[var(--line)] overflow-hidden p-8 md:p-10 flex flex-col justify-center">
-            <p className="eyebrow mb-5">Het traject</p>
+            <p className="eyebrow mb-5">{t('learnFeat.routeEyebrow')}</p>
             <div className="relative">
               {/* Connecting dotted route */}
               <div className="absolute left-0 right-0 top-[14px] border-t border-dashed border-[var(--line)] z-0" />
@@ -390,36 +401,36 @@ export const MissionStatement: React.FC = () => {
                 {[
                   {
                     level: 'beginner' as UserLevel,
-                    label: 'Groen',
-                    sub: 'Fundamenten',
+                    label: t('learnFeat.pisteGreen'),
+                    sub: t('learnFeat.pisteGreenSub'),
                     color: '#0F9D58',
                     shape: 'circle' as const,
                   },
                   {
                     level: 'medior' as UserLevel,
-                    label: 'Blauw',
-                    sub: 'Premium-inkomen',
+                    label: t('learnFeat.pisteBlue'),
+                    sub: t('learnFeat.pisteBlueSub'),
                     color: '#2F6CAE',
                     shape: 'square' as const,
                   },
                   {
                     level: 'senior' as UserLevel,
-                    label: 'Rood',
-                    sub: 'Spreads · PMCC',
+                    label: t('learnFeat.pisteRed'),
+                    sub: t('learnFeat.pisteRedSub'),
                     color: '#D14343',
                     shape: 'diamond' as const,
                   },
                   {
                     level: 'expert' as UserLevel,
-                    label: 'Zwart',
-                    sub: 'Mastery',
+                    label: t('learnFeat.pisteBlack'),
+                    sub: t('learnFeat.pisteBlackSub'),
                     color: '#0F1E36',
                     shape: 'double-diamond' as const,
                   },
                   {
                     level: 'offpiste' as UserLevel,
-                    label: 'Off-piste',
-                    sub: 'Quant trading',
+                    label: t('learnFeat.pisteOffpiste'),
+                    sub: t('learnFeat.pisteOffpisteSub'),
                     color: '#F08C2E',
                     shape: 'double-diamond' as const,
                   },
@@ -495,45 +506,44 @@ export const MissionStatement: React.FC = () => {
       <section>
         <div className="flex items-center justify-between mb-3">
           <div>
-            <p className="eyebrow mb-1">Route</p>
+            <p className="eyebrow mb-1">{t('learnFeat.routeLabel')}</p>
             <h2 className="text-lg font-semibold text-ink-900 dark:text-white tracking-tight">
-              Jouw progressie op PayDay Mountain
+              {t('learnFeat.routeHeading')}
             </h2>
           </div>
           <div className="hidden md:flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-ink-500">
             <Target className="w-3.5 h-3.5" />
-            <span>Live · Skilift in bedrijf</span>
+            <span>{t('learnFeat.routeLive')}</span>
           </div>
         </div>
         <PaydayMountain
           activeLevel={progress.currentLevel}
           unlockedLevels={progress.unlockedLevels}
-          onOpenCommunity={() => handleNavigate('/community', 'Community')}
-          onOpenQuant={() => handleNavigate('/quant', 'Quant trading')}
-          onOpenMentorship={() => handleNavigate('/mentorship', 'Mentorship')}
+          onOpenCommunity={() => handleNavigate('/community', t('learnFeat.moduleCommunityName'))}
+          onOpenQuant={() => handleNavigate('/quant', t('learnFeat.quantTradingTitle'))}
+          onOpenMentorship={() =>
+            handleNavigate('/mentorship', t('learnFeat.moduleMentorshipName'))
+          }
           mentorshipRequested={mentorshipRequested}
         />
       </section>
 
       {/* Mission Statement */}
       <div className="surface-card p-8">
-        <p className="eyebrow mb-2">Onze missie</p>
+        <p className="eyebrow mb-2">{t('learnFeat.missionEyebrow')}</p>
         <h2 className="text-lg font-semibold text-ink-900 dark:text-white tracking-tight mb-4">
-          Iedereen toegang tot de kracht van opties.
+          {t('learnFeat.missionHeading')}
         </h2>
         <div className="max-w-3xl">
           <p className="text-[15px] text-ink-700 dark:text-ink-300 leading-relaxed">
-            PayDay is opgericht met één duidelijke missie:{' '}
+            {t('learnFeat.missionBody1Prefix')}
             <strong className="text-ink-900 dark:text-white font-semibold">
-              iedereen toegang geven tot de kracht van opties trading
+              {t('learnFeat.missionBody1Bold')}
             </strong>
-            , ongeacht ervaring of achtergrond. Wij geloven dat financiële educatie de sleutel is
-            tot financiële vrijheid.
+            {t('learnFeat.missionBody1Suffix')}
           </p>
           <p className="text-[15px] text-ink-700 dark:text-ink-300 leading-relaxed mt-4">
-            Net zoals een skischool je stap voor stap leert skiën — van de eerste sneeuwploeg op de
-            groene piste tot het carven op de zwarte — begeleiden wij je door de wereld van
-            beleggen. Elke strategie wordt uitgelegd, elke tool helpt je groeien.
+            {t('learnFeat.missionBody2')}
           </p>
         </div>
 
@@ -542,28 +552,28 @@ export const MissionStatement: React.FC = () => {
           {[
             {
               icon: GraduationCap,
-              t: 'Educatie eerst',
-              d: 'Leer de theorie voordat je handelt. Begrip is de basis van succes.',
+              titleKey: 'learnFeat.valueEducationTitle',
+              descKey: 'learnFeat.valueEducationDesc',
             },
             {
               icon: Shield,
-              t: 'Veilig groeien',
-              d: 'Paper trading modus om risico-vrij te oefenen.',
+              titleKey: 'learnFeat.valueSafeTitle',
+              descKey: 'learnFeat.valueSafeDesc',
             },
             {
               icon: TrendingUp,
-              t: 'Stap voor stap',
-              d: 'Ontgrendel nieuwe strategieën naarmate je vordert.',
+              titleKey: 'learnFeat.valueStepTitle',
+              descKey: 'learnFeat.valueStepDesc',
             },
-          ].map(({ icon: Icon, t, d }) => (
-            <div key={t} className="bg-white dark:bg-trading-dark-800 p-5">
+          ].map(({ icon: Icon, titleKey, descKey }) => (
+            <div key={titleKey} className="bg-white dark:bg-trading-dark-800 p-5">
               <div className="w-9 h-9 rounded-md bg-primary-50 text-primary-700 flex items-center justify-center mb-3">
                 <Icon className="w-[18px] h-[18px]" strokeWidth={1.75} />
               </div>
               <h3 className="font-semibold text-sm text-ink-900 dark:text-white tracking-tight mb-1">
-                {t}
+                {t(titleKey)}
               </h3>
-              <p className="text-xs text-ink-500 dark:text-ink-400 leading-relaxed">{d}</p>
+              <p className="text-xs text-ink-500 dark:text-ink-400 leading-relaxed">{t(descKey)}</p>
             </div>
           ))}
         </div>
@@ -571,9 +581,9 @@ export const MissionStatement: React.FC = () => {
 
       {/* Level Cards */}
       <div>
-        <p className="eyebrow mb-2">Curriculum</p>
+        <p className="eyebrow mb-2">{t('learnFeat.curriculumEyebrow')}</p>
         <h2 className="text-lg font-semibold text-ink-900 dark:text-white tracking-tight mb-5">
-          De niveaus
+          {t('learnFeat.curriculumHeading')}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {LEVEL_CONFIGS.map((config) => (
@@ -591,10 +601,10 @@ export const MissionStatement: React.FC = () => {
 
         {/* Extra modules — activate to show them in the sidebar */}
         <h3 className="text-base font-semibold text-ink-900 dark:text-white tracking-tight mt-8 mb-1">
-          Extra modules
+          {t('learnFeat.extraModules')}
         </h3>
         <p className="text-sm text-ink-500 dark:text-ink-400 mb-4">
-          Activeer een module om die in je zijbalk te tonen. Geen credits nodig.
+          {t('learnFeat.extraModulesDesc')}
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {MODULE_CONFIGS.map((mod) => (
@@ -603,7 +613,7 @@ export const MissionStatement: React.FC = () => {
               config={mod}
               isActivated={activatedModules.includes(mod.id)}
               onActivate={() => dispatch(activateModule(mod.id))}
-              onOpen={() => handleNavigate(mod.path, mod.name)}
+              onOpen={() => handleNavigate(mod.path, t(mod.nameKey))}
             />
           ))}
         </div>
@@ -611,25 +621,41 @@ export const MissionStatement: React.FC = () => {
 
       {/* How to Earn Credits */}
       <div className="surface-card p-8">
-        <p className="eyebrow mb-2">Voortgang</p>
+        <p className="eyebrow mb-2">{t('learnFeat.progressEyebrow')}</p>
         <h2 className="text-lg font-semibold text-ink-900 dark:text-white tracking-tight mb-6">
-          Zo verdien je credits
+          {t('learnFeat.earnCreditsHeading')}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-[var(--line)] rounded-md overflow-hidden">
           {[
-            { icon: Play, t: 'Voltooi lessen', d: '10–50 credits per les' },
-            { icon: Award, t: 'Behaal achievements', d: '25–100 credits per achievement' },
-            { icon: Zap, t: 'Dagelijkse streak', d: '5 credits per dag' },
-            { icon: CreditCard, t: 'Koop credits', d: 'Of ontgrendel direct met €' },
-          ].map(({ icon: Icon, t, d }) => (
-            <div key={t} className="bg-white dark:bg-trading-dark-800 p-5 text-center">
+            {
+              icon: Play,
+              titleKey: 'learnFeat.earnLessonsTitle',
+              descKey: 'learnFeat.earnLessonsDesc',
+            },
+            {
+              icon: Award,
+              titleKey: 'learnFeat.earnAchievementsTitle',
+              descKey: 'learnFeat.earnAchievementsDesc',
+            },
+            {
+              icon: Zap,
+              titleKey: 'learnFeat.earnStreakTitle',
+              descKey: 'learnFeat.earnStreakDesc',
+            },
+            {
+              icon: CreditCard,
+              titleKey: 'learnFeat.earnBuyTitle',
+              descKey: 'learnFeat.earnBuyDesc',
+            },
+          ].map(({ icon: Icon, titleKey, descKey }) => (
+            <div key={titleKey} className="bg-white dark:bg-trading-dark-800 p-5 text-center">
               <div className="w-10 h-10 mx-auto mb-3 bg-primary-50 text-primary-700 rounded-md flex items-center justify-center">
                 <Icon className="w-[18px] h-[18px]" strokeWidth={1.75} />
               </div>
               <h3 className="font-semibold text-sm text-ink-900 dark:text-white tracking-tight mb-1">
-                {t}
+                {t(titleKey)}
               </h3>
-              <p className="text-xs text-ink-500 dark:text-ink-400">{d}</p>
+              <p className="text-xs text-ink-500 dark:text-ink-400">{t(descKey)}</p>
             </div>
           ))}
         </div>
@@ -637,21 +663,21 @@ export const MissionStatement: React.FC = () => {
 
       {/* Education Curriculum Section */}
       <div className="surface-card p-8">
-        <p className="eyebrow mb-2">Leertraject</p>
+        <p className="eyebrow mb-2">{t('learnFeat.learningPathEyebrow')}</p>
         <h2 className="text-lg font-semibold text-ink-900 dark:text-white tracking-tight mb-3">
-          Gestructureerd onderwijs
+          {t('learnFeat.learningPathHeading')}
         </h2>
         <p className="text-sm text-ink-500 dark:text-ink-400 mb-6 max-w-2xl leading-relaxed">
-          Elke les bouwt voort op de vorige en is afgestemd op jouw niveau.
+          {t('learnFeat.learningPathDesc')}
         </p>
         <EducationCurriculum />
       </div>
 
       {/* Learning Resources Section */}
       <div className="surface-card p-8">
-        <p className="eyebrow mb-2">Bibliotheek</p>
+        <p className="eyebrow mb-2">{t('learnFeat.libraryEyebrow')}</p>
         <h2 className="text-lg font-semibold text-ink-900 dark:text-white tracking-tight mb-6">
-          Tips, boeken &amp; tutorials
+          {t('learnFeat.libraryHeading')}
         </h2>
         <LearningResources showAllLevels />
       </div>
@@ -663,22 +689,22 @@ export const MissionStatement: React.FC = () => {
             <div className="w-11 h-11 rounded-md bg-primary-50 text-primary-700 flex items-center justify-center mb-3">
               <Shield className="w-5 h-5" strokeWidth={1.75} />
             </div>
-            <p className="eyebrow mb-1">Fiscaliteit</p>
+            <p className="eyebrow mb-1">{t('learnFeat.fiscalEyebrow')}</p>
             <h2 className="text-base font-semibold text-ink-900 tracking-tight">
-              Belgische belasting
+              {t('learnFeat.fiscalHeading')}
             </h2>
           </div>
           <div className="p-8">
             <p className="text-sm text-ink-700 dark:text-ink-300 leading-relaxed mb-4">
-              Als Belgische belegger heb je te maken met specifieke belastingregels. PayDay helpt je
-              met het begrijpen van de fiscale impact van je trades — inclusief meerwaardebelasting,
-              TOB en roerende voorheffing.
+              {t('learnFeat.fiscalBody')}
             </p>
             <button
-              onClick={() => handleNavigate('/tools/capital-gains-tax', 'Meerwaardebelasting')}
+              onClick={() =>
+                handleNavigate('/tools/capital-gains-tax', t('learnFeat.capitalGainsTaxTitle'))
+              }
               className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-700 hover:text-primary-800 transition-colors"
             >
-              Naar de belastingcalculator
+              {t('learnFeat.fiscalCta')}
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
@@ -688,21 +714,21 @@ export const MissionStatement: React.FC = () => {
       {/* CTA Section */}
       {nextLevel && !progress.unlockedLevels.includes(nextLevel.level) && (
         <div className="surface-card p-8 text-center">
-          <p className="eyebrow mb-2">Volgende stap</p>
+          <p className="eyebrow mb-2">{t('learnFeat.ctaEyebrow')}</p>
           <h2 className="text-lg font-semibold text-ink-900 dark:text-white tracking-tight mb-2">
-            Klaar voor de volgende piste?
+            {t('learnFeat.ctaHeading')}
           </h2>
           <p className="text-sm text-ink-500 dark:text-ink-400 mb-5">
-            Nog{' '}
+            {t('learnFeat.ctaBodyPrefix')}
             <span className="font-semibold text-ink-900 dark:text-white tabular-nums">
               {nextLevel.creditsRequired - progress.credits}
             </span>{' '}
-            credits om de {nextLevel.slopeName} te ontgrendelen.
+            {t('learnFeat.ctaBodySuffix', { slopeName: nextLevel.slopeName })}
           </p>
           {nextLevel.priceEUR && nextLevel.priceEUR > 0 && (
             <button className="inline-flex items-center justify-center gap-2 px-5 py-2.5 border border-[var(--line)] hover:border-primary-300 hover:bg-primary-50 rounded-md font-semibold text-sm transition-colors text-ink-700">
               <CreditCard className="w-4 h-4" strokeWidth={1.75} />
-              Ontgrendel voor €{nextLevel.priceEUR}
+              {t('learnFeat.ctaUnlock', { price: nextLevel.priceEUR })}
             </button>
           )}
         </div>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AlertCircle, Target, Trash2 } from 'lucide-react';
 import type { StrategyRule, StrategyType, PortfolioName } from '../../types';
 import { ConfirmModal } from '../modals/ConfirmModal';
@@ -20,6 +21,7 @@ export const StrategyRules: React.FC<StrategyRulesProps> = ({
   onDeleteRule,
   onToggleRule,
 }) => {
+  const { t } = useTranslation();
   const [deleteConfirm, setDeleteConfirm] = useState<{
     isOpen: boolean;
     rule: StrategyRule | null;
@@ -51,15 +53,15 @@ export const StrategyRules: React.FC<StrategyRulesProps> = ({
             <div className="inline-flex p-3 rounded-full mb-3 bg-primary-50 dark:bg-primary-900/30">
               <AlertCircle className="w-5 h-5 text-primary-700 dark:text-primary-300" />
             </div>
-            <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">Geen regels</h3>
-            <p className="text-ink-600 dark:text-ink-400 mb-4">
-              Voeg regels toe om automatisch waarschuwingen en kansen te ontvangen
-            </p>
+            <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
+              {t('learnFeat.rulesEmptyTitle')}
+            </h3>
+            <p className="text-ink-600 dark:text-ink-400 mb-4">{t('learnFeat.rulesEmptyDesc')}</p>
             <button
               onClick={() => onAddRule()}
               className="px-4 py-2 bg-primary-700 hover:bg-primary-800 text-white rounded-lg font-medium transition-colors"
             >
-              Eerste regel toevoegen
+              {t('learnFeat.rulesAddFirst')}
             </button>
           </div>
         ) : (
@@ -99,7 +101,7 @@ export const StrategyRules: React.FC<StrategyRulesProps> = ({
                       )}
                       {rule.parameters.threshold && (
                         <span className="px-2 py-1 bg-surface-subtle dark:bg-trading-dark-700 text-ink-700 dark:text-ink-300 rounded text-xs">
-                          Drempel: {rule.parameters.threshold}
+                          {t('learnFeat.rulesThreshold', { threshold: rule.parameters.threshold })}
                         </span>
                       )}
                     </div>
@@ -109,17 +111,17 @@ export const StrategyRules: React.FC<StrategyRulesProps> = ({
                   <div className="flex flex-wrap gap-2 text-xs text-ink-600 dark:text-ink-400">
                     {rule.actions.showOnDashboard && (
                       <span className="flex items-center gap-1 px-2 py-1 bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300 rounded">
-                        Dashboard
+                        {t('learnFeat.rulesDashboard')}
                       </span>
                     )}
                     {rule.actions.showOnPortfolioOverview && (
                       <span className="flex items-center gap-1 px-2 py-1 bg-surface-subtle dark:bg-trading-dark-700 text-ink-700 dark:text-ink-300 rounded">
-                        Portfolio Overzicht
+                        {t('learnFeat.rulesPortfolioOverview')}
                       </span>
                     )}
                     {rule.actions.showInList && (
                       <span className="flex items-center gap-1 px-2 py-1 bg-positive-50 dark:bg-positive-700/15 text-positive-700 dark:text-positive-500 rounded">
-                        In Lijst
+                        {t('learnFeat.rulesInList')}
                       </span>
                     )}
                   </div>
@@ -138,7 +140,7 @@ export const StrategyRules: React.FC<StrategyRulesProps> = ({
                         ? 'bg-primary-700 dark:bg-primary-500'
                         : 'bg-surface-muted dark:bg-trading-dark-700'
                     }`}
-                    title={rule.enabled ? 'Deactiveren' : 'Activeren'}
+                    title={rule.enabled ? t('learnFeat.rulesDeactivate') : t('learnFeat.rulesActivate')}
                   >
                     <span
                       className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
@@ -154,7 +156,7 @@ export const StrategyRules: React.FC<StrategyRulesProps> = ({
                       setDeleteConfirm({ isOpen: true, rule });
                     }}
                     className="p-2 hover:bg-negative-50 dark:hover:bg-negative-700/25 rounded transition-colors"
-                    title="Verwijderen"
+                    title={t('learnFeat.rulesDelete')}
                   >
                     <Trash2 className="w-4 h-4 text-negative-600 dark:text-negative-500" />
                   </button>
@@ -175,10 +177,10 @@ export const StrategyRules: React.FC<StrategyRulesProps> = ({
               onDeleteRule(deleteConfirm.rule.id);
             }
           }}
-          title="Regel Verwijderen"
-          message={`Weet je zeker dat je de regel "${deleteConfirm.rule?.name}" wilt verwijderen?`}
-          confirmText="Verwijderen"
-          cancelText="Annuleren"
+          title={t('learnFeat.rulesDeleteTitle')}
+          message={t('learnFeat.rulesDeleteMessage', { name: deleteConfirm.rule?.name })}
+          confirmText={t('learnFeat.rulesDeleteConfirm')}
+          cancelText={t('learnFeat.rulesDeleteCancel')}
           variant="danger"
         />
       )}

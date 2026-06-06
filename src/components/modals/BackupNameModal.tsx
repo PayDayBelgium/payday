@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, Download } from 'lucide-react';
 
 interface BackupNameModalProps {
@@ -14,6 +15,7 @@ export const BackupNameModal: React.FC<BackupNameModalProps> = ({
   onConfirm,
   defaultFilename,
 }) => {
+  const { t } = useTranslation();
   const [filename, setFilename] = useState(defaultFilename);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -65,7 +67,9 @@ export const BackupNameModal: React.FC<BackupNameModalProps> = ({
             <div className="p-2 bg-primary-50 dark:bg-primary-900/30 rounded-lg">
               <Download className="w-5 h-5 text-primary-700 dark:text-primary-300" />
             </div>
-            <h2 className="text-lg font-bold text-ink-900 dark:text-white">Backup Opslaan</h2>
+            <h2 className="text-lg font-bold text-ink-900 dark:text-white">
+              {t('modalsB.backup.title')}
+            </h2>
           </div>
           <button
             onClick={onClose}
@@ -79,7 +83,7 @@ export const BackupNameModal: React.FC<BackupNameModalProps> = ({
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
             <label className="block mb-2 text-sm font-medium text-ink-900 dark:text-white">
-              Bestandsnaam
+              {t('modalsB.backup.filename')}
             </label>
             <input
               ref={inputRef}
@@ -90,7 +94,7 @@ export const BackupNameModal: React.FC<BackupNameModalProps> = ({
               placeholder={defaultFilename}
             />
             <p className="mt-1 text-xs text-ink-500 dark:text-ink-400">
-              .payday extensie wordt automatisch toegevoegd
+              {t('modalsB.backup.extensionHint')}
             </p>
           </div>
 
@@ -101,14 +105,14 @@ export const BackupNameModal: React.FC<BackupNameModalProps> = ({
               onClick={onClose}
               className="flex-1 px-4 py-2.5 bg-surface-muted dark:bg-trading-dark-700 hover:bg-ink-200 dark:hover:bg-trading-dark-600 text-ink-700 dark:text-ink-200 rounded-lg font-medium transition-colors"
             >
-              Annuleren
+              {t('modalsB.backup.cancel')}
             </button>
             <button
               type="submit"
               className="flex-1 px-4 py-2.5 bg-primary-700 hover:bg-primary-800 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
             >
               <Download className="w-4 h-4" />
-              Opslaan
+              {t('modalsB.backup.save')}
             </button>
           </div>
         </form>

@@ -233,13 +233,12 @@ export const Dashboard: React.FC = () => {
           {/* Strategy Overview for New Users */}
           <div className="surface-card p-8">
             <div className="text-center mb-8">
-              <p className="eyebrow mb-2">Welkom bij PayDay</p>
+              <p className="eyebrow mb-2">{t('pagesB.dashboard.welcomeEyebrow')}</p>
               <h3 className="text-lg font-semibold text-ink-900 dark:text-white tracking-tight mb-3">
-                Een systematisch traject voor opties-inkomen
+                {t('pagesB.dashboard.welcomeTitle')}
               </h3>
               <p className="text-sm text-ink-500 dark:text-ink-400 max-w-2xl mx-auto leading-relaxed">
-                We bouwen je portefeuille stap voor stap op — van fundament tot geavanceerde
-                strategieën.
+                {t('pagesB.dashboard.welcomeDescription')}
               </p>
             </div>
 
@@ -247,23 +246,23 @@ export const Dashboard: React.FC = () => {
               {[
                 {
                   n: '01',
-                  t: 'Aandelen & ETFs',
-                  d: 'De basis: betrouwbare aandelen of ETFs voor de lange termijn.',
+                  t: t('pagesB.dashboard.step1Title'),
+                  d: t('pagesB.dashboard.step1Desc'),
                 },
                 {
                   n: '02',
-                  t: 'LEAPS',
-                  d: 'Synthetische aandelen met leverage — exposure voor minder kapitaal.',
+                  t: t('pagesB.dashboard.step2Title'),
+                  d: t('pagesB.dashboard.step2Desc'),
                 },
                 {
                   n: '03',
-                  t: 'Covered Calls',
-                  d: 'Verdien extra premies door calls te schrijven op je aandelen of LEAPS.',
+                  t: t('pagesB.dashboard.step3Title'),
+                  d: t('pagesB.dashboard.step3Desc'),
                 },
                 {
                   n: '04',
-                  t: 'Cash Secured Puts',
-                  d: 'Krijg betaald om aandelen te kopen aan jouw gewenste prijs.',
+                  t: t('pagesB.dashboard.step4Title'),
+                  d: t('pagesB.dashboard.step4Desc'),
                 },
               ].map((step) => (
                 <div key={step.n} className="bg-white dark:bg-trading-dark-800 p-6">
@@ -289,58 +288,73 @@ export const Dashboard: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <StatCard
-              title="Portfolio waarde"
+              title={t('pagesB.dashboard.statPortfolioValue')}
               description={
                 <>
-                  Cash: {formatCurrency(totalStats.totalCash, totalStats.currencySymbol)}
+                  {t('pagesB.dashboard.cashLabel', {
+                    value: formatCurrency(totalStats.totalCash, totalStats.currencySymbol),
+                  })}
                   <br />
-                  Assets (long-short):{' '}
-                  {formatCurrency(
-                    totalStats.longValue - totalStats.shortValue,
-                    totalStats.currencySymbol
-                  )}
+                  {t('pagesB.dashboard.assetsLabel', {
+                    value: formatCurrency(
+                      totalStats.longValue - totalStats.shortValue,
+                      totalStats.currencySymbol
+                    ),
+                  })}
                 </>
               }
               value={formatCurrency(totalStats.totalValue, totalStats.currencySymbol)}
               icon={<DollarSign className="w-6 h-6" />}
-              tooltip="De totale waarde van alle portfolios bestaande uit: Cash + Aandelen + ETF's + Opties (long) - Opties (short)"
+              tooltip={t('pagesB.dashboard.portfolioValueTooltip')}
             />
             <StatCard
-              title="Long posities"
-              description={`${totalStats.longCount} actieve long posities`}
+              title={t('pagesB.dashboard.statLongPositions')}
+              description={t('pagesB.dashboard.activeLongPositions', {
+                count: totalStats.longCount,
+              })}
               value={formatCurrency(totalStats.longValue, totalStats.currencySymbol)}
               icon={<TrendingUp className="w-6 h-6" />}
             />
             <StatCard
-              title="Short posities"
-              description={`${totalStats.shortCount} actieve short posities`}
+              title={t('pagesB.dashboard.statShortPositions')}
+              description={t('pagesB.dashboard.activeShortPositions', {
+                count: totalStats.shortCount,
+              })}
               value={formatCurrency(totalStats.shortValue, totalStats.currencySymbol)}
               icon={<TrendingDown className="w-6 h-6" />}
             />
             <StatCard
-              title="Cash"
+              title={t('pagesB.dashboard.statCash')}
               description={
                 <>
-                  Gealloceerd: {formatCurrency(totalStats.allocatedCash, totalStats.currencySymbol)}
+                  {t('pagesB.dashboard.allocatedLabel', {
+                    value: formatCurrency(totalStats.allocatedCash, totalStats.currencySymbol),
+                  })}
                   <br />
-                  Vrij: {formatCurrency(totalStats.freeCash, totalStats.currencySymbol)}
+                  {t('pagesB.dashboard.freeLabel', {
+                    value: formatCurrency(totalStats.freeCash, totalStats.currencySymbol),
+                  })}
                 </>
               }
               value={formatCurrency(totalStats.totalCash, totalStats.currencySymbol)}
               icon={<Banknote className="w-6 h-6" />}
             />
             <StatCard
-              title="Vrije cash"
+              title={t('pagesB.dashboard.statFreeCash')}
               description={
                 <>
-                  Cash: {formatCurrency(totalStats.totalCash, totalStats.currencySymbol)}
+                  {t('pagesB.dashboard.cashLabel', {
+                    value: formatCurrency(totalStats.totalCash, totalStats.currencySymbol),
+                  })}
                   <br />
-                  Gealloceerd: {formatCurrency(totalStats.allocatedCash, totalStats.currencySymbol)}
+                  {t('pagesB.dashboard.allocatedLabel', {
+                    value: formatCurrency(totalStats.allocatedCash, totalStats.currencySymbol),
+                  })}
                 </>
               }
               value={formatCurrency(totalStats.freeCash, totalStats.currencySymbol)}
               icon={<Wallet className="w-6 h-6" />}
-              tooltip="Cash die niet gereserveerd is als collateral voor short posities"
+              tooltip={t('pagesB.dashboard.freeCashTooltip')}
               valueClassName={
                 totalStats.freeCash < 0 ? 'text-negative-600 dark:text-negative-500' : undefined
               }
@@ -356,10 +370,10 @@ export const Dashboard: React.FC = () => {
             <PortfolioValueChart
               data={aggregatedDailyData as any}
               currency={totalStats.currencySymbol === '€' ? 'EUR' : 'USD'}
-              portfolioName="Alle Portefeuilles"
-              title="Totale portfolio waarde"
-              subtitle={`${aggregatedDailyData.length} ${aggregatedDailyData.length === 1 ? 'datapunt' : 'datapunten'}`}
-              footer="Gecombineerde waarde van alle portfolios over tijd"
+              portfolioName={t('pagesB.dashboard.allPortfolios')}
+              title={t('pagesB.dashboard.totalPortfolioValue')}
+              subtitle={`${aggregatedDailyData.length} ${aggregatedDailyData.length === 1 ? t('pagesB.dashboard.dataPoint') : t('pagesB.dashboard.dataPoints')}`}
+              footer={t('pagesB.dashboard.chartFooter')}
             />
 
             {/* Multi-Portfolio Chart - Individual lines for each portfolio */}
@@ -394,7 +408,7 @@ export const Dashboard: React.FC = () => {
                 <AlertCircle className="w-[18px] h-[18px]" strokeWidth={1.75} />
               </div>
               <div>
-                <p className="eyebrow text-negative-600">Kritiek</p>
+                <p className="eyebrow text-negative-600">{t('pagesB.dashboard.criticalEyebrow')}</p>
                 <h2 className="text-base font-semibold text-ink-900 dark:text-white tracking-tight">
                   {t('dashboard.criticalAlerts')}
                 </h2>

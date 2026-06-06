@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { AlertTriangle } from 'lucide-react';
 import { Modal } from '../common/Modal';
 
@@ -46,14 +47,17 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   isOpen,
   title,
   message,
-  confirmText = 'OK',
-  cancelText = 'Annuleren',
+  confirmText,
+  cancelText,
   onConfirm,
   onClose,
   onCancel,
   variant = 'danger',
   style = 'icon',
 }) => {
+  const { t } = useTranslation();
+  const resolvedConfirmText = confirmText ?? t('modalsB.confirm.ok');
+  const resolvedCancelText = cancelText ?? t('modalsB.confirm.cancel');
   const handleClose = () => {
     // Support both onClose and legacy onCancel
     if (onClose) {
@@ -100,13 +104,13 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             onClick={handleClose}
             className="px-4 py-2 bg-surface-muted dark:bg-trading-dark-700 hover:bg-ink-200 dark:hover:bg-trading-dark-600 text-ink-900 dark:text-white rounded-lg font-medium transition-colors"
           >
-            {cancelText}
+            {resolvedCancelText}
           </button>
           <button
             onClick={handleConfirm}
             className={`px-4 py-2 ${styles.button} rounded-lg font-medium transition-colors`}
           >
-            {confirmText}
+            {resolvedConfirmText}
           </button>
         </div>
       </Modal>
@@ -150,13 +154,13 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           onClick={handleClose}
           className="px-4 py-2 text-sm font-medium text-ink-700 dark:text-ink-300 bg-surface-subtle dark:bg-trading-dark-700 hover:bg-surface-muted dark:hover:bg-trading-dark-600 rounded-lg transition-colors"
         >
-          {cancelText}
+          {resolvedCancelText}
         </button>
         <button
           onClick={handleConfirm}
           className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${styles.button}`}
         >
-          {confirmText}
+          {resolvedConfirmText}
         </button>
       </div>
     </Modal>

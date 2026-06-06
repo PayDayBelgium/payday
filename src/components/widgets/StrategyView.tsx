@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import {
@@ -92,6 +93,7 @@ const strategyTypeConfig: Record<
 };
 
 export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, currency }) => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const strategies = useAppSelector(selectStrategiesByPortfolio(portfolioName));
   const allPositions = useAppSelector((state) => state.positions.positions);
@@ -230,14 +232,16 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <Layers className="w-5 h-5 text-ink-600 dark:text-ink-400" />
-          <h3 className="text-lg font-semibold text-ink-900 dark:text-white">Trading Strategies</h3>
+          <h3 className="text-lg font-semibold text-ink-900 dark:text-white">
+            {t('widgetsB.tradingStrategies')}
+          </h3>
         </div>
         <button
           onClick={() => setIsCreating(true)}
           className="flex items-center gap-2 px-3 py-2 bg-primary-700 hover:bg-primary-800 text-white rounded-lg text-sm font-medium transition-colors"
         >
           <Plus className="w-4 h-4" />
-          Nieuwe Strategie
+          {t('widgetsB.newStrategy')}
         </button>
       </div>
 
@@ -245,24 +249,24 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
       {isCreating && (
         <div className="mb-6 p-4 bg-surface dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600">
           <h4 className="text-sm font-semibold text-ink-900 dark:text-white mb-3">
-            Nieuwe Strategie Aanmaken
+            {t('widgetsB.createNewStrategy')}
           </h4>
           <div className="space-y-3">
             <div>
               <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
-                Naam
+                {t('widgetsB.name')}
               </label>
               <input
                 type="text"
                 value={newStrategyName}
                 onChange={(e) => setNewStrategyName(e.target.value)}
-                placeholder="Bijv. AAPL Covered Calls"
+                placeholder={t('widgetsB.strategyNamePlaceholder')}
                 className="w-full px-3 py-2 bg-white dark:bg-trading-dark-700 border border-ink-200 dark:border-trading-dark-500 rounded-lg text-sm text-ink-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
             <div>
               <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
-                Type
+                {t('widgetsB.type')}
               </label>
               <select
                 value={newStrategyType}
@@ -278,12 +282,12 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
             </div>
             <div>
               <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
-                Beschrijving (optioneel)
+                {t('widgetsB.descriptionOptional')}
               </label>
               <textarea
                 value={newStrategyDescription}
                 onChange={(e) => setNewStrategyDescription(e.target.value)}
-                placeholder="Beschrijf de strategie..."
+                placeholder={t('widgetsB.describeStrategyPlaceholder')}
                 rows={2}
                 className="w-full px-3 py-2 bg-white dark:bg-trading-dark-700 border border-ink-200 dark:border-trading-dark-500 rounded-lg text-sm text-ink-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
               />
@@ -294,7 +298,7 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
                 disabled={!newStrategyName.trim()}
                 className="px-4 py-2 bg-primary-700 hover:bg-primary-800 disabled:bg-ink-300 text-white rounded-lg text-sm font-medium transition-colors"
               >
-                Aanmaken
+                {t('widgetsB.create')}
               </button>
               <button
                 onClick={() => {
@@ -304,7 +308,7 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
                 }}
                 className="px-4 py-2 bg-surface-muted dark:bg-trading-dark-700 hover:bg-ink-200 dark:hover:bg-trading-dark-600 text-ink-700 dark:text-ink-300 rounded-lg text-sm font-medium transition-colors"
               >
-                Annuleren
+                {t('widgetsB.cancel')}
               </button>
             </div>
           </div>
@@ -316,16 +320,18 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
         {strategies.length === 0 && !isCreating ? (
           <div className="text-center py-12 bg-surface dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600">
             <Layers className="w-12 h-12 mx-auto mb-3 text-ink-400 dark:text-ink-500" />
-            <p className="text-ink-600 dark:text-ink-400 mb-2">Geen strategieën geconfigureerd</p>
+            <p className="text-ink-600 dark:text-ink-400 mb-2">
+              {t('widgetsB.noStrategiesConfigured')}
+            </p>
             <p className="text-sm text-ink-500 dark:text-ink-500 mb-4">
-              Maak strategieën aan om posities te groeperen
+              {t('widgetsB.createStrategiesToGroup')}
             </p>
             <button
               onClick={() => setIsCreating(true)}
               className="inline-flex items-center gap-2 px-4 py-2 bg-primary-700 hover:bg-primary-800 text-white rounded-lg text-sm font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
-              Eerste Strategie Aanmaken
+              {t('widgetsB.createFirstStrategy')}
             </button>
           </div>
         ) : (
@@ -362,8 +368,10 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
                         {strategy.name}
                       </h4>
                       <p className="text-xs text-ink-500 dark:text-ink-400">
-                        {config.label} • {strategyPositions.length} positie
-                        {strategyPositions.length !== 1 ? 's' : ''}
+                        {config.label} •{' '}
+                        {strategyPositions.length === 1
+                          ? t('widgetsB.positionCount', { count: strategyPositions.length })
+                          : t('widgetsB.positionCountPlural', { count: strategyPositions.length })}
                       </p>
                     </div>
                   </button>
@@ -378,14 +386,14 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
                           ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
                           : 'hover:bg-surface-subtle dark:hover:bg-trading-dark-700 text-ink-500 dark:text-ink-400'
                       }`}
-                      title="Posities koppelen"
+                      title={t('widgetsB.linkPositions')}
                     >
                       <Link2 className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleDeleteStrategy(strategy.id)}
                       className="p-2 hover:bg-negative-50 dark:hover:bg-negative-700/25 text-ink-500 dark:text-ink-400 hover:text-negative-600 dark:hover:text-negative-500 rounded-lg transition-colors"
-                      title="Strategie verwijderen"
+                      title={t('widgetsB.deleteStrategy')}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -403,7 +411,7 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
 
                     {strategyPositions.length === 0 ? (
                       <p className="text-sm text-ink-500 dark:text-ink-500 italic">
-                        Geen posities gekoppeld aan deze strategie
+                        {t('widgetsB.noPositionsLinked')}
                       </p>
                     ) : (
                       <div className="space-y-2">
@@ -430,7 +438,7 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
                                 <button
                                   onClick={() => handleUnlinkPosition(strategy.id, pos.id)}
                                   className="p-1.5 hover:bg-surface-subtle dark:hover:bg-trading-dark-700 text-ink-400 hover:text-ink-600 dark:hover:text-ink-300 rounded transition-colors"
-                                  title="Ontkoppelen"
+                                  title={t('widgetsB.unlink')}
                                 >
                                   <Unlink className="w-3.5 h-3.5" />
                                 </button>
@@ -447,7 +455,7 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
                 {isLinking && unassignedPositions.length > 0 && (
                   <div className="border-t border-primary-200 dark:border-primary-800 bg-primary-50 dark:bg-primary-900/20 p-4">
                     <p className="text-xs font-medium text-primary-700 dark:text-primary-300 mb-3">
-                      Selecteer posities om te koppelen:
+                      {t('widgetsB.selectPositionsToLink')}
                     </p>
                     <div className="space-y-2 max-h-48 overflow-y-auto">
                       {unassignedPositions.map((pos) => {
@@ -484,7 +492,7 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
         <div className="mt-6">
           <h4 className="text-sm font-semibold text-ink-700 dark:text-ink-300 mb-3 flex items-center gap-2">
             <Target className="w-4 h-4" />
-            Niet-gekoppelde Posities ({unassignedPositions.length})
+            {t('widgetsB.unlinkedPositions', { count: unassignedPositions.length })}
           </h4>
           <div className="bg-surface dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 p-4">
             <div className="space-y-2">

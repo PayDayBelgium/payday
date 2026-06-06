@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Lightbulb,
   BookOpen,
@@ -27,6 +28,7 @@ import type {
 
 // Tip Card Component
 const TipCard: React.FC<{ tip: TradingTip; isLocked?: boolean }> = ({ tip, isLocked }) => {
+  const { t } = useTranslation();
   const getCategoryColor = (category: TradingTip['category']) => {
     switch (category) {
       case 'strategy':
@@ -47,17 +49,17 @@ const TipCard: React.FC<{ tip: TradingTip; isLocked?: boolean }> = ({ tip, isLoc
   const getCategoryLabel = (category: TradingTip['category']) => {
     switch (category) {
       case 'strategy':
-        return 'Strategie';
+        return t('learnFeat.tipCatStrategy');
       case 'risk':
-        return 'Risico';
+        return t('learnFeat.tipCatRisk');
       case 'psychology':
-        return 'Psychologie';
+        return t('learnFeat.tipCatPsychology');
       case 'tax':
-        return 'Belasting';
+        return t('learnFeat.tipCatTax');
       case 'tool':
-        return 'Tool';
+        return t('learnFeat.tipCatTool');
       default:
-        return 'Algemeen';
+        return t('learnFeat.tipCatGeneral');
     }
   };
 
@@ -95,6 +97,7 @@ const TipCard: React.FC<{ tip: TradingTip; isLocked?: boolean }> = ({ tip, isLoc
 
 // Book Card Component
 const BookCard: React.FC<{ book: RecommendedBook; isLocked?: boolean }> = ({ book, isLocked }) => {
+  const { t } = useTranslation();
   const getDifficultyColor = (difficulty: RecommendedBook['difficulty']) => {
     switch (difficulty) {
       case 'easy':
@@ -111,11 +114,11 @@ const BookCard: React.FC<{ book: RecommendedBook; isLocked?: boolean }> = ({ boo
   const getDifficultyLabel = (difficulty: RecommendedBook['difficulty']) => {
     switch (difficulty) {
       case 'easy':
-        return 'Toegankelijk';
+        return t('learnFeat.bookDiffEasy');
       case 'medium':
-        return 'Gemiddeld';
+        return t('learnFeat.bookDiffMedium');
       case 'advanced':
-        return 'Gevorderd';
+        return t('learnFeat.bookDiffAdvanced');
       default:
         return difficulty;
     }
@@ -139,7 +142,9 @@ const BookCard: React.FC<{ book: RecommendedBook; isLocked?: boolean }> = ({ boo
         </div>
         <div className="flex-1 min-w-0">
           <h4 className="font-semibold text-ink-900 dark:text-white text-sm mb-1">{book.title}</h4>
-          <p className="text-xs text-ink-500 dark:text-ink-400 mb-2">door {book.author}</p>
+          <p className="text-xs text-ink-500 dark:text-ink-400 mb-2">
+            {t('learnFeat.bookByAuthor', { author: book.author })}
+          </p>
           <p
             className={`text-sm ${isLocked ? 'blur-sm select-none' : ''} text-ink-600 dark:text-ink-400 mb-3 line-clamp-2`}
           >
@@ -236,6 +241,7 @@ const ResourceLink: React.FC<{ resource: ExternalResource; isLocked?: boolean }>
   resource,
   isLocked,
 }) => {
+  const { t } = useTranslation();
   const getTypeIcon = (type: ExternalResource['type']) => {
     switch (type) {
       case 'broker':
@@ -268,7 +274,7 @@ const ResourceLink: React.FC<{ resource: ExternalResource; isLocked?: boolean }>
           <h4 className="font-medium text-ink-900 dark:text-white text-sm">{resource.title}</h4>
           {resource.isFree && (
             <span className="text-xs px-1.5 py-0.5 bg-positive-50 text-positive-700 dark:bg-positive-700/25 dark:text-positive-500 rounded">
-              Gratis
+              {t('learnFeat.resourceFree')}
             </span>
           )}
         </div>
@@ -327,6 +333,7 @@ interface LearningResourcesProps {
 }
 
 export const LearningResources: React.FC<LearningResourcesProps> = () => {
+  const { t } = useTranslation();
   const unlockedLevels = useAppSelector(selectUnlockedLevels);
   const currentLevel = useAppSelector(selectCurrentLevel);
   const [activeLevel, setActiveLevel] = useState<UserLevel | 'all'>(currentLevel);
@@ -368,7 +375,7 @@ export const LearningResources: React.FC<LearningResourcesProps> = () => {
               : 'bg-surface-subtle dark:bg-trading-dark-700 text-ink-700 dark:text-ink-300 hover:bg-surface-muted dark:hover:bg-trading-dark-600'
           }`}
         >
-          Alle Niveaus
+          {t('learnFeat.resourcesAllLevels')}
         </button>
         {levelOrder.map((level) => {
           const config = LEVEL_CONFIGS.find((c) => c.level === level);
@@ -405,12 +412,14 @@ export const LearningResources: React.FC<LearningResourcesProps> = () => {
                 <span className="text-2xl">{config?.icon}</span>
                 <div>
                   <h3 className="font-bold text-ink-900 dark:text-white">{config?.slopeName}</h3>
-                  <p className="text-sm text-ink-500 dark:text-ink-400">{config?.name} niveau</p>
+                  <p className="text-sm text-ink-500 dark:text-ink-400">
+                    {t('learnFeat.resourcesLevelSuffix', { name: config?.name })}
+                  </p>
                 </div>
                 {isLocked && (
                   <span className="ml-auto flex items-center gap-1 text-xs text-ink-500 dark:text-ink-400 bg-surface-subtle dark:bg-trading-dark-700 px-2 py-1 rounded">
                     <Lock className="w-3 h-3" />
-                    Vergrendeld
+                    {t('learnFeat.resourcesLocked')}
                   </span>
                 )}
               </div>
@@ -419,7 +428,7 @@ export const LearningResources: React.FC<LearningResourcesProps> = () => {
             {/* Tips & Tricks */}
             {resources.tips.length > 0 && (
               <Section
-                title="Tips & Tricks"
+                title={t('learnFeat.resourcesTips')}
                 icon={<Lightbulb className="w-5 h-5 text-caution-500" />}
                 count={resources.tips.length}
               >
@@ -434,7 +443,7 @@ export const LearningResources: React.FC<LearningResourcesProps> = () => {
             {/* Recommended Books */}
             {resources.books.length > 0 && (
               <Section
-                title="Aanbevolen Boeken"
+                title={t('learnFeat.resourcesBooks')}
                 icon={<BookOpen className="w-5 h-5 text-primary-600" />}
                 count={resources.books.length}
               >
@@ -449,7 +458,7 @@ export const LearningResources: React.FC<LearningResourcesProps> = () => {
             {/* Video Tutorials */}
             {resources.videos.length > 0 && (
               <Section
-                title="Video Tutorials"
+                title={t('learnFeat.resourcesVideos')}
                 icon={<PlayCircle className="w-5 h-5 text-negative-600" />}
                 count={resources.videos.length}
                 defaultOpen={false}
@@ -465,7 +474,7 @@ export const LearningResources: React.FC<LearningResourcesProps> = () => {
             {/* External Resources */}
             {resources.externalResources.length > 0 && (
               <Section
-                title="Handige Links"
+                title={t('learnFeat.resourcesLinks')}
                 icon={<ExternalLink className="w-5 h-5 text-positive-600" />}
                 count={resources.externalResources.length}
                 defaultOpen={false}
@@ -486,6 +495,7 @@ export const LearningResources: React.FC<LearningResourcesProps> = () => {
 
 // Random Tip Widget - for dashboard or sidebar
 export const RandomTipWidget: React.FC = () => {
+  const { t } = useTranslation();
   const currentLevel = useAppSelector(selectCurrentLevel);
   const [tip, setTip] = useState<TradingTip | null>(null);
 
@@ -506,7 +516,7 @@ export const RandomTipWidget: React.FC = () => {
         </div>
         <div className="flex-1 min-w-0">
           <h4 className="font-semibold text-ink-900 dark:text-white text-sm mb-1">
-            Tip van de Dag
+            {t('learnFeat.tipOfTheDay')}
           </h4>
           <p className="text-xs text-ink-600 dark:text-ink-400 mb-2 font-medium">{tip.title}</p>
           <p className="text-sm text-ink-700 dark:text-ink-300">{tip.content}</p>

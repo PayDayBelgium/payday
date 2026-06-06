@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { DollarSign, Shield, TrendingUp, Calendar, AlertCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { selectPortfolios, selectPortfolioSummaries } from '../../store/slices/portfoliosSlice';
 import { selectPositions } from '../../store/slices/positionsSlice';
@@ -35,6 +36,7 @@ interface PortfolioCashAnalysis {
 }
 
 export const CashOnderpandAnalysis: React.FC = () => {
+  const { t } = useTranslation();
   const portfolios = useAppSelector(selectPortfolios);
   const positions = useAppSelector(selectPositions);
   const summaries = useAppSelector(selectPortfolioSummaries);
@@ -195,8 +197,7 @@ export const CashOnderpandAnalysis: React.FC = () => {
     return (
       <div className="bg-caution-50 dark:bg-caution-600/15 border border-caution-500/30 dark:border-caution-500/30 rounded-lg p-4">
         <p className="text-sm text-caution-600 dark:text-amber-200">
-          Geen portfolios met opties gevonden. Deze analyse is alleen beschikbaar voor portfolios
-          die opties ondersteunen.
+          {t('compCommon.noOptionPortfolios')}
         </p>
       </div>
     );
@@ -209,44 +210,50 @@ export const CashOnderpandAnalysis: React.FC = () => {
         <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
           <div className="flex items-center gap-2 mb-2">
             <DollarSign className="w-5 h-5 text-primary-700 dark:text-primary-300" />
-            <p className="text-sm text-ink-600 dark:text-ink-400">Totale Cash</p>
+            <p className="text-sm text-ink-600 dark:text-ink-400">{t('compCommon.totalCash')}</p>
           </div>
           <p className="text-2xl font-bold text-ink-900 dark:text-white">
             {formatCurrency(totalAnalysis.totalCash, portfolios)}
           </p>
-          <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">Alle portfolios met opties</p>
+          <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
+            {t('compCommon.allOptionPortfolios')}
+          </p>
         </div>
 
         <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
           <div className="flex items-center gap-2 mb-2">
             <Shield className="w-5 h-5 text-ink-600 dark:text-ink-300" />
-            <p className="text-sm text-ink-600 dark:text-ink-400">Totaal Onderpand</p>
+            <p className="text-sm text-ink-600 dark:text-ink-400">
+              {t('compCommon.totalCollateral')}
+            </p>
           </div>
           <p className="text-2xl font-bold text-ink-600 dark:text-ink-300">
             {formatCurrency(totalAnalysis.totalOnderpand, portfolios)}
           </p>
           <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
-            {totalAnalysis.positionsCount} posities
+            {t('compCommon.positionsCount', { n: totalAnalysis.positionsCount })}
           </p>
         </div>
 
         <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
           <div className="flex items-center gap-2 mb-2">
             <TrendingUp className="w-5 h-5 text-positive-600 dark:text-positive-500" />
-            <p className="text-sm text-ink-600 dark:text-ink-400">Vrije cash</p>
+            <p className="text-sm text-ink-600 dark:text-ink-400">{t('compCommon.freeCash')}</p>
           </div>
           <p className="text-2xl font-bold text-positive-600 dark:text-positive-500">
             {formatCurrency(totalAnalysis.freeCash, portfolios)}
           </p>
           <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
-            Beschikbaar voor nieuwe posities
+            {t('compCommon.availableForNewPositions')}
           </p>
         </div>
 
         <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
           <div className="flex items-center gap-2 mb-2">
             <Calendar className="w-5 h-5 text-caution-600 dark:text-caution-500" />
-            <p className="text-sm text-ink-600 dark:text-ink-400">Onderpand %</p>
+            <p className="text-sm text-ink-600 dark:text-ink-400">
+              {t('compCommon.collateralPercent')}
+            </p>
           </div>
           <p className="text-2xl font-bold text-ink-900 dark:text-white">
             {totalAnalysis.totalCash > 0
@@ -254,7 +261,9 @@ export const CashOnderpandAnalysis: React.FC = () => {
               : 0}
             %
           </p>
-          <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">Van totale cash</p>
+          <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
+            {t('compCommon.ofTotalCash')}
+          </p>
         </div>
       </div>
 
@@ -272,19 +281,19 @@ export const CashOnderpandAnalysis: React.FC = () => {
               </h3>
               <div className="flex gap-4 text-sm">
                 <div className="text-right">
-                  <p className="text-ink-600 dark:text-ink-400">Cash</p>
+                  <p className="text-ink-600 dark:text-ink-400">{t('compCommon.colCash')}</p>
                   <p className="font-bold text-ink-900 dark:text-white">
                     {formatCurrency(portfolio.totalCash, portfolios)}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-ink-600 dark:text-ink-400">Onderpand</p>
+                  <p className="text-ink-600 dark:text-ink-400">{t('compCommon.colCollateral')}</p>
                   <p className="font-bold text-ink-600 dark:text-ink-300">
                     {formatCurrency(portfolio.totalOnderpand, portfolios)}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-ink-600 dark:text-ink-400">Vrij</p>
+                  <p className="text-ink-600 dark:text-ink-400">{t('compCommon.colFree')}</p>
                   <p className="font-bold text-positive-600 dark:text-positive-500">
                     {formatCurrency(portfolio.freeCash, portfolios)}
                   </p>
@@ -300,25 +309,25 @@ export const CashOnderpandAnalysis: React.FC = () => {
                 <thead className="bg-surface dark:bg-trading-dark-700">
                   <tr>
                     <th className="px-4 py-3 text-left text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
-                      Ticker
+                      {t('compCommon.thTicker')}
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
-                      Type
+                      {t('compCommon.thType')}
                     </th>
                     <th className="px-4 py-3 text-right text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
-                      Onderpand
+                      {t('compCommon.thCollateral')}
                     </th>
                     <th className="px-4 py-3 text-center text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
-                      Expiratie
+                      {t('compCommon.thExpiration')}
                     </th>
                     <th className="px-4 py-3 text-center text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
-                      DTE
+                      {t('compCommon.thDte')}
                     </th>
                     <th className="px-4 py-3 text-center text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
-                      Delta
+                      {t('compCommon.thDelta')}
                     </th>
                     <th className="px-4 py-3 text-center text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
-                      Actie
+                      {t('compCommon.thAction')}
                     </th>
                   </tr>
                 </thead>
@@ -392,11 +401,13 @@ export const CashOnderpandAnalysis: React.FC = () => {
                           <div className="flex items-center justify-center gap-1">
                             <AlertCircle className="w-4 h-4 text-positive-600 dark:text-positive-500" />
                             <span className="text-xs text-positive-600 dark:text-positive-500 font-medium">
-                              Overweeg sluiten
+                              {t('compCommon.considerClosing')}
                             </span>
                           </div>
                         ) : (
-                          <span className="text-xs text-ink-500 dark:text-ink-400">Aanhouden</span>
+                          <span className="text-xs text-ink-500 dark:text-ink-400">
+                            {t('compCommon.hold')}
+                          </span>
                         )}
                       </td>
                     </tr>
@@ -406,7 +417,7 @@ export const CashOnderpandAnalysis: React.FC = () => {
             </div>
           ) : (
             <div className="p-8 text-center text-ink-500 dark:text-ink-400">
-              Geen posities met onderpand vereisten
+              {t('compCommon.noCollateralPositions')}
             </div>
           )}
         </div>
@@ -418,24 +429,24 @@ export const CashOnderpandAnalysis: React.FC = () => {
           <AlertCircle className="w-5 h-5 text-primary-700 dark:text-primary-300 mt-0.5 flex-shrink-0" />
           <div className="flex-1">
             <h4 className="font-semibold text-primary-900 dark:text-blue-100 mb-2">
-              Hoe gebruik je deze analyse?
+              {t('compCommon.howToUseTitle')}
             </h4>
             <ul className="text-sm text-primary-700 dark:text-primary-200 space-y-1">
               <li>
-                • <strong>Vrije cash</strong>: Dit is het bedrag dat je kunt gebruiken voor nieuwe
-                Cash Secured Puts of spreads
+                • <strong>{t('compCommon.howToUseFreeCashLabel')}</strong>
+                {t('compCommon.howToUseFreeCashText')}
               </li>
               <li>
-                • <strong>DTE (Days To Expiration)</strong>: Oranje (&lt;7 dagen) = expireert
-                binnenkort, overweeg vroeg sluiten als winstgevend
+                • <strong>{t('compCommon.howToUseDteLabel')}</strong>
+                {t('compCommon.howToUseDteText')}
               </li>
               <li>
-                • <strong>Delta</strong>: Hoe dichtbij de strike price. Groen (&lt;0.3) = veilig,
-                Oranje (0.3-0.5) = let op, Rood (&gt;0.5) = ITM risk
+                • <strong>{t('compCommon.howToUseDeltaLabel')}</strong>
+                {t('compCommon.howToUseDeltaText')}
               </li>
               <li>
-                • <strong>Actie</strong>: "Overweeg sluiten" = positie is &lt;7 DTE én winstgevend,
-                onderpand kan vrijkomen voor nieuwe trades
+                • <strong>{t('compCommon.howToUseActionLabel')}</strong>
+                {t('compCommon.howToUseActionText')}
               </li>
             </ul>
           </div>

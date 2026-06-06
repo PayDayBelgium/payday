@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import { TrendingUp, TrendingDown, Info, AlertTriangle } from 'lucide-react';
 
 interface StatCardProps {
@@ -29,6 +30,7 @@ export const StatCard: React.FC<StatCardProps> = ({
   showAlert,
   alertMessage,
 }) => {
+  const { t } = useTranslation();
   const isWarning = variant === 'warning';
 
   const [showAlertTooltip, setShowAlertTooltip] = useState(false);
@@ -53,8 +55,7 @@ export const StatCard: React.FC<StatCardProps> = ({
     }
   }, [showInfoTooltip]);
 
-  const defaultAlertMessage =
-    'Kritiek: Je vrije cash is negatief. Dit betekent dat je meer collateral nodig hebt dan je beschikbare cash. Overweeg posities te sluiten of extra kapitaal toe te voegen.';
+  const defaultAlertMessage = t('widgetsB.criticalNegativeCash');
 
   return (
     <div
@@ -90,7 +91,9 @@ export const StatCard: React.FC<StatCardProps> = ({
                     strokeWidth={1.75}
                   />
                   <div>
-                    <p className="font-semibold text-sm text-negative-600 mb-1">Kritiek</p>
+                    <p className="font-semibold text-sm text-negative-600 mb-1">
+                      {t('widgetsB.critical')}
+                    </p>
                     <p className="text-xs text-ink-700 dark:text-ink-300">
                       {alertMessage || defaultAlertMessage}
                     </p>
@@ -130,7 +133,9 @@ export const StatCard: React.FC<StatCardProps> = ({
                     strokeWidth={1.75}
                   />
                   <div>
-                    <p className="font-semibold text-sm text-ink-900 dark:text-white mb-1">Info</p>
+                    <p className="font-semibold text-sm text-ink-900 dark:text-white mb-1">
+                      {t('widgetsB.info')}
+                    </p>
                     <p className="text-xs text-ink-700 dark:text-ink-300">{tooltip}</p>
                   </div>
                 </div>

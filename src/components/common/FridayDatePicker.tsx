@@ -1,5 +1,6 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface FridayDatePickerProps {
   value: string;
@@ -24,6 +25,7 @@ export const FridayDatePicker: React.FC<FridayDatePickerProps> = ({
   min,
   max,
 }) => {
+  const { t } = useTranslation();
   // Get the next Friday from a given date
   const getNextFriday = (date: Date): Date => {
     const result = new Date(date);
@@ -118,8 +120,8 @@ export const FridayDatePicker: React.FC<FridayDatePickerProps> = ({
           onClick={handlePreviousFriday}
           disabled={isPrevDisabled}
           className="w-8 flex items-center justify-center text-ink-500 hover:text-ink-700 dark:text-ink-400 dark:hover:text-ink-200 hover:bg-surface-subtle dark:hover:bg-trading-dark-700 bg-surface dark:bg-trading-dark-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-surface dark:disabled:hover:bg-trading-dark-700 border-r border-ink-200 dark:border-trading-dark-500"
-          aria-label="Vorige vrijdag"
-          title="Vorige vrijdag"
+          aria-label={t('compCommon.previousFriday')}
+          title={t('compCommon.previousFriday')}
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
@@ -129,8 +131,8 @@ export const FridayDatePicker: React.FC<FridayDatePickerProps> = ({
           onClick={handleNextFriday}
           disabled={isNextDisabled}
           className="w-9 flex items-center justify-center text-ink-500 hover:text-ink-700 dark:text-ink-400 dark:hover:text-ink-200 hover:bg-surface-subtle dark:hover:bg-trading-dark-700 bg-surface dark:bg-trading-dark-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-surface dark:disabled:hover:bg-trading-dark-700"
-          aria-label="Volgende vrijdag"
-          title="Volgende vrijdag"
+          aria-label={t('compCommon.nextFriday')}
+          title={t('compCommon.nextFriday')}
         >
           <ChevronRight className="w-4 h-4" />
         </button>

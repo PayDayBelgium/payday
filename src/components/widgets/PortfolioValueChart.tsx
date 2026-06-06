@@ -8,6 +8,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import { useTranslation } from 'react-i18next';
 import type { DailyPortfolioData, CurrencyType } from '../../types';
 import { getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency, formatNumber, formatCompactNumber } from '../../utils/numberFormat';
@@ -33,6 +34,7 @@ export const PortfolioValueChart: React.FC<PortfolioValueChartProps> = ({
   subtitle,
   footer,
 }) => {
+  const { t } = useTranslation();
   const currencySymbol = getCurrencySymbol(currency);
   const [viewMode, setViewMode] = useState<ViewMode>('chart');
   const [copied, setCopied] = useState(false);
@@ -58,7 +60,12 @@ export const PortfolioValueChart: React.FC<PortfolioValueChartProps> = ({
     if (chartData.length === 0) return;
 
     // Create tab-separated values (TSV) for Excel compatibility
-    const headers = ['Datum', 'Portfolio waarde', 'Cash', 'Dagelijkse P&L'];
+    const headers = [
+      t('widgetsB.colDate'),
+      t('widgetsB.colPortfolioValue'),
+      t('widgetsB.colCash'),
+      t('widgetsB.colDailyPnl'),
+    ];
     const rows = chartData.map((row) => [
       row.fullDate,
       formatNumber(row.totalValue, 2),
@@ -86,11 +93,10 @@ export const PortfolioValueChart: React.FC<PortfolioValueChartProps> = ({
         <div className="p-12 text-center flex-1 flex flex-col items-center justify-center">
           <TrendingUp className="w-16 h-16 mx-auto mb-4 text-ink-400 dark:text-ink-500" />
           <p className="text-lg font-medium text-ink-900 dark:text-white mb-2">
-            Nog geen historische data
+            {t('widgetsB.noHistoricalDataValue')}
           </p>
           <p className="text-sm text-ink-600 dark:text-ink-400 max-w-md mx-auto">
-            Voeg een transactie toe (deposit, withdrawal, of aanpassing) om automatisch je portfolio
-            waarde te tracken over tijd
+            {t('widgetsB.addTransactionToTrack')}
           </p>
         </div>
       </div>
@@ -124,7 +130,7 @@ export const PortfolioValueChart: React.FC<PortfolioValueChartProps> = ({
                     ? 'bg-white dark:bg-trading-dark-600 text-primary-700 dark:text-primary-300 shadow-sm'
                     : 'text-ink-500 dark:text-ink-400 hover:text-ink-700 dark:hover:text-ink-300'
                 }`}
-                title="Grafiek weergave"
+                title={t('widgetsB.chartView')}
               >
                 <BarChart3 className="w-4 h-4" />
               </button>
@@ -135,7 +141,7 @@ export const PortfolioValueChart: React.FC<PortfolioValueChartProps> = ({
                     ? 'bg-white dark:bg-trading-dark-600 text-primary-700 dark:text-primary-300 shadow-sm'
                     : 'text-ink-500 dark:text-ink-400 hover:text-ink-700 dark:hover:text-ink-300'
                 }`}
-                title="Tabel weergave"
+                title={t('widgetsB.tableView')}
               >
                 <Table className="w-4 h-4" />
               </button>
@@ -148,7 +154,7 @@ export const PortfolioValueChart: React.FC<PortfolioValueChartProps> = ({
                   ? 'bg-positive-50 dark:bg-positive-700/25 text-positive-600 dark:text-positive-500'
                   : 'bg-surface-subtle dark:bg-trading-dark-700 text-ink-500 dark:text-ink-400 hover:text-ink-700 dark:hover:text-ink-300'
               }`}
-              title={copied ? 'Gekopieerd!' : 'Kopieer naar clipboard (Excel)'}
+              title={copied ? t('widgetsB.copied') : t('widgetsB.copyToClipboard')}
             >
               {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
             </button>
@@ -184,14 +190,17 @@ export const PortfolioValueChart: React.FC<PortfolioValueChartProps> = ({
                   boxShadow:
                     '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
                 }}
-                formatter={(value: number) => [formatCurrency(value, currencySymbol), 'Waarde']}
+                formatter={(value: number) => [
+                  formatCurrency(value, currencySymbol),
+                  t('widgetsB.valueTooltip'),
+                ]}
                 labelStyle={{ color: '#000000', fontWeight: '600' }}
                 itemStyle={{ color: '#000000' }}
               />
               <Line
                 type="monotone"
                 dataKey="totalValue"
-                name="Portfolio waarde"
+                name={t('widgetsB.portfolioValueSeries')}
                 stroke="#3b82f6"
                 strokeWidth={2}
                 dot={{ fill: '#3b82f6', r: 4 }}
@@ -209,16 +218,16 @@ export const PortfolioValueChart: React.FC<PortfolioValueChartProps> = ({
             <thead className="bg-surface dark:bg-trading-dark-700/50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
-                  datum
+                  {t('widgetsB.colDate')}
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
-                  Portfolio Waarde
+                  {t('widgetsB.colPortfolioValue')}
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
-                  Cash
+                  {t('widgetsB.colCash')}
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-ink-500 dark:text-ink-400 uppercase tracking-wider">
-                  Dagelijkse P&L
+                  {t('widgetsB.colDailyPnl')}
                 </th>
               </tr>
             </thead>

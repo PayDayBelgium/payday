@@ -8,6 +8,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import { useTranslation } from 'react-i18next';
 import type { DailyPortfolioData, CurrencyType } from '../../types';
 import { getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency, formatCompactNumber } from '../../utils/numberFormat';
@@ -36,6 +37,7 @@ export const MultiPortfolioChart: React.FC<MultiPortfolioChartProps> = ({
   portfolios,
   className = '',
 }) => {
+  const { t } = useTranslation();
   // Track HIDDEN series instead of visible ones, so portfolios added after mount
   // are visible by default (they're simply not in the hidden set).
   const [hiddenPortfolios, setHiddenPortfolios] = useState<Set<string>>(new Set());
@@ -94,10 +96,10 @@ export const MultiPortfolioChart: React.FC<MultiPortfolioChartProps> = ({
         {/* Header */}
         <div className="px-6 py-4 border-b border-surface-line dark:border-trading-dark-600">
           <h3 className="text-lg font-semibold text-ink-900 dark:text-white">
-            Portfolio Vergelijking
+            {t('widgetsB.portfolioComparison')}
           </h3>
           <p className="text-sm text-ink-600 dark:text-ink-400 mt-1">
-            Vergelijk de ontwikkeling van je verschillende portfolios
+            {t('widgetsB.portfolioComparisonSubtitle')}
           </p>
         </div>
 
@@ -105,10 +107,10 @@ export const MultiPortfolioChart: React.FC<MultiPortfolioChartProps> = ({
         <div className="p-12 text-center">
           <TrendingUp className="w-16 h-16 mx-auto mb-4 text-ink-400 dark:text-ink-500" />
           <p className="text-lg font-medium text-ink-900 dark:text-white mb-2">
-            Nog geen historische data
+            {t('widgetsB.noHistoricalData')}
           </p>
           <p className="text-sm text-ink-600 dark:text-ink-400 max-w-md mx-auto">
-            Voeg transacties toe aan je portfolios om ze te vergelijken
+            {t('widgetsB.addTransactionsToCompare')}
           </p>
         </div>
       </div>
@@ -122,10 +124,11 @@ export const MultiPortfolioChart: React.FC<MultiPortfolioChartProps> = ({
       {/* Header */}
       <div className="px-6 py-4 border-b border-surface-line dark:border-trading-dark-600 flex-shrink-0">
         <h3 className="text-lg font-semibold text-ink-900 dark:text-white">
-          Portfolio Vergelijking
+          {t('widgetsB.portfolioComparison')}
         </h3>
         <p className="text-sm text-ink-600 dark:text-ink-400 mt-1">
-          {chartData.length} {chartData.length === 1 ? 'datapunt' : 'datapunten'}
+          {chartData.length}{' '}
+          {chartData.length === 1 ? t('widgetsB.oneDatapoint') : t('widgetsB.multipleDatapoints')}
         </p>
       </div>
 

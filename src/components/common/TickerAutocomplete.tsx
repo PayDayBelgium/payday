@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useId } from 'react';
 import { Search } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { TickerSuggestion } from './TickerAutocomplete.types';
 
 export type { TickerSuggestion } from './TickerAutocomplete.types';
@@ -25,6 +26,7 @@ export const TickerAutocomplete: React.FC<TickerAutocompleteProps> = ({
   required = false,
   className = '',
 }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [filteredSuggestions, setFilteredSuggestions] = useState<TickerSuggestion[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -107,7 +109,8 @@ export const TickerAutocomplete: React.FC<TickerAutocompleteProps> = ({
       {/* Ticker Input with Autocomplete */}
       <div ref={wrapperRef} className="relative">
         <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
-          Ticker symbool {required && <span className="text-negative-600">*</span>}
+          {t('compCommon.tickerSymbol')}{' '}
+          {required && <span className="text-negative-600">*</span>}
         </label>
         <div className="relative">
           <input
@@ -177,7 +180,7 @@ export const TickerAutocomplete: React.FC<TickerAutocompleteProps> = ({
       {/* Name Input */}
       <div>
         <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
-          Naam (Optioneel)
+          {t('compCommon.nameOptional')}
         </label>
         <input
           type="text"

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, AlertCircle, Target } from 'lucide-react';
 import { useFormData } from '../../hooks/useFormData';
 import type {
@@ -21,43 +22,43 @@ interface StrategyRuleModalProps {
 
 const allTriggerOptions: {
   value: StrategyRuleTrigger;
-  label: string;
+  labelKey: string;
   category: StrategyRuleCategory;
   strategies: StrategyType[];
 }[] = [
   {
     value: 'price_increase',
-    label: 'Prijs Stijging',
+    labelKey: 'modalsB.rule.priceIncrease',
     category: 'opportunity',
     strategies: ['stocks-etfs', 'leaps', 'covered-calls', 'csp', 'pmcc', 'spreads', 'kaching'],
   },
   {
     value: 'price_decrease',
-    label: 'Prijs Daling',
+    labelKey: 'modalsB.rule.priceDecrease',
     category: 'alert',
     strategies: ['stocks-etfs', 'leaps', 'covered-calls', 'csp', 'pmcc', 'spreads', 'kaching'],
   },
   {
     value: 'profit_target',
-    label: 'Winst Doelstelling',
+    labelKey: 'modalsB.rule.profitTarget',
     category: 'opportunity',
     strategies: ['stocks-etfs', 'leaps', 'covered-calls', 'csp', 'pmcc', 'spreads', 'kaching'],
   },
   {
     value: 'loss_limit',
-    label: 'Verlies Limiet',
+    labelKey: 'modalsB.rule.lossLimit',
     category: 'alert',
     strategies: ['stocks-etfs', 'leaps', 'covered-calls', 'csp', 'pmcc', 'spreads', 'kaching'],
   },
   {
     value: 'time_based',
-    label: 'Tijd Gebaseerd',
+    labelKey: 'modalsB.rule.timeBased',
     category: 'opportunity',
     strategies: ['covered-calls', 'csp', 'pmcc', 'spreads'],
   },
   {
     value: 'volatility',
-    label: 'Volatiliteit',
+    labelKey: 'modalsB.rule.volatility',
     category: 'opportunity',
     strategies: ['covered-calls', 'csp', 'pmcc', 'spreads'],
   },
@@ -71,6 +72,7 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
   portfolio,
   existingRule,
 }) => {
+  const { t } = useTranslation();
   // Filter trigger options based on strategy type only (show all categories)
   const triggerOptions = allTriggerOptions.filter((option) => {
     return option.strategies.includes(strategyType);
@@ -157,7 +159,7 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
     e.preventDefault();
 
     if (!formData.name || !formData.description) {
-      alert('Vul alle verplichte velden in');
+      alert(t('modalsB.rule.validationRequired'));
       return;
     }
 
@@ -169,7 +171,7 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
         formData.trigger === 'loss_limit') &&
       (!formData.percentage || parseFloat(formData.percentage) <= 0)
     ) {
-      alert('Vul een geldig percentage in (groter dan 0)');
+      alert(t('modalsB.rule.validationPercentage'));
       return;
     }
 
@@ -213,7 +215,7 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-surface-line dark:border-trading-dark-600">
           <h2 className="text-xl font-bold text-ink-900 dark:text-white">
-            {isEditing ? 'Regel Bewerken' : 'Nieuwe Regel Toevoegen'}
+            {isEditing ? t('modalsB.rule.editTitle') : t('modalsB.rule.newTitle')}
           </h2>
           <button
             onClick={onClose}
@@ -228,7 +230,7 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
           {/* Name */}
           <div>
             <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
-              Regel Naam <span className="text-negative-600">*</span>
+              {t('modalsB.rule.ruleName')} <span className="text-negative-600">*</span>
             </label>
             <input
               type="text"
@@ -236,14 +238,14 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
               value={formData.name}
               onChange={(e) => updateField('name', e.target.value)}
               className="w-full px-3 py-2 border border-ink-200 dark:border-trading-dark-500 rounded-lg bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              placeholder="Bijv. Aandeel Stijgt 15%"
+              placeholder={t('modalsB.rule.ruleNamePlaceholder')}
             />
           </div>
 
           {/* Description */}
           <div>
             <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
-              Beschrijving <span className="text-negative-600">*</span>
+              {t('modalsB.rule.description')} <span className="text-negative-600">*</span>
             </label>
             <textarea
               required
@@ -251,14 +253,14 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
               onChange={(e) => updateField('description', e.target.value)}
               rows={3}
               className="w-full px-3 py-2 border border-ink-200 dark:border-trading-dark-500 rounded-lg bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              placeholder="Beschrijf wanneer deze regel moet triggeren"
+              placeholder={t('modalsB.rule.descriptionPlaceholder')}
             />
           </div>
 
           {/* Trigger Type */}
           <div>
             <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
-              Trigger Type <span className="text-negative-600">*</span>
+              {t('modalsB.rule.triggerType')} <span className="text-negative-600">*</span>
             </label>
             <div className="grid grid-cols-2 gap-3">
               {triggerOptions.map((option) => (
@@ -298,7 +300,7 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
                         : 'text-ink-600 dark:text-ink-400'
                     }`}
                   >
-                    {option.label}
+                    {t(option.labelKey)}
                   </span>
                 </button>
               ))}
@@ -307,7 +309,9 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
 
           {/* Parameters - conditional based on trigger */}
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-ink-900 dark:text-white">Parameters</h3>
+            <h3 className="text-sm font-semibold text-ink-900 dark:text-white">
+              {t('modalsB.rule.parameters')}
+            </h3>
 
             {(formData.trigger === 'price_increase' ||
               formData.trigger === 'price_decrease' ||
@@ -315,7 +319,7 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
               formData.trigger === 'loss_limit') && (
               <div>
                 <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
-                  Percentage <span className="text-negative-600">*</span>
+                  {t('modalsB.rule.percentage')} <span className="text-negative-600">*</span>
                 </label>
                 <div className="relative">
                   <input
@@ -338,7 +342,7 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
             {formData.trigger === 'volatility' && (
               <div>
                 <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
-                  Drempelwaarde
+                  {t('modalsB.rule.threshold')}
                 </label>
                 <input
                   type="number"
@@ -354,17 +358,17 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
             {formData.trigger === 'time_based' && (
               <div>
                 <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
-                  Tijdseenheid
+                  {t('modalsB.rule.timeUnit')}
                 </label>
                 <select
                   value={formData.timeframe}
                   onChange={(e) => updateField('timeframe', e.target.value)}
                   className="w-full px-3 py-2 border border-ink-200 dark:border-trading-dark-500 rounded-lg bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 >
-                  <option value="">Selecteer tijdseenheid</option>
-                  <option value="daily">Dagelijks</option>
-                  <option value="weekly">Wekelijks</option>
-                  <option value="monthly">Maandelijks</option>
+                  <option value="">{t('modalsB.rule.selectTimeUnit')}</option>
+                  <option value="daily">{t('modalsB.rule.daily')}</option>
+                  <option value="weekly">{t('modalsB.rule.weekly')}</option>
+                  <option value="monthly">{t('modalsB.rule.monthly')}</option>
                 </select>
               </div>
             )}
@@ -372,7 +376,9 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
 
           {/* Actions */}
           <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-ink-900 dark:text-white">Waar tonen?</h3>
+            <h3 className="text-sm font-semibold text-ink-900 dark:text-white">
+              {t('modalsB.rule.whereToShow')}
+            </h3>
 
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -381,7 +387,9 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
                 onChange={(e) => updateField('showOnDashboard', e.target.checked)}
                 className="w-4 h-4 text-primary-700 border-ink-200 rounded focus:ring-primary-500 dark:border-trading-dark-500 dark:bg-trading-dark-700"
               />
-              <span className="text-sm text-ink-900 dark:text-white">Dashboard</span>
+              <span className="text-sm text-ink-900 dark:text-white">
+                {t('modalsB.rule.dashboard')}
+              </span>
             </label>
 
             <label className="flex items-center gap-2 cursor-pointer">
@@ -391,7 +399,9 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
                 onChange={(e) => updateField('showOnPortfolioOverview', e.target.checked)}
                 className="w-4 h-4 text-primary-700 border-ink-200 rounded focus:ring-primary-500 dark:border-trading-dark-500 dark:bg-trading-dark-700"
               />
-              <span className="text-sm text-ink-900 dark:text-white">Portfolio Overzicht</span>
+              <span className="text-sm text-ink-900 dark:text-white">
+                {t('modalsB.rule.portfolioOverview')}
+              </span>
             </label>
 
             <label className="flex items-center gap-2 cursor-pointer">
@@ -401,7 +411,9 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
                 onChange={(e) => updateField('showInList', e.target.checked)}
                 className="w-4 h-4 text-primary-700 border-ink-200 rounded focus:ring-primary-500 dark:border-trading-dark-500 dark:bg-trading-dark-700"
               />
-              <span className="text-sm text-ink-900 dark:text-white">In Lijst</span>
+              <span className="text-sm text-ink-900 dark:text-white">
+                {t('modalsB.rule.inList')}
+              </span>
             </label>
 
             <label className="flex items-center gap-2 cursor-pointer">
@@ -411,7 +423,9 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
                 onChange={(e) => updateField('notification', e.target.checked)}
                 className="w-4 h-4 text-primary-700 border-ink-200 rounded focus:ring-primary-500 dark:border-trading-dark-500 dark:bg-trading-dark-700"
               />
-              <span className="text-sm text-ink-900 dark:text-white">Notificaties</span>
+              <span className="text-sm text-ink-900 dark:text-white">
+                {t('modalsB.rule.notifications')}
+              </span>
             </label>
           </div>
 
@@ -437,7 +451,7 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
                   <p className="text-sm text-ink-700 dark:text-ink-300">{formData.description}</p>
                   {formData.percentage && (
                     <p className="text-xs text-ink-600 dark:text-ink-400 mt-2">
-                      Percentage: {formData.percentage}%
+                      {t('modalsB.rule.previewPercentage', { percentage: formData.percentage })}
                     </p>
                   )}
                 </div>
@@ -453,14 +467,14 @@ export const StrategyRuleModal: React.FC<StrategyRuleModalProps> = ({
             onClick={onClose}
             className="px-4 py-2 border border-ink-200 dark:border-trading-dark-500 text-ink-700 dark:text-ink-300 rounded-lg hover:bg-surface dark:hover:bg-trading-dark-700 transition-colors"
           >
-            Annuleren
+            {t('modalsB.rule.cancel')}
           </button>
           <button
             onClick={handleSubmit}
             disabled={!formData.name || !formData.description}
             className="px-4 py-2 bg-primary-700 hover:bg-primary-800 disabled:bg-ink-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
           >
-            {isEditing ? 'Regel Bijwerken' : 'Regel Toevoegen'}
+            {isEditing ? t('modalsB.rule.updateRule') : t('modalsB.rule.addRule')}
           </button>
         </div>
       </div>

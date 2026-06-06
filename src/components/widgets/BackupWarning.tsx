@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { AlertTriangle, Download, Clock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { getDaysSinceLastBackup } from '../../utils/backup';
 
 export const BackupWarning: React.FC = () => {
+  const { t } = useTranslation();
   const [daysSinceBackup, setDaysSinceBackup] = useState<number | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -48,11 +50,10 @@ export const BackupWarning: React.FC = () => {
           <Download className="w-5 h-5 text-primary-700 dark:text-primary-300 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
             <h3 className="text-sm font-semibold text-primary-900 dark:text-blue-100">
-              Nog geen backup gemaakt
+              {t('widgetsB.noBackupYet')}
             </h3>
             <p className="text-xs text-primary-700 dark:text-primary-300 mt-1">
-              Het is aan te raden om regelmatig een backup van je data te maken. Klik op je
-              profielicoon rechtsboven om je eerste backup te maken.
+              {t('widgetsB.noBackupBody')}
             </p>
           </div>
         </div>

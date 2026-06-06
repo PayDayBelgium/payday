@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { CommunityReply } from '../../types';
 
 export const ReplyThread: React.FC<{
   replies: CommunityReply[];
   onReply: (text: string) => void;
 }> = ({ replies, onReply }) => {
+  const { t } = useTranslation();
   const [text, setText] = useState('');
   const submit = () => {
     const trimmed = text.trim();
@@ -35,7 +37,7 @@ export const ReplyThread: React.FC<{
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && submit()}
-          placeholder="Reageer…"
+          placeholder={t('learnFeat.replyPlaceholder')}
           className="flex-1 bg-surface-subtle dark:bg-trading-dark-700 rounded-md px-2.5 py-1.5 text-xs outline-none text-ink-700 dark:text-ink-200 placeholder:text-ink-400"
         />
       </div>

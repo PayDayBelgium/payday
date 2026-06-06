@@ -7,6 +7,11 @@ import { toolsPages } from './toolsPages';
 import { modalsA } from './modalsA';
 import { widgetsA } from './widgetsA';
 import { pagesA } from './pagesA';
+import { modalsB } from './modalsB';
+import { widgetsB } from './widgetsB';
+import { pagesB } from './pagesB';
+import { compCommon } from './compCommon';
+import { learnFeat } from './learnFeat';
 
 export const sweepEn = {
   stratPages: stratPages.en,
@@ -14,6 +19,11 @@ export const sweepEn = {
   modalsA: modalsA.en,
   widgetsA: widgetsA.en,
   pagesA: pagesA.en,
+  modalsB: modalsB.en,
+  widgetsB: widgetsB.en,
+  pagesB: pagesB.en,
+  compCommon: compCommon.en,
+  learnFeat: learnFeat.en,
 };
 
 export const sweepNl = {
@@ -22,6 +32,11 @@ export const sweepNl = {
   modalsA: modalsA.nl,
   widgetsA: widgetsA.nl,
   pagesA: pagesA.nl,
+  modalsB: modalsB.nl,
+  widgetsB: widgetsB.nl,
+  pagesB: pagesB.nl,
+  compCommon: compCommon.nl,
+  learnFeat: learnFeat.nl,
 };
 
 export const sweepFr = {
@@ -30,4 +45,9 @@ export const sweepFr = {
   modalsA: modalsA.fr,
   widgetsA: widgetsA.fr,
   pagesA: pagesA.fr,
+  modalsB: modalsB.fr,
+  widgetsB: widgetsB.fr,
+  pagesB: pagesB.fr,
+  compCommon: compCommon.fr,
+  learnFeat: learnFeat.fr,
 };

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { AlertTriangle, X, Upload } from 'lucide-react';
 
 interface RestoreConfirmModalProps {
@@ -14,6 +15,7 @@ export const RestoreConfirmModal: React.FC<RestoreConfirmModalProps> = ({
   onConfirm,
   timestamp,
 }) => {
+  const { t } = useTranslation();
   if (!isOpen) return null;
 
   return (
@@ -25,7 +27,9 @@ export const RestoreConfirmModal: React.FC<RestoreConfirmModalProps> = ({
             <div className="p-2 bg-caution-50 dark:bg-caution-600/25 rounded-lg">
               <Upload className="w-6 h-6 text-caution-600 dark:text-caution-500" />
             </div>
-            <h2 className="text-xl font-bold text-ink-900 dark:text-white">Herstel backup</h2>
+            <h2 className="text-xl font-bold text-ink-900 dark:text-white">
+              {t('modalsB.restore.title')}
+            </h2>
           </div>
           <button
             onClick={onClose}
@@ -42,10 +46,13 @@ export const RestoreConfirmModal: React.FC<RestoreConfirmModalProps> = ({
             <div className="flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-caution-600 dark:text-caution-500 mt-0.5 flex-shrink-0" />
               <div className="flex-1">
-                <h3 className="font-semibold text-ink-900 dark:text-white mb-2">Let op!</h3>
+                <h3 className="font-semibold text-ink-900 dark:text-white mb-2">
+                  {t('modalsB.restore.warningTitle')}
+                </h3>
                 <p className="text-sm text-ink-700 dark:text-ink-300">
-                  Deze actie zal <strong>alle huidige data vervangen</strong> met de data uit de
-                  backup. Deze wijziging kan niet ongedaan worden gemaakt.
+                  {t('modalsB.restore.warningTextBefore')}
+                  <strong>{t('modalsB.restore.warningTextStrong')}</strong>
+                  {t('modalsB.restore.warningTextAfter')}
                 </p>
               </div>
             </div>
@@ -55,7 +62,9 @@ export const RestoreConfirmModal: React.FC<RestoreConfirmModalProps> = ({
           <div className="bg-surface dark:bg-trading-dark-900/50 rounded-lg p-4 border border-surface-line dark:border-trading-dark-600">
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-ink-600 dark:text-ink-400">Backup datum:</span>
+                <span className="text-ink-600 dark:text-ink-400">
+                  {t('modalsB.restore.backupDate')}
+                </span>
                 <span className="font-medium text-ink-900 dark:text-white">
                   {new Date(timestamp).toLocaleDateString('nl-NL', {
                     year: 'numeric',
@@ -65,7 +74,9 @@ export const RestoreConfirmModal: React.FC<RestoreConfirmModalProps> = ({
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-ink-600 dark:text-ink-400">Backup Tijd:</span>
+                <span className="text-ink-600 dark:text-ink-400">
+                  {t('modalsB.restore.backupTime')}
+                </span>
                 <span className="font-medium text-ink-900 dark:text-white">
                   {new Date(timestamp).toLocaleTimeString('nl-NL', {
                     hour: '2-digit',
@@ -80,7 +91,7 @@ export const RestoreConfirmModal: React.FC<RestoreConfirmModalProps> = ({
           {/* Confirmation Question */}
           <div className="pt-2">
             <p className="text-sm text-ink-700 dark:text-ink-300 text-center">
-              Weet je zeker dat je wilt doorgaan?
+              {t('modalsB.restore.confirmQuestion')}
             </p>
           </div>
         </div>
@@ -92,13 +103,13 @@ export const RestoreConfirmModal: React.FC<RestoreConfirmModalProps> = ({
             onClick={onClose}
             className="px-4 py-2 border border-ink-200 dark:border-trading-dark-500 text-ink-700 dark:text-ink-300 rounded-lg hover:bg-surface-subtle dark:hover:bg-trading-dark-700 transition-colors font-medium"
           >
-            Annuleren
+            {t('modalsB.restore.cancel')}
           </button>
           <button
             onClick={onConfirm}
             className="px-6 py-2 bg-caution-600 hover:bg-caution-600 text-white rounded-lg font-medium transition-colors shadow-sm hover:shadow-md"
           >
-            Ja, herstel backup
+            {t('modalsB.restore.confirm')}
           </button>
         </div>
       </div>

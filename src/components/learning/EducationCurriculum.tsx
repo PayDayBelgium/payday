@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ChevronRight,
   ChevronDown,
@@ -248,6 +249,7 @@ interface QuizProps {
 }
 
 const Quiz: React.FC<QuizProps> = ({ quiz, onComplete }) => {
+  const { t } = useTranslation();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
   const [showResults, setShowResults] = useState(false);
@@ -301,15 +303,19 @@ const Quiz: React.FC<QuizProps> = ({ quiz, onComplete }) => {
           )}
         </div>
         <h3 className="text-xl font-bold text-ink-900 dark:text-white mb-2">
-          {passed ? 'Gefeliciteerd!' : 'Helaas...'}
+          {passed ? t('learnFeat.quizPassed') : t('learnFeat.quizFailed')}
         </h3>
         <p className="text-ink-600 dark:text-ink-400 mb-4">
-          Je score: {correctCount}/{quiz.questions.length} ({score}%)
+          {t('learnFeat.quizScore', {
+            correct: correctCount,
+            total: quiz.questions.length,
+            score,
+          })}
         </p>
         <p className="text-sm text-ink-500 dark:text-ink-400">
           {passed
-            ? 'Je hebt de quiz gehaald en de les voltooid!'
-            : `Je hebt ${quiz.passingScore}% nodig om te slagen. Probeer het opnieuw!`}
+            ? t('learnFeat.quizPassedDesc')
+            : t('learnFeat.quizFailedDesc', { passingScore: quiz.passingScore })}
         </p>
       </div>
     );
@@ -318,9 +324,12 @@ const Quiz: React.FC<QuizProps> = ({ quiz, onComplete }) => {
   return (
     <div className="bg-white dark:bg-trading-dark-800 rounded-xl p-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-bold text-ink-900 dark:text-white">Quiz</h3>
+        <h3 className="font-bold text-ink-900 dark:text-white">{t('learnFeat.quizTitle')}</h3>
         <span className="text-sm text-ink-500 dark:text-ink-400">
-          Vraag {currentQuestion + 1} van {quiz.questions.length}
+          {t('learnFeat.quizQuestionOf', {
+            current: currentQuestion + 1,
+            total: quiz.questions.length,
+          })}
         </span>
       </div>
 
@@ -370,7 +379,8 @@ const Quiz: React.FC<QuizProps> = ({ quiz, onComplete }) => {
           <p
             className={`text-sm ${isCorrect ? 'text-positive-700 dark:text-positive-500' : 'text-caution-600 dark:text-amber-200'}`}
           >
-            <strong>{isCorrect ? 'Correct!' : 'Uitleg:'}</strong> {question.explanation}
+            <strong>{isCorrect ? t('learnFeat.quizCorrect') : t('learnFeat.quizExplanation')}</strong>{' '}
+            {question.explanation}
           </p>
         </div>
       )}
@@ -380,7 +390,9 @@ const Quiz: React.FC<QuizProps> = ({ quiz, onComplete }) => {
           onClick={handleNext}
           className="mt-4 w-full py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors"
         >
-          {currentQuestion < quiz.questions.length - 1 ? 'Volgende vraag' : 'Bekijk resultaat'}
+          {currentQuestion < quiz.questions.length - 1
+            ? t('learnFeat.quizNextQuestion')
+            : t('learnFeat.quizViewResult')}
         </button>
       )}
     </div>
@@ -412,6 +424,7 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
   prevLesson,
   onNavigate,
 }) => {
+  const { t } = useTranslation();
   const [, setQuizCompleted] = useState(false);
   const [, setQuizScore] = useState<number | null>(null);
 
@@ -432,14 +445,14 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
           className="flex items-center gap-2 text-ink-500 hover:text-ink-700 dark:text-ink-400 dark:hover:text-ink-200 mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
-          Terug naar overzicht
+          {t('learnFeat.lessonBackToOverview')}
         </button>
 
         <div className="flex items-center gap-2 text-sm text-ink-500 dark:text-ink-400 mb-2">
           <span>{chapter.icon}</span>
           <span>{chapter.title}</span>
           <ChevronRight className="w-4 h-4" />
-          <span>Les {lesson.order}</span>
+          <span>{t('learnFeat.lessonLabel', { order: lesson.order })}</span>
         </div>
 
         <h1 className="text-2xl font-bold text-ink-900 dark:text-white mb-2">{lesson.title}</h1>
@@ -450,12 +463,13 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
             {lesson.estimatedDuration}
           </span>
           <span className="flex items-center gap-1">
-            <Gift className="w-4 h-4" />+{lesson.creditsAwarded} credits
+            <Gift className="w-4 h-4" />
+            {t('learnFeat.lessonCredits', { credits: lesson.creditsAwarded })}
           </span>
           {isCompleted && (
             <span className="flex items-center gap-1 text-positive-600 dark:text-positive-500">
               <CheckCircle className="w-4 h-4" />
-              Voltooid
+              {t('learnFeat.lessonCompleted')}
             </span>
           )}
         </div>
@@ -471,7 +485,9 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
       {/* Quiz Section */}
       {lesson.quiz && (
         <div className="mt-8">
-          <h2 className="text-xl font-bold text-ink-900 dark:text-white mb-4">Test je kennis</h2>
+          <h2 className="text-xl font-bold text-ink-900 dark:text-white mb-4">
+            {t('learnFeat.lessonTestKnowledge')}
+          </h2>
           <Quiz quiz={lesson.quiz} onComplete={handleQuizComplete} />
         </div>
       )}
@@ -484,7 +500,9 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
             className="flex items-center gap-2 text-ink-600 dark:text-ink-400 hover:text-ink-900 dark:hover:text-white"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm">Vorige: {prevLesson.lesson.title}</span>
+            <span className="text-sm">
+              {t('learnFeat.lessonPrev', { title: prevLesson.lesson.title })}
+            </span>
           </button>
         ) : (
           <div />
@@ -495,7 +513,9 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
             onClick={() => onNavigate(nextLesson.lesson.id)}
             className="flex items-center gap-2 text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
           >
-            <span className="text-sm">Volgende: {nextLesson.lesson.title}</span>
+            <span className="text-sm">
+              {t('learnFeat.lessonNext', { title: nextLesson.lesson.title })}
+            </span>
             <ArrowRight className="w-4 h-4" />
           </button>
         ) : (
@@ -503,7 +523,7 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
             onClick={onBack}
             className="flex items-center gap-2 text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
           >
-            <span className="text-sm">Terug naar overzicht</span>
+            <span className="text-sm">{t('learnFeat.lessonBackToOverview')}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         )}
@@ -529,6 +549,7 @@ const ChapterCard: React.FC<ChapterCardProps> = ({
   isLocked,
   onSelectLesson,
 }) => {
+  const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
 
   const completedCount = chapter.lessons.filter((l) => completedLessons.includes(l.id)).length;
@@ -555,10 +576,13 @@ const ChapterCard: React.FC<ChapterCardProps> = ({
               <Clock className="w-3 h-3" />
               {chapter.estimatedDuration}
             </span>
-            <span>{totalCount} lessen</span>
+            <span>{t('learnFeat.chapterLessons', { count: totalCount })}</span>
             {completedCount > 0 && (
               <span className="text-positive-600 dark:text-positive-500">
-                {completedCount}/{totalCount} voltooid
+                {t('learnFeat.chapterCompleted', {
+                  completed: completedCount,
+                  total: totalCount,
+                })}
               </span>
             )}
           </div>
@@ -638,6 +662,7 @@ interface EducationCurriculumProps {
 }
 
 export const EducationCurriculum: React.FC<EducationCurriculumProps> = ({ defaultLevel }) => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const unlockedLevels = useAppSelector(selectUnlockedLevels);
   const completedLessons = useAppSelector(selectCompletedLessons);
@@ -738,8 +763,7 @@ export const EducationCurriculum: React.FC<EducationCurriculumProps> = ({ defaul
         <div className="bg-caution-50 dark:bg-caution-600/15 border border-caution-500/30 dark:border-caution-600/40 rounded-lg p-4 flex items-center gap-3">
           <Lock className="w-5 h-5 text-caution-600 dark:text-caution-500" />
           <p className="text-sm text-caution-600 dark:text-amber-200">
-            Dit niveau is nog vergrendeld. Voltooi eerst de vorige niveaus of ontgrendel dit niveau
-            in je profiel.
+            {t('learnFeat.levelLocked')}
           </p>
         </div>
       )}
