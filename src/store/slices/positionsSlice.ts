@@ -140,15 +140,15 @@ const positionsSlice = createSlice({
         position.status = 'closed';
         position.closeDate = action.payload.closeDate;
 
-        // Add close details based on position type
+        // Add close details (fields now declared on BasePosition).
         if (action.payload.closePrice !== undefined) {
-          (position as any).closePrice = action.payload.closePrice;
+          position.closePrice = action.payload.closePrice;
         }
         if (action.payload.closePremium !== undefined) {
-          (position as any).closePremium = action.payload.closePremium;
+          position.closePremium = action.payload.closePremium;
         }
         if (action.payload.realizedPnL !== undefined) {
-          (position as any).realizedPnL = action.payload.realizedPnL;
+          position.realizedPnL = action.payload.realizedPnL;
         }
         if (action.payload.notes) {
           position.notes = position.notes

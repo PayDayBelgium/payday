@@ -60,6 +60,10 @@ export interface BasePosition {
   closeDate?: string;
   notes?: string;
   status: 'open' | 'closed';
+  // Set when a position is closed (written by positionsSlice.closePosition).
+  closePrice?: number; // stocks/ETFs
+  closePremium?: number; // options
+  realizedPnL?: number;
 }
 
 // LEAP (Long-term Equity AnticiPation Securities)
@@ -177,6 +181,7 @@ export interface CallOption extends BasePosition {
   dte?: number; // Days to expiration (berekend)
   breakEven?: number; // Break-even prijs (berekend)
   currentPremium?: number; // Live premium voor live-tracking
+  delta?: number; // Live greek (written by updateOptionPremium)
   strategy?: string; // Strategie-label voor analytics
 }
 
@@ -197,6 +202,7 @@ export interface PutOption extends BasePosition {
   dte?: number; // Days to expiration (berekend)
   breakEven?: number; // Break-even prijs (berekend)
   currentPremium?: number; // Live premium voor live-tracking
+  delta?: number; // Live greek (written by updateOptionPremium)
   strategy?: string; // Strategie-label voor analytics
 }
 
