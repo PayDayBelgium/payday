@@ -14,6 +14,9 @@ const frBase = {
     search: 'Rechercher',
     filter: 'Filtrer',
     reset: 'Réinitialiser',
+    next: 'Suivant',
+    previous: 'Précédent',
+    complete: 'Terminer',
   },
 
   // Assistant IA

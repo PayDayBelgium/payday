@@ -14,6 +14,9 @@ const enBase = {
     search: 'Search',
     filter: 'Filter',
     reset: 'Reset',
+    next: 'Next',
+    previous: 'Previous',
+    complete: 'Finish',
   },
 
   // AI Assistant

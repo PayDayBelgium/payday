@@ -83,7 +83,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '', isCollapsed })
         className={`flex-1 overflow-y-auto scrollbar-thin ${isCollapsed ? 'p-2 pt-3' : 'px-3 pt-4 pb-3'}`}
       >
         {/* Primary */}
-        {!isCollapsed && <p className="eyebrow px-3 mb-2">Overzicht</p>}
+        {!isCollapsed && <p className="eyebrow px-3 mb-2">{t('sidebarExtra.overview')}</p>}
 
         <NavLink
           to="/"
@@ -103,30 +103,30 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '', isCollapsed })
 
         <NavLink
           to="/mission"
-          onClick={() => handleMenuClick('/mission', 'Jouw Reis')}
+          onClick={() => handleMenuClick('/mission', t('sidebarExtra.yourJourney'))}
           className={({ isActive }) => navClass(isActive, isCollapsed)}
-          title={isCollapsed ? 'Jouw Reis' : ''}
+          title={isCollapsed ? t('sidebarExtra.yourJourney') : ''}
         >
           {({ isActive }) => (
             <>
               <ActiveBar active={isActive} />
               <Mountain className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={1.75} />
-              {!isCollapsed && <span>Jouw Reis</span>}
+              {!isCollapsed && <span>{t('sidebarExtra.yourJourney')}</span>}
             </>
           )}
         </NavLink>
 
         <NavLink
           to="/analytics"
-          onClick={() => handleMenuClick('/analytics', 'Analyses')}
+          onClick={() => handleMenuClick('/analytics', t('sidebarExtra.analyses'))}
           className={({ isActive }) => navClass(isActive, isCollapsed)}
-          title={isCollapsed ? 'Performance' : ''}
+          title={isCollapsed ? t('sidebarExtra.performance') : ''}
         >
           {({ isActive }) => (
             <>
               <ActiveBar active={isActive} />
               <Activity className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={1.75} />
-              {!isCollapsed && <span>Performance</span>}
+              {!isCollapsed && <span>{t('sidebarExtra.performance')}</span>}
             </>
           )}
         </NavLink>
@@ -185,7 +185,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '', isCollapsed })
         {/* Portfolios */}
         {portfolios.length > 0 && (
           <div className="mt-6">
-            {!isCollapsed && <p className="eyebrow px-3 mb-2">Portefeuilles</p>}
+            {!isCollapsed && <p className="eyebrow px-3 mb-2">{t('sidebarExtra.portfolios')}</p>}
             {!isCollapsed &&
               portfolios.map((portfolio) => (
                 <NavLink
@@ -233,7 +233,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '', isCollapsed })
 
         {/* Tools */}
         <div className="mt-6">
-          {!isCollapsed && <p className="eyebrow px-3 mb-2">Tools</p>}
+          {!isCollapsed && <p className="eyebrow px-3 mb-2">{t('sidebarExtra.tools')}</p>}
 
           <NavLink
             to="/tickers"
@@ -320,13 +320,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '', isCollapsed })
           <NavLink
             to="/tools/capital-gains-tax"
             className={({ isActive }) => navClass(isActive, isCollapsed)}
-            title={isCollapsed ? 'Meerwaardebelasting' : ''}
+            title={isCollapsed ? t('sidebarExtra.capitalGainsTax') : ''}
           >
             {({ isActive }) => (
               <>
                 <ActiveBar active={isActive} />
                 <Receipt className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={1.75} />
-                {!isCollapsed && <span>Meerwaardebelasting</span>}
+                {!isCollapsed && <span>{t('sidebarExtra.capitalGainsTax')}</span>}
               </>
             )}
           </NavLink>

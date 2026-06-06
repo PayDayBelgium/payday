@@ -12,6 +12,7 @@ import { widgetsB } from './widgetsB';
 import { pagesB } from './pagesB';
 import { compCommon } from './compCommon';
 import { learnFeat } from './learnFeat';
+import { sidebarExtra } from './sidebarExtra';
 
 export const sweepEn = {
   stratPages: stratPages.en,
@@ -24,6 +25,7 @@ export const sweepEn = {
   pagesB: pagesB.en,
   compCommon: compCommon.en,
   learnFeat: learnFeat.en,
+  sidebarExtra: sidebarExtra.en,
 };
 
 export const sweepNl = {
@@ -37,6 +39,7 @@ export const sweepNl = {
   pagesB: pagesB.nl,
   compCommon: compCommon.nl,
   learnFeat: learnFeat.nl,
+  sidebarExtra: sidebarExtra.nl,
 };
 
 export const sweepFr = {
@@ -50,4 +53,5 @@ export const sweepFr = {
   pagesB: pagesB.fr,
   compCommon: compCommon.fr,
   learnFeat: learnFeat.fr,
+  sidebarExtra: sidebarExtra.fr,
 };

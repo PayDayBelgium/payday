@@ -14,6 +14,9 @@ const nlBase = {
     search: 'Zoeken',
     filter: 'Filteren',
     reset: 'Resetten',
+    next: 'Volgende',
+    previous: 'Vorige',
+    complete: 'Voltooien',
   },
 
   // AI-assistent
