@@ -30,3 +30,6 @@ NUL
 
 # Terminal Paste Image folder
 .cp-images/
+
+# Loose dev/debug screenshots in the repo root (keep app assets under src/ or public/)
+/*.png

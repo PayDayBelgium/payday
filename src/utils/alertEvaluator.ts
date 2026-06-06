@@ -49,8 +49,8 @@ export const saveSystemAlertConfig = (config: SystemAlertConfig): void => {
   localStorage.setItem('system-alert-config', JSON.stringify(config));
 };
 
-// Get strategy rules for a portfolio from localStorage
-export const getPortfolioStrategyRules = (portfolioName: string): StrategyRule[] => {
+// Get strategy rules from localStorage. Rules are global (not per-portfolio).
+export const getPortfolioStrategyRules = (): StrategyRule[] => {
   const allRules: StrategyRule[] = [];
 
   // Load from global strategy type keys (not per-portfolio)
@@ -71,9 +71,8 @@ export const getPortfolioStrategyRules = (portfolioName: string): StrategyRule[]
 };
 
 // Get all strategy rules (global rules, not per-portfolio)
-export const getAllStrategyRules = (portfolios: Portfolio[]): StrategyRule[] => {
-  // Rules are now global, so just get them once
-  return getPortfolioStrategyRules('global');
+export const getAllStrategyRules = (): StrategyRule[] => {
+  return getPortfolioStrategyRules();
 };
 
 // Calculate portfolio free cash
@@ -1093,7 +1092,7 @@ export const evaluateAllAlerts = (
   tickers?: Ticker[]
 ): { alerts: AlertItem[]; opportunities: AlertItem[] } => {
   const config = getSystemAlertConfig();
-  const allRules = getAllStrategyRules(portfolios);
+  const allRules = getAllStrategyRules();
 
   // Evaluate price-based alerts
   const priceResults = evaluatePriceAlerts(positions, allRules, dismissedAlerts, portfolioFilter);

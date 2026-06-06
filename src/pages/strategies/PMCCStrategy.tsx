@@ -8,6 +8,7 @@ import type { LEAP, CoveredCall, StockPosition, PortfolioName } from '../../type
 import { getDaysToExpiration } from '../../utils/dateHelpers';
 import { PROFIT_THRESHOLDS } from '../../constants/trading';
 import { selectPositionsByPortfolio } from '../../store/slices/positionsSlice';
+import { selectAllTickers } from '../../store/slices/tickersSlice';
 import { formatNumber } from '../../utils/numberFormat';
 // import { AddLeapModal } from '../../components/modals/AddLeapModal';
 // import { AddCoveredCallModal } from '../../components/modals/AddCoveredCallModal';
@@ -18,6 +19,12 @@ export const PMCCStrategy: React.FC = () => {
   const { setPageTitle } = usePageTitle();
   const { pushNavigation } = useNavigation();
   const positions = useAppSelector(selectPositionsByPortfolio(portfolio as PortfolioName));
+  const tickers = useAppSelector(selectAllTickers);
+  const priceBySymbol = useMemo(() => {
+    const map = new Map<string, number>();
+    tickers.forEach((t) => map.set(t.symbol.toUpperCase(), t.currentPrice ?? 0));
+    return map;
+  }, [tickers]);
   const [isAddLeapModalOpen, setIsAddLeapModalOpen] = useState(false);
   const [isAddCoveredCallModalOpen, setIsAddCoveredCallModalOpen] = useState(false);
   const [selectedLeapId, setSelectedLeapId] = useState<string | undefined>(undefined);
@@ -269,7 +276,9 @@ export const PMCCStrategy: React.FC = () => {
                     {item.coveredCalls.map((call) => {
                       const expiryWarning = getExpirationWarning(call.expiration);
                       const profitStatus = getProfitStatus(call.premiumCollected, call.currentValue);
-                      const isITM = false; // TODO: Calculate based on current stock price
+                      // A short call is in-the-money when the underlying trades above its strike.
+                      const underlyingPrice = priceBySymbol.get(item.underlying.ticker.toUpperCase()) ?? 0;
+                      const isITM = underlyingPrice > 0 && underlyingPrice > call.strike;
                       const daysToExpiry = getDaysToExpiration(call.expiration);
 
                       let bgClass = 'bg-gray-50 dark:bg-trading-dark-700';

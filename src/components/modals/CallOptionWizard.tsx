@@ -5,7 +5,7 @@ import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { addPosition } from '../../store/slices/positionsSlice';
 import { selectPositions } from '../../store/slices/positionsSlice';
-import { addTransaction, addTicker } from '../../store/slices/portfoliosSlice';
+import { addTransaction } from '../../store/slices/portfoliosSlice';
 import { ensureTicker, selectAllTickers } from '../../store/slices/tickersSlice';
 import { selectActiveWheels, updateWheelPremium } from '../../store/slices/wheelsSlice';
 import { WizardModal, type WizardStep } from './WizardModal';
@@ -174,7 +174,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
       currentPrice: 10, // Default price for new tickers
     };
 
-    dispatch(addTicker(ticker));
+    dispatch(ensureTicker(ticker));
     setSelectedTicker(ticker);
     setIsCreatingTicker(false);
     setNewTickerData({

@@ -86,9 +86,10 @@ export const createAppStore = (username?: string) => {
   return { store, persistor };
 };
 
-// Create default store instance
-const { store, persistor } = createAppStore();
-
-export { store, persistor };
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+// The runtime store is created per user in main.tsx and injected where needed
+// (see initializeWebSocketService / initializeIBWebSocketService). There is no
+// module-level singleton: that previously caused reads/dispatches against an empty
+// default store. Types are derived from the factory's return type instead.
+export type AppStore = ReturnType<typeof createAppStore>['store'];
+export type RootState = ReturnType<AppStore['getState']>;
+export type AppDispatch = AppStore['dispatch'];

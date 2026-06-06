@@ -21,18 +21,12 @@ A modern, professional React/TypeScript trading tracker for managing options str
 - **Mock Data**: Pre-loaded demo data to explore features
 
 ### 🚧 Coming Soon
-- Spreads & Iron Condor tracking
-- Cash Secured Puts module
-- KaChing strategy tracker
-- Ticker overview (aggregate view of all positions per ticker)
-- Trade history and P/L analytics
-- Rules engine and smart suggestions
-- Data import/export (CSV, Excel, Interactive Portfolios)
-- Real-time market data integration
+- Real-time market data integration (Interactive Brokers)
+- Advanced trade history and P/L analytics
 
 ## Tech Stack
 
-- **React 18** with **TypeScript**
+- **React 19** with **TypeScript**
 - **Redux Toolkit** for state management
 - **React Router** for navigation
 - **Vite** for blazing fast builds
@@ -100,7 +94,6 @@ payday-web/
 │   ├── App.tsx           # Main app component
 │   └── main.tsx          # App entry point
 ├── public/               # Static assets
-├── REQUIREMENTS.md       # Detailed requirements document
 └── package.json          # Dependencies and scripts
 ```
 
@@ -125,7 +118,7 @@ Each portfolio has its own section with dedicated strategy tracking.
 
 ## Development Roadmap
 
-See [REQUIREMENTS.md](REQUIREMENTS.md) for the complete feature list and development phases.
+See [docs/CODE-REVIEW-2026-06.md](docs/CODE-REVIEW-2026-06.md) for the current code review and phased refactor plan.
 
 ### Phase 1: Foundation (✅ Complete)
 - Project setup

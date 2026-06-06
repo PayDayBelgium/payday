@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { createSelector } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import type { Portfolio, PortfolioSummary, DailyPortfolioData, PortfolioTransaction, Ticker } from '../../types';
+import type { Portfolio, PortfolioSummary, DailyPortfolioData, PortfolioTransaction } from '../../types';
 import type { RootState } from '../index';
 
 interface PortfoliosState {
@@ -9,7 +9,6 @@ interface PortfoliosState {
   summaries: PortfolioSummary[];
   dailyData: DailyPortfolioData[];
   transactions: PortfolioTransaction[]; // Portfolio transacties per portfolio
-  tickers: Ticker[]; // Ticker database voor autocomplete
 }
 
 const initialState: PortfoliosState = {
@@ -17,7 +16,6 @@ const initialState: PortfoliosState = {
   summaries: [],
   dailyData: [],
   transactions: [],
-  tickers: [],
 };
 
 const portfoliosSlice = createSlice({
@@ -168,32 +166,9 @@ const portfoliosSlice = createSlice({
         portfolio.currentValue = action.payload.value;
       }
     },
-    // Ticker Management Actions
-    addTicker: (state, action: PayloadAction<Ticker>) => {
-      // Initialize tickers array if it doesn't exist
-      if (!state.tickers) {
-        state.tickers = [];
-      }
-      const exists = state.tickers.find(t => t.symbol === action.payload.symbol);
-      if (!exists) {
-        state.tickers.push(action.payload);
-      } else {
-        // Update lastUsed timestamp
-        const index = state.tickers.findIndex(t => t.symbol === action.payload.symbol);
-        if (index !== -1) {
-          state.tickers[index] = { ...state.tickers[index], lastUsed: new Date().toISOString() };
-        }
-      }
-    },
-    updateTicker: (state, action: PayloadAction<Ticker>) => {
-      const index = state.tickers.findIndex(t => t.symbol === action.payload.symbol);
-      if (index !== -1) {
-        state.tickers[index] = action.payload;
-      }
-    },
-    deleteTicker: (state, action: PayloadAction<string>) => {
-      state.tickers = state.tickers.filter(t => t.symbol !== action.payload);
-    },
+    // NOTE: Ticker management lives entirely in tickersSlice (single source of truth).
+    // The legacy ticker reducers/selectors that used to live here were removed; see
+    // tickerMigration.ts for the one-time migration of older persisted data.
     resetPortfoliosState: () => initialState,
   },
 });
@@ -213,9 +188,6 @@ export const {
   updateTransaction,
   deleteTransaction,
   updatePortfolioValue,
-  addTicker,
-  updateTicker,
-  deleteTicker,
   resetPortfoliosState,
 } = portfoliosSlice.actions;
 
@@ -223,7 +195,6 @@ export const {
 export const selectPortfolios = (state: RootState) => state.portfolios.portfolios;
 export const selectDailyData = (state: RootState) => state.portfolios.dailyData;
 export const selectTransactions = (state: RootState) => state.portfolios.transactions;
-export const selectTickers = (state: RootState) => state.portfolios.tickers;
 
 // Memoized selector for transactions by portfolio
 export const selectTransactionsByPortfolio = createSelector(
@@ -232,19 +203,6 @@ export const selectTransactionsByPortfolio = createSelector(
     (_state: RootState, portfolioName: string) => portfolioName
   ],
   (transactions, portfolioName) => (transactions || []).filter(t => t.portfolio === portfolioName)
-);
-
-// Memoized selector for tickers sorted by last used
-export const selectTickersSorted = createSelector(
-  [selectTickers],
-  (tickers) => {
-    if (!tickers || !Array.isArray(tickers)) return [];
-    return [...tickers].sort((a, b) => {
-      if (!a.lastUsed) return 1;
-      if (!b.lastUsed) return -1;
-      return new Date(b.lastUsed).getTime() - new Date(a.lastUsed).getTime();
-    });
-  }
 );
 
 // Memoized selector to calculate portfolio summaries

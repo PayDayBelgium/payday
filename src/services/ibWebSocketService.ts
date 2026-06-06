@@ -1,4 +1,3 @@
-import { store } from '../store';
 import {
   setConnecting,
   setConnected,
@@ -7,6 +6,19 @@ import {
   incrementReconnectAttempts,
   resetReconnectAttempts,
 } from '../store/slices/ibConnectionSlice';
+
+// Store reference - injected from main.tsx (same pattern as priceWebSocketService).
+// Avoids importing a module-level singleton store that wouldn't hold user data.
+let storeInstance: any = null;
+
+export const initializeIBWebSocketService = (store: any) => {
+  storeInstance = store;
+};
+
+const store = {
+  getState: () => storeInstance?.getState(),
+  dispatch: (action: any) => storeInstance?.dispatch(action),
+};
 
 export interface IBConfig {
   host: string;

@@ -35,11 +35,6 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
   const isPut = position.type === 'put';
   const isShort = position.action === 'sell';
 
-  // Only short options can be assigned
-  if (!isShort) {
-    return null;
-  }
-
   // Calculate assignment details
   const assignmentCalculation = useMemo(() => {
     const price = parseFloat(assignmentPrice) || position.strike;
@@ -92,7 +87,9 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
     });
   };
 
-  if (!isOpen) return null;
+  // Guard renders AFTER all hooks so hook order stays stable (rules-of-hooks).
+  // Only short options can be assigned.
+  if (!isOpen || !isShort) return null;
 
   const optionType = position.type === 'call' ? 'Call' : 'Put';
 

@@ -112,13 +112,13 @@ export const LEAPSStrategy: React.FC = () => {
             Informatie
           </button>
         </div>
-        {(activeTab === 'positions' || activeTab === 'rules') && (
+        {activeTab === 'rules' && (
           <button
-            onClick={() => activeTab === 'positions' ? {} : handleAddRule()}
+            onClick={handleAddRule}
             className="flex items-center gap-2 px-3 py-1.5 bg-primary-700 hover:bg-primary-800 text-white rounded-lg text-sm font-medium transition-colors"
           >
             <Plus className="w-4 h-4" />
-            {activeTab === 'positions' ? 'LEAP Toevoegen' : 'Regel Toevoegen'}
+            Regel Toevoegen
           </button>
         )}
       </div>

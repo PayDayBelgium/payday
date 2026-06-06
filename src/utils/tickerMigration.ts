@@ -9,8 +9,10 @@ import type { Ticker } from '../types';
 export const migrateTickersToStore = (dispatch: AppDispatch, getState: () => RootState) => {
   const state = getState();
 
-  // Get tickers from both stores
-  const portfolioTickers = state.portfolios.tickers || [];
+  // Get tickers from both stores. portfolios.tickers is legacy: the field was removed
+  // from portfoliosSlice, but older persisted state may still contain it, so we read it
+  // defensively for a one-time migration into tickersSlice (the single source of truth).
+  const portfolioTickers = ((state.portfolios as { tickers?: Ticker[] }).tickers) || [];
   const tickersStoreTickers = state.tickers.tickers || [];
 
   // Create a set of existing ticker symbols in tickersSlice for quick lookup

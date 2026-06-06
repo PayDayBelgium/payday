@@ -42,7 +42,8 @@ import { useAppSelector } from './hooks/useAppSelector';
 import { useAppDispatch } from './hooks/useAppDispatch';
 import { selectIsAuthenticated } from './store/slices/authSlice';
 import { migrateTickersToStore } from './utils/tickerMigration';
-import { store } from './store';
+import { useStore } from 'react-redux';
+import type { AppStore } from './store';
 
 function HomeRedirect() {
   const portfolios = useAppSelector((state) => state.portfolios.portfolios);
@@ -58,6 +59,9 @@ function HomeRedirect() {
 
 function AppContent() {
   const dispatch = useAppDispatch();
+  // The runtime, per-user store (NOT a module-level singleton) so the migration
+  // reads the rehydrated user data instead of an empty default store.
+  const store = useStore() as AppStore;
 
   // Initialize IB WebSocket connection (disabled for now)
   useIBConnection(false);
@@ -65,7 +69,7 @@ function AppContent() {
   // Migrate tickers from portfoliosSlice to tickersSlice on first load
   useEffect(() => {
     migrateTickersToStore(dispatch, store.getState);
-  }, [dispatch]);
+  }, [dispatch, store]);
 
   return (
     <Routes>

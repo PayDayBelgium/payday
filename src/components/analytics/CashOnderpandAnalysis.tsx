@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { DollarSign, Shield, TrendingUp, Calendar, AlertCircle } from 'lucide-react';
 import { useAppSelector } from '../../hooks/useAppSelector';
-import { selectPortfolios } from '../../store/slices/portfoliosSlice';
+import { selectPortfolios, selectPortfolioSummaries } from '../../store/slices/portfoliosSlice';
 import { selectPositions } from '../../store/slices/positionsSlice';
 import { formatCurrency } from '../../utils/currencyHelpers';
 import { formatNumber } from '../../utils/numberFormat';
@@ -31,6 +31,7 @@ interface PortfolioCashAnalysis {
 export const CashOnderpandAnalysis: React.FC = () => {
   const portfolios = useAppSelector(selectPortfolios);
   const positions = useAppSelector(selectPositions);
+  const summaries = useAppSelector(selectPortfolioSummaries);
 
   const calculateDaysToExpiration = (expiration: string): number => {
     const today = new Date();
@@ -64,9 +65,12 @@ export const CashOnderpandAnalysis: React.FC = () => {
     // Initialize portfolios with options support
     portfolios.forEach(portfolio => {
       if (portfolio.hasOptions) {
+        // Real available cash for the portfolio (derived in selectPortfolioSummaries),
+        // not a hardcoded placeholder. freeCash = totalCash - reserved collateral.
+        const totalCash = summaries.find(s => s.portfolio === portfolio.name)?.cash ?? 0;
         portfolioMap.set(portfolio.name, {
           portfolio: portfolio.name,
-          totalCash: 10000, // TODO: Get from portfolio data
+          totalCash,
           totalOnderpand: 0,
           freeCash: 0,
           positions: [],
@@ -159,7 +163,7 @@ export const CashOnderpandAnalysis: React.FC = () => {
     });
 
     return Array.from(portfolioMap.values());
-  }, [portfolios, positions]);
+  }, [portfolios, positions, summaries]);
 
   const totalAnalysis = useMemo(() => {
     const total = {

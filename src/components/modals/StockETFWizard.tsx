@@ -4,7 +4,6 @@ import { WizardModal, type WizardStep } from './WizardModal';
 import { TickerSelector } from '../widgets/TickerSelector';
 import { TrendingUp, Building2, Calendar, DollarSign, Hash, Info } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
-import { addTicker } from '../../store/slices/portfoliosSlice';
 import { addPosition } from '../../store/slices/positionsSlice';
 import { addTransaction } from '../../store/slices/portfoliosSlice';
 import { ensureTicker } from '../../store/slices/tickersSlice';
@@ -87,7 +86,7 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({
       currentPrice: 10, // Default price for new tickers
     };
 
-    dispatch(addTicker(newTicker));
+    dispatch(ensureTicker(newTicker));
     setSelectedTicker(newTicker);
     setIsCreatingTicker(false);
   };
