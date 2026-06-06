@@ -24,8 +24,8 @@ import {
 } from '../../store/slices/positionsSlice';
 import { selectPortfolios } from '../../store/slices/portfoliosSlice';
 import { formatCurrency } from '../../utils/currencyHelpers';
-import { getDefaultRulesForStrategy } from '../../utils/defaultStrategyRules';
-import type { StockPosition, StrategyRule } from '../../types';
+import { useStrategyRules } from '../../hooks/useStrategyRules';
+import type { StockPosition } from '../../types';
 import type { StrategyAlert } from '../../components/widgets/GroupedStockList';
 import { formatNumber } from '../../utils/numberFormat';
 
@@ -38,8 +38,34 @@ export const StocksETFsStrategy: React.FC = () => {
   const [, setIsModalOpen] = useState(false);
   const [, setIsEditModalOpen] = useState(false);
   const [, setSelectedPosition] = useState<StockPosition | null>(null);
-  const [isRuleModalOpen, setIsRuleModalOpen] = useState(false);
-  const [selectedRule, setSelectedRule] = useState<StrategyRule | null>(null);
+  const {
+    strategyRules,
+    isRuleModalOpen,
+    selectedRule,
+    openAddRule,
+    openEditRule: handleEditRule,
+    closeRuleModal,
+    saveRule: handleSaveRule,
+    deleteRule: handleDeleteRule,
+    toggleRule: handleToggleRule,
+  } = useStrategyRules('stocks-etfs', portfolio, (rules) =>
+    // One-time normalisation: derive the category from the trigger type so older
+    // saved rules show the correct alert/opportunity badge.
+    rules.map((rule) => {
+      let correctCategory: 'alert' | 'opportunity' = rule.category as 'alert' | 'opportunity';
+      if (
+        rule.trigger === 'price_increase' ||
+        rule.trigger === 'profit_target' ||
+        rule.trigger === 'time_based' ||
+        rule.trigger === 'volatility'
+      ) {
+        correctCategory = 'opportunity';
+      } else if (rule.trigger === 'price_decrease' || rule.trigger === 'loss_limit') {
+        correctCategory = 'alert';
+      }
+      return correctCategory !== rule.category ? { ...rule, category: correctCategory } : rule;
+    })
+  );
   const [activeRuleCategory, setActiveRuleCategory] = useState<'alert' | 'opportunity' | undefined>(
     undefined
   );
@@ -61,40 +87,6 @@ export const StocksETFsStrategy: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('dismissed-strategy-alerts', JSON.stringify([...dismissedStrategyAlerts]));
   }, [dismissedStrategyAlerts]);
-
-  // Initialize rules with defaults (later will come from Redux)
-  const [strategyRules, setStrategyRules] = useState<StrategyRule[]>(() => {
-    const saved = localStorage.getItem(`strategy-rules-stocks-etfs-${portfolio}`);
-    if (saved) {
-      const rules = JSON.parse(saved) as StrategyRule[];
-
-      // Migration: Fix category based on trigger type
-      const migratedRules = rules.map((rule) => {
-        let correctCategory: 'alert' | 'opportunity' = rule.category as 'alert' | 'opportunity';
-
-        // Determine correct category based on trigger
-        if (
-          rule.trigger === 'price_increase' ||
-          rule.trigger === 'profit_target' ||
-          rule.trigger === 'time_based' ||
-          rule.trigger === 'volatility'
-        ) {
-          correctCategory = 'opportunity';
-        } else if (rule.trigger === 'price_decrease' || rule.trigger === 'loss_limit') {
-          correctCategory = 'alert';
-        }
-
-        // Return rule with corrected category if needed
-        if (correctCategory !== rule.category) {
-          return { ...rule, category: correctCategory };
-        }
-        return rule;
-      });
-
-      return migratedRules;
-    }
-    return getDefaultRulesForStrategy('stocks-etfs', portfolio || '');
-  });
 
   // Get stock and ETF positions for this portfolio
   const stockPositions = useAppSelector(
@@ -182,60 +174,15 @@ export const StocksETFsStrategy: React.FC = () => {
     setPageTitle('Aandelen & ETFs', `De basis van je portfolio - long-term holdings`);
   }, [setPageTitle, portfolio]);
 
-  // Save rules to localStorage when they change
-  useEffect(() => {
-    if (strategyRules.length > 0) {
-      localStorage.setItem(
-        `strategy-rules-stocks-etfs-${portfolio}`,
-        JSON.stringify(strategyRules)
-      );
-    }
-  }, [strategyRules, portfolio]);
-
   const handleEditPosition = (position: StockPosition) => {
     setSelectedPosition(position);
     setIsEditModalOpen(true);
   };
 
-  // Rules handlers
+  // Rules handlers: wrap de hook zodat de extra categorie-state mee gereset wordt
   const handleAddRule = () => {
-    setSelectedRule(null);
     setActiveRuleCategory(undefined);
-    setIsRuleModalOpen(true);
-  };
-
-  const handleEditRule = (rule: StrategyRule) => {
-    setSelectedRule(rule);
-    setIsRuleModalOpen(true);
-  };
-
-  const handleSaveRule = (rule: StrategyRule) => {
-    setStrategyRules((prev) => {
-      const existingIndex = prev.findIndex((r) => r.id === rule.id);
-      if (existingIndex >= 0) {
-        // Update existing rule
-        const updated = [...prev];
-        updated[existingIndex] = rule;
-        return updated;
-      } else {
-        // Add new rule
-        return [...prev, rule];
-      }
-    });
-    setIsRuleModalOpen(false);
-    setSelectedRule(null);
-  };
-
-  const handleDeleteRule = (ruleId: string) => {
-    setStrategyRules((prev) => prev.filter((r) => r.id !== ruleId));
-  };
-
-  const handleToggleRule = (ruleId: string, enabled: boolean) => {
-    setStrategyRules((prev) =>
-      prev.map((r) =>
-        r.id === ruleId ? { ...r, enabled, updatedAt: new Date().toISOString() } : r
-      )
-    );
+    openAddRule();
   };
 
   return (
@@ -503,8 +450,7 @@ export const StocksETFsStrategy: React.FC = () => {
       <StrategyRuleModal
         isOpen={isRuleModalOpen}
         onClose={() => {
-          setIsRuleModalOpen(false);
-          setSelectedRule(null);
+          closeRuleModal();
           setActiveRuleCategory(undefined);
         }}
         onSave={handleSaveRule}

@@ -12,14 +12,14 @@ import { WizardModal, type WizardStep } from './WizardModal';
 import { TickerSelector } from '../widgets/TickerSelector';
 import { PnLCurve } from '../widgets/PnLCurve';
 import { FridayDatePicker } from '../common/FridayDatePicker';
-import { parseLocalizedNumber, formatNumber, getDecimalSeparator } from '../../utils/numberFormat';
+import { LocalizedNumberInput } from '../common/LocalizedNumberInput';
+import { formatNumber, getDecimalSeparator } from '../../utils/numberFormat';
 import type { CallOption, Ticker, PortfolioName, CurrencyType, Position } from '../../types';
 import { groupHoldings, type Holding } from '../../utils/holdings';
 import type { RootState } from '../../store';
 import {
   type OptionAction,
   type OptionLegData,
-  validateNumberInput,
   calculateDTE,
   calculateCallBreakEven,
   calculateCallValues,
@@ -103,12 +103,6 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
 
   const [purchaseDate, setPurchaseDate] = useState(new Date().toISOString().split('T')[0]);
   const [notes, setNotes] = useState('');
-
-  // Text representations for locale-based number formatting
-  const [longLegStrikeText, setLongLegStrikeText] = useState('');
-  const [longLegPremiumText, setLongLegPremiumText] = useState('');
-  const [shortLegStrikeText, setShortLegStrikeText] = useState('');
-  const [shortLegPremiumText, setShortLegPremiumText] = useState('');
 
   // Refs for autofocus
   const strikeInputRef = useRef<HTMLInputElement>(null);
@@ -390,11 +384,6 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
     setShortLeg({ strike: 0, expiration: '', premium: 0, contracts: 1 });
     setPurchaseDate(new Date().toISOString().split('T')[0]);
     setNotes('');
-    // Reset text states
-    setLongLegStrikeText('');
-    setLongLegPremiumText('');
-    setShortLegStrikeText('');
-    setShortLegPremiumText('');
     // Reset wheel linking - use initialWheelId if provided
     setSelectedWheelId(initialWheelId || null);
     // Reset to initial step if provided, otherwise 0
@@ -800,17 +789,10 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                             <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                               {t('callWizard.detailsStep.strikePrice')}
                             </label>
-                            <input
+                            <LocalizedNumberInput
                               ref={strikeInputRef}
-                              type="text"
-                              value={shortLegStrikeText}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (validateNumberInput(value)) {
-                                  setShortLegStrikeText(value);
-                                  setShortLeg({ ...shortLeg, strike: parseLocalizedNumber(value) });
-                                }
-                              }}
+                              value={shortLeg.strike}
+                              onChange={(strike) => setShortLeg({ ...shortLeg, strike })}
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                               placeholder={`150${getDecimalSeparator()}00`}
                             />
@@ -820,19 +802,9 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                             <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                               {t('callWizard.detailsStep.premiumPerShare')}
                             </label>
-                            <input
-                              type="text"
-                              value={shortLegPremiumText}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (validateNumberInput(value)) {
-                                  setShortLegPremiumText(value);
-                                  setShortLeg({
-                                    ...shortLeg,
-                                    premium: parseLocalizedNumber(value),
-                                  });
-                                }
-                              }}
+                            <LocalizedNumberInput
+                              value={shortLeg.premium}
+                              onChange={(premium) => setShortLeg({ ...shortLeg, premium })}
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                               placeholder={`5${getDecimalSeparator()}50`}
                             />
@@ -850,16 +822,9 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                             <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                               {t('callWizard.detailsStep.strikePrice')}
                             </label>
-                            <input
-                              type="text"
-                              value={longLegStrikeText}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (validateNumberInput(value)) {
-                                  setLongLegStrikeText(value);
-                                  setLongLeg({ ...longLeg, strike: parseLocalizedNumber(value) });
-                                }
-                              }}
+                            <LocalizedNumberInput
+                              value={longLeg.strike}
+                              onChange={(strike) => setLongLeg({ ...longLeg, strike })}
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                               placeholder={`160${getDecimalSeparator()}00`}
                             />
@@ -869,16 +834,9 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                             <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                               {t('callWizard.detailsStep.premiumPerShare')}
                             </label>
-                            <input
-                              type="text"
-                              value={longLegPremiumText}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (validateNumberInput(value)) {
-                                  setLongLegPremiumText(value);
-                                  setLongLeg({ ...longLeg, premium: parseLocalizedNumber(value) });
-                                }
-                              }}
+                            <LocalizedNumberInput
+                              value={longLeg.premium}
+                              onChange={(premium) => setLongLeg({ ...longLeg, premium })}
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                               placeholder={`2${getDecimalSeparator()}50`}
                             />
@@ -898,17 +856,10 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                             <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                               {t('callWizard.detailsStep.strikePrice')}
                             </label>
-                            <input
+                            <LocalizedNumberInput
                               ref={strikeInputRef}
-                              type="text"
-                              value={longLegStrikeText}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (validateNumberInput(value)) {
-                                  setLongLegStrikeText(value);
-                                  setLongLeg({ ...longLeg, strike: parseLocalizedNumber(value) });
-                                }
-                              }}
+                              value={longLeg.strike}
+                              onChange={(strike) => setLongLeg({ ...longLeg, strike })}
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                               placeholder={`150${getDecimalSeparator()}00`}
                             />
@@ -918,16 +869,9 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                             <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                               {t('callWizard.detailsStep.premiumPerShare')}
                             </label>
-                            <input
-                              type="text"
-                              value={longLegPremiumText}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (validateNumberInput(value)) {
-                                  setLongLegPremiumText(value);
-                                  setLongLeg({ ...longLeg, premium: parseLocalizedNumber(value) });
-                                }
-                              }}
+                            <LocalizedNumberInput
+                              value={longLeg.premium}
+                              onChange={(premium) => setLongLeg({ ...longLeg, premium })}
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                               placeholder={`5${getDecimalSeparator()}50`}
                             />
@@ -945,16 +889,9 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                             <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                               {t('callWizard.detailsStep.strikePrice')}
                             </label>
-                            <input
-                              type="text"
-                              value={shortLegStrikeText}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (validateNumberInput(value)) {
-                                  setShortLegStrikeText(value);
-                                  setShortLeg({ ...shortLeg, strike: parseLocalizedNumber(value) });
-                                }
-                              }}
+                            <LocalizedNumberInput
+                              value={shortLeg.strike}
+                              onChange={(strike) => setShortLeg({ ...shortLeg, strike })}
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                               placeholder={`160${getDecimalSeparator()}00`}
                             />
@@ -964,19 +901,9 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                             <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                               {t('callWizard.detailsStep.premiumPerShare')}
                             </label>
-                            <input
-                              type="text"
-                              value={shortLegPremiumText}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (validateNumberInput(value)) {
-                                  setShortLegPremiumText(value);
-                                  setShortLeg({
-                                    ...shortLeg,
-                                    premium: parseLocalizedNumber(value),
-                                  });
-                                }
-                              }}
+                            <LocalizedNumberInput
+                              value={shortLeg.premium}
+                              onChange={(premium) => setShortLeg({ ...shortLeg, premium })}
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                               placeholder={`2${getDecimalSeparator()}50`}
                             />
@@ -1152,17 +1079,10 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       {t('callWizard.detailsStep.strikePrice')}
                     </label>
-                    <input
+                    <LocalizedNumberInput
                       ref={strikeInputRef}
-                      type="text"
-                      value={longLegStrikeText}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        if (validateNumberInput(value)) {
-                          setLongLegStrikeText(value);
-                          setLongLeg({ ...longLeg, strike: parseLocalizedNumber(value) });
-                        }
-                      }}
+                      value={longLeg.strike}
+                      onChange={(strike) => setLongLeg({ ...longLeg, strike })}
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       placeholder={`150${getDecimalSeparator()}00`}
                     />
@@ -1172,16 +1092,9 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       {t('callWizard.detailsStep.premiumPerShare')}
                     </label>
-                    <input
-                      type="text"
-                      value={longLegPremiumText}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        if (validateNumberInput(value)) {
-                          setLongLegPremiumText(value);
-                          setLongLeg({ ...longLeg, premium: parseLocalizedNumber(value) });
-                        }
-                      }}
+                    <LocalizedNumberInput
+                      value={longLeg.premium}
+                      onChange={(premium) => setLongLeg({ ...longLeg, premium })}
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       placeholder={`5${getDecimalSeparator()}50`}
                     />

@@ -1,18 +1,6 @@
-import React, { useMemo, useState, useRef, useEffect } from 'react';
+﻿import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import {
-  TrendingUp,
-  Building2,
-  X as XIcon,
-  ChevronDown,
-  ChevronUp,
-  ChevronRight,
-  Target,
-  AlertCircle,
-  Lightbulb,
-  Filter,
-  Redo2,
-} from 'lucide-react';
+import { TrendingUp, ChevronDown, ChevronUp, Target, AlertCircle, Lightbulb, Filter } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import {
@@ -48,8 +36,8 @@ import { StockRow } from './StockRow';
 import { GroupedStockList } from './GroupedStockList';
 import { OptionRow } from './OptionRow';
 import type { CollateralType } from './OptionRow';
-import { AlertTooltipContent } from '../common/AlertTooltipContent';
-import { PortalTooltip } from '../common/PortalTooltip';
+import { SpreadSummaryRow } from './SpreadSummaryRow';
+import { isLEAPS, calculateSpreadSummary } from '../../utils/positionHelpers';
 
 type SortField = 'expiration' | 'ticker' | 'strike' | 'premium' | 'dte' | 'pnl';
 type SortDirection = 'asc' | 'desc';
@@ -64,19 +52,6 @@ interface PortfolioViewProps {
   onNavigateToCampaigns?: () => void;
   /** Opens the covered-call wizard for a ticker (threaded down to the grouped stock list). */
   onWriteCoveredCall?: (ticker: string) => void;
-}
-
-interface GroupedPosition {
-  ticker: string;
-  name?: string;
-  type: 'stock' | 'etf';
-  positions: Position[];
-  totalShares: number;
-  avgPurchasePrice: number;
-  totalCostBasis: number;
-  currentValue: number;
-  unrealizedPnL: number;
-  unrealizedPnLPercent: number;
 }
 
 export const PortfolioView: React.FC<PortfolioViewProps> = ({
@@ -242,65 +217,6 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
     return filter.expiration !== 'all' || filter.opportunities || filter.alerts || filter.ideas;
   };
 
-  // Helper to calculate DTE
-  const calculateDTE = (expiration: string | undefined): number => {
-    if (!expiration) return 0;
-    return getDaysToExpiration(expiration);
-  };
-
-  // Helper to check if option is LEAP (>90 days / 3 months)
-  const isLEAPS = (position: Position): boolean => {
-    if (position.type !== 'call') return false;
-    const option = position as CallOption;
-    return calculateDTE(option.expiration) > 90;
-  };
-
-  // Helper to calculate spread summary
-  const calculateSpreadSummary = (legs: Position[]) => {
-    if (legs.length !== 2) return null;
-
-    const options = legs as (CallOption | PutOption)[];
-    const longLeg = options.find((o) => o.action === 'buy');
-    const shortLeg = options.find((o) => o.action === 'sell');
-
-    if (!longLeg || !shortLeg) return null;
-
-    const isCredit = shortLeg.premium > longLeg.premium;
-    const netPremium = (shortLeg.premium - longLeg.premium) * shortLeg.contracts * 100;
-    const spreadWidth = Math.abs(shortLeg.strike - longLeg.strike);
-    const totalCostBasis = longLeg.costBasis + shortLeg.costBasis;
-    const totalCurrentValue = longLeg.currentValue + shortLeg.currentValue;
-    const totalPnL = totalCurrentValue - totalCostBasis;
-
-    const maxProfit = isCredit
-      ? netPremium
-      : (spreadWidth - Math.abs(netPremium / (shortLeg.contracts * 100))) *
-        shortLeg.contracts *
-        100;
-
-    const maxLoss = isCredit
-      ? (spreadWidth - Math.abs(netPremium / (shortLeg.contracts * 100))) * shortLeg.contracts * 100
-      : Math.abs(netPremium);
-
-    return {
-      ticker: longLeg.ticker,
-      type: longLeg.type,
-      spreadType: isCredit ? 'credit' : 'debit',
-      contracts: shortLeg.contracts,
-      longStrike: longLeg.strike,
-      shortStrike: shortLeg.strike,
-      expiration: longLeg.expiration,
-      netPremium,
-      spreadWidth,
-      maxProfit,
-      maxLoss,
-      totalPnL,
-      totalCostBasis,
-      totalCurrentValue,
-      collateral: isCredit ? spreadWidth * shortLeg.contracts * 100 : 0,
-    };
-  };
-
   // Update filter popup position when it opens
   useEffect(() => {
     if (showFilterPopup && filterButtonRef.current) {
@@ -311,49 +227,6 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
       });
     }
   }, [showFilterPopup]);
-
-  // Group positions by ticker
-  const groupedPositions = useMemo(() => {
-    const groups: Record<string, GroupedPosition> = {};
-
-    positions
-      .filter((p) => p.status === 'open' && (p.type === 'stock' || p.type === 'etf'))
-      .forEach((position) => {
-        if (position.type !== 'stock' && position.type !== 'etf') return;
-
-        const ticker = position.ticker;
-
-        if (!groups[ticker]) {
-          groups[ticker] = {
-            ticker,
-            name: position.name,
-            type: position.type,
-            positions: [],
-            totalShares: 0,
-            avgPurchasePrice: 0,
-            totalCostBasis: 0,
-            currentValue: 0,
-            unrealizedPnL: 0,
-            unrealizedPnLPercent: 0,
-          };
-        }
-
-        const group = groups[ticker];
-        group.positions.push(position);
-        group.totalShares += position.shares;
-        group.totalCostBasis += position.costBasis;
-        group.currentValue += position.currentValue;
-      });
-
-    // Calculate averages and P&L for each group
-    Object.values(groups).forEach((group) => {
-      group.avgPurchasePrice = group.totalCostBasis / group.totalShares;
-      group.unrealizedPnL = group.currentValue - group.totalCostBasis;
-      group.unrealizedPnLPercent = (group.unrealizedPnL / group.totalCostBasis) * 100;
-    });
-
-    return Object.values(groups).sort((a, b) => a.ticker.localeCompare(b.ticker));
-  }, [positions]);
 
   // Get ALL positions (stocks, ETFs, and options) with sorting
   const allPositions = useMemo(() => {
@@ -540,7 +413,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
     };
   }, [filteredPositions]);
 
-  // Open stock/ETF lots for this portfolio — rendered as a grouped, expandable tree
+  // Open stock/ETF lots for this portfolio â€” rendered as a grouped, expandable tree
   const stockLots = useMemo(
     () =>
       positions.filter(
@@ -552,7 +425,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   // Group all positions by strategy if needed
   // This groups both standalone positions and spreads
   const groupedAllPositions = useMemo(() => {
-    // Stocks/ETFs are rendered separately by GroupedStockList — keep them out of the
+    // Stocks/ETFs are rendered separately by GroupedStockList â€” keep them out of the
     // strategy/expiry/ticker grouping so they don't appear twice.
     const nonStockPositions = filteredPositions.filter(
       (p) => p.type !== 'stock' && p.type !== 'etf'
@@ -953,10 +826,10 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
     if (isHorizontalRoll) {
       rollTypeLabel = `Horizontaal (+${daysDiff}d)`;
     } else if (isVerticalRoll) {
-      const direction = rollData.newStrike > positionToRoll.strike ? '↑' : '↓';
+      const direction = rollData.newStrike > positionToRoll.strike ? 'â†‘' : 'â†“';
       rollTypeLabel = `Verticaal ${direction}`;
     } else if (isDiagonalRoll) {
-      const direction = rollData.newStrike > positionToRoll.strike ? '↑' : '↓';
+      const direction = rollData.newStrike > positionToRoll.strike ? 'â†‘' : 'â†“';
       rollTypeLabel = `Diagonaal ${direction} (+${daysDiff}d)`;
     }
 
@@ -974,14 +847,14 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
       date: rollData.closeDate,
       type: 'option_roll' as const,
       amount: netCashFlow, // Net cash received (credit) or paid (debit)
-      description: `Roll ${actionType} ${optionType} ${positionToRoll.ticker} $${positionToRoll.strike} (${oldExpStr}) → $${rollData.newStrike} (${newExpStr})`,
+      description: `Roll ${actionType} ${optionType} ${positionToRoll.ticker} $${positionToRoll.strike} (${oldExpStr}) â†’ $${rollData.newStrike} (${newExpStr})`,
       relatedPositionId: newPosition.id,
       previousValue: portfolioCurrentValue,
       newValue: portfolioCurrentValue + realizedPnL,
       createdAt: new Date().toISOString(),
       notes:
         rollData.notes ||
-        `${rollTypeLabel} • ${netCashFlow >= 0 ? 'Credit' : 'Debit'}: ${formatCurrency(Math.abs(netCashFlow), currencySymbol)}${daysDiff > 0 ? ` • +${daysDiff} dagen` : ''}`,
+        `${rollTypeLabel} â€¢ ${netCashFlow >= 0 ? 'Credit' : 'Debit'}: ${formatCurrency(Math.abs(netCashFlow), currencySymbol)}${daysDiff > 0 ? ` â€¢ +${daysDiff} dagen` : ''}`,
     };
 
     dispatch(addTransaction(transaction));
@@ -1111,7 +984,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
       date: rollData.rollDate,
       type: 'option_roll' as const,
       amount: netCashFlow,
-      description: `Roll ${longLeg.ticker} ${optionType} Spread $${Math.min(longLeg.strike, shortLeg.strike)}/$${Math.max(longLeg.strike, shortLeg.strike)} → $${Math.min(rollData.longLeg.newStrike, rollData.shortLeg.newStrike)}/$${Math.max(rollData.longLeg.newStrike, rollData.shortLeg.newStrike)}`,
+      description: `Roll ${longLeg.ticker} ${optionType} Spread $${Math.min(longLeg.strike, shortLeg.strike)}/$${Math.max(longLeg.strike, shortLeg.strike)} â†’ $${Math.min(rollData.longLeg.newStrike, rollData.shortLeg.newStrike)}/$${Math.max(rollData.longLeg.newStrike, rollData.shortLeg.newStrike)}`,
       relatedPositionId: newSpreadId,
       previousValue: portfolioCurrentValue,
       newValue: portfolioCurrentValue + totalRealizedPnL,
@@ -1420,7 +1293,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                             {/* Category Filters */}
                             <div>
                               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Categorieën:
+                                CategorieÃ«n:
                               </label>
                               <div className="space-y-2">
                                 <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700/50">
@@ -1484,182 +1357,6 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
       {/* Position List - Scrollable */}
       <div className="divide-y divide-gray-200 dark:divide-gray-700 flex-1 overflow-y-auto">
-        {/* Remove old grouped stocks display - now integrated in table below */}
-        {false &&
-          groupedPositions.map((group) => {
-            return (
-              <div
-                key={group.ticker}
-                className="p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-              >
-                {/* Group Header */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                        group.type === 'stock'
-                          ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                          : 'bg-positive-50 dark:bg-positive-700/25 text-positive-600 dark:text-positive-500'
-                      }`}
-                    >
-                      {group.type === 'stock' ? (
-                        <TrendingUp className="w-6 h-6" />
-                      ) : (
-                        <Building2 className="w-6 h-6" />
-                      )}
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h4 className="text-lg font-bold text-gray-900 dark:text-white">
-                          {group.ticker}
-                        </h4>
-                        <span
-                          className={`text-xs px-2 py-0.5 rounded ${
-                            group.type === 'stock'
-                              ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                              : 'bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500'
-                          }`}
-                        >
-                          {group.type === 'stock' ? 'Aandeel' : 'ETF'}
-                        </span>
-                      </div>
-                      {group.name && (
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{group.name}</p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Total P&L */}
-                  <div className="text-right">
-                    <p
-                      className={`text-lg font-bold ${
-                        group.unrealizedPnL > 0
-                          ? 'text-positive-600 dark:text-positive-500'
-                          : group.unrealizedPnL < 0
-                            ? 'text-negative-600 dark:text-negative-500'
-                            : 'text-gray-900 dark:text-white'
-                      }`}
-                    >
-                      {group.unrealizedPnL > 0 ? '+' : ''}
-                      {formatCurrency(group.unrealizedPnL, currencySymbol)}
-                    </p>
-                    <p
-                      className={`text-sm font-medium ${
-                        group.unrealizedPnL > 0
-                          ? 'text-positive-600 dark:text-positive-500'
-                          : group.unrealizedPnL < 0
-                            ? 'text-negative-600 dark:text-negative-500'
-                            : 'text-gray-900 dark:text-white'
-                      }`}
-                    >
-                      {group.unrealizedPnL > 0 ? '+' : ''}
-                      {formatNumber(group.unrealizedPnLPercent)}%
-                    </p>
-                  </div>
-                </div>
-
-                {/* Group Stats */}
-                <div className="grid grid-cols-4 gap-4 mb-4">
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Totaal Aandelen</p>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                      {group.totalShares}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Gem. Prijs</p>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                      {formatCurrency(group.avgPurchasePrice, currencySymbol)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Totale kost</p>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                      {formatCurrency(group.totalCostBasis, currencySymbol)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Huidige Waarde</p>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                      {formatCurrency(group.currentValue, currencySymbol)}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Individual Positions */}
-                {group.positions.length > 1 && (
-                  <div className="space-y-2 pl-4 border-l-2 border-gray-200 dark:border-gray-700">
-                    {group.positions.map((position, index) => {
-                      if (position.type !== 'stock' && position.type !== 'etf') return null;
-
-                      const positionPnL = position.currentValue - position.costBasis;
-                      const positionPnLPercent = (positionPnL / position.costBasis) * 100;
-
-                      return (
-                        <div
-                          key={position.id}
-                          className="p-3 bg-gray-50 dark:bg-gray-900 rounded-lg relative group"
-                        >
-                          <button
-                            onClick={() => setPositionToClose(position)}
-                            className="absolute top-2 right-2 p-1.5 bg-negative-50 dark:bg-negative-700/25 hover:bg-negative-50 dark:hover:bg-negative-700/50 text-negative-600 dark:text-negative-500 rounded opacity-0 group-hover:opacity-100 transition-opacity"
-                            title="Positie sluiten"
-                          >
-                            <XIcon className="w-4 h-4" />
-                          </button>
-                          <div className="flex items-center justify-between mb-2">
-                            <p className="text-sm font-medium text-gray-900 dark:text-white">
-                              Positie #{index + 1}
-                            </p>
-                            <p
-                              className={`text-sm font-semibold ${
-                                positionPnL > 0
-                                  ? 'text-positive-600 dark:text-positive-500'
-                                  : positionPnL < 0
-                                    ? 'text-negative-600 dark:text-negative-500'
-                                    : 'text-gray-900 dark:text-white'
-                              }`}
-                            >
-                              {positionPnL > 0 ? '+' : ''}
-                              {formatCurrency(positionPnL, currencySymbol)} (
-                              {positionPnL > 0 ? '+' : ''}
-                              {formatNumber(positionPnLPercent)}%)
-                            </p>
-                          </div>
-                          <div className="grid grid-cols-4 gap-2 text-xs">
-                            <div>
-                              <p className="text-gray-500 dark:text-gray-400">Aandelen</p>
-                              <p className="font-medium text-gray-900 dark:text-white">
-                                {position.shares}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-gray-500 dark:text-gray-400">Prijs</p>
-                              <p className="font-medium text-gray-900 dark:text-white">
-                                {formatCurrency(position.purchasePrice, currencySymbol)}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-gray-500 dark:text-gray-400">Kost</p>
-                              <p className="font-medium text-gray-900 dark:text-white">
-                                {formatCurrency(position.costBasis, currencySymbol)}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-gray-500 dark:text-gray-400">Datum</p>
-                              <p className="font-medium text-gray-900 dark:text-white">
-                                {new Date(position.openDate).toLocaleDateString('nl-NL')}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            );
-          })}
 
         {/* Grouped Stock/ETF Tree */}
         {stockLots.length > 0 && (
@@ -2026,389 +1723,32 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                               return (
                                 <React.Fragment key={spread.id}>
                                   {/* Spread Summary Row */}
-                                  <div
-                                    className={`px-6 py-3 hover:bg-white dark:hover:bg-gray-700/30 transition-colors border-b border-gray-200 dark:border-gray-700 bg-surface-subtle/30 dark:bg-trading-dark-700 border-l-4 ${getSpreadBorderColor()}`}
-                                  >
-                                    <div className="grid grid-cols-[32px_minmax(140px,1fr)_80px_70px_70px_70px_85px_85px_90px_70px_16px_130px] gap-2 items-start">
-                                      {/* Icon with expand/collapse indicator - clickable for expand */}
-                                      <div
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          toggleSpread(spread.id);
-                                        }}
-                                        className="w-8 h-8 rounded flex items-center justify-center flex-shrink-0 bg-surface-muted dark:bg-trading-dark-600 text-ink-600 dark:text-ink-300 cursor-pointer hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors"
-                                      >
-                                        {isExpanded ? (
-                                          <ChevronDown className="w-4 h-4" />
-                                        ) : (
-                                          <ChevronRight className="w-4 h-4" />
-                                        )}
-                                      </div>
-                                      {/* Rest of row - clickable to open editor */}
-                                      <div
-                                        onClick={() => {
-                                          setSpreadToView({ legs: spread.legs, currentStockPrice });
-                                        }}
-                                        className="contents cursor-pointer"
-                                      >
-                                        {/* Ticker with spread badges */}
-                                        <div>
-                                          <div className="flex items-center gap-1.5 flex-wrap">
-                                            <h4 className="text-sm font-bold text-gray-900 dark:text-white">
-                                              {summary.contracts}x {summary.ticker}
-                                            </h4>
-                                            <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-surface-muted dark:bg-trading-dark-600 text-ink-700 dark:text-ink-300">
-                                              {summary.type.toUpperCase()} SPREAD
-                                            </span>
-                                            <span
-                                              className={`px-1.5 py-0.5 text-[10px] font-semibold rounded ${
-                                                summary.spreadType === 'credit'
-                                                  ? 'bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500'
-                                                  : 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                                              }`}
-                                            >
-                                              {summary.spreadType === 'credit' ? 'CREDIT' : 'DEBIT'}
-                                            </span>
-                                            {hasAlert && (
-                                              <>
-                                                <div
-                                                  ref={getTooltipRef(`spread-alert-${spread.id}`)}
-                                                  onMouseEnter={() =>
-                                                    setShowTooltip(`spread-alert-${spread.id}`)
-                                                  }
-                                                  onMouseLeave={() => setShowTooltip(null)}
-                                                  className="flex items-center gap-1 px-1.5 py-0.5 bg-caution-50 dark:bg-caution-600/25 rounded-full cursor-help"
-                                                >
-                                                  <AlertCircle className="w-3 h-3 text-caution-600 dark:text-caution-500" />
-                                                  <span className="text-[10px] font-semibold text-caution-600 dark:text-caution-500">
-                                                    {uniqueSpreadAlerts.length || 1}
-                                                  </span>
-                                                </div>
-                                                <PortalTooltip
-                                                  triggerRef={getTooltipRef(
-                                                    `spread-alert-${spread.id}`
-                                                  )}
-                                                  show={showTooltip === `spread-alert-${spread.id}`}
-                                                >
-                                                  <div className="w-72 p-3 bg-white dark:bg-gray-800 border-2 border-caution-500/30 dark:border-caution-600/40 rounded-lg shadow-xl">
-                                                    <AlertTooltipContent
-                                                      items={
-                                                        uniqueSpreadAlerts.length > 0
-                                                          ? uniqueSpreadAlerts.map((a) => ({
-                                                              ticker: a.ticker,
-                                                              message: a.message,
-                                                            }))
-                                                          : [
-                                                              {
-                                                                ticker: summary.ticker,
-                                                                message: alertMessage,
-                                                              },
-                                                            ]
-                                                      }
-                                                      type="alert"
-                                                    />
-                                                  </div>
-                                                </PortalTooltip>
-                                              </>
-                                            )}
-                                            {hasOpportunity && (
-                                              <>
-                                                <div
-                                                  ref={getTooltipRef(`spread-opp-${spread.id}`)}
-                                                  onMouseEnter={() =>
-                                                    setShowTooltip(`spread-opp-${spread.id}`)
-                                                  }
-                                                  onMouseLeave={() => setShowTooltip(null)}
-                                                >
-                                                  <Target className="w-3.5 h-3.5 text-positive-600 dark:text-positive-500 cursor-help" />
-                                                </div>
-                                                <PortalTooltip
-                                                  triggerRef={getTooltipRef(
-                                                    `spread-opp-${spread.id}`
-                                                  )}
-                                                  show={showTooltip === `spread-opp-${spread.id}`}
-                                                >
-                                                  <div className="w-72 p-3 bg-white dark:bg-gray-800 border-2 border-positive-500/20 dark:border-positive-700/30 rounded-lg shadow-xl">
-                                                    <AlertTooltipContent
-                                                      items={[
-                                                        {
-                                                          ticker: summary.ticker,
-                                                          message: opportunityMessage,
-                                                        },
-                                                      ]}
-                                                      type="opportunity"
-                                                    />
-                                                  </div>
-                                                </PortalTooltip>
-                                              </>
-                                            )}
-                                          </div>
-                                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                                            {spreadTickerData?.name ||
-                                              `Breedte: $${formatNumber(summary.spreadWidth, 2)}`}
-                                          </p>
-                                        </div>
-
-                                        {/* Expiratie */}
-                                        <div>
-                                          <p className="text-sm font-medium text-gray-900 dark:text-white">
-                                            {summary.expiration
-                                              ? new Date(summary.expiration).toLocaleDateString(
-                                                  'nl-NL'
-                                                )
-                                              : 'N/A'}
-                                          </p>
-                                          <p
-                                            className={`text-xs ${
-                                              daysToExpiration <= 7 && daysToExpiration > 0
-                                                ? 'text-negative-600 dark:text-negative-500 font-semibold'
-                                                : expiresWithinTwoWeeks
-                                                  ? 'text-caution-500 dark:text-caution-500 font-semibold'
-                                                  : 'text-gray-500 dark:text-gray-400'
-                                            }`}
-                                          >
-                                            {daysToExpiration > 0
-                                              ? `${daysToExpiration}d`
-                                              : daysToExpiration === 0
-                                                ? 'Vandaag'
-                                                : 'Verlopen'}
-                                          </p>
-                                        </div>
-
-                                        {/* Strike Range - always show lowest first */}
-                                        <div>
-                                          <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                                            ${Math.min(summary.longStrike, summary.shortStrike)}-$
-                                            {Math.max(summary.longStrike, summary.shortStrike)}
-                                          </p>
-                                        </div>
-
-                                        {/* Stock prijs */}
-                                        <div>
-                                          {currentStockPrice > 0 ? (
-                                            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                              {formatCurrency(currentStockPrice, currencySymbol)}
-                                            </p>
-                                          ) : (
-                                            <p className="text-sm text-gray-400 dark:text-gray-600">
-                                              -
-                                            </p>
-                                          )}
-                                        </div>
-
-                                        {/* Verschil (stock price - short strike) */}
-                                        <div>
-                                          {currentStockPrice > 0 ? (
-                                            <p
-                                              className={`text-sm font-semibold ${(() => {
-                                                // Only show red for bad situations, otherwise neutral
-                                                // Call spread: positive difference is bad (stock above short strike)
-                                                // Put spread: negative difference is bad (stock below short strike)
-                                                const isCallSpread = summary.type === 'call';
-                                                const isBadForPosition = isCallSpread
-                                                  ? priceDifference > 0
-                                                  : priceDifference < 0;
-
-                                                if (isBadForPosition)
-                                                  return 'text-negative-600 dark:text-negative-500';
-                                                return 'text-gray-900 dark:text-white';
-                                              })()}`}
-                                            >
-                                              {priceDifference > 0 ? '+' : ''}
-                                              {formatCurrency(priceDifference, currencySymbol)}
-                                            </p>
-                                          ) : (
-                                            <p className="text-sm text-gray-400 dark:text-gray-600">
-                                              -
-                                            </p>
-                                          )}
-                                        </div>
-
-                                        {/* Net Premium (Aankoop) */}
-                                        <div>
-                                          {(() => {
-                                            // Calculate per-contract premium: short - long
-                                            const shortLegPremium = spread.legs.find(
-                                              (l) => (l as CallOption | PutOption).action === 'sell'
-                                            ) as CallOption | PutOption;
-                                            const longLegPremium = spread.legs.find(
-                                              (l) => (l as CallOption | PutOption).action === 'buy'
-                                            ) as CallOption | PutOption;
-                                            const netPremiumPerContract =
-                                              shortLegPremium.premium - longLegPremium.premium;
-
-                                            return (
-                                              <>
-                                                <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                                                  {formatCurrency(
-                                                    netPremiumPerContract,
-                                                    currencySymbol
-                                                  )}
-                                                </p>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                  {formatCurrency(
-                                                    Math.abs(summary.netPremium),
-                                                    currencySymbol
-                                                  )}
-                                                </p>
-                                              </>
-                                            );
-                                          })()}
-                                        </div>
-
-                                        {/* Current Value */}
-                                        <div>
-                                          {(() => {
-                                            // Calculate per-contract value: short - long for current value
-                                            const shortLegData = spread.legs.find(
-                                              (l) => (l as CallOption | PutOption).action === 'sell'
-                                            ) as CallOption | PutOption;
-                                            const longLegData = spread.legs.find(
-                                              (l) => (l as CallOption | PutOption).action === 'buy'
-                                            ) as CallOption | PutOption;
-                                            const shortPerContract =
-                                              Math.abs(shortLegData.currentValue) /
-                                              (shortLegData.contracts * 100);
-                                            const longPerContract =
-                                              Math.abs(longLegData.currentValue) /
-                                              (longLegData.contracts * 100);
-                                            const netPerContract =
-                                              shortPerContract - longPerContract;
-
-                                            return (
-                                              <>
-                                                <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                                                  {formatCurrency(netPerContract, currencySymbol)}
-                                                </p>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                  {formatCurrency(
-                                                    Math.abs(summary.totalCurrentValue),
-                                                    currencySymbol
-                                                  )}
-                                                </p>
-                                              </>
-                                            );
-                                          })()}
-                                        </div>
-
-                                        {/* P&L */}
-                                        <div>
-                                          <p
-                                            className={`text-sm font-bold ${
-                                              summary.totalPnL > 0
-                                                ? 'text-positive-600 dark:text-positive-500'
-                                                : summary.totalPnL < 0
-                                                  ? 'text-negative-600 dark:text-negative-500'
-                                                  : 'text-gray-900 dark:text-white'
-                                            }`}
-                                          >
-                                            {summary.totalPnL > 0 ? '+' : ''}
-                                            {formatCurrency(summary.totalPnL, currencySymbol)}
-                                          </p>
-                                          <p
-                                            className={`text-xs font-medium ${
-                                              summary.totalPnL > 0
-                                                ? 'text-positive-600 dark:text-positive-500'
-                                                : summary.totalPnL < 0
-                                                  ? 'text-negative-600 dark:text-negative-500'
-                                                  : 'text-gray-900 dark:text-white'
-                                            }`}
-                                          >
-                                            {summary.totalPnL > 0 ? '+' : ''}
-                                            {formatNumber(
-                                              (summary.totalPnL /
-                                                Math.abs(summary.totalCostBasis)) *
-                                                100
-                                            )}
-                                            %
-                                          </p>
-                                        </div>
-
-                                        {/* Collateral */}
-                                        <div>
-                                          {(() => {
-                                            // Determine if this is a credit or debit spread
-                                            // Credit spread: short strike > long strike (for puts), short strike < long strike (for calls)
-                                            const isCredit =
-                                              summary.type === 'put'
-                                                ? summary.shortStrike > summary.longStrike
-                                                : summary.shortStrike < summary.longStrike;
-
-                                            if (isCredit) {
-                                              // Credit spread - collateral is max loss (spread width × 100 × contracts)
-                                              const spreadWidth = Math.abs(
-                                                summary.shortStrike - summary.longStrike
-                                              );
-                                              const contracts = spread.legs[0]
-                                                ? (spread.legs[0] as CallOption | PutOption)
-                                                    .contracts
-                                                : 1;
-                                              const maxLoss = spreadWidth * 100 * contracts;
-
-                                              return (
-                                                <>
-                                                  <p className="text-sm font-semibold text-caution-600 dark:text-caution-500">
-                                                    Cash
-                                                  </p>
-                                                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                    {formatCurrency(maxLoss, currencySymbol)}
-                                                  </p>
-                                                </>
-                                              );
-                                            } else {
-                                              // Debit spread - no collateral needed
-                                              return (
-                                                <p className="text-sm text-gray-400 dark:text-gray-600">
-                                                  -
-                                                </p>
-                                              );
-                                            }
-                                          })()}
-                                        </div>
-                                      </div>{' '}
-                                      {/* Close "contents" wrapper for clickable row */}
-                                      {/* Spacer */}
-                                      <div></div>
-                                      {/* Action buttons - outside the clickable area */}
-                                      <div className="flex justify-end gap-1 pt-0.5">
-                                        <button
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            // Roll both legs of the spread
-                                            const longLeg = spread.legs.find(
-                                              (leg) =>
-                                                (leg as CallOption | PutOption).action === 'buy'
-                                            ) as CallOption | PutOption | undefined;
-                                            const shortLeg = spread.legs.find(
-                                              (leg) =>
-                                                (leg as CallOption | PutOption).action === 'sell'
-                                            ) as CallOption | PutOption | undefined;
-                                            if (longLeg && shortLeg) {
-                                              setSpreadToRoll({ longLeg, shortLeg });
-                                            }
-                                          }}
-                                          className="p-1.5 hover:bg-primary-50 dark:hover:bg-primary-900/25 text-primary-700 dark:text-primary-300 rounded"
-                                          title="Spread Rollen"
-                                        >
-                                          <Redo2 className="w-4 h-4" />
-                                        </button>
-                                        <button
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            // Close both legs - we'll set the first leg as the position to close
-                                            // and handle the second leg in the modal
-                                            setPositionToClose(spread.legs[0]);
-                                          }}
-                                          className="p-1.5 hover:bg-negative-50 dark:hover:bg-negative-700/25 text-negative-600 dark:text-negative-500 rounded"
-                                          title="Spread Sluiten"
-                                        >
-                                          <XIcon className="w-4 h-4" />
-                                        </button>
-                                      </div>
-                                    </div>{' '}
-                                    {/* Close grid */}
-                                  </div>{' '}
-                                  {/* Close row container */}
+                                  <SpreadSummaryRow
+                                    spread={spread}
+                                    summary={summary}
+                                    isExpanded={isExpanded}
+                                    currentStockPrice={currentStockPrice}
+                                    priceDifference={priceDifference}
+                                    spreadTickerData={spreadTickerData}
+                                    daysToExpiration={daysToExpiration}
+                                    expiresWithinTwoWeeks={expiresWithinTwoWeeks}
+                                    hasAlert={hasAlert}
+                                    alertMessage={alertMessage}
+                                    uniqueSpreadAlerts={uniqueSpreadAlerts}
+                                    hasOpportunity={hasOpportunity}
+                                    opportunityMessage={opportunityMessage}
+                                    currencySymbol={currencySymbol}
+                                    spreadBorderColor={getSpreadBorderColor()}
+                                    showTooltip={showTooltip}
+                                    getTooltipRef={getTooltipRef}
+                                    onSetShowTooltip={setShowTooltip}
+                                    onToggleSpread={toggleSpread}
+                                    onViewSpread={(legs, price) =>
+                                      setSpreadToView({ legs, currentStockPrice: price })
+                                    }
+                                    onRollSpread={(longLeg, shortLeg) => setSpreadToRoll({ longLeg, shortLeg })}
+                                    onCloseSpread={(firstLeg) => setPositionToClose(firstLeg)}
+                                  />
                                   {/* Expanded Legs */}
                                   {isExpanded &&
                                     spread.legs.map((legPosition) => {
@@ -2445,7 +1785,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                             const spreadWidth = Math.abs(
                                               option.strike - longCallLeg.strike
                                             );
-                                            legCollateralDescription = `Beschermd door long call @ $${longCallLeg.strike}. Max verlies: $${spreadWidth} × 100 × ${option.contracts} = $${spreadWidth * 100 * option.contracts}.`;
+                                            legCollateralDescription = `Beschermd door long call @ $${longCallLeg.strike}. Max verlies: $${spreadWidth} Ã— 100 Ã— ${option.contracts} = $${spreadWidth * 100 * option.contracts}.`;
                                           } else {
                                             // Standalone short call - check for stock or LEAPS as collateral
                                             const stockPosition = positions.find(
@@ -2497,7 +1837,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                             const spreadWidth = Math.abs(
                                               option.strike - longPutLeg.strike
                                             );
-                                            legCollateralDescription = `Beschermd door long put @ $${longPutLeg.strike}. Max verlies: $${spreadWidth} × 100 × ${option.contracts} = $${spreadWidth * 100 * option.contracts}.`;
+                                            legCollateralDescription = `Beschermd door long put @ $${longPutLeg.strike}. Max verlies: $${spreadWidth} Ã— 100 Ã— ${option.contracts} = $${spreadWidth * 100 * option.contracts}.`;
                                           } else {
                                             // Standalone short put - cash secured
                                             legCollateralType = 'cash';

@@ -9,7 +9,13 @@ import { getDefaultRulesForStrategy } from '../utils/defaultStrategyRules';
  * lazy localStorage-init, a persist effect, and add/edit/save/delete/toggle
  * handlers (see docs/CODE-REVIEW-2026-06.md P1). This hook is the single source.
  */
-export const useStrategyRules = (strategyType: StrategyType, portfolio: string | undefined) => {
+export const useStrategyRules = (
+  strategyType: StrategyType,
+  portfolio: string | undefined,
+  // Optional one-time normalisation applied to rules loaded from storage
+  // (e.g. StocksETFs corrects rule.category from the trigger type).
+  migrate?: (rules: StrategyRule[]) => StrategyRule[]
+) => {
   const storageKey = `strategy-rules-${strategyType}-${portfolio}`;
 
   const [isRuleModalOpen, setIsRuleModalOpen] = useState(false);
@@ -19,7 +25,8 @@ export const useStrategyRules = (strategyType: StrategyType, portfolio: string |
     const saved = localStorage.getItem(storageKey);
     if (saved) {
       try {
-        return JSON.parse(saved) as StrategyRule[];
+        const parsed = JSON.parse(saved) as StrategyRule[];
+        return migrate ? migrate(parsed) : parsed;
       } catch {
         // fall through to defaults on corrupt data
       }

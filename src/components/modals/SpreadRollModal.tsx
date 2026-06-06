@@ -1,9 +1,11 @@
 import React, { useState, useMemo } from 'react';
-import { X, Redo2, HelpCircle, Calendar, DollarSign, TrendingUp } from 'lucide-react';
+import { Redo2, Calendar, DollarSign, TrendingUp } from 'lucide-react';
 import type { CallOption, PutOption, CurrencyType } from '../../types';
 import { getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency } from '../../utils/numberFormat';
 import { FridayDatePicker } from '../common/FridayDatePicker';
+import { RollModalShell } from './RollModalShell';
+import { RollCalculationSummary } from './RollCalculationSummary';
 
 interface LegRollData {
   closePremium: number;
@@ -130,45 +132,24 @@ export const SpreadRollModal: React.FC<SpreadRollModalProps> = ({
   const spreadType = shortLeg.premium > longLeg.premium ? 'Credit' : 'Debit';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-
-      {/* Modal */}
-      <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-surface-muted dark:bg-trading-dark-600 rounded-lg">
-              <Redo2 className="w-5 h-5 text-ink-600 dark:text-ink-300" />
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Roll Spread</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {longLeg.ticker} {optionType} {spreadType} Spread $
-                {Math.min(longLeg.strike, shortLeg.strike)}/$
-                {Math.max(longLeg.strike, shortLeg.strike)}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowHelp(!showHelp)}
-              className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-              title="Wat is een spread roll?"
-            >
-              <HelpCircle className="w-5 h-5" />
-            </button>
-            <button
-              onClick={onClose}
-              className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-
-        {/* Help Section */}
+    <RollModalShell
+      onClose={onClose}
+      title="Roll Spread"
+      subtitle={
+        <>
+          {longLeg.ticker} {optionType} {spreadType} Spread $
+          {Math.min(longLeg.strike, shortLeg.strike)}/$
+          {Math.max(longLeg.strike, shortLeg.strike)}
+        </>
+      }
+      iconWrapperClassName="bg-surface-muted dark:bg-trading-dark-600"
+      iconClassName="text-ink-600 dark:text-ink-300"
+      maxWidthClassName="max-w-4xl"
+      showHelpToggle
+      onToggleHelp={() => setShowHelp(!showHelp)}
+      helpToggleTitle="Wat is een spread roll?"
+    >
+      {/* Help Section */}
         {showHelp && (
           <div className="p-4 bg-surface-subtle dark:bg-trading-dark-700 border-b border-ink-200 dark:border-trading-dark-600">
             <h3 className="font-semibold text-purple-900 dark:text-purple-100 mb-2">
@@ -441,64 +422,16 @@ export const SpreadRollModal: React.FC<SpreadRollModalProps> = ({
           </div>
 
           {/* Calculation Summary */}
-          <div
-            className={`p-4 rounded-lg ${
-              rollCalculation.isCredit
-                ? 'bg-positive-50 dark:bg-positive-700/15 border border-positive-500/20 dark:border-positive-700/30'
-                : rollCalculation.isDebit
-                  ? 'bg-negative-50 dark:bg-negative-700/15 border border-negative-500/20 dark:border-negative-700/30'
-                  : 'bg-gray-50 dark:bg-gray-700/50'
-            }`}
-          >
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-              Berekening
-            </h3>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Sluiten spread:</span>
-                <span
-                  className={`font-medium ${rollCalculation.totalCloseValue >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
-                >
-                  {rollCalculation.totalCloseValue >= 0 ? '+' : ''}
-                  {formatCurrency(rollCalculation.totalCloseValue, currencySymbol)}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Openen nieuwe spread:</span>
-                <span
-                  className={`font-medium ${rollCalculation.totalOpenValue >= 0 ? 'text-positive-600 dark:text-positive-500' : 'text-negative-600 dark:text-negative-500'}`}
-                >
-                  {rollCalculation.totalOpenValue >= 0 ? '+' : ''}
-                  {formatCurrency(rollCalculation.totalOpenValue, currencySymbol)}
-                </span>
-              </div>
-              <div className="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2">
-                <div className="flex justify-between items-center">
-                  <span className="font-semibold text-gray-700 dark:text-gray-300">
-                    Netto{' '}
-                    {rollCalculation.isCredit
-                      ? 'Credit'
-                      : rollCalculation.isDebit
-                        ? 'Debit'
-                        : 'Resultaat'}
-                    :
-                  </span>
-                  <span
-                    className={`text-lg font-bold ${
-                      rollCalculation.isCredit
-                        ? 'text-positive-600 dark:text-positive-500'
-                        : rollCalculation.isDebit
-                          ? 'text-negative-600 dark:text-negative-500'
-                          : 'text-gray-900 dark:text-white'
-                    }`}
-                  >
-                    {rollCalculation.netCredit >= 0 ? '+' : ''}
-                    {formatCurrency(rollCalculation.netCredit, currencySymbol)}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <RollCalculationSummary
+            closeLabel="Sluiten spread:"
+            closeValue={rollCalculation.totalCloseValue}
+            openLabel="Openen nieuwe spread:"
+            openValue={rollCalculation.totalOpenValue}
+            netCredit={rollCalculation.netCredit}
+            isCredit={rollCalculation.isCredit}
+            isDebit={rollCalculation.isDebit}
+            currencySymbol={currencySymbol}
+          />
 
           {/* Action Buttons */}
           <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
@@ -526,7 +459,6 @@ export const SpreadRollModal: React.FC<SpreadRollModalProps> = ({
             </button>
           </div>
         </form>
-      </div>
-    </div>
+    </RollModalShell>
   );
 };
