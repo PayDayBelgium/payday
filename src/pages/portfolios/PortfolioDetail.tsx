@@ -586,7 +586,13 @@ export const PortfolioDetail: React.FC = () => {
           )}
 
           {activeTab === 'transactions' && (
-            <TransactionLog transactions={transactions} currency={portfolio?.currency ?? 'USD'} />
+            <div className="h-full">
+              <TransactionLog
+                transactions={transactions}
+                currency={portfolio?.currency ?? 'USD'}
+                className="h-full border-0 rounded-none"
+              />
+            </div>
           )}
 
           {activeTab === 'freecash' && (

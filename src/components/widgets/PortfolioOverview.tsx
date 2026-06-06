@@ -13,7 +13,6 @@ import {
   RotateCcw,
   AlertCircle,
   Target,
-  Plus,
   Settings,
 } from 'lucide-react';
 
@@ -63,9 +62,9 @@ export const PortfolioOverview: React.FC = memo(() => {
     return null;
   }
 
-  const handleAddPortfolio = () => {
+  const handleManagePortfolios = () => {
     pushNavigation('/settings/portfolios', 'Portfolio Beheer');
-    navigate('/settings/portfolios', { state: { addPortfolio: true } });
+    navigate('/settings/portfolios');
   };
 
   const handleEditPortfolio = (portfolioId: string, e: React.MouseEvent) => {
@@ -87,11 +86,11 @@ export const PortfolioOverview: React.FC = memo(() => {
           </p>
         </div>
         <button
-          onClick={handleAddPortfolio}
+          onClick={handleManagePortfolios}
           className="flex items-center gap-2 px-3 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-medium transition-colors"
           title="Portfolio beheren"
         >
-          <Plus className="w-4 h-4" />
+          <Settings className="w-4 h-4" />
           <span className="hidden sm:inline">Beheer</span>
         </button>
       </div>

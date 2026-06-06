@@ -140,10 +140,10 @@ export const TransactionLog: React.FC<TransactionLogProps> = ({
 
   return (
     <div
-      className={`bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 ${className}`}
+      className={`bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 flex flex-col ${className}`}
     >
-      {/* Transaction List */}
-      <div className="divide-y divide-surface-line dark:divide-trading-dark-600 max-h-[600px] overflow-y-auto">
+      {/* Transaction List — fills the available height and scrolls internally */}
+      <div className="divide-y divide-surface-line dark:divide-trading-dark-600 flex-1 min-h-0 overflow-y-auto">
         {sortedTransactions.map((transaction) => {
           const isPositive = transaction.amount >= 0;
           const color = getTransactionColor(transaction.type);

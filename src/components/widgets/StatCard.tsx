@@ -141,15 +141,16 @@ export const StatCard: React.FC<StatCardProps> = ({
       )}
 
       <div className="p-5">
-        <div className="flex items-start justify-between gap-3 mb-4">
-          <p className="eyebrow text-ink-500">{title}</p>
+        {/* Icon on the left, then the title */}
+        <div className="flex items-center gap-3 mb-4">
           <div
-            className={`w-9 h-9 rounded-md flex items-center justify-center ${isWarning ? 'bg-caution-50 text-caution-600' : 'bg-primary-50 text-primary-700 dark:text-primary-100'}`}
+            className={`w-9 h-9 rounded-md flex items-center justify-center flex-shrink-0 ${isWarning ? 'bg-caution-50 text-caution-600' : 'bg-primary-50 text-primary-700 dark:text-primary-100'}`}
           >
             <div className="[&_svg]:w-[18px] [&_svg]:h-[18px]" style={{ strokeWidth: 1.75 }}>
               {icon}
             </div>
           </div>
+          <p className="eyebrow text-ink-500">{title}</p>
         </div>
 
         <p

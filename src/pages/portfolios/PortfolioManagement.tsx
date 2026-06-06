@@ -286,8 +286,13 @@ export const PortfolioManagement: React.FC = () => {
     setLogoPreview(null);
     setLogoOriginal(null);
     setLogoMetadata(undefined);
-    // Clear navigation stack and stay on portfolio list (component will re-render to show list)
+    // After creating a new portfolio, open it right away; when editing an
+    // existing one, return to the portfolio list. (editingPortfolioId and
+    // formData still hold their pre-reset values in this closure.)
     clearNavigation();
+    if (editingPortfolioId === 'new') {
+      navigate(`/portfolio/${encodeURIComponent(formData.name)}`);
+    }
   };
 
   const handleCancelEdit = () => {
@@ -378,7 +383,7 @@ export const PortfolioManagement: React.FC = () => {
   // If editing, show edit form - full page integration without extra padding
   if (editingPortfolioId) {
     return (
-      <div className="-m-6 min-h-[calc(100vh-4rem)]">
+      <div className="-m-6 min-h-[calc(100vh-4rem)] bg-white dark:bg-trading-dark-800">
         {/* Edit Form - Full page layout */}
         <div className="bg-white dark:bg-trading-dark-800 p-6 min-h-full">
           <div className="space-y-6 max-w-4xl">
