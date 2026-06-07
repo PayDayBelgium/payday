@@ -1,4 +1,4 @@
-import type { Position, PriceAlertRule, Trade, PortfolioName, TradingRule } from '../../types';
+import type { Position, PriceAlertRule, Trade, PortfolioName, TradingRule, JournalEntry, JournalGoal } from '../../types';
 import type { Todo } from '../slices/todosSlice';
 import { uuid } from '../../utils/uuid';
 
@@ -23,7 +23,14 @@ export type DomainEventType =
   | 'TradingRuleCreated'
   | 'TradingRuleUpdated'
   | 'TradingRuleDeleted'
-  | 'TradingRuleToggled';
+  | 'TradingRuleToggled'
+  | 'JournalEntryWritten'
+  | 'JournalEntryEdited'
+  | 'JournalEntryDeleted'
+  | 'GoalCreated'
+  | 'GoalEdited'
+  | 'GoalDeleted'
+  | 'GoalCompleted';
 
 // --- Phase 1 payloads ---
 export interface PositionOpenedPayload {
@@ -109,6 +116,13 @@ export interface DomainEventPayloads {
   TradingRuleUpdated: TradingRuleUpdatedPayload;
   TradingRuleDeleted: TradingRuleDeletedPayload;
   TradingRuleToggled: TradingRuleToggledPayload;
+  JournalEntryWritten: JournalEntryWrittenPayload;
+  JournalEntryEdited: JournalEntryEditedPayload;
+  JournalEntryDeleted: JournalEntryDeletedPayload;
+  GoalCreated: GoalCreatedPayload;
+  GoalEdited: GoalEditedPayload;
+  GoalDeleted: GoalDeletedPayload;
+  GoalCompleted: GoalCompletedPayload;
 }
 
 /** A persisted domain event (has seq + actor). */
@@ -146,5 +160,29 @@ export function createEvent<T extends DomainEventType>(
   };
 }
 
+// --- Phase 2 payloads: journal ---
+export interface JournalEntryWrittenPayload {
+  entry: JournalEntry;
+}
+export interface JournalEntryEditedPayload {
+  entry: JournalEntry;
+}
+export interface JournalEntryDeletedPayload {
+  id: string;
+}
+export interface GoalCreatedPayload {
+  goal: JournalGoal;
+}
+export interface GoalEditedPayload {
+  goal: JournalGoal;
+}
+export interface GoalDeletedPayload {
+  id: string;
+}
+export interface GoalCompletedPayload {
+  id: string;
+  completedAt: string;
+}
+
 // Re-export domain aliases used by payloads for convenience.
-export type { Position, PriceAlertRule, Trade, PortfolioName, Todo, TradingRule };
+export type { Position, PriceAlertRule, Trade, PortfolioName, Todo, TradingRule, JournalEntry, JournalGoal };
