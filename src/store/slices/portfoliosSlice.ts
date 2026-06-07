@@ -257,24 +257,22 @@ export const selectPortfolioSummaries = createSelector(
       let yearlyReturn = 0;
 
       if (portfolioSeries.length >= 2) {
-        // Weekly: value 7 days back vs now.
-        const oneWeekAgoIso = new Date(
-          Date.now() - 7 * 24 * 60 * 60 * 1000
-        ).toISOString().slice(0, 10);
-        const weekAgoPoint = [...portfolioSeries]
-          .reverse()
-          .find((d) => d.date <= oneWeekAgoIso);
+        // Anchor the lookback to the series' latest point date (not the wall clock):
+        // keeps this memoized selector pure/stable and matches the realized-series design
+        // where everything is keyed off ledger dates.
+        const latestMs = new Date(portfolioSeries[portfolioSeries.length - 1].date).getTime();
+        const DAY = 24 * 60 * 60 * 1000;
+
+        // Weekly: value ~7 days back vs the current (live) value.
+        const oneWeekAgoIso = new Date(latestMs - 7 * DAY).toISOString().slice(0, 10);
+        const weekAgoPoint = [...portfolioSeries].reverse().find((d) => d.date <= oneWeekAgoIso);
         if (weekAgoPoint && weekAgoPoint.totalValue > 0) {
           weeklyReturn = ((totalValue - weekAgoPoint.totalValue) / weekAgoPoint.totalValue) * 100;
         }
 
-        // Yearly: value ~1 year back vs now.
-        const oneYearAgoIso = new Date(
-          Date.now() - 365 * 24 * 60 * 60 * 1000
-        ).toISOString().slice(0, 10);
-        const yearAgoPoint = [...portfolioSeries]
-          .reverse()
-          .find((d) => d.date <= oneYearAgoIso);
+        // Yearly: value ~1 year back vs the current (live) value.
+        const oneYearAgoIso = new Date(latestMs - 365 * DAY).toISOString().slice(0, 10);
+        const yearAgoPoint = [...portfolioSeries].reverse().find((d) => d.date <= oneYearAgoIso);
         if (yearAgoPoint && yearAgoPoint.totalValue > 0) {
           yearlyReturn = ((totalValue - yearAgoPoint.totalValue) / yearAgoPoint.totalValue) * 100;
         }

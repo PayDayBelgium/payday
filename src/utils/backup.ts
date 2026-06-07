@@ -4,12 +4,11 @@ import type { DomainEvent } from '../store/events/types';
 export interface BackupData {
   version: string; // '2.0.0'
   timestamp: string;
+  // The event log IS the backup: the financial/data model is fully event-sourced, so
+  // replaying these events reproduces all derived state. (Non-event-sourced slices like
+  // userProgress/community/mentorship are session/learning state persisted by redux-persist
+  // and are intentionally not part of the backup — matching the original backup's scope.)
   events: DomainEvent[];
-  nonEventSourced: {
-    userProgress?: unknown;
-    community?: unknown;
-    mentorship?: unknown;
-  };
 }
 
 export const createBackup = (state: RootState): BackupData => {
@@ -17,11 +16,6 @@ export const createBackup = (state: RootState): BackupData => {
     version: '2.0.0',
     timestamp: new Date().toISOString(),
     events: state.events.log,
-    nonEventSourced: {
-      userProgress: state.userProgress,
-      community: state.community,
-      mentorship: state.mentorship,
-    },
   };
 };
 
