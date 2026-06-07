@@ -71,8 +71,11 @@ export const createAppStore = (username?: string) => {
     ], // Persist auth and adminAuth to remember sessions
     // blacklist: ['alerts', 'ibConnection'], // Don't persist these
     version: 2,
+    // v2 (event-sourcing): `positions` and `trades` were removed from the whitelist —
+    // they are rebuilt from the IndexedDB event log on boot, not from redux-persist.
+    // The legacy v1 positions blob is therefore ignored (clean start). The guard below
+    // is now effectively dead (state.positions is never rehydrated) but kept harmless.
     migrate: (state: any) => {
-      // Migration: ensure positions slice has priceAlertRules and priceAlerts arrays
       if (state && state.positions) {
         if (!state.positions.priceAlertRules) {
           state.positions.priceAlertRules = [];

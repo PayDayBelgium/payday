@@ -192,7 +192,7 @@ export const tickerPriceMiddleware: Middleware = (store) => (next) => (action) =
   });
 
   // Note: Portfolio value updates are handled by positionValueMiddleware
-  // when updatePosition is dispatched above
+  // when updatePositionLivePrice is dispatched above
 
   return result;
 };
