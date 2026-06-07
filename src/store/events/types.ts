@@ -1,4 +1,4 @@
-import type { Position, PriceAlertRule, Trade, PortfolioName } from '../../types';
+import type { Position, PriceAlertRule, Trade, PortfolioName, TradingRule } from '../../types';
 import type { Todo } from '../slices/todosSlice';
 import { uuid } from '../../utils/uuid';
 
@@ -19,7 +19,11 @@ export type DomainEventType =
   | 'TodoEdited'
   | 'TodoCompleted'
   | 'TodoReopened'
-  | 'TodoDeleted';
+  | 'TodoDeleted'
+  | 'TradingRuleCreated'
+  | 'TradingRuleUpdated'
+  | 'TradingRuleDeleted'
+  | 'TradingRuleToggled';
 
 // --- Phase 1 payloads ---
 export interface PositionOpenedPayload {
@@ -72,6 +76,20 @@ export interface TodoDeletedPayload {
   id: string;
 }
 
+// --- Phase 2 payloads: trading rules ---
+export interface TradingRuleCreatedPayload {
+  rule: TradingRule;
+}
+export interface TradingRuleUpdatedPayload {
+  rule: TradingRule;
+}
+export interface TradingRuleDeletedPayload {
+  id: string;
+}
+export interface TradingRuleToggledPayload {
+  id: string;
+}
+
 /** Maps each event type to its payload shape. */
 export interface DomainEventPayloads {
   PositionOpened: PositionOpenedPayload;
@@ -87,6 +105,10 @@ export interface DomainEventPayloads {
   TodoCompleted: TodoCompletedPayload;
   TodoReopened: TodoReopenedPayload;
   TodoDeleted: TodoDeletedPayload;
+  TradingRuleCreated: TradingRuleCreatedPayload;
+  TradingRuleUpdated: TradingRuleUpdatedPayload;
+  TradingRuleDeleted: TradingRuleDeletedPayload;
+  TradingRuleToggled: TradingRuleToggledPayload;
 }
 
 /** A persisted domain event (has seq + actor). */
@@ -125,4 +147,4 @@ export function createEvent<T extends DomainEventType>(
 }
 
 // Re-export domain aliases used by payloads for convenience.
-export type { Position, PriceAlertRule, Trade, PortfolioName, Todo };
+export type { Position, PriceAlertRule, Trade, PortfolioName, Todo, TradingRule };

@@ -59,7 +59,6 @@ export const createAppStore = (username?: string) => {
       'auth',
       'adminAuth',
       'portfolios',
-      'rules',
       'journal',
       'tickers',
       'strategies',
@@ -68,9 +67,10 @@ export const createAppStore = (username?: string) => {
       'community',
       'mentorship',
     ], // Persist auth and adminAuth to remember sessions
-    // v3 (event-sourcing phase 2): `todos` removed — rebuilt from IndexedDB event log on boot.
+    // v3 (event-sourcing phase 2): `todos` and `rules` removed — rebuilt from IndexedDB event log on boot.
     // blacklist: ['alerts', 'ibConnection'], // Don't persist these
-    version: 2,
+    version: 3,
+    // v3 (event-sourcing phase 2): `rules` removed — rebuilt from IndexedDB event log on boot.
     // v2 (event-sourcing): `positions` and `trades` were removed from the whitelist —
     // they are rebuilt from the IndexedDB event log on boot, not from redux-persist.
     // The legacy v1 positions blob is therefore ignored (clean start). The guard below
