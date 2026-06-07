@@ -1,4 +1,4 @@
-import type { Position, PriceAlertRule, Trade, PortfolioName, TradingRule, JournalEntry, JournalGoal, TradingStrategy, StrategyRule } from '../../types';
+import type { Position, PriceAlertRule, Trade, PortfolioName, TradingRule, JournalEntry, JournalGoal, TradingStrategy, StrategyRule, Ticker } from '../../types';
 import type { Todo } from '../slices/todosSlice';
 import { uuid } from '../../utils/uuid';
 
@@ -42,7 +42,14 @@ export type DomainEventType =
   | 'StrategyRuleCreated'
   | 'StrategyRuleUpdated'
   | 'StrategyRuleDeleted'
-  | 'StrategyRuleToggled';
+  | 'StrategyRuleToggled'
+  // --- Phase 2: tickers aggregate ---
+  | 'TickerAdded'
+  | 'TickerUpdated'
+  | 'TickerRenamed'
+  | 'TickerRemoved'
+  | 'AddedToWatchlist'
+  | 'RemovedFromWatchlist';
 
 // --- Phase 1 payloads ---
 export interface PositionOpenedPayload {
@@ -147,6 +154,13 @@ export interface DomainEventPayloads {
   StrategyRuleUpdated: StrategyRuleUpdatedPayload;
   StrategyRuleDeleted: StrategyRuleDeletedPayload;
   StrategyRuleToggled: StrategyRuleToggledPayload;
+  // --- Phase 2: tickers ---
+  TickerAdded: TickerAddedPayload;
+  TickerUpdated: TickerUpdatedPayload;
+  TickerRenamed: TickerRenamedPayload;
+  TickerRemoved: TickerRemovedPayload;
+  AddedToWatchlist: AddedToWatchlistPayload;
+  RemovedFromWatchlist: RemovedFromWatchlistPayload;
 }
 
 /** A persisted domain event (has seq + actor). */
@@ -246,5 +260,26 @@ export interface StrategyRuleToggledPayload {
   id: string;
 }
 
+// --- Phase 2 payloads: tickers ---
+export interface TickerAddedPayload {
+  ticker: Ticker;
+}
+export interface TickerUpdatedPayload {
+  ticker: Partial<Ticker> & { symbol: string };
+}
+export interface TickerRenamedPayload {
+  symbol: string;
+  name: string;
+}
+export interface TickerRemovedPayload {
+  symbol: string;
+}
+export interface AddedToWatchlistPayload {
+  ticker: Ticker;
+}
+export interface RemovedFromWatchlistPayload {
+  symbol: string;
+}
+
 // Re-export domain aliases used by payloads for convenience.
-export type { Position, PriceAlertRule, Trade, PortfolioName, Todo, TradingRule, JournalEntry, JournalGoal, TradingStrategy, StrategyRule };
+export type { Position, PriceAlertRule, Trade, PortfolioName, Todo, TradingRule, JournalEntry, JournalGoal, TradingStrategy, StrategyRule, Ticker };

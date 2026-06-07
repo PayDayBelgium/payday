@@ -6,7 +6,7 @@ import { useAppSelector } from '../../hooks/useAppSelector';
 import { addWheel } from '../../store/slices/wheelsSlice';
 import { selectPositions } from '../../store/slices/positionsSlice';
 import { openPosition, editPosition } from '../../store/commands/positionCommands';
-import { ensureTicker } from '../../store/slices/tickersSlice';
+import { ensureTicker } from '../../store/commands/tickerCommands';
 import { TickerSelector } from '../widgets/TickerSelector';
 import type {
   Ticker,
@@ -214,7 +214,7 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({ isOpen, onClose, p
       lastUsed: new Date().toISOString(),
     };
 
-    dispatch(ensureTicker(newTicker));
+    dispatch(ensureTicker(newTicker, new Date().toISOString()));
     setSelectedTicker(newTicker);
     setIsCreatingTicker(false);
     setNewTickerData({

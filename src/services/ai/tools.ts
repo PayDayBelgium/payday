@@ -14,7 +14,8 @@ import type {
 } from '../../types';
 import { addPortfolio, addTransaction } from '../../store/slices/portfoliosSlice';
 import { openPosition } from '../../store/commands/positionCommands';
-import { addTicker, updateTickerPrice } from '../../store/slices/tickersSlice';
+import { updateTickerPrice } from '../../store/slices/tickersSlice';
+import { addTicker as addTickerCommand } from '../../store/commands/tickerCommands';
 import { selectPortfolios } from '../../store/slices/portfoliosSlice';
 import { selectAllTickers } from '../../store/slices/tickersSlice';
 import { selectUnlockedLevels, isFeatureAvailable } from '../../store/slices/userProgressSlice';
@@ -279,29 +280,29 @@ const uid = (prefix: string): string => `${prefix}-${Date.now()}-${++seq}`;
 const portfolioCurrentValue = (getState: () => RootState, name: string): number =>
   selectPortfolios(getState()).find((p) => p.name === name)?.currentValue ?? 0;
 
-const ensureTicker = (
+const ensureTickerInStore = (
   getState: () => RootState,
   dispatch: AppDispatch,
   symbol: string,
   name: string,
   type: 'stock' | 'etf',
-  price?: number
+  _price?: number
 ): void => {
   const exists = selectAllTickers(getState()).some(
     (t) => t.symbol.toUpperCase() === symbol.toUpperCase()
   );
   if (exists) return;
+  const ts = new Date().toISOString();
   const ticker: Ticker = {
     symbol,
     name: name || symbol,
     type,
     optionsAvailable: true,
     miniContractsAvailable: false,
-    lastUsed: new Date().toISOString(),
-    currentPrice: price,
-    createdAt: new Date().toISOString(),
+    lastUsed: ts,
+    createdAt: ts,
   };
-  dispatch(addTicker(ticker));
+  dispatch(addTickerCommand(ticker, ts));
 };
 
 // Current value of a position (for the total-deposit calculation).
@@ -356,7 +357,7 @@ const applyStock = (
   dispatch: AppDispatch
 ): void => {
   const price = c.currentPrice ?? c.purchasePrice;
-  ensureTicker(getState, dispatch, c.ticker, c.name, c.assetType, price);
+  ensureTickerInStore(getState, dispatch, c.ticker, c.name, c.assetType, price);
   // Update the current price on the ticker (even if the ticker already existed),
   // since the current value of stock positions comes from the ticker price.
   if (c.currentPrice !== undefined) {
@@ -402,7 +403,7 @@ const applyOption = (
   dispatch: AppDispatch
 ): void => {
   // Create the underlying ticker if needed (asking for the name is done by the agent).
-  ensureTicker(getState, dispatch, c.ticker, c.tickerName ?? c.ticker, 'stock');
+  ensureTickerInStore(getState, dispatch, c.ticker, c.tickerName ?? c.ticker, 'stock');
   const openTotal = c.premium * c.contracts * 100;
   const costBasis = c.action === 'buy' ? openTotal : -openTotal;
   // Current premium (last price) determines the current value; falls back to the open premium.

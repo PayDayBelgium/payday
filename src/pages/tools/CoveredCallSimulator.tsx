@@ -5,7 +5,7 @@ import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { usePageTitle } from '../../contexts/PageTitleContext';
 import { FridayDatePicker } from '../../components/common/FridayDatePicker';
 import { TickerSelector } from '../../components/widgets/TickerSelector';
-import { addTicker } from '../../store/slices/tickersSlice';
+import { addTicker } from '../../store/commands/tickerCommands';
 import { PortalTooltip } from '../../components/common/PortalTooltip';
 import { formatNumber } from '../../utils/numberFormat';
 import type { Ticker } from '../../types';
@@ -114,7 +114,7 @@ export const CoveredCallSimulator: React.FC = () => {
       currentPrice: inputs.stockPrice || 0,
     };
 
-    dispatch(addTicker(ticker));
+    dispatch(addTicker(ticker, new Date().toISOString()));
     handleInputChange('ticker', ticker.symbol);
     setIsCreatingTicker(false);
     setNewTickerData({

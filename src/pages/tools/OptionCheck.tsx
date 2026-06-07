@@ -4,7 +4,8 @@ import { Info, Plus } from 'lucide-react';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { usePageTitle } from '../../contexts/PageTitleContext';
-import { selectAllTickers, addTicker } from '../../store/slices/tickersSlice';
+import { selectAllTickers } from '../../store/slices/tickersSlice';
+import { addTicker } from '../../store/commands/tickerCommands';
 import { TickerSelector } from '../../components/widgets/TickerSelector';
 import { generateMockOptionData, scoreOptionCandidate } from '../../utils/optionCandidate';
 import type { CriterionStatus, Verdict } from '../../utils/optionCandidate';
@@ -83,7 +84,7 @@ export const OptionCheck: React.FC = () => {
       miniContractsAvailable: false,
       lastUsed: new Date().toISOString(),
     };
-    dispatch(addTicker(ticker));
+    dispatch(addTicker(ticker, new Date().toISOString()));
     setSymbol(ticker.symbol);
     setIsCreatingTicker(false);
   };

@@ -1,5 +1,5 @@
 import type { AppDispatch, RootState } from '../store';
-import { addTicker } from '../store/slices/tickersSlice';
+import { addTicker } from '../store/commands/tickerCommands';
 import type { Ticker } from '../types';
 
 /**
@@ -22,12 +22,16 @@ export const migrateTickersToStore = (dispatch: AppDispatch, getState: () => Roo
   let migratedCount = 0;
   portfolioTickers.forEach((ticker: Ticker) => {
     if (!existingSymbols.has(ticker.symbol.toUpperCase())) {
+      const ts = ticker.createdAt || new Date().toISOString();
       dispatch(
-        addTicker({
-          ...ticker,
-          symbol: ticker.symbol.toUpperCase(),
-          createdAt: ticker.createdAt || new Date().toISOString(),
-        })
+        addTicker(
+          {
+            ...ticker,
+            symbol: ticker.symbol.toUpperCase(),
+            createdAt: ts,
+          },
+          ts
+        )
       );
       migratedCount++;
     }
