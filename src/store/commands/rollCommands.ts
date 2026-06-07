@@ -406,10 +406,13 @@ export const recordAssignment =
       );
     } else {
       // --- CALL assigned → stock called away ---
+      // Scope to the option's own portfolio: the same ticker may be held open in
+      // multiple portfolios, and we must close the covered stock in THIS one.
       const stockPos = positions.find(
         (p) =>
           (p.type === 'stock' || p.type === 'etf') &&
           p.ticker.toUpperCase() === ticker.toUpperCase() &&
+          p.portfolio === portfolio &&
           p.status === 'open'
       );
 

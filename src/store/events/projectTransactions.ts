@@ -337,6 +337,8 @@ export function applyTransactionEvent(
       }
 
       // kind === 'call': stock called away
+      const calledOption = positionsBefore.find((p) => p.id === payload.optionId);
+      const calledTicker = calledOption?.ticker ?? payload.portfolio;
       return [
         ...transactions,
         makeTxn({
@@ -345,7 +347,7 @@ export function applyTransactionEvent(
           date: payload.assignmentDate,
           type: 'position_sell',
           amount: payload.totalProceeds + payload.premiumReceived,
-          description: `Call assignment — ${payload.portfolio} stock sold`,
+          description: `Call assignment — ${calledTicker} stock sold`,
           relatedPositionId: payload.optionId,
           createdAt,
         }),

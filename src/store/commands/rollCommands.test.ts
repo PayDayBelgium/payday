@@ -616,6 +616,33 @@ describe('recordAssignment — call assigned, full stock close', () => {
     expect(p.stockClose.closePrice).toBe(310);
     expect(p.stockClose.stockRealizedPnL).toBe(3000);
   });
+
+  it('closes the stock in the OPTION\'s portfolio, not a same-ticker stock in another portfolio', () => {
+    const store = makeStore();
+    const dispatch = store.dispatch as AppDispatch;
+    dispatch(setActor('test'));
+    // Decoy: same ticker (MSFT), DIFFERENT portfolio, listed FIRST in the array.
+    const decoy = {
+      ...MSFT_STOCK,
+      id: 'stock-decoy-other',
+      portfolio: 'Other',
+    } as unknown as Position;
+    seedPositions(
+      store,
+      decoy,
+      MSFT_STOCK as unknown as Position, // portfolio 'Main'
+      SHORT_CALL_CC as unknown as Position // portfolio 'Main'
+    );
+
+    const logBefore = getLog(store.getState()).length;
+    dispatch(
+      recordAssignment({ optionId: 'opt-cc1', assignmentDate: '2026-07-18', assignmentPrice: 312 }, TS)
+    );
+
+    const event = getLog(store.getState())[logBefore] as { payload: { stockId: string } };
+    // Must target the Main-portfolio stock, never the decoy.
+    expect(event.payload.stockId).toBe('stock-msft1');
+  });
 });
 
 // ---------------------------------------------------------------------------
