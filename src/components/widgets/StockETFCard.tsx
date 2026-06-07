@@ -5,6 +5,7 @@ import type { StockPosition, PriceAlert, Portfolio } from '../../types';
 import { formatCurrency } from '../../utils/currencyHelpers';
 import { formatNumber } from '../../utils/numberFormat';
 import { ConfirmModal } from '../modals/ConfirmModal';
+import { useFeatureAccess } from '../../hooks/useFeatureAccess';
 
 export interface StrategyAlert {
   id: string;
@@ -50,10 +51,14 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
   const profitLossPercentage = position.costBasis > 0 ? (profitLoss / position.costBasis) * 100 : 0;
   const isProfit = profitLoss >= 0;
 
-  // Determine if covered calls can be written
+  // Determine if covered calls can be written. Writing a CC is a level-gated opportunity
+  // (covered_calls = medior), so the badge must not show on lower (e.g. beginner) levels.
+  const { hasAccess: canUseCoveredCalls } = useFeatureAccess('covered_calls');
   const minShares = position.miniContractsSupported ? 10 : 100;
   const canWriteCoveredCalls =
-    canWriteCoveredCallsOverride ?? (position.shares >= minShares && position.optionsSupported);
+    (canWriteCoveredCallsOverride ??
+      (position.shares >= minShares && position.optionsSupported)) &&
+    canUseCoveredCalls;
 
   // Count unread alerts and separate by type
   const unreadAlerts = alerts.filter((a) => !a.isRead);

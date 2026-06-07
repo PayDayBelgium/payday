@@ -14,6 +14,7 @@ import { formatCurrency } from '../../utils/currencyHelpers';
 import { formatNumber } from '../../utils/numberFormat';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
+import { useFeatureAccess } from '../../hooks/useFeatureAccess';
 import { updatePositionLivePrice, selectPositions } from '../../store/slices/positionsSlice';
 import { updateTickerPrice } from '../../store/slices/tickersSlice';
 import { computeCoveredCallCapacity } from '../../utils/coveredCallEligibility';
@@ -70,6 +71,9 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const allStorePositions = useAppSelector(selectPositions);
+  // Writing a covered call is an OPPORTUNITY → level-gated (covered_calls = medior).
+  // Without this, the "CC" badge leaked to beginners on the stocks view.
+  const { hasAccess: canUseCoveredCalls } = useFeatureAccess('covered_calls');
   const [expandedTickers, setExpandedTickers] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState('');
   const [editingTicker, setEditingTicker] = useState<string | null>(null);
@@ -263,7 +267,8 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
               group.positions as StockPosition[],
               groupSoldCalls
             );
-            const canWriteCoveredCalls = portfolioSupportsOptions && ccCapacity.canWriteCoveredCall;
+            const canWriteCoveredCalls =
+              portfolioSupportsOptions && ccCapacity.canWriteCoveredCall && canUseCoveredCalls;
 
             return (
               <div

@@ -7,6 +7,7 @@ import type { StockPosition, CurrencyType, Ticker } from '../../types';
 import { getCurrencySymbol } from '../../utils/currency';
 import { PositionActionButtons } from './PositionActionButtons';
 import { POSITION_GRID_COLS } from './positionGrid';
+import { useFeatureAccess } from '../../hooks/useFeatureAccess';
 
 interface StockRowProps {
   position: StockPosition;
@@ -55,9 +56,13 @@ export const StockRow: React.FC<StockRowProps> = ({
   const profitLoss = liveCurrentValue - position.costBasis;
   const profitLossPercentage = position.costBasis > 0 ? (profitLoss / position.costBasis) * 100 : 0;
 
-  // Check for Covered Call opportunity - use external opportunity if provided, otherwise calculate locally
+  // Check for Covered Call opportunity - use external opportunity if provided, otherwise calculate locally.
+  // Gate on the covered_calls feature: writing a CC is a level-gated opportunity (medior),
+  // so the locally-derived badge must not show on lower (e.g. beginner/green) levels.
+  const { hasAccess: canUseCoveredCalls } = useFeatureAccess('covered_calls');
   const minShares = position.miniContractsSupported ? 10 : 100;
-  const canWriteCoveredCalls = canWriteCoveredCallsOverride ?? position.shares >= minShares;
+  const canWriteCoveredCalls =
+    (canWriteCoveredCallsOverride ?? position.shares >= minShares) && canUseCoveredCalls;
   const contractsNeeded = Math.floor(
     position.shares / (position.miniContractsSupported ? 10 : 100)
   );

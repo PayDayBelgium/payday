@@ -400,7 +400,8 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
               pos.ticker === stock.ticker
           );
           const ccCapacity = computeCoveredCallCapacity(tickerLots, tickerSoldCalls);
-          return ccCapacity.canWriteCoveredCall;
+          // Covered-call writing is a level-gated opportunity (covered_calls = medior).
+          return hasOptionsAccess && ccCapacity.canWriteCoveredCall;
         } else if (p.type === 'call' || p.type === 'put') {
           // Check for option opportunity - 80% of max profit reached
           const option = p as CallOption | PutOption;
@@ -1630,7 +1631,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                     hasOpportunity={hasOptionsAccess && hasStockOpportunity}
                                     opportunityMessage={stockOpportunityMessage}
                                     canWriteCoveredCallsOverride={
-                                      stockCcCapacity.canWriteCoveredCall
+                                      hasOptionsAccess && stockCcCapacity.canWriteCoveredCall
                                     }
                                   />
                                 );
