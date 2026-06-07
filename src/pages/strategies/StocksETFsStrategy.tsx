@@ -26,6 +26,7 @@ import {
 import { selectPortfolios } from '../../store/slices/portfoliosSlice';
 import { formatCurrency } from '../../utils/currencyHelpers';
 import { useStrategyRules } from '../../hooks/useStrategyRules';
+import { useFeatureAccess } from '../../hooks/useFeatureAccess';
 import type { StockPosition } from '../../types';
 import type { StrategyAlert } from '../../components/widgets/GroupedStockList';
 import { formatNumber } from '../../utils/numberFormat';
@@ -178,7 +179,12 @@ export const StocksETFsStrategy: React.FC = () => {
   const openPositions = allPositions.filter((pos) => pos.status === 'open');
   const totalValue = openPositions.reduce((sum, pos) => sum + pos.currentValue, 0);
   const totalPositions = openPositions.length;
-  const availableForCC = holdings.filter((h) => h.canWriteCoveredCall).length;
+  // Covered-call writing is a level-gated opportunity (covered_calls = medior); don't surface
+  // the "available for CC" count on lower levels (e.g. beginner/green slope).
+  const { hasAccess: canUseCoveredCalls } = useFeatureAccess('covered_calls');
+  const availableForCC = canUseCoveredCalls
+    ? holdings.filter((h) => h.canWriteCoveredCall).length
+    : 0;
 
   useEffect(() => {
     setPageTitle(t('stratPages.navStocksEtfs'), t('stratPages.stocksSubtitle'));
