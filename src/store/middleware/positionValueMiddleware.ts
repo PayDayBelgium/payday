@@ -90,6 +90,17 @@ const calculatePortfolioValue = (state: RootState, portfolioName: string): numbe
       // Cash spent buying options (amount is negative)
       cashBalance += transaction.amount;
     }
+    // Previously omitted types — now included so rolls/dividends/fees affect cash balance:
+    else if (transaction.type === 'option_roll') {
+      // Net signed cash flow of the roll (positive = credit roll, negative = debit roll)
+      cashBalance += transaction.amount;
+    } else if (transaction.type === 'dividend') {
+      // Dividend received (positive amount)
+      cashBalance += transaction.amount;
+    } else if (transaction.type === 'fee') {
+      // Transaction fee (stored as negative amount by the ledger projection)
+      cashBalance += transaction.amount;
+    }
   });
 
   // Total portfolio value = cash + current value of positions

@@ -7,11 +7,11 @@ import positionsReducer, {
   updatePositionValue,
   updateMultiplePositionValues,
 } from '../slices/positionsSlice';
-import portfoliosReducer, { addPortfolio } from '../slices/portfoliosSlice';
+import portfoliosReducer, { addPortfolio, addTransaction } from '../slices/portfoliosSlice';
 import tickersReducer from '../slices/tickersSlice';
 import eventsReducer, { appendEvents } from '../events/eventsSlice';
 import { positionValueMiddleware } from './positionValueMiddleware';
-import type { Portfolio, Position } from '../../types';
+import type { Portfolio, Position, PortfolioTransaction } from '../../types';
 import type { DomainEvent } from '../events/types';
 
 const rootReducer = combineReducers({
@@ -125,5 +125,31 @@ describe('positionValueMiddleware', () => {
     store.dispatch(openPosition(shortPut()));
     store.dispatch(updateMultiplePositionValues([{ id: 'pos1', currentValue: -150 }]));
     expect(portfolioValue()).toBe(9850);
+  });
+
+  // Cash-balance bug fix: option_roll / dividend / fee were previously ignored
+  const txBase = (): Omit<PortfolioTransaction, 'type' | 'amount'> => ({
+    id: 'tx1',
+    portfolio: 'Test',
+    date: '2026-01-02',
+    description: 'test transaction',
+    createdAt: '2026-01-02T00:00:00.000Z',
+  });
+
+  it('includes option_roll amount in portfolio cash balance', () => {
+    // No open positions → value = initialCapital (10000) + roll credit (500)
+    store.dispatch(addTransaction({ ...txBase(), type: 'option_roll', amount: 500 }));
+    expect(portfolioValue()).toBe(10500);
+  });
+
+  it('includes dividend amount in portfolio cash balance', () => {
+    store.dispatch(addTransaction({ ...txBase(), type: 'dividend', amount: 250 }));
+    expect(portfolioValue()).toBe(10250);
+  });
+
+  it('includes fee amount (negative) in portfolio cash balance', () => {
+    // Fees are stored as negative amounts by the ledger projection
+    store.dispatch(addTransaction({ ...txBase(), type: 'fee', amount: -30 }));
+    expect(portfolioValue()).toBe(9970);
   });
 });
