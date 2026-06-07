@@ -4,7 +4,8 @@ import { X, RefreshCw, Info, ArrowLeft, TrendingUp, Building2, Plus } from 'luci
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { addWheel } from '../../store/slices/wheelsSlice';
-import { addPosition, selectPositions, updatePosition } from '../../store/slices/positionsSlice';
+import { selectPositions } from '../../store/slices/positionsSlice';
+import { openPosition, editPosition } from '../../store/commands/positionCommands';
 import { ensureTicker } from '../../store/slices/tickersSlice';
 import { TickerSelector } from '../widgets/TickerSelector';
 import type {
@@ -141,16 +142,16 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({ isOpen, onClose, p
         wheelId,
       };
 
-      dispatch(addPosition(stockPosition));
+      dispatch(openPosition(stockPosition, new Date().toISOString()));
     } else if (startOption === 'existing-stock' && selectedPositionId) {
       // Link existing stock to wheel
       const stock = existingPositions.stocks.find((p) => p.id === selectedPositionId);
       if (stock) {
         dispatch(
-          updatePosition({
+          editPosition({
             ...stock,
             wheelId,
-          } as Position)
+          } as Position, new Date().toISOString())
         );
       }
     } else if (startOption === 'existing-csp' && selectedPositionId) {
@@ -158,10 +159,10 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({ isOpen, onClose, p
       const csp = existingPositions.csps.find((p) => p.id === selectedPositionId);
       if (csp) {
         dispatch(
-          updatePosition({
+          editPosition({
             ...csp,
             wheelId,
-          } as Position)
+          } as Position, new Date().toISOString())
         );
       }
     }

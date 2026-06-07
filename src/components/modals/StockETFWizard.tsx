@@ -4,7 +4,7 @@ import { WizardModal, type WizardStep } from './WizardModal';
 import { TickerSelector } from '../widgets/TickerSelector';
 import { TrendingUp, Building2, Calendar, DollarSign, Hash, Info } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
-import { addPosition } from '../../store/slices/positionsSlice';
+import { openPosition } from '../../store/commands/positionCommands';
 import { addTransaction } from '../../store/slices/portfoliosSlice';
 import { ensureTicker } from '../../store/slices/tickersSlice';
 import type { Ticker, StockPosition, PortfolioName, CurrencyType } from '../../types';
@@ -123,7 +123,7 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
     );
 
     // Add position
-    dispatch(addPosition(newPosition));
+    dispatch(openPosition(newPosition, new Date().toISOString()));
 
     // Log transaction
     // Portfolio value stays the same when buying stocks (Cash decreases, Long increases)

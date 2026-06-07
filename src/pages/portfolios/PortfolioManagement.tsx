@@ -25,7 +25,7 @@ import {
   selectPortfolios,
   addTransaction,
 } from '../../store/slices/portfoliosSlice';
-import { updatePortfolioName } from '../../store/slices/positionsSlice';
+import { renamePortfolioPositions } from '../../store/commands/positionCommands';
 import { updateWheelPortfolioName } from '../../store/slices/wheelsSlice';
 import type { Portfolio, CurrencyType, ImageMetadata } from '../../types';
 import { getCurrencySymbol } from '../../utils/currency';
@@ -249,7 +249,7 @@ export const PortfolioManagement: React.FC = () => {
 
       // If name changed, update positions and wheels first
       if (originalPortfolioName && originalPortfolioName !== formData.name) {
-        dispatch(updatePortfolioName({ oldName: originalPortfolioName, newName: formData.name }));
+        dispatch(renamePortfolioPositions(originalPortfolioName, formData.name, new Date().toISOString()));
         dispatch(
           updateWheelPortfolioName({ oldName: originalPortfolioName, newName: formData.name })
         );

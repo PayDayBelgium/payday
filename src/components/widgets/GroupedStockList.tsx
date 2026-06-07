@@ -14,7 +14,7 @@ import { formatCurrency } from '../../utils/currencyHelpers';
 import { formatNumber } from '../../utils/numberFormat';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
-import { updatePosition, selectPositions } from '../../store/slices/positionsSlice';
+import { updatePositionLivePrice, selectPositions } from '../../store/slices/positionsSlice';
 import { updateTickerPrice } from '../../store/slices/tickersSlice';
 import { computeCoveredCallCapacity } from '../../utils/coveredCallEligibility';
 // import { SellStockModal } from '../modals/SellStockModal';
@@ -192,12 +192,11 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
     const group = groupedPositions[ticker];
     if (group) {
       group.positions.forEach((position) => {
-        const updatedPosition = {
-          ...position,
+        dispatch(updatePositionLivePrice({
+          id: position.id,
           currentPrice: newPrice,
           currentValue: newPrice * position.shares,
-        };
-        dispatch(updatePosition(updatedPosition));
+        }));
       });
     }
 

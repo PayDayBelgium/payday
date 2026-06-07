@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { TrendingUp, TrendingDown, ArrowRightLeft, BarChart3, RefreshCw } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
-import { addPosition } from '../../store/slices/positionsSlice';
 import { selectPositions } from '../../store/slices/positionsSlice';
+import { openPosition } from '../../store/commands/positionCommands';
 import { addTransaction } from '../../store/slices/portfoliosSlice';
 import { ensureTicker, selectAllTickers } from '../../store/slices/tickersSlice';
 import { selectActiveWheels, updateWheelPremium } from '../../store/slices/wheelsSlice';
@@ -298,8 +298,8 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
         })
       );
 
-      dispatch(addPosition(longPosition));
-      dispatch(addPosition(shortPosition));
+      dispatch(openPosition(longPosition, new Date().toISOString()));
+      dispatch(openPosition(shortPosition, new Date().toISOString()));
 
       // Log transaction for net debit/credit
       const netAmount = costBasis;
@@ -405,7 +405,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
         })
       );
 
-      dispatch(addPosition(newPosition));
+      dispatch(openPosition(newPosition, new Date().toISOString()));
 
       // Log transaction
       // Portfolio value doesn't change - the position value offsets the cash change

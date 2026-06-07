@@ -13,10 +13,9 @@ import {
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import {
-  closePosition,
-  updatePosition,
   selectAllPriceAlerts,
 } from '../../store/slices/positionsSlice';
+import { openPosition, closePosition, editPosition } from '../../store/commands/positionCommands';
 import { selectUnlockedLevels, isFeatureAvailable } from '../../store/slices/userProgressSlice';
 import { addTransaction } from '../../store/slices/portfoliosSlice';
 import { selectAllTickers } from '../../store/slices/tickersSlice';
@@ -29,7 +28,6 @@ import { SpreadDetailModal } from '../modals/SpreadDetailModal';
 import { RollOptionModal } from '../modals/RollOptionModal';
 import { SpreadRollModal } from '../modals/SpreadRollModal';
 import { AssignmentModal } from '../modals/AssignmentModal';
-import { addPosition } from '../../store/slices/positionsSlice';
 import {
   updateWheelPhase,
   incrementWheelCycle,
@@ -668,12 +666,12 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
       const purchasePricePerShare = positionToClose.costBasis / positionToClose.shares;
 
       dispatch(
-        updatePosition({
+        editPosition({
           ...positionToClose,
           shares: remainingShares,
           costBasis: remainingCostBasis,
           currentValue: remainingShares * purchasePricePerShare, // Will be updated by price service
-        })
+        }, new Date().toISOString())
       );
 
       // Log transaction for partial sale
@@ -711,7 +709,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
           closePremium: closeData.closePremium,
           realizedPnL,
           notes: closeData.notes,
-        })
+        }, new Date().toISOString())
       );
 
       // Log transaction for close
@@ -783,7 +781,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
           closePremium: closeData.closePremium,
           realizedPnL,
           notes: closeData.notes,
-        })
+        }, new Date().toISOString())
       );
     });
 
@@ -869,7 +867,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
         closePremium: rollData.closePremium,
         realizedPnL,
         notes: rollData.notes ? `Roll: ${rollData.notes}` : 'Rolled to new position',
-      })
+      }, new Date().toISOString())
     );
 
     // 2. Create the new position
@@ -897,7 +895,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
       underlyingId: positionToRoll.underlyingId,
     };
 
-    dispatch(addPosition(newPosition));
+    dispatch(openPosition(newPosition, new Date().toISOString()));
 
     // 3. Log the roll transaction
     const optionType = positionToRoll.type === 'call' ? 'CALL' : 'PUT';
@@ -1009,7 +1007,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
         closePremium: rollData.longLeg.closePremium,
         realizedPnL: longRealizedPnL,
         notes: rollData.notes ? `Spread Roll: ${rollData.notes}` : 'Rolled spread - long leg',
-      })
+      }, new Date().toISOString())
     );
 
     dispatch(
@@ -1019,7 +1017,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
         closePremium: rollData.shortLeg.closePremium,
         realizedPnL: shortRealizedPnL,
         notes: rollData.notes ? `Spread Roll: ${rollData.notes}` : 'Rolled spread - short leg',
-      })
+      }, new Date().toISOString())
     );
 
     // 2. Create new positions with linked spread ID
@@ -1065,8 +1063,8 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
       notes: `${rollData.notes || ''}\nSpread ID: ${newSpreadId} (${spreadType} Spread - Short Leg)\nRolled from $${shortLeg.strike}`,
     };
 
-    dispatch(addPosition(newLongPosition));
-    dispatch(addPosition(newShortPosition));
+    dispatch(openPosition(newLongPosition, new Date().toISOString()));
+    dispatch(openPosition(newShortPosition, new Date().toISOString()));
 
     // 3. Log the roll transaction
     const optionType = longLeg.type === 'call' ? 'Call' : 'Put';
@@ -1118,7 +1116,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
         closePremium: 0, // Option expires/assigned, no buyback
         realizedPnL,
         notes: assignmentData.notes ? `Assignment: ${assignmentData.notes}` : 'Assigned',
-      })
+      }, new Date().toISOString())
     );
 
     if (isPut) {
@@ -1147,7 +1145,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
         wheelId: option.wheelId,
       };
 
-      dispatch(addPosition(newStockPosition));
+      dispatch(openPosition(newStockPosition, new Date().toISOString()));
 
       // Update Wheel phase if linked
       if (option.wheelId) {
@@ -1201,7 +1199,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
               closePrice: option.strike,
               realizedPnL: stockRealizedPnL,
               notes: `Assigned from covered call at $${option.strike}`,
-            })
+            }, new Date().toISOString())
           );
         } else {
           // Partial close - reduce shares
@@ -1210,12 +1208,12 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
             (stockPosition.costBasis / stockPosition.shares) * remainingShares;
 
           dispatch(
-            updatePosition({
+            editPosition({
               ...stockPosition,
               shares: remainingShares,
               costBasis: remainingCostBasis,
               currentValue: remainingShares * (stockPosition.currentValue / stockPosition.shares),
-            } as any)
+            } as any, new Date().toISOString())
           );
         }
 
@@ -2260,7 +2258,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
           isOpen={!!positionToView}
           onClose={() => setPositionToView(null)}
           onSave={(updatedPosition) => {
-            dispatch(updatePosition(updatedPosition));
+            dispatch(editPosition(updatedPosition, new Date().toISOString()));
             setPositionToView(null);
           }}
           position={positionToView}
@@ -2276,7 +2274,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
           onSave={(updatedLegs) => {
             // Update both legs
             updatedLegs.forEach((leg) => {
-              dispatch(updatePosition(leg));
+              dispatch(editPosition(leg, new Date().toISOString()));
             });
             setSpreadToView(null);
           }}

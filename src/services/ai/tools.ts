@@ -13,7 +13,7 @@ import type {
   UserLevel,
 } from '../../types';
 import { addPortfolio, addTransaction } from '../../store/slices/portfoliosSlice';
-import { addPosition } from '../../store/slices/positionsSlice';
+import { openPosition } from '../../store/commands/positionCommands';
 import { addTicker, updateTickerPrice } from '../../store/slices/tickersSlice';
 import { selectPortfolios } from '../../store/slices/portfoliosSlice';
 import { selectAllTickers } from '../../store/slices/tickersSlice';
@@ -379,7 +379,7 @@ const applyStock = (
     optionsSupported: true,
     miniContractsSupported: false,
   };
-  dispatch(addPosition(position));
+  dispatch(openPosition(position, new Date().toISOString()));
   const prev = portfolioCurrentValue(getState, c.portfolio);
   const txn: PortfolioTransaction = {
     id: uid('txn'),
@@ -434,7 +434,7 @@ const applyOption = (
           ...base,
           cashReserved: c.action === 'sell' ? c.strike * c.contracts * 100 : undefined,
         };
-  dispatch(addPosition(position));
+  dispatch(openPosition(position, new Date().toISOString()));
   const prev = portfolioCurrentValue(getState, c.portfolio);
   const txn: PortfolioTransaction = {
     id: uid('txn'),
