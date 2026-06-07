@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { TrendingUp, TrendingDown, ArrowRightLeft, BarChart3, RefreshCw } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useSelector } from 'react-redux';
-import { addPosition } from '../../store/slices/positionsSlice';
+import { openPosition } from '../../store/commands/positionCommands';
 import { addTransaction } from '../../store/slices/portfoliosSlice';
 import { ensureTicker, selectAllTickers } from '../../store/slices/tickersSlice';
 import { selectActiveWheels, updateWheelPremium } from '../../store/slices/wheelsSlice';
@@ -236,8 +236,8 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
         })
       );
 
-      dispatch(addPosition(longPosition));
-      dispatch(addPosition(shortPosition));
+      dispatch(openPosition(longPosition, new Date().toISOString()));
+      dispatch(openPosition(shortPosition, new Date().toISOString()));
 
       // Log transaction for net credit/debit
       const netAmount = costBasis;
@@ -309,7 +309,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
         })
       );
 
-      dispatch(addPosition(newPosition));
+      dispatch(openPosition(newPosition, new Date().toISOString()));
 
       // Log transaction
       // When buying/selling options, the portfolio value doesn't change

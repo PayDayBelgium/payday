@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { TrendingUp, Layers, Zap, X as XIcon, RefreshCw, Trash2 } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
-import { closePosition, updatePosition, addPosition } from '../../store/slices/positionsSlice';
+import { openPosition, closePosition, editPosition } from '../../store/commands/positionCommands';
 import { addTransaction } from '../../store/slices/portfoliosSlice';
 import { selectAllTickers } from '../../store/slices/tickersSlice';
 import {
@@ -242,7 +242,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
         closePrice: closeData.closePrice,
         realizedPnL: closeData.realizedPnL,
         notes: closeData.notes,
-      })
+      }, new Date().toISOString())
     );
 
     setPositionToClose(null);
@@ -281,7 +281,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
         notes: rollData.notes
           ? `Rolled to $${rollData.newStrike} ${rollData.newExpiration}. ${rollData.notes}`
           : `Rolled to $${rollData.newStrike} ${rollData.newExpiration}`,
-      })
+      }, new Date().toISOString())
     );
 
     // Create the new rolled position
@@ -319,7 +319,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
       ...(newCashReserved !== undefined && { cashReserved: newCashReserved }),
     };
 
-    dispatch(addPosition(newPosition));
+    dispatch(openPosition(newPosition, new Date().toISOString()));
 
     // Calculate net credit/debit for the roll
     const contractMultiplier = 100;
@@ -387,7 +387,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
         closePremium: 0,
         realizedPnL,
         notes: assignmentData.notes ? `Assignment: ${assignmentData.notes}` : 'Assigned',
-      })
+      }, new Date().toISOString())
     );
 
     if (isPut) {
@@ -415,7 +415,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
         wheelId: option.wheelId,
       };
 
-      dispatch(addPosition(newStockPosition));
+      dispatch(openPosition(newStockPosition, new Date().toISOString()));
 
       // Update Wheel phase if linked
       if (option.wheelId) {
@@ -463,7 +463,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               closePrice: option.strike,
               realizedPnL: stockRealizedPnL,
               notes: `Assigned from covered call at $${option.strike}`,
-            })
+            }, new Date().toISOString())
           );
         } else {
           const remainingShares = stockPosition.shares - shares;
@@ -471,12 +471,12 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
             (stockPosition.costBasis / stockPosition.shares) * remainingShares;
 
           dispatch(
-            updatePosition({
+            editPosition({
               ...stockPosition,
               shares: remainingShares,
               costBasis: remainingCostBasis,
               currentValue: remainingShares * (stockPosition.currentValue / stockPosition.shares),
-            } as any)
+            } as any, new Date().toISOString())
           );
         }
 
@@ -782,7 +782,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
           isOpen={!!positionToView}
           onClose={() => setPositionToView(null)}
           onSave={(updatedPosition) => {
-            dispatch(updatePosition(updatedPosition));
+            dispatch(editPosition(updatedPosition, new Date().toISOString()));
             setPositionToView(null);
           }}
           position={positionToView}
