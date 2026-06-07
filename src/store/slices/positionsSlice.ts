@@ -3,6 +3,10 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type { Position, PortfolioName, PriceAlertRule, PriceAlert } from '../../types';
 import type { RootState } from '../index';
 import { groupHoldings } from '../../utils/holdings';
+import { applyPositionEvent } from '../events/projectPositions';
+import { appendEvents, replayEvents } from '../events/eventsSlice';
+import { applyPriceAlertRuleEvent } from '../events/projectPriceAlertRules';
+import type { DomainEvent } from '../events/types';
 
 interface PositionsState {
   positions: Position[];
@@ -24,55 +28,6 @@ const positionsSlice = createSlice({
   name: 'positions',
   initialState,
   reducers: {
-    addPosition: (state, action: PayloadAction<Position>) => {
-      state.positions.push(action.payload);
-    },
-    updatePosition: (state, action: PayloadAction<Position>) => {
-      const index = state.positions.findIndex((p) => p.id === action.payload.id);
-      if (index !== -1) {
-        const updatedPosition = { ...action.payload };
-
-        // Ensure price values don't go below 0 for stocks/ETFs
-        if (updatedPosition.type === 'stock' || updatedPosition.type === 'etf') {
-          const stockPos = updatedPosition as any;
-          if (stockPos.currentPrice !== undefined && stockPos.currentPrice < 0) {
-            stockPos.currentPrice = 0;
-          }
-          if (stockPos.currentValue !== undefined && stockPos.currentValue < 0) {
-            stockPos.currentValue = 0;
-          }
-        }
-
-        // For options, currentValue can be negative (short positions are liabilities)
-        // but the absolute value shouldn't exceed a reasonable threshold
-        // We only ensure it doesn't go to extreme negative values
-        if (updatedPosition.type === 'call' || updatedPosition.type === 'put') {
-          const optionPos = updatedPosition as any;
-          // For long options (buy), currentValue should be >= 0
-          if (
-            optionPos.action === 'buy' &&
-            optionPos.currentValue !== undefined &&
-            optionPos.currentValue < 0
-          ) {
-            optionPos.currentValue = 0;
-          }
-          // For short options (sell), currentValue is negative (liability)
-          // Ensure it doesn't become positive (which would be incorrect)
-          if (
-            optionPos.action === 'sell' &&
-            optionPos.currentValue !== undefined &&
-            optionPos.currentValue > 0
-          ) {
-            optionPos.currentValue = 0;
-          }
-        }
-
-        state.positions[index] = updatedPosition;
-      }
-    },
-    removePosition: (state, action: PayloadAction<string>) => {
-      state.positions = state.positions.filter((p) => p.id !== action.payload);
-    },
     updatePositionValue: (
       state,
       action: PayloadAction<{
@@ -146,39 +101,6 @@ const positionsSlice = createSlice({
         }
       });
     },
-    closePosition: (
-      state,
-      action: PayloadAction<{
-        id: string;
-        closeDate: string;
-        closePrice?: number;
-        closePremium?: number;
-        realizedPnL?: number;
-        notes?: string;
-      }>
-    ) => {
-      const position = state.positions.find((p) => p.id === action.payload.id);
-      if (position) {
-        position.status = 'closed';
-        position.closeDate = action.payload.closeDate;
-
-        // Add close details (fields now declared on BasePosition).
-        if (action.payload.closePrice !== undefined) {
-          position.closePrice = action.payload.closePrice;
-        }
-        if (action.payload.closePremium !== undefined) {
-          position.closePremium = action.payload.closePremium;
-        }
-        if (action.payload.realizedPnL !== undefined) {
-          position.realizedPnL = action.payload.realizedPnL;
-        }
-        if (action.payload.notes) {
-          position.notes = position.notes
-            ? `${position.notes}\n\nClose notes: ${action.payload.notes}`
-            : `Close notes: ${action.payload.notes}`;
-        }
-      }
-    },
     setSelectedPortfolio: (state, action: PayloadAction<PortfolioName | null>) => {
       state.selectedPortfolio = action.payload;
     },
@@ -187,27 +109,6 @@ const positionsSlice = createSlice({
     },
     loadPositions: (state, action: PayloadAction<Position[]>) => {
       state.positions = action.payload;
-    },
-    // Price Alert Rule actions
-    addPriceAlertRule: (state, action: PayloadAction<PriceAlertRule>) => {
-      state.priceAlertRules.push(action.payload);
-    },
-    updatePriceAlertRule: (state, action: PayloadAction<PriceAlertRule>) => {
-      const index = state.priceAlertRules.findIndex((r) => r.id === action.payload.id);
-      if (index !== -1) {
-        state.priceAlertRules[index] = action.payload;
-      }
-    },
-    deletePriceAlertRule: (state, action: PayloadAction<string>) => {
-      state.priceAlertRules = state.priceAlertRules.filter((r) => r.id !== action.payload);
-      // Also remove associated alerts
-      state.priceAlerts = state.priceAlerts.filter((a) => a.ruleId !== action.payload);
-    },
-    togglePriceAlertRule: (state, action: PayloadAction<string>) => {
-      const rule = state.priceAlertRules.find((r) => r.id === action.payload);
-      if (rule) {
-        rule.isActive = !rule.isActive;
-      }
     },
     // Price Alert actions
     addPriceAlert: (state, action: PayloadAction<PriceAlert>) => {
@@ -225,36 +126,34 @@ const positionsSlice = createSlice({
     clearReadAlerts: (state) => {
       state.priceAlerts = state.priceAlerts.filter((a) => !a.isRead);
     },
-    updatePortfolioName: (state, action: PayloadAction<{ oldName: string; newName: string }>) => {
-      const { oldName, newName } = action.payload;
-      // Update portfolio name in all positions
-      state.positions = state.positions.map((pos) =>
-        pos.portfolio === oldName ? { ...pos, portfolio: newName as PortfolioName } : pos
-      );
-    },
+  },
+  extraReducers: (builder) => {
+    const fold = (state: PositionsState, events: DomainEvent[]) => {
+      for (const event of events) {
+        state.positions = applyPositionEvent(state.positions, event);
+        state.priceAlertRules = applyPriceAlertRuleEvent(state.priceAlertRules, event);
+      }
+    };
+    builder.addCase(appendEvents, (state, action) => fold(state, action.payload.events));
+    builder.addCase(replayEvents, (state, action) => {
+      state.positions = [];
+      state.priceAlertRules = [];
+      fold(state, action.payload);
+    });
   },
 });
 
 export const {
-  addPosition,
-  updatePosition,
   updatePositionValue,
   updateMultiplePositionValues,
   updateOptionPremium,
-  removePosition,
-  closePosition,
   setSelectedPortfolio,
   setSelectedStrategy,
   loadPositions,
-  addPriceAlertRule,
-  updatePriceAlertRule,
-  deletePriceAlertRule,
-  togglePriceAlertRule,
   addPriceAlert,
   markPriceAlertAsRead,
   deletePriceAlert,
   clearReadAlerts,
-  updatePortfolioName,
 } = positionsSlice.actions;
 
 // Base Selectors

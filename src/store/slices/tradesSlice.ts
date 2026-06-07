@@ -1,6 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { Trade } from '../../types';
+import { appendEvents, replayEvents } from '../events/eventsSlice';
+import { applyTradeEvent } from '../events/projectTrades';
+import { applyPositionEvent } from '../events/projectPositions';
+import type { DomainEvent } from '../events/types';
+import type { Position } from '../../types';
 
 interface TradesState {
   trades: Trade[];
@@ -42,6 +47,23 @@ const tradesSlice = createSlice({
     loadTrades: (state, action: PayloadAction<Trade[]>) => {
       state.trades = action.payload;
     },
+  },
+  extraReducers: (builder) => {
+    const fold = (state: TradesState, events: DomainEvent[], positionsSeed: Position[]) => {
+      let positions = positionsSeed;
+      for (const event of events) {
+        // trades use positions as they were BEFORE this event is applied
+        state.trades = applyTradeEvent(state.trades, event, positions);
+        positions = applyPositionEvent(positions, event);
+      }
+    };
+    builder.addCase(appendEvents, (state, action) => {
+      fold(state, action.payload.events, action.payload.positionsBefore);
+    });
+    builder.addCase(replayEvents, (state, action) => {
+      state.trades = [];
+      fold(state, action.payload, []);
+    });
   },
 });
 
