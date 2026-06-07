@@ -58,6 +58,21 @@ export function getNumberPlaceholder(example: number, decimals: number = 2): str
 }
 
 /**
+ * Parse a positive whole-count text input (e.g. contracts, shares).
+ *
+ * Returns 0 for an empty or invalid field so a `value={count || ''}` binding
+ * renders an EMPTY input — letting the user clear the field and type a new value.
+ * (The old `parseInt(x) || 1` pattern forced a 1 back in on every keystroke, so
+ * the field could never be cleared to type e.g. 5.) Callers must gate
+ * submit/validation on `count > 0`.
+ */
+export function parseCountInput(raw: string): number {
+  if (raw.trim() === '') return 0;
+  const n = parseInt(raw, 10);
+  return Number.isNaN(n) || n < 0 ? 0 : n;
+}
+
+/**
  * Validate and format user input in real-time for Dutch number format
  * Allows: digits, comma (decimal), period (thousand separator)
  */

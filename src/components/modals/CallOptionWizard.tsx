@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { parseCountInput } from '../../utils/inputFormat';
 import { TrendingUp, TrendingDown, ArrowRightLeft, BarChart3, RefreshCw } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
@@ -883,7 +884,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                         min="1"
                         value={longLeg.contracts || ''}
                         onChange={(e) => {
-                          const contracts = parseInt(e.target.value) || 1;
+                          const contracts = parseCountInput(e.target.value);
                           setLongLeg({ ...longLeg, contracts });
                           setShortLeg({ ...shortLeg, contracts });
                         }}

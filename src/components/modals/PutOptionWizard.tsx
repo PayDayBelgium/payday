@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { parseCountInput } from '../../utils/inputFormat';
 import { TrendingUp, TrendingDown, ArrowRightLeft, BarChart3, RefreshCw } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useSelector } from 'react-redux';
@@ -772,7 +773,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                         min="1"
                         value={longLeg.contracts || ''}
                         onChange={(e) => {
-                          const contracts = parseInt(e.target.value) || 1;
+                          const contracts = parseCountInput(e.target.value);
                           setLongLeg({ ...longLeg, contracts });
                           setShortLeg({ ...shortLeg, contracts });
                         }}
@@ -953,7 +954,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                       min="1"
                       value={longLeg.contracts || ''}
                       onChange={(e) =>
-                        setLongLeg({ ...longLeg, contracts: parseInt(e.target.value) || 1 })
+                        setLongLeg({ ...longLeg, contracts: parseCountInput(e.target.value) })
                       }
                       className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                       placeholder="1"
