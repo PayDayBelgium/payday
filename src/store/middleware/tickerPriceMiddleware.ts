@@ -12,19 +12,15 @@ import type {
 } from '../../types';
 import { formatNumber } from '../../utils/numberFormat';
 
-// Helper to check if action is a ticker price update
+// Helper to check if action is a ticker price update. Ticker identity/metadata is
+// now event-sourced; live prices flow only through the runtime `updateTickerPrice`.
 const isTickerPriceUpdate = (action: any): boolean => {
-  return action.type === 'tickers/updateTicker' || action.type === 'tickers/updateTickerPrice';
+  return action.type === 'tickers/updateTickerPrice';
 };
 
 // Helper to get updated ticker info from action
 const getTickerUpdateInfo = (action: any): { symbol: string; price: number } | null => {
-  if (action.type === 'tickers/updateTicker') {
-    const ticker = action.payload;
-    if (ticker.currentPrice !== undefined) {
-      return { symbol: ticker.symbol, price: ticker.currentPrice };
-    }
-  } else if (action.type === 'tickers/updateTickerPrice') {
+  if (action.type === 'tickers/updateTickerPrice') {
     return { symbol: action.payload.symbol, price: action.payload.price };
   }
   return null;

@@ -10,6 +10,7 @@ import {
   removeTicker,
   updateTicker,
 } from '../../store/commands/tickerCommands';
+import { updateTickerPrice } from '../../store/slices/tickersSlice';
 import { ConfirmModal } from '../../components/modals/ConfirmModal';
 import type { PortfolioName, Ticker, Position } from '../../types';
 import { formatNumber } from '../../utils/numberFormat';
@@ -210,16 +211,12 @@ export const TickersOverview: React.FC = () => {
   };
 
   const saveEdit = (symbol: string) => {
-    dispatch(
-      updateTicker(
-        {
-          symbol,
-          name: editValues.name,
-          currentPrice: editValues.price ? parseFloat(editValues.price) : undefined,
-        },
-        new Date().toISOString()
-      )
-    );
+    // Name/metadata is an event-sourced intent; the live price is runtime-only
+    // (not part of the event log), so set it via the runtime price reducer.
+    dispatch(updateTicker({ symbol, name: editValues.name }, new Date().toISOString()));
+    if (editValues.price) {
+      dispatch(updateTickerPrice({ symbol, price: parseFloat(editValues.price) }));
+    }
     setEditingTicker(null);
   };
 
