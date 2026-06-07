@@ -1,4 +1,4 @@
-import type { Position, PriceAlertRule, Trade, PortfolioName, TradingRule, JournalEntry, JournalGoal, TradingStrategy, StrategyRule, Ticker } from '../../types';
+import type { Position, PriceAlertRule, Trade, PortfolioName, TradingRule, JournalEntry, JournalGoal, TradingStrategy, StrategyRule, Ticker, Portfolio, WheelCampaign } from '../../types';
 import type { Todo } from '../slices/todosSlice';
 import { uuid } from '../../utils/uuid';
 
@@ -49,7 +49,28 @@ export type DomainEventType =
   | 'TickerRenamed'
   | 'TickerRemoved'
   | 'AddedToWatchlist'
-  | 'RemovedFromWatchlist';
+  | 'RemovedFromWatchlist'
+  // --- Coupled cluster: portfolio entities ---
+  | 'PortfolioCreated'
+  | 'PortfolioEdited'
+  | 'PortfolioRenamed'
+  | 'PortfolioDeleted'
+  | 'PortfoliosReordered'
+  // --- Coupled cluster: cash intents ---
+  | 'CashDeposited'
+  | 'CashWithdrawn'
+  | 'FeeCharged'
+  | 'DividendReceived'
+  | 'ValueAdjusted'
+  // --- Coupled cluster: wheels ---
+  | 'WheelCampaignStarted'
+  | 'WheelEdited'
+  | 'WheelClosed'
+  | 'WheelDeleted'
+  // --- Coupled cluster: roll / assignment composites ---
+  | 'OptionRolled'
+  | 'SpreadRolled'
+  | 'OptionAssigned';
 
 // --- Phase 1 payloads ---
 export interface PositionOpenedPayload {
@@ -161,6 +182,27 @@ export interface DomainEventPayloads {
   TickerRemoved: TickerRemovedPayload;
   AddedToWatchlist: AddedToWatchlistPayload;
   RemovedFromWatchlist: RemovedFromWatchlistPayload;
+  // --- Coupled cluster: portfolio entities ---
+  PortfolioCreated: PortfolioCreatedPayload;
+  PortfolioEdited: PortfolioEditedPayload;
+  PortfolioRenamed: PortfolioRenamedPayload;
+  PortfolioDeleted: PortfolioDeletedPayload;
+  PortfoliosReordered: PortfoliosReorderedPayload;
+  // --- Coupled cluster: cash intents ---
+  CashDeposited: CashEventPayload;
+  CashWithdrawn: CashEventPayload;
+  FeeCharged: CashEventPayload;
+  DividendReceived: CashEventPayload;
+  ValueAdjusted: CashEventPayload;
+  // --- Coupled cluster: wheels ---
+  WheelCampaignStarted: WheelCampaignStartedPayload;
+  WheelEdited: WheelEditedPayload;
+  WheelClosed: WheelClosedPayload;
+  WheelDeleted: WheelDeletedPayload;
+  // --- Coupled cluster: roll / assignment composites ---
+  OptionRolled: OptionRolledPayload;
+  SpreadRolled: SpreadRolledPayload;
+  OptionAssigned: OptionAssignedPayload;
 }
 
 /** A persisted domain event (has seq + actor). */
@@ -281,5 +323,107 @@ export interface RemovedFromWatchlistPayload {
   symbol: string;
 }
 
+// --- Coupled cluster payloads: portfolio entities ---
+export interface PortfolioCreatedPayload {
+  portfolio: Portfolio;
+}
+export interface PortfolioEditedPayload {
+  portfolio: Portfolio;
+}
+export interface PortfolioRenamedPayload {
+  oldName: string;
+  newName: string;
+}
+export interface PortfolioDeletedPayload {
+  id: string;
+}
+export interface PortfoliosReorderedPayload {
+  /** Portfolio ids in the new display order. */
+  order: string[];
+}
+
+// --- Coupled cluster payloads: cash intents ---
+/** Shared payload shape for all first-class cash-intent events. */
+export interface CashEventPayload {
+  id: string;
+  portfolio: PortfolioName;
+  amount: number;
+  date: string;
+  description?: string;
+}
+
+// --- Coupled cluster payloads: wheels ---
+export interface WheelCampaignStartedPayload {
+  wheel: WheelCampaign;
+}
+export interface WheelEditedPayload {
+  wheel: WheelCampaign;
+}
+export interface WheelClosedPayload {
+  id: string;
+  endDate: string;
+}
+export interface WheelDeletedPayload {
+  id: string;
+}
+
+// --- Coupled cluster payloads: roll / assignment composites ---
+export interface OptionRolledPayload {
+  oldPositionId: string;
+  closeDate: string;
+  closePremium: number;
+  realizedPnL: number;
+  newPosition: Position;
+  netCashFlow: number;
+}
+
+export interface SpreadRolledPayload {
+  rollDate: string;
+  legs: Array<{
+    oldPositionId: string;
+    closePremium: number;
+    realizedPnL: number;
+    newPosition: Position;
+  }>;
+  netCashFlow: number;
+}
+
+/** Put-assignment: option exercised, stock is bought at the strike. */
+export interface OptionAssignedPutPayload {
+  kind: 'put';
+  optionId: string;
+  assignmentDate: string;
+  assignmentPrice: number;
+  optionRealizedPnL: number;
+  newStock: Position;
+  effectiveCost: number;
+  portfolio: PortfolioName;
+  wheelId?: string;
+}
+
+/** Call-assignment: stock is called away; full or partial close. */
+export interface OptionAssignedCallPayload {
+  kind: 'call';
+  optionId: string;
+  assignmentDate: string;
+  optionRealizedPnL: number;
+  stockId: string;
+  portfolio: PortfolioName;
+  totalProceeds: number;
+  premiumReceived: number;
+  wheelId?: string;
+  stockClose:
+    | { fullClose: true; closePrice: number; stockRealizedPnL: number }
+    | {
+        fullClose: false;
+        remainingShares: number;
+        remainingCostBasis: number;
+        remainingCurrentValue: number;
+      };
+}
+
+/** Discriminated union payload for OptionAssigned events. */
+export type OptionAssignedPayload = OptionAssignedPutPayload | OptionAssignedCallPayload;
+
 // Re-export domain aliases used by payloads for convenience.
-export type { Position, PriceAlertRule, Trade, PortfolioName, Todo, TradingRule, JournalEntry, JournalGoal, TradingStrategy, StrategyRule, Ticker };
+export type { Position, PriceAlertRule, Trade, PortfolioName, Todo, TradingRule, JournalEntry, JournalGoal, TradingStrategy, StrategyRule, Ticker, Portfolio, WheelCampaign };
