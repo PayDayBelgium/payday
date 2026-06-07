@@ -22,10 +22,9 @@ const isPositionMutation = (action: any): boolean => {
   );
 };
 
-// Helper to check if action is a transaction that affects portfolio value
-const isTransactionMutation = (action: any): boolean => {
-  return action.type === 'portfolios/addTransaction';
-};
+// NOTE: Transaction mutations previously dispatched via `portfolios/addTransaction` now flow
+// through `events/appendEvents` (the ledger projection folds CashDeposited, OptionRolled, etc.).
+// `isPositionMutation` already covers `events/appendEvents`, so no separate transaction check is needed.
 
 // Calculate portfolio value from positions
 const calculatePortfolioValue = (state: RootState, portfolioName: string): number => {
@@ -157,17 +156,15 @@ const getAffectedPortfolios = (
       );
     }
 
-    case 'portfolios/addTransaction':
-      return dedupe([action.payload.portfolio]);
-
     default:
       return [];
   }
 };
 
 export const positionValueMiddleware: Middleware = (store) => (next) => (action) => {
-  // Only process position mutations and transaction mutations
-  if (!isPositionMutation(action) && !isTransactionMutation(action)) {
+  // Only process position mutations (position lifecycle + live-price ticks).
+  // Transaction mutations now flow through events/appendEvents (already in isPositionMutation).
+  if (!isPositionMutation(action)) {
     return next(action);
   }
 

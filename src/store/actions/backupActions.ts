@@ -1,6 +1,6 @@
 import type { Dispatch } from 'redux';
 import type { BackupData } from '../../utils/backup';
-import { loadMockData } from '../slices/portfoliosSlice';
+import { loadPortfoliosSnapshot } from '../slices/portfoliosSlice';
 import { loadPositions } from '../slices/positionsSlice';
 
 export const restoreFromBackup = (backup: BackupData) => {
@@ -8,7 +8,7 @@ export const restoreFromBackup = (backup: BackupData) => {
     try {
       // Restore portfolios data (including transactions)
       dispatch(
-        loadMockData({
+        loadPortfoliosSnapshot({
           portfolios: backup.data.portfolios.portfolios,
           summaries: backup.data.portfolios.summaries,
           dailyData: backup.data.portfolios.dailyData,
