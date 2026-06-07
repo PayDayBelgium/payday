@@ -19,6 +19,7 @@ import connectivityReducer from './slices/connectivitySlice';
 import userProgressReducer from './slices/userProgressSlice';
 import communityReducer from './slices/communitySlice';
 import mentorshipReducer from './slices/mentorshipSlice';
+import eventsReducer from './events/eventsSlice';
 import { tickerPriceMiddleware } from './middleware/tickerPriceMiddleware';
 import { tradeMiddleware } from './middleware/tradeMiddleware';
 import { positionValueMiddleware } from './middleware/positionValueMiddleware';
@@ -42,6 +43,7 @@ const rootReducer = combineReducers({
   userProgress: userProgressReducer,
   community: communityReducer,
   mentorship: mentorshipReducer,
+  events: eventsReducer,
 });
 
 // Create store factory to support per-user persistence
