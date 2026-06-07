@@ -21,8 +21,10 @@ import communityReducer from './slices/communitySlice';
 import mentorshipReducer from './slices/mentorshipSlice';
 import eventsReducer from './events/eventsSlice';
 import { tickerPriceMiddleware } from './middleware/tickerPriceMiddleware';
-import { tradeMiddleware } from './middleware/tradeMiddleware';
 import { positionValueMiddleware } from './middleware/positionValueMiddleware';
+import { createEventStore } from './events/eventStore';
+import { createEventPersistenceMiddleware } from './events/eventPersistenceMiddleware';
+import { setActor } from './events/eventsSlice';
 
 // Combine all reducers
 const rootReducer = combineReducers({
@@ -48,6 +50,7 @@ const rootReducer = combineReducers({
 
 // Create store factory to support per-user persistence
 export const createAppStore = (username?: string) => {
+  const eventStore = createEventStore(username);
   // Persist config with user-specific key
   const persistConfig = {
     key: username ? `payday-${username}` : 'payday-root',
@@ -56,8 +59,6 @@ export const createAppStore = (username?: string) => {
       'auth',
       'adminAuth',
       'portfolios',
-      'positions',
-      'trades',
       'rules',
       'journal',
       'todos',
@@ -69,7 +70,7 @@ export const createAppStore = (username?: string) => {
       'mentorship',
     ], // Persist auth and adminAuth to remember sessions
     // blacklist: ['alerts', 'ibConnection'], // Don't persist these
-    version: 1,
+    version: 2,
     migrate: (state: any) => {
       // Migration: ensure positions slice has priceAlertRules and priceAlerts arrays
       if (state && state.positions) {
@@ -95,17 +96,22 @@ export const createAppStore = (username?: string) => {
           ignoredActions: [
             'persist/PERSIST',
             'persist/REHYDRATE',
-            'positions/addPosition',
-            'trades/addTrade',
+            'events/appendEvents',
+            'events/replayEvents',
           ],
           ignoredPaths: ['register', 'rehydrate'],
         },
-      }).concat(tickerPriceMiddleware, tradeMiddleware, positionValueMiddleware),
+      }).concat(
+        tickerPriceMiddleware,
+        positionValueMiddleware,
+        createEventPersistenceMiddleware(eventStore)
+      ),
   });
 
   const persistor = persistStore(store);
+  store.dispatch(setActor(username ?? 'local'));
 
-  return { store, persistor };
+  return { store, persistor, eventStore };
 };
 
 // The runtime store is created per user in main.tsx and injected where needed

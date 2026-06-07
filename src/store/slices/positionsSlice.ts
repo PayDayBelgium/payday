@@ -56,6 +56,17 @@ const positionsSlice = createSlice({
         }
       });
     },
+    /** Live-price tick: update currentPrice + currentValue on a stock/ETF position. */
+    updatePositionLivePrice: (
+      state,
+      action: PayloadAction<{ id: string; currentPrice: number; currentValue: number }>
+    ) => {
+      const position = state.positions.find((p) => p.id === action.payload.id);
+      if (position) {
+        (position as any).currentPrice = action.payload.currentPrice;
+        (position as any).currentValue = action.payload.currentValue;
+      }
+    },
     // Update option premium and delta by matching symbol, strike, expiration, and optionType
     updateOptionPremium: (
       state,
@@ -146,6 +157,7 @@ const positionsSlice = createSlice({
 export const {
   updatePositionValue,
   updateMultiplePositionValues,
+  updatePositionLivePrice,
   updateOptionPremium,
   setSelectedPortfolio,
   setSelectedStrategy,

@@ -15,7 +15,8 @@ const isPositionMutation = (action: any): boolean => {
     // sync with the selectors that combine it with the fresh position values.
     action.type === 'positions/updatePositionValue' ||
     action.type === 'positions/updateMultiplePositionValues' ||
-    action.type === 'positions/updateOptionPremium'
+    action.type === 'positions/updateOptionPremium' ||
+    action.type === 'positions/updatePositionLivePrice'
   );
 };
 
@@ -119,7 +120,8 @@ const getAffectedPortfolios = (
       return dedupe([position?.portfolio]);
     }
 
-    case 'positions/updatePositionValue': {
+    case 'positions/updatePositionValue':
+    case 'positions/updatePositionLivePrice': {
       const position = stateAfter.positions.positions.find((p) => p.id === action.payload.id);
       return dedupe([position?.portfolio]);
     }

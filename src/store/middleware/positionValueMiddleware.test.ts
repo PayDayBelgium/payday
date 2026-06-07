@@ -3,7 +3,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { combineReducers } from '@reduxjs/toolkit';
 import type { Middleware } from '@reduxjs/toolkit';
 import positionsReducer, {
-  addPosition,
+  loadPositions,
   updateOptionPremium,
   updatePositionValue,
   updateMultiplePositionValues,
@@ -73,13 +73,13 @@ describe('positionValueMiddleware', () => {
   });
 
   it('recomputes portfolio value when a position is added', () => {
-    store.dispatch(addPosition(shortPut()));
+    store.dispatch(loadPositions([shortPut()]));
     // cash (initialCapital 10000, no transactions) + currentValue (-200) = 9800
     expect(portfolioValue()).toBe(9800);
   });
 
   it('recomputes portfolio value when an option premium changes (live price tick)', () => {
-    store.dispatch(addPosition(shortPut()));
+    store.dispatch(loadPositions([shortPut()]));
     expect(portfolioValue()).toBe(9800);
 
     // A live price tick raises the put premium to 3.00 -> liability becomes -300.
@@ -98,13 +98,13 @@ describe('positionValueMiddleware', () => {
   });
 
   it('recomputes portfolio value when a single position value is set', () => {
-    store.dispatch(addPosition(shortPut()));
+    store.dispatch(loadPositions([shortPut()]));
     store.dispatch(updatePositionValue({ id: 'pos1', currentValue: -350 }));
     expect(portfolioValue()).toBe(9650);
   });
 
   it('recomputes affected portfolios when multiple position values are batched', () => {
-    store.dispatch(addPosition(shortPut()));
+    store.dispatch(loadPositions([shortPut()]));
     store.dispatch(updateMultiplePositionValues([{ id: 'pos1', currentValue: -150 }]));
     expect(portfolioValue()).toBe(9850);
   });

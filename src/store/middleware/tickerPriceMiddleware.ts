@@ -1,6 +1,6 @@
 import type { Middleware } from '@reduxjs/toolkit';
 import type { RootState } from '../index';
-import { updatePosition, addPriceAlert } from '../slices/positionsSlice';
+import { updatePositionLivePrice, addPriceAlert } from '../slices/positionsSlice';
 import { addAlert } from '../slices/alertsSlice';
 import type {
   Position,
@@ -99,8 +99,8 @@ export const tickerPriceMiddleware: Middleware = (store) => (next) => (action) =
 
       // Update position with new current value and price
       store.dispatch(
-        updatePosition({
-          ...stockPosition,
+        updatePositionLivePrice({
+          id: stockPosition.id,
           currentPrice: newPrice,
           currentValue: newCurrentValue,
         })
