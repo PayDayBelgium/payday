@@ -1262,6 +1262,7 @@ import { createEventPersistenceMiddleware } from './eventPersistenceMiddleware';
 import { createEventStore } from './eventStore';
 import { openPosition } from '../commands/positionCommands';
 import type { Position } from '../../types';
+import type { AppDispatch } from '../index';
 
 const stock = (id: string): Position =>
   ({ id, type: 'stock', ticker: 'AAPL', portfolio: 'Main', status: 'open', openDate: '2026-01-01', shares: 10, purchasePrice: 100 }) as unknown as Position;
@@ -1277,8 +1278,9 @@ describe('eventPersistenceMiddleware', () => {
       reducer: { events: eventsReducer, positions: positionsReducer, trades: tradesReducer },
       middleware: (gdm) => gdm().concat(createEventPersistenceMiddleware(eventStore)),
     });
-    store.dispatch(setActor('alice'));
-    store.dispatch(openPosition(stock('p1'), '2026-06-07T10:00:00.000Z'));
+    const dispatch = store.dispatch as AppDispatch;
+    dispatch(setActor('alice'));
+    dispatch(openPosition(stock('p1'), '2026-06-07T10:00:00.000Z'));
 
     // allow the async write to settle
     await new Promise((r) => setTimeout(r, 0));
@@ -1479,15 +1481,27 @@ Remove the now-unused `import { tradeMiddleware } from './middleware/tradeMiddle
   return { store, persistor, eventStore };
 ```
 
-- [ ] **Step 2: Typecheck**
+### Step 1h: Keep the derived-value middleware in sync with the event log
+Two `src/store/middleware/` files referenced the now-removed raw actions and must be fixed in this task (they live inside `src/store/`, so they are in-scope):
+
+- `tickerPriceMiddleware.ts` previously dispatched `updatePosition({ ...stockPos, currentPrice, currentValue })` to push live stock/ETF prices. `updatePosition` is gone. Add a dedicated **runtime** reducer `updatePositionLivePrice` to `positionsSlice.ts` (payload `{ id, currentPrice, currentValue }`, sets only those two ephemeral fields; it emits NO event — live prices are runtime/non-persisted) and export it. Rewire `tickerPriceMiddleware` to dispatch `updatePositionLivePrice` instead.
+- `positionValueMiddleware.ts` recomputes `portfolio.currentValue` on position mutations. Position lifecycle now flows through the event log, so:
+  - In `isPositionMutation`: REMOVE the dead `positions/addPosition`, `positions/updatePosition`, `positions/closePosition`, `positions/removePosition` entries. ADD `events/appendEvents` and `events/replayEvents`. Keep `positions/updatePositionValue`, `positions/updateMultiplePositionValues`, `positions/updateOptionPremium`, and add `positions/updatePositionLivePrice`.
+  - In `getAffectedPortfolios`: REMOVE the dead `positions/add|update|close|remove` cases. ADD `case 'events/appendEvents': case 'events/replayEvents':` returning every portfolio name (`dedupe(stateAfter.portfolios.portfolios.map((p) => p.name))`) — event commits/replays can touch any portfolio and the payload is a heterogeneous event list, so recompute all (these fire only on user commands and once at boot). Add the `updatePositionLivePrice` case alongside `updatePositionValue` (keyed on `action.payload.id`).
+  - Update `positionValueMiddleware.test.ts`: seed positions by dispatching a `PositionOpened` event via `appendEvents({ events: [openedEvent], positionsBefore: [] })` (add `events: eventsReducer` to the test's `combineReducers`), NOT via `loadPositions`/`addPosition`. Assertions stay the same.
+
+- [ ] **Step 2: Typecheck + store tests**
 
 Run: `npm run typecheck`
-Expected: errors ONLY at the call sites of the removed raw actions (`addPosition`, `closePosition`, `updatePosition`, `removePosition`, `addPriceAlertRule`, `updatePriceAlertRule`, `deletePriceAlertRule`, `togglePriceAlertRule`, `updatePortfolioName`, `addTrade`). These are fixed in Task 13. No errors inside `src/store/events/` or `src/store/commands/`.
+Expected: errors ONLY at the call sites of the removed raw actions in `src/components/**`, `src/pages/**`, `src/services/**` (`addPosition`, `closePosition`, `updatePosition`, `removePosition`, `addPriceAlertRule`, `updatePriceAlertRule`, `deletePriceAlertRule`, `togglePriceAlertRule`, `updatePortfolioName`, `addTrade`). These are fixed in Task 13. **ZERO errors anywhere inside `src/store/`.**
+Run: `npx vitest run src/store/` — all store tests must pass.
 
 - [ ] **Step 3: Commit**
 
 ```bash
-git add src/store/index.ts src/store/slices/tradesSlice.ts
+git add src/store/index.ts src/store/slices/tradesSlice.ts src/store/slices/positionsSlice.ts \
+        src/store/middleware/tickerPriceMiddleware.ts src/store/middleware/positionValueMiddleware.ts \
+        src/store/middleware/positionValueMiddleware.test.ts
 git rm src/store/middleware/tradeMiddleware.ts
 git commit -m "feat(store): wire event log into the store, drop tradeMiddleware"
 ```
