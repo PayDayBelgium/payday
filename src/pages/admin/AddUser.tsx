@@ -84,7 +84,7 @@ export const AddUser: React.FC = () => {
       // Create empty user store for the new user
       const newUserStore = {
         auth: JSON.stringify({ isAuthenticated: false, user: username.trim() }),
-        portfolios: JSON.stringify({ portfolios: [], summaries: [], dailyData: [] }),
+        portfolios: JSON.stringify({ portfolios: [], summaries: [] }),
         positions: JSON.stringify({ positions: [] }),
         trades: JSON.stringify({ trades: [] }),
         rules: JSON.stringify({ rules: [] }),

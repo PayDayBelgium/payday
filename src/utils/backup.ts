@@ -1,36 +1,21 @@
 import type { RootState } from '../store';
+import type { DomainEvent } from '../store/events/types';
 
 export interface BackupData {
-  version: string;
+  version: string; // '2.0.0'
   timestamp: string;
-  data: {
-    portfolios: RootState['portfolios'];
-    positions: RootState['positions'];
-    todos: RootState['todos'];
-    alerts: RootState['alerts'];
-    journal: RootState['journal'];
-    trades: RootState['trades'];
-    rules: RootState['rules'];
-    tickers?: RootState['tickers'];
-    strategies?: RootState['strategies'];
-  };
+  // The event log IS the backup: the financial/data model is fully event-sourced, so
+  // replaying these events reproduces all derived state. (Non-event-sourced slices like
+  // userProgress/community/mentorship are session/learning state persisted by redux-persist
+  // and are intentionally not part of the backup — matching the original backup's scope.)
+  events: DomainEvent[];
 }
 
 export const createBackup = (state: RootState): BackupData => {
   return {
-    version: '1.0.0',
+    version: '2.0.0',
     timestamp: new Date().toISOString(),
-    data: {
-      portfolios: state.portfolios,
-      positions: state.positions,
-      todos: state.todos,
-      alerts: state.alerts,
-      journal: state.journal,
-      trades: state.trades,
-      rules: state.rules,
-      tickers: state.tickers,
-      strategies: state.strategies,
-    },
+    events: state.events.log,
   };
 };
 
@@ -54,9 +39,11 @@ export const parseBackupFile = async (file: File): Promise<BackupData> => {
       try {
         const backup = JSON.parse(e.target?.result as string) as BackupData;
 
-        // Validate backup structure
-        if (!backup.version || !backup.timestamp || !backup.data) {
-          reject(new Error('Invalid backup file format'));
+        // Validate v2 backup structure: must have an events array
+        if (!backup.version || !backup.timestamp || !Array.isArray(backup.events)) {
+          reject(
+            new Error('This backup was created by an older version and can no longer be restored.')
+          );
           return;
         }
 
