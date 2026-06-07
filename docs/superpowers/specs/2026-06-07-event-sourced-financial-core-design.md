@@ -175,6 +175,18 @@ once its events, command(s) and projection are in place and tested.
 - Migration of existing persisted data (clean start).
 - Non-financial slices.
 
+## Known issues / follow-ups (deferred to a later phase)
+
+- **Backup/restore is not event-sourcing-aware.** `restoreFromBackup`
+  (`src/store/actions/backupActions.ts`, reachable via the Header restore button)
+  restores positions/trades by dispatching `loadPositions` / `trades/loadTrades`,
+  which set projection state directly without writing to the IndexedDB event log.
+  Because positions/trades are now rebuilt from the log on boot, a restored backup is
+  **wiped on the next reload**. Deferred to Phase 2, where backup/restore must be
+  redesigned around the event log (e.g. export/import the event log itself, or
+  synthesize `PositionOpened` events on restore). Until then, treat financial
+  backup/restore as non-functional.
+
 ## Resolved during review
 
 - Non-financial slices (`userProgress`, `community`, `mentorship`, …) stay classic — confirmed.
