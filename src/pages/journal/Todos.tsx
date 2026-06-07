@@ -5,12 +5,15 @@ import { useAppDispatch } from '../../hooks/useAppDispatch';
 import {
   selectActiveTodos,
   selectCompletedTodos,
+} from '../../store/slices/todosSlice';
+import {
   addTodo,
   toggleTodo,
   deleteTodo,
   editTodo,
   reopenTodo,
-} from '../../store/slices/todosSlice';
+} from '../../store/commands/todoCommands';
+import { uuid } from '../../utils/uuid';
 import { usePageTitle } from '../../contexts/PageTitleContext';
 import { CheckCircle2, Circle, Plus, Trash2, Edit2, RotateCcw, X, Save } from 'lucide-react';
 
@@ -33,18 +36,24 @@ export const Todos: React.FC = () => {
   const handleAddTodo = (e: React.FormEvent) => {
     e.preventDefault();
     if (newTodoText.trim()) {
-      dispatch(addTodo(newTodoText.trim()));
+      const now = new Date().toISOString();
+      dispatch(
+        addTodo(
+          { id: uuid(), text: newTodoText.trim(), completed: false, createdAt: now },
+          now
+        )
+      );
       setNewTodoText('');
     }
   };
 
   const handleToggleTodo = (id: string) => {
-    dispatch(toggleTodo(id));
+    dispatch(toggleTodo(id, new Date().toISOString()));
   };
 
   const handleDeleteTodo = (id: string) => {
     if (window.confirm(t('todos.confirmDelete'))) {
-      dispatch(deleteTodo(id));
+      dispatch(deleteTodo(id, new Date().toISOString()));
     }
   };
 
@@ -55,7 +64,7 @@ export const Todos: React.FC = () => {
 
   const handleSaveEdit = () => {
     if (editingId && editText.trim()) {
-      dispatch(editTodo({ id: editingId, text: editText.trim() }));
+      dispatch(editTodo(editingId, editText.trim(), new Date().toISOString()));
       setEditingId(null);
       setEditText('');
     }
@@ -67,7 +76,7 @@ export const Todos: React.FC = () => {
   };
 
   const handleReopenTodo = (id: string) => {
-    dispatch(reopenTodo(id));
+    dispatch(reopenTodo(id, new Date().toISOString()));
   };
 
   const formatDate = (dateString: string) => {

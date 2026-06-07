@@ -61,7 +61,6 @@ export const createAppStore = (username?: string) => {
       'portfolios',
       'rules',
       'journal',
-      'todos',
       'tickers',
       'strategies',
       'wheels',
@@ -69,6 +68,7 @@ export const createAppStore = (username?: string) => {
       'community',
       'mentorship',
     ], // Persist auth and adminAuth to remember sessions
+    // v3 (event-sourcing phase 2): `todos` removed — rebuilt from IndexedDB event log on boot.
     // blacklist: ['alerts', 'ibConnection'], // Don't persist these
     version: 2,
     // v2 (event-sourcing): `positions` and `trades` were removed from the whitelist —

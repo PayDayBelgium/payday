@@ -1,10 +1,11 @@
 import type { Position, PriceAlertRule, Trade, PortfolioName } from '../../types';
+import type { Todo } from '../slices/todosSlice';
 import { uuid } from '../../utils/uuid';
 
 /** Current event schema version. Bump + add an upcaster when payloads change. */
 export const EVENT_SCHEMA_VERSION = 1;
 
-/** All domain-event type names handled in Phase 1. */
+/** All domain-event type names handled in Phase 1 + Phase 2. */
 export type DomainEventType =
   | 'PositionOpened'
   | 'PositionClosed'
@@ -13,7 +14,12 @@ export type DomainEventType =
   | 'PriceAlertRuleCreated'
   | 'PriceAlertRuleUpdated'
   | 'PriceAlertRuleDeleted'
-  | 'PriceAlertRuleToggled';
+  | 'PriceAlertRuleToggled'
+  | 'TodoAdded'
+  | 'TodoEdited'
+  | 'TodoCompleted'
+  | 'TodoReopened'
+  | 'TodoDeleted';
 
 // --- Phase 1 payloads ---
 export interface PositionOpenedPayload {
@@ -47,6 +53,25 @@ export interface PriceAlertRuleToggledPayload {
   id: string;
 }
 
+// --- Phase 2 payloads: todos ---
+export interface TodoAddedPayload {
+  todo: Todo;
+}
+export interface TodoEditedPayload {
+  id: string;
+  text: string;
+}
+export interface TodoCompletedPayload {
+  id: string;
+  completedAt: string;
+}
+export interface TodoReopenedPayload {
+  id: string;
+}
+export interface TodoDeletedPayload {
+  id: string;
+}
+
 /** Maps each event type to its payload shape. */
 export interface DomainEventPayloads {
   PositionOpened: PositionOpenedPayload;
@@ -57,6 +82,11 @@ export interface DomainEventPayloads {
   PriceAlertRuleUpdated: PriceAlertRuleUpdatedPayload;
   PriceAlertRuleDeleted: PriceAlertRuleDeletedPayload;
   PriceAlertRuleToggled: PriceAlertRuleToggledPayload;
+  TodoAdded: TodoAddedPayload;
+  TodoEdited: TodoEditedPayload;
+  TodoCompleted: TodoCompletedPayload;
+  TodoReopened: TodoReopenedPayload;
+  TodoDeleted: TodoDeletedPayload;
 }
 
 /** A persisted domain event (has seq + actor). */
@@ -95,4 +125,4 @@ export function createEvent<T extends DomainEventType>(
 }
 
 // Re-export domain aliases used by payloads for convenience.
-export type { Position, PriceAlertRule, Trade, PortfolioName };
+export type { Position, PriceAlertRule, Trade, PortfolioName, Todo };

@@ -1,6 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '../index';
+import { applyTodoEvent } from '../events/projectTodos';
+import { appendEvents, replayEvents } from '../events/eventsSlice';
+import type { DomainEvent } from '../events/types';
 
 export interface Todo {
   id: string;
@@ -21,43 +23,22 @@ const initialState: TodosState = {
 const todosSlice = createSlice({
   name: 'todos',
   initialState,
-  reducers: {
-    addTodo: (state, action: PayloadAction<string>) => {
-      const newTodo: Todo = {
-        id: Date.now().toString(),
-        text: action.payload,
-        completed: false,
-        createdAt: new Date().toISOString(),
-      };
-      state.todos.push(newTodo);
-    },
-    toggleTodo: (state, action: PayloadAction<string>) => {
-      const todo = state.todos.find((t) => t.id === action.payload);
-      if (todo) {
-        todo.completed = !todo.completed;
-        todo.completedAt = todo.completed ? new Date().toISOString() : undefined;
+  // All user-intent reducers (addTodo, toggleTodo, deleteTodo, editTodo, reopenTodo)
+  // have been replaced by event-sourced commands in src/store/commands/todoCommands.ts.
+  reducers: {},
+  extraReducers: (builder) => {
+    const fold = (state: TodosState, events: DomainEvent[]) => {
+      for (const event of events) {
+        state.todos = applyTodoEvent(state.todos, event);
       }
-    },
-    deleteTodo: (state, action: PayloadAction<string>) => {
-      state.todos = state.todos.filter((t) => t.id !== action.payload);
-    },
-    editTodo: (state, action: PayloadAction<{ id: string; text: string }>) => {
-      const todo = state.todos.find((t) => t.id === action.payload.id);
-      if (todo) {
-        todo.text = action.payload.text;
-      }
-    },
-    reopenTodo: (state, action: PayloadAction<string>) => {
-      const todo = state.todos.find((t) => t.id === action.payload);
-      if (todo) {
-        todo.completed = false;
-        todo.completedAt = undefined;
-      }
-    },
+    };
+    builder.addCase(appendEvents, (state, action) => fold(state, action.payload.events));
+    builder.addCase(replayEvents, (state, action) => {
+      state.todos = [];
+      fold(state, action.payload);
+    });
   },
 });
-
-export const { addTodo, toggleTodo, deleteTodo, editTodo, reopenTodo } = todosSlice.actions;
 
 // Selectors
 export const selectActiveTodos = (state: RootState) =>
