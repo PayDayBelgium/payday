@@ -57,7 +57,7 @@ projections reproduce identical positions + ledger entries.
 ## Exact formulas (the contract — from the current handlers)
 
 ### Single-option roll
-- short (sell): `closeValue = -closePremium*contracts*100`; `realizedPnL = closePremium*contracts*100 - costBasis`; new `costBasis = -(newPremium*newContracts*100)`, `currentValue = costBasis`.
+- short (sell): `closeValue = -closePremium*contracts*100`; `realizedPnL = -(closePremium*contracts*100) - costBasis` (i.e. `closeValue - costBasis`; CORRECTED — matches the actual handlers; for a short costBasis is negative); new `costBasis = -(newPremium*newContracts*100)`, `currentValue = costBasis`.
 - long (buy): `closeValue = closePremium*contracts*100`; `realizedPnL = closeValue - costBasis`; new `costBasis = newPremium*newContracts*100`, `currentValue = costBasis`.
 - `openValue = sell ? newPremium*newContracts*100 : -(newPremium*newContracts*100)`.
 - `netCashFlow = closeValue + openValue`. Ledger: one `option_roll` amount=netCashFlow, relatedPositionId=newPos.id. Preserve wheelId/underlyingId.
