@@ -33,6 +33,7 @@ import {
   parseBackupFile,
   saveLastBackupTimestamp,
 } from '../../utils/backup';
+import type { RootState } from '../../store';
 import { restoreFromBackup } from '../../store/actions/backupActions';
 import { RestoreConfirmModal } from '../modals/RestoreConfirmModal';
 import { BackupNameModal } from '../modals/BackupNameModal';
@@ -87,24 +88,10 @@ export const Header: React.FC<HeaderProps> = ({
   const userProgress = useAppSelector(selectUserProgress);
   const currentLevelConfig = useAppSelector(selectCurrentLevelConfig);
 
-  // Read the backup snapshot lazily via the store. Subscribing to these 9 slices
+  // Read the backup snapshot lazily via the store. Subscribing to all slices
   // with useAppSelector would re-render the always-mounted Header on every data
   // mutation (incl. every price tick); we only need this data on a backup click.
   const store = useStore();
-  const getBackupState = () => {
-    const state = store.getState() as any;
-    return {
-      portfolios: state.portfolios,
-      positions: state.positions,
-      todos: state.todos,
-      alerts: state.alerts,
-      journal: state.journal,
-      trades: state.trades,
-      rules: state.rules,
-      tickers: state.tickers,
-      strategies: state.strategies,
-    } as any;
-  };
 
   const handleThemeChange = (theme: ThemeColor) => {
     setCurrentTheme(theme);
@@ -134,7 +121,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   const handleBackupConfirm = (filename: string) => {
     try {
-      const backup = createBackup(getBackupState());
+      const backup = createBackup(store.getState() as RootState);
       downloadBackup(backup, filename);
       saveLastBackupTimestamp();
       setShowBackupNameModal(false);
@@ -175,11 +162,11 @@ export const Header: React.FC<HeaderProps> = ({
     }
   };
 
-  const handleConfirmRestore = () => {
+  const handleConfirmRestore = async () => {
     if (!pendingBackup) return;
 
     try {
-      dispatch(restoreFromBackup(pendingBackup) as any);
+      await dispatch(restoreFromBackup(pendingBackup) as any);
       setShowRestoreModal(false);
       setPendingBackup(null);
 

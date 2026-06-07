@@ -63,25 +63,6 @@ const portfoliosSlice = createSlice({
         state.summaries[index] = action.payload;
       }
     },
-    /**
-     * Bulk-load a persisted/backup snapshot of portfolio state directly into the slice.
-     * This is NOT an intent reducer — it is a maintenance/restore action used by
-     * backupActions.ts. Domain mutations must go through the event log (appendEvents).
-     */
-    loadPortfoliosSnapshot: (
-      state,
-      action: PayloadAction<{
-        portfolios: Portfolio[];
-        summaries?: PortfolioSummary[];
-        dailyData?: DailyPortfolioData[];
-        transactions?: PortfolioTransaction[];
-      }>
-    ) => {
-      state.portfolios = action.payload.portfolios;
-      if (action.payload.summaries) state.summaries = action.payload.summaries;
-      if (action.payload.dailyData) state.dailyData = action.payload.dailyData;
-      if (action.payload.transactions) state.transactions = action.payload.transactions;
-    },
     // NOTE: Ticker management lives entirely in tickersSlice (single source of truth).
     // The legacy ticker reducers/selectors that used to live here were removed; see
     // tickerMigration.ts for the one-time migration of older persisted data.
@@ -99,8 +80,7 @@ const portfoliosSlice = createSlice({
   },
 });
 
-export const { updatePortfolioValue, updatePortfolioSummary, loadPortfoliosSnapshot } =
-  portfoliosSlice.actions;
+export const { updatePortfolioValue, updatePortfolioSummary } = portfoliosSlice.actions;
 
 // Base Selectors
 export const selectPortfolios = (state: RootState) => state.portfolios.portfolios;
