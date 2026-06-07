@@ -1124,6 +1124,7 @@ import positionsReducer, { selectPositions } from '../slices/positionsSlice';
 import tradesReducer from '../slices/tradesSlice';
 import { openPosition, closePosition } from './positionCommands';
 import type { Position } from '../../types';
+import type { AppDispatch } from '../index';
 
 function makeStore() {
   return configureStore({
@@ -1137,8 +1138,11 @@ const stock = (id: string): Position =>
 describe('position commands', () => {
   it('openPosition emits PositionOpened and updates the projection', () => {
     const store = makeStore();
-    store.dispatch(setActor('alice'));
-    store.dispatch(openPosition(stock('p1'), '2026-06-07T10:00:00.000Z'));
+    // The mini test store's inferred dispatch lacks the global thunk overload;
+    // commands are typed against the app's AppDispatch (real call sites use that).
+    const dispatch = store.dispatch as AppDispatch;
+    dispatch(setActor('alice'));
+    dispatch(openPosition(stock('p1'), '2026-06-07T10:00:00.000Z'));
 
     expect(selectPositions(store.getState() as any).map((p) => p.id)).toEqual(['p1']);
     const log = (store.getState() as any).events.log;
@@ -1149,8 +1153,9 @@ describe('position commands', () => {
 
   it('closePosition emits PositionClosed and projects a trade', () => {
     const store = makeStore();
-    store.dispatch(openPosition(stock('p1'), '2026-06-07T10:00:00.000Z'));
-    store.dispatch(closePosition({ id: 'p1', closeDate: '2026-06-08', realizedPnL: 50 }, '2026-06-08T10:00:00.000Z'));
+    const dispatch = store.dispatch as AppDispatch;
+    dispatch(openPosition(stock('p1'), '2026-06-07T10:00:00.000Z'));
+    dispatch(closePosition({ id: 'p1', closeDate: '2026-06-08', realizedPnL: 50 }, '2026-06-08T10:00:00.000Z'));
 
     const state = store.getState() as any;
     expect(selectPositions(state)[0].status).toBe('closed');
