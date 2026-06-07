@@ -529,12 +529,28 @@ export default eventsSlice.reducer;
 Run: `npx vitest run src/store/events/eventsSlice.test.ts`
 Expected: PASS (3 tests).
 
-> Note: `commit`'s `getState`/`dispatch` types reference `RootState`/`AppDispatch` from `src/store/index.ts`. These resolve once Task 11 registers the slice; the unit test above does not import `commit`, so it passes now. If the typecheck step in Task 11 reports a cycle, the import is type-only and erased at build — acceptable.
+> Note: `commit`'s `getState` reads `getState().events` and `getState().positions.positions`. `RootState` only includes `events` once the reducer is registered, so register it now (Step 5) — otherwise `tsc -b` fails on `.events` for every task until Task 12.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Register the events reducer (minimal — rest of store wiring is Task 12)**
+
+In `src/store/index.ts`, add the import and the one reducer line so `RootState` includes `events`:
+```ts
+import eventsReducer from './events/eventsSlice';
+```
+and inside `combineReducers({ ... })` add:
+```ts
+  events: eventsReducer,
+```
+Do NOT touch the persist whitelist, middleware, or version here — that is Task 12. (`events` is intentionally NOT persisted via redux-persist; it lives in IndexedDB.)
+
+- [ ] **Step 6: Verify typecheck + test**
+
+Run: `npm run typecheck` (expect 0 errors) and `npx vitest run src/store/events/eventsSlice.test.ts` (expect 3 pass).
+
+- [ ] **Step 7: Commit**
 
 ```bash
-git add src/store/events/eventsSlice.ts src/store/events/eventsSlice.test.ts
+git add src/store/events/eventsSlice.ts src/store/events/eventsSlice.test.ts src/store/index.ts
 git commit -m "feat(store): events slice with commit thunk"
 ```
 
@@ -1398,15 +1414,14 @@ git commit -m "feat(store): bootstrap projections by replaying the event log"
 
 - [ ] **Step 1: Edit `src/store/index.ts`**
 
-1a. Add imports:
+1a. Add imports (note: `eventsReducer` and its `events:` line in `combineReducers` were already added in Task 4 — do not duplicate):
 ```ts
-import eventsReducer from './events/eventsSlice';
 import { createEventStore } from './events/eventStore';
 import { createEventPersistenceMiddleware } from './events/eventPersistenceMiddleware';
 import { setActor } from './events/eventsSlice';
 ```
 
-1b. Add `events: eventsReducer,` to `combineReducers({ ... })`.
+1b. (Already done in Task 4: `events: eventsReducer` is in `combineReducers`.)
 
 1c. Remove `'positions'` and `'trades'` from the persist `whitelist` array (they are now rebuilt from the event log; the event log lives in IndexedDB, not redux-persist).
 
