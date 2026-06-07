@@ -3,7 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useNavigation } from '../../contexts/NavigationContext';
-import { selectPortfolioSummaries } from '../../store/slices/portfoliosSlice';
+import {
+  selectPortfolioSummaries,
+  selectEquitySeries,
+} from '../../store/slices/portfoliosSlice';
 import { useAlerts } from '../../hooks/useAlerts';
 import { formatCurrency, formatNumber } from '../../utils/numberFormat';
 import { getCurrencySymbol } from '../../utils/currency';
@@ -24,7 +27,7 @@ export const PortfolioOverview: React.FC = memo(() => {
   const { t } = useTranslation();
   const { pushNavigation } = useNavigation();
   const summaries = useAppSelector(selectPortfolioSummaries);
-  const dailyData = useAppSelector((state) => state.portfolios.dailyData);
+  const dailyData = useAppSelector(selectEquitySeries);
   const portfolios = useAppSelector((state) => state.portfolios.portfolios);
   const positions = useAppSelector((state) => state.positions.positions);
 

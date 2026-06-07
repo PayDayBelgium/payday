@@ -19,9 +19,12 @@ import connectivityReducer from './slices/connectivitySlice';
 import userProgressReducer from './slices/userProgressSlice';
 import communityReducer from './slices/communitySlice';
 import mentorshipReducer from './slices/mentorshipSlice';
+import eventsReducer from './events/eventsSlice';
 import { tickerPriceMiddleware } from './middleware/tickerPriceMiddleware';
-import { tradeMiddleware } from './middleware/tradeMiddleware';
 import { positionValueMiddleware } from './middleware/positionValueMiddleware';
+import { createEventStore } from './events/eventStore';
+import { createEventPersistenceMiddleware } from './events/eventPersistenceMiddleware';
+import { setActor } from './events/eventsSlice';
 
 // Combine all reducers
 const rootReducer = combineReducers({
@@ -42,10 +45,12 @@ const rootReducer = combineReducers({
   userProgress: userProgressReducer,
   community: communityReducer,
   mentorship: mentorshipReducer,
+  events: eventsReducer,
 });
 
 // Create store factory to support per-user persistence
 export const createAppStore = (username?: string) => {
+  const eventStore = createEventStore(username);
   // Persist config with user-specific key
   const persistConfig = {
     key: username ? `payday-${username}` : 'payday-root',
@@ -53,23 +58,25 @@ export const createAppStore = (username?: string) => {
     whitelist: [
       'auth',
       'adminAuth',
-      'portfolios',
-      'positions',
-      'trades',
-      'rules',
-      'journal',
-      'todos',
-      'tickers',
-      'strategies',
-      'wheels',
       'userProgress',
       'community',
       'mentorship',
     ], // Persist auth and adminAuth to remember sessions
+    // v7 (event-sourcing coupled-cluster): `portfolios` and `wheels` removed — rebuilt from IndexedDB event log on boot.
+    // v6 (event-sourcing phase 2): `tickers` removed — rebuilt from IndexedDB event log on boot.
+    // v5 (event-sourcing phase 2): `strategies` removed — rebuilt from IndexedDB event log on boot.
+    // v4 (event-sourcing phase 2): `todos`, `rules`, and `journal` removed — rebuilt from IndexedDB event log on boot.
     // blacklist: ['alerts', 'ibConnection'], // Don't persist these
-    version: 1,
+    version: 5,
+    // v6 (event-sourcing phase 2): `tickers` removed — rebuilt from IndexedDB event log on boot.
+    // v5 (event-sourcing phase 2): `strategies` removed — rebuilt from IndexedDB event log on boot.
+    // v4 (event-sourcing phase 2): `journal` removed — rebuilt from IndexedDB event log on boot.
+    // v3 (event-sourcing phase 2): `todos` and `rules` removed — rebuilt from IndexedDB event log on boot.
+    // v2 (event-sourcing): `positions` and `trades` were removed from the whitelist —
+    // they are rebuilt from the IndexedDB event log on boot, not from redux-persist.
+    // The legacy v1 positions blob is therefore ignored (clean start). The guard below
+    // is now effectively dead (state.positions is never rehydrated) but kept harmless.
     migrate: (state: any) => {
-      // Migration: ensure positions slice has priceAlertRules and priceAlerts arrays
       if (state && state.positions) {
         if (!state.positions.priceAlertRules) {
           state.positions.priceAlertRules = [];
@@ -93,17 +100,22 @@ export const createAppStore = (username?: string) => {
           ignoredActions: [
             'persist/PERSIST',
             'persist/REHYDRATE',
-            'positions/addPosition',
-            'trades/addTrade',
+            'events/appendEvents',
+            'events/replayEvents',
           ],
           ignoredPaths: ['register', 'rehydrate'],
         },
-      }).concat(tickerPriceMiddleware, tradeMiddleware, positionValueMiddleware),
+      }).concat(
+        tickerPriceMiddleware,
+        positionValueMiddleware,
+        createEventPersistenceMiddleware(eventStore)
+      ),
   });
 
   const persistor = persistStore(store);
+  store.dispatch(setActor(username ?? 'local'));
 
-  return { store, persistor };
+  return { store, persistor, eventStore };
 };
 
 // The runtime store is created per user in main.tsx and injected where needed

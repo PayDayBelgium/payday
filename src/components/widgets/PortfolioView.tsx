@@ -13,12 +13,10 @@ import {
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import {
-  closePosition,
-  updatePosition,
   selectAllPriceAlerts,
 } from '../../store/slices/positionsSlice';
+import { closePosition, editPosition } from '../../store/commands/positionCommands';
 import { selectUnlockedLevels, isFeatureAvailable } from '../../store/slices/userProgressSlice';
-import { addTransaction } from '../../store/slices/portfoliosSlice';
 import { selectAllTickers } from '../../store/slices/tickersSlice';
 import { useAlerts } from '../../hooks/useAlerts';
 import type { AlertItem } from '../../utils/alertEvaluator';
@@ -29,12 +27,7 @@ import { SpreadDetailModal } from '../modals/SpreadDetailModal';
 import { RollOptionModal } from '../modals/RollOptionModal';
 import { SpreadRollModal } from '../modals/SpreadRollModal';
 import { AssignmentModal } from '../modals/AssignmentModal';
-import { addPosition } from '../../store/slices/positionsSlice';
-import {
-  updateWheelPhase,
-  incrementWheelCycle,
-  updateWheelPremium,
-} from '../../store/slices/wheelsSlice';
+import { rollOption, rollSpread, recordAssignment } from '../../store/commands/rollCommands';
 import type { StockPosition } from '../../types';
 import type { Position, CurrencyType, CallOption, PutOption } from '../../types';
 import { POSITION_GRID_COLS } from './positionGrid';
@@ -70,7 +63,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   positions,
   currency,
   portfolioName,
-  portfolioCurrentValue,
+  portfolioCurrentValue: _portfolioCurrentValue,
   className = '',
   onNavigateToCampaigns,
   onWriteCoveredCall,
@@ -635,28 +628,12 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
     // Use the realizedPnL from the modal
     const realizedPnL = closeData.realizedPnL;
-    let closeValue = 0;
     let isPartialClose = false;
 
     if (positionToClose.type === 'stock' || positionToClose.type === 'etf') {
       if ('shares' in positionToClose && closeData.closePrice) {
         const quantityToClose = closeData.quantity || positionToClose.shares;
         isPartialClose = quantityToClose < positionToClose.shares;
-        closeValue = closeData.closePrice * quantityToClose;
-      }
-    } else if (positionToClose.type === 'call' || positionToClose.type === 'put') {
-      if (
-        'contracts' in positionToClose &&
-        'action' in positionToClose &&
-        closeData.closePremium !== undefined
-      ) {
-        const contractMultiplier = 100;
-        if (positionToClose.action === 'buy') {
-          closeValue = closeData.closePremium * positionToClose.contracts * contractMultiplier;
-        } else {
-          const closeCost = closeData.closePremium * positionToClose.contracts * contractMultiplier;
-          closeValue = -closeCost;
-        }
       }
     }
 
@@ -668,39 +645,16 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
       const purchasePricePerShare = positionToClose.costBasis / positionToClose.shares;
 
       dispatch(
-        updatePosition({
+        editPosition({
           ...positionToClose,
           shares: remainingShares,
           costBasis: remainingCostBasis,
           currentValue: remainingShares * purchasePricePerShare, // Will be updated by price service
-        })
+        }, new Date().toISOString())
       );
 
-      // Log transaction for partial sale
-      const transaction = {
-        id: `txn-${Date.now()}`,
-        portfolio: portfolioName as any,
-        date: closeData.closeDate,
-        type: 'position_sell' as const,
-        amount: closeValue,
-        description: t('widgetsB.txnPartialSell', {
-          quantity: closeData.quantity,
-          ticker: positionToClose.ticker,
-        }),
-        relatedPositionId: positionToClose.id,
-        previousValue: portfolioCurrentValue,
-        newValue: portfolioCurrentValue + realizedPnL,
-        createdAt: new Date().toISOString(),
-        notes:
-          closeData.notes ||
-          t('widgetsB.txnPartialSellNotes', {
-            quantity: closeData.quantity,
-            total: positionToClose.shares,
-            pnl: formatCurrency(realizedPnL, currencySymbol),
-          }),
-      };
-
-      dispatch(addTransaction(transaction));
+      // Transaction ledger line is derived from PositionClosed / EditPosition events
+      // by the transaction projection — no manual addTransaction needed.
     } else {
       // Full close: close the position completely
       dispatch(
@@ -711,32 +665,9 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
           closePremium: closeData.closePremium,
           realizedPnL,
           notes: closeData.notes,
-        })
+        }, new Date().toISOString())
       );
-
-      // Log transaction for close
-      // For bought options: we receive closeValue (can be 0 if worthless)
-      // For sold options: we pay closeCost to buy back
-      const transaction = {
-        id: `txn-${Date.now()}`,
-        portfolio: portfolioName as any,
-        date: closeData.closeDate,
-        type: 'position_sell' as const,
-        amount: closeValue, // Cash received (can be 0 for worthless options)
-        description: t('widgetsB.txnClose', {
-          type: positionToClose.type,
-          ticker: positionToClose.ticker,
-        }),
-        relatedPositionId: positionToClose.id,
-        previousValue: portfolioCurrentValue,
-        newValue: portfolioCurrentValue + realizedPnL,
-        createdAt: new Date().toISOString(),
-        notes:
-          closeData.notes ||
-          t('widgetsB.txnRealizedPnl', { pnl: formatCurrency(realizedPnL, currencySymbol) }),
-      };
-
-      dispatch(addTransaction(transaction));
+      // Transaction ledger line derived from PositionClosed event.
     }
 
     // Close modal
@@ -753,27 +684,20 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   ) => {
     // Close both legs of the spread
     const contractMultiplier = 100;
-    let totalRealizedPnL = 0;
-    let totalCloseValue = 0;
 
     spreadLegs.forEach((leg) => {
       const option = leg as CallOption | PutOption;
-      let closeValue = 0;
       let realizedPnL = 0;
 
       if (option.action === 'buy') {
         // Sell the long leg
-        closeValue = closeData.closePremium * option.contracts * contractMultiplier;
+        const closeValue = closeData.closePremium * option.contracts * contractMultiplier;
         realizedPnL = closeValue - option.costBasis;
       } else {
         // Buy back the short leg
         const closeCost = closeData.closePremium * option.contracts * contractMultiplier;
-        closeValue = -closeCost;
         realizedPnL = option.costBasis - closeCost;
       }
-
-      totalRealizedPnL += realizedPnL;
-      totalCloseValue += closeValue;
 
       // Close each leg
       dispatch(
@@ -783,34 +707,11 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
           closePremium: closeData.closePremium,
           realizedPnL,
           notes: closeData.notes,
-        })
+        }, new Date().toISOString())
       );
     });
 
-    // Log a single transaction for the spread close
-    const firstLeg = spreadLegs[0] as CallOption | PutOption;
-    const transaction = {
-      id: `txn-${Date.now()}`,
-      portfolio: portfolioName as any,
-      date: closeData.closeDate,
-      type: 'position_sell' as const,
-      amount: totalCloseValue,
-      description: t('widgetsB.txnCloseSpread', {
-        type: firstLeg.type,
-        ticker: firstLeg.ticker,
-      }),
-      relatedPositionId: firstLeg.id,
-      previousValue: portfolioCurrentValue,
-      newValue: portfolioCurrentValue + totalRealizedPnL,
-      createdAt: new Date().toISOString(),
-      notes:
-        closeData.notes ||
-        t('widgetsB.txnSpreadClosedNotes', {
-          pnl: formatCurrency(totalRealizedPnL, currencySymbol),
-        }),
-    };
-
-    dispatch(addTransaction(transaction));
+    // Transaction ledger lines derived from PositionClosed events by the projection.
 
     // Close modal
     setPositionToClose(null);
@@ -827,132 +728,22 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   }) => {
     if (!positionToRoll) return;
 
-    const contractMultiplier = 100;
-
-    // Calculate close values
-    let closeValue = 0;
-    let realizedPnL = 0;
-
-    if (positionToRoll.action === 'sell') {
-      // SHORT option: buy back to close
-      const closeCost = rollData.closePremium * positionToRoll.contracts * contractMultiplier;
-      closeValue = -closeCost;
-      realizedPnL = -closeCost - positionToRoll.costBasis;
-    } else {
-      // LONG option: sell to close
-      closeValue = rollData.closePremium * positionToRoll.contracts * contractMultiplier;
-      realizedPnL = closeValue - positionToRoll.costBasis;
-    }
-
-    // Calculate new position values
-    let newCostBasis = 0;
-    let openValue = 0;
-
-    if (positionToRoll.action === 'sell') {
-      // Selling new option: receive premium (credit)
-      openValue = rollData.newPremium * rollData.newContracts * contractMultiplier;
-      newCostBasis = -openValue; // Negative cost basis for short options
-    } else {
-      // Buying new option: pay premium (debit)
-      openValue = -rollData.newPremium * rollData.newContracts * contractMultiplier;
-      newCostBasis = Math.abs(openValue); // Positive cost basis for long options
-    }
-
-    // Net credit/debit for the roll
-    const netCashFlow = closeValue + openValue;
-
-    // 1. Close the existing position
     dispatch(
-      closePosition({
-        id: positionToRoll.id,
-        closeDate: rollData.closeDate,
-        closePremium: rollData.closePremium,
-        realizedPnL,
-        notes: rollData.notes ? `Roll: ${rollData.notes}` : 'Rolled to new position',
-      })
+      rollOption(
+        {
+          positionId: positionToRoll.id,
+          closePremium: rollData.closePremium,
+          closeDate: rollData.closeDate,
+          newContracts: rollData.newContracts,
+          newStrike: rollData.newStrike,
+          newExpiration: rollData.newExpiration,
+          newPremium: rollData.newPremium,
+          notes: rollData.notes,
+        },
+        new Date().toISOString()
+      )
     );
 
-    // 2. Create the new position
-    const newPosition: CallOption | PutOption = {
-      id: `pos-${Date.now()}`,
-      portfolio: positionToRoll.portfolio,
-      ticker: positionToRoll.ticker,
-      type: positionToRoll.type,
-      action: positionToRoll.action,
-      strike: rollData.newStrike,
-      expiration: rollData.newExpiration,
-      contracts: rollData.newContracts,
-      premium: rollData.newPremium,
-      costBasis: newCostBasis,
-      currentValue: positionToRoll.action === 'sell' ? -newCostBasis : newCostBasis,
-      status: 'open',
-      openDate: rollData.closeDate,
-      notes: t('widgetsB.rolledFrom', {
-        strike: positionToRoll.strike,
-        date: new Date(positionToRoll.expiration).toLocaleDateString('nl-NL'),
-      }),
-      strategy: positionToRoll.strategy,
-      // Preserve wheel and underlying links when rolling
-      wheelId: positionToRoll.wheelId,
-      underlyingId: positionToRoll.underlyingId,
-    };
-
-    dispatch(addPosition(newPosition));
-
-    // 3. Log the roll transaction
-    const optionType = positionToRoll.type === 'call' ? 'CALL' : 'PUT';
-    const actionType = positionToRoll.action === 'sell' ? 'Short' : 'Long';
-
-    // Calculate days difference between expirations
-    const oldExpDate = new Date(positionToRoll.expiration);
-    const newExpDate = new Date(rollData.newExpiration);
-    const daysDiff = Math.round(
-      (newExpDate.getTime() - oldExpDate.getTime()) / (1000 * 60 * 60 * 24)
-    );
-
-    // Determine roll type
-    const isHorizontalRoll = positionToRoll.strike === rollData.newStrike && daysDiff !== 0;
-    const isVerticalRoll = positionToRoll.strike !== rollData.newStrike && daysDiff === 0;
-    const isDiagonalRoll = positionToRoll.strike !== rollData.newStrike && daysDiff !== 0;
-
-    let rollTypeLabel = '';
-    if (isHorizontalRoll) {
-      rollTypeLabel = t('widgetsB.rollHorizontal', { days: daysDiff });
-    } else if (isVerticalRoll) {
-      const direction = rollData.newStrike > positionToRoll.strike ? 'â†‘' : 'â†“';
-      rollTypeLabel = t('widgetsB.rollVertical', { direction });
-    } else if (isDiagonalRoll) {
-      const direction = rollData.newStrike > positionToRoll.strike ? 'â†‘' : 'â†“';
-      rollTypeLabel = t('widgetsB.rollDiagonal', { direction, days: daysDiff });
-    }
-
-    // Format dates for display
-    const oldExpStr = oldExpDate.toLocaleDateString('nl-NL', { day: '2-digit', month: 'short' });
-    const newExpStr = newExpDate.toLocaleDateString('nl-NL', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    });
-
-    const transaction = {
-      id: `txn-${Date.now()}`,
-      portfolio: portfolioName as any,
-      date: rollData.closeDate,
-      type: 'option_roll' as const,
-      amount: netCashFlow, // Net cash received (credit) or paid (debit)
-      description: `Roll ${actionType} ${optionType} ${positionToRoll.ticker} $${positionToRoll.strike} (${oldExpStr}) â†’ $${rollData.newStrike} (${newExpStr})`,
-      relatedPositionId: newPosition.id,
-      previousValue: portfolioCurrentValue,
-      newValue: portfolioCurrentValue + realizedPnL,
-      createdAt: new Date().toISOString(),
-      notes:
-        rollData.notes ||
-        `${rollTypeLabel} â€¢ ${netCashFlow >= 0 ? 'Credit' : 'Debit'}: ${formatCurrency(Math.abs(netCashFlow), currencySymbol)}${daysDiff > 0 ? t('widgetsB.rollNotesDays', { days: daysDiff }) : ''}`,
-    };
-
-    dispatch(addTransaction(transaction));
-
-    // Close modal
     setPositionToRoll(null);
   };
 
@@ -974,122 +765,20 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   }) => {
     if (!spreadToRoll) return;
 
-    const contractMultiplier = 100;
-    const { longLeg, shortLeg } = spreadToRoll;
-
-    // Calculate close values for long leg (sell to close)
-    const longCloseValue = rollData.longLeg.closePremium * longLeg.contracts * contractMultiplier;
-    const longRealizedPnL = longCloseValue - longLeg.costBasis;
-
-    // Calculate close values for short leg (buy to close)
-    const shortCloseValue =
-      -rollData.shortLeg.closePremium * shortLeg.contracts * contractMultiplier;
-    const shortRealizedPnL = -shortCloseValue - shortLeg.costBasis;
-
-    // Calculate new position values
-    const longNewCostBasis = rollData.longLeg.newPremium * longLeg.contracts * contractMultiplier;
-    const shortNewCostBasis = -(
-      rollData.shortLeg.newPremium *
-      shortLeg.contracts *
-      contractMultiplier
-    );
-
-    // Net cash flow for the roll
-    const netCashFlow =
-      longCloseValue +
-      shortCloseValue -
-      rollData.longLeg.newPremium * longLeg.contracts * contractMultiplier +
-      rollData.shortLeg.newPremium * shortLeg.contracts * contractMultiplier;
-
-    // 1. Close existing positions
     dispatch(
-      closePosition({
-        id: longLeg.id,
-        closeDate: rollData.rollDate,
-        closePremium: rollData.longLeg.closePremium,
-        realizedPnL: longRealizedPnL,
-        notes: rollData.notes ? `Spread Roll: ${rollData.notes}` : 'Rolled spread - long leg',
-      })
+      rollSpread(
+        {
+          rollDate: rollData.rollDate,
+          longLegId: spreadToRoll.longLeg.id,
+          shortLegId: spreadToRoll.shortLeg.id,
+          longLeg: rollData.longLeg,
+          shortLeg: rollData.shortLeg,
+          notes: rollData.notes,
+        },
+        new Date().toISOString()
+      )
     );
 
-    dispatch(
-      closePosition({
-        id: shortLeg.id,
-        closeDate: rollData.rollDate,
-        closePremium: rollData.shortLeg.closePremium,
-        realizedPnL: shortRealizedPnL,
-        notes: rollData.notes ? `Spread Roll: ${rollData.notes}` : 'Rolled spread - short leg',
-      })
-    );
-
-    // 2. Create new positions with linked spread ID
-    const newSpreadId = `spread-${Date.now()}`;
-    const spreadType =
-      rollData.shortLeg.newPremium > rollData.longLeg.newPremium ? 'Credit' : 'Debit';
-
-    const newLongPosition: CallOption | PutOption = {
-      id: `${newSpreadId}-long`,
-      portfolio: longLeg.portfolio,
-      ticker: longLeg.ticker,
-      type: longLeg.type,
-      action: 'buy',
-      strike: rollData.longLeg.newStrike,
-      expiration: rollData.longLeg.newExpiration,
-      contracts: longLeg.contracts,
-      premium: rollData.longLeg.newPremium,
-      costBasis: longNewCostBasis,
-      currentValue: longNewCostBasis,
-      status: 'open',
-      openDate: rollData.rollDate,
-      notes: `${rollData.notes || ''}\nSpread ID: ${newSpreadId} (${spreadType} Spread - Long Leg)\nRolled from $${longLeg.strike}`,
-    };
-
-    const newShortPosition: CallOption | PutOption = {
-      id: `${newSpreadId}-short`,
-      portfolio: shortLeg.portfolio,
-      ticker: shortLeg.ticker,
-      type: shortLeg.type,
-      action: 'sell',
-      strike: rollData.shortLeg.newStrike,
-      expiration: rollData.shortLeg.newExpiration,
-      contracts: shortLeg.contracts,
-      premium: rollData.shortLeg.newPremium,
-      costBasis: shortNewCostBasis,
-      currentValue: shortNewCostBasis,
-      cashReserved:
-        Math.abs(rollData.shortLeg.newStrike - rollData.longLeg.newStrike) *
-        shortLeg.contracts *
-        100,
-      status: 'open',
-      openDate: rollData.rollDate,
-      notes: `${rollData.notes || ''}\nSpread ID: ${newSpreadId} (${spreadType} Spread - Short Leg)\nRolled from $${shortLeg.strike}`,
-    };
-
-    dispatch(addPosition(newLongPosition));
-    dispatch(addPosition(newShortPosition));
-
-    // 3. Log the roll transaction
-    const optionType = longLeg.type === 'call' ? 'Call' : 'Put';
-    const totalRealizedPnL = longRealizedPnL + shortRealizedPnL;
-    const transaction = {
-      id: `txn-${Date.now()}`,
-      portfolio: portfolioName as any,
-      date: rollData.rollDate,
-      type: 'option_roll' as const,
-      amount: netCashFlow,
-      description: `Roll ${longLeg.ticker} ${optionType} Spread $${Math.min(longLeg.strike, shortLeg.strike)}/$${Math.max(longLeg.strike, shortLeg.strike)} â†’ $${Math.min(rollData.longLeg.newStrike, rollData.shortLeg.newStrike)}/$${Math.max(rollData.longLeg.newStrike, rollData.shortLeg.newStrike)}`,
-      relatedPositionId: newSpreadId,
-      previousValue: portfolioCurrentValue,
-      newValue: portfolioCurrentValue + totalRealizedPnL,
-      createdAt: new Date().toISOString(),
-      notes:
-        rollData.notes ||
-        `Roll ${spreadType} ${optionType} Spread. ${netCashFlow >= 0 ? 'Credit' : 'Debit'}: ${formatCurrency(Math.abs(netCashFlow), currencySymbol)}`,
-    };
-
-    dispatch(addTransaction(transaction));
-
-    // Close modal
     setSpreadToRoll(null);
   };
 
@@ -1101,168 +790,18 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   }) => {
     if (!positionToAssign) return;
 
-    const option = positionToAssign;
-    const isPut = option.type === 'put';
-    const contractMultiplier = 100;
-    const shares = option.contracts * contractMultiplier;
-
-    // Calculate realized P&L for the option
-    // The option expires worthless (premium kept), but we need to account for assignment
-    const realizedPnL = Math.abs(option.costBasis); // Premium received is our profit on the option
-
-    // Close the option position
     dispatch(
-      closePosition({
-        id: option.id,
-        closeDate: assignmentData.assignmentDate,
-        closePremium: 0, // Option expires/assigned, no buyback
-        realizedPnL,
-        notes: assignmentData.notes ? `Assignment: ${assignmentData.notes}` : 'Assigned',
-      })
+      recordAssignment(
+        {
+          optionId: positionToAssign.id,
+          assignmentDate: assignmentData.assignmentDate,
+          assignmentPrice: assignmentData.assignmentPrice,
+          notes: assignmentData.notes,
+        },
+        new Date().toISOString()
+      )
     );
 
-    if (isPut) {
-      // Short PUT assigned: create stock position
-      const totalCost = option.strike * shares;
-      const premiumReceived = Math.abs(option.costBasis);
-      const effectiveCost = totalCost - premiumReceived;
-
-      const newStockPosition: StockPosition = {
-        id: `stock-${Date.now()}`,
-        type: 'stock',
-        ticker: option.ticker,
-        name: option.name,
-        portfolio: option.portfolio,
-        status: 'open',
-        shares,
-        costBasis: effectiveCost,
-        purchasePrice: effectiveCost / shares,
-        currentPrice: assignmentData.assignmentPrice,
-        currentValue: shares * assignmentData.assignmentPrice,
-        optionsSupported: true,
-        miniContractsSupported: false,
-        openDate: assignmentData.assignmentDate,
-        notes: `Assigned from Cash Secured Put at $${option.strike}. Premium: $${formatNumber(premiumReceived, 2)}`,
-        // Link to Wheel if the option was part of one
-        wheelId: option.wheelId,
-      };
-
-      dispatch(addPosition(newStockPosition));
-
-      // Update Wheel phase if linked
-      if (option.wheelId) {
-        dispatch(
-          updateWheelPhase({
-            id: option.wheelId,
-            phase: 'stock',
-          })
-        );
-      }
-
-      // Log transaction
-      const transaction = {
-        id: `txn-${Date.now()}`,
-        portfolio: portfolioName as any,
-        date: assignmentData.assignmentDate,
-        type: 'position_buy' as const,
-        amount: -effectiveCost,
-        description: `Assignment: ${shares} ${option.ticker} @ $${option.strike}`,
-        relatedPositionId: newStockPosition.id,
-        previousValue: portfolioCurrentValue,
-        newValue: portfolioCurrentValue,
-        createdAt: new Date().toISOString(),
-        notes: `Assigned from Cash Secured Put. Effective cost: ${formatCurrency(effectiveCost, currencySymbol)}`,
-      };
-
-      dispatch(addTransaction(transaction));
-    } else {
-      // Short CALL assigned: remove stock and realize gain
-      // Find the stock position
-      const stockPosition = positions.find(
-        (p) =>
-          (p.type === 'stock' || p.type === 'etf') &&
-          p.ticker.toUpperCase() === option.ticker.toUpperCase() &&
-          p.status === 'open'
-      );
-
-      if (stockPosition && 'shares' in stockPosition) {
-        const totalProceeds = option.strike * shares;
-        const premiumReceived = Math.abs(option.costBasis);
-        const stockCostBasis = (stockPosition.costBasis / stockPosition.shares) * shares;
-        const stockRealizedPnL = totalProceeds - stockCostBasis;
-
-        // Close or reduce stock position
-        if (stockPosition.shares <= shares) {
-          // Close entire stock position
-          dispatch(
-            closePosition({
-              id: stockPosition.id,
-              closeDate: assignmentData.assignmentDate,
-              closePrice: option.strike,
-              realizedPnL: stockRealizedPnL,
-              notes: `Assigned from covered call at $${option.strike}`,
-            })
-          );
-        } else {
-          // Partial close - reduce shares
-          const remainingShares = stockPosition.shares - shares;
-          const remainingCostBasis =
-            (stockPosition.costBasis / stockPosition.shares) * remainingShares;
-
-          dispatch(
-            updatePosition({
-              ...stockPosition,
-              shares: remainingShares,
-              costBasis: remainingCostBasis,
-              currentValue: remainingShares * (stockPosition.currentValue / stockPosition.shares),
-            } as any)
-          );
-        }
-
-        // Update Wheel if linked
-        if (option.wheelId) {
-          // Increment cycle and move back to CSP phase
-          dispatch(incrementWheelCycle(option.wheelId));
-          dispatch(
-            updateWheelPhase({
-              id: option.wheelId,
-              phase: 'csp',
-            })
-          );
-          // Add the stock P&L to wheel
-          dispatch(
-            updateWheelPremium({
-              id: option.wheelId,
-              premiumCollected: 0,
-              realizedPnL: stockRealizedPnL,
-            })
-          );
-        }
-
-        // Log transaction
-        const transaction = {
-          id: `txn-${Date.now()}`,
-          portfolio: portfolioName as any,
-          date: assignmentData.assignmentDate,
-          type: 'position_sell' as const,
-          amount: totalProceeds + premiumReceived,
-          description: t('widgetsB.txnAssignmentSell', {
-            shares,
-            ticker: option.ticker,
-            strike: option.strike,
-          }),
-          relatedPositionId: option.id,
-          previousValue: portfolioCurrentValue,
-          newValue: portfolioCurrentValue + stockRealizedPnL + realizedPnL,
-          createdAt: new Date().toISOString(),
-          notes: `Assigned from covered call. Stock P&L: ${formatCurrency(stockRealizedPnL, currencySymbol)}, Premium: ${formatCurrency(premiumReceived, currencySymbol)}`,
-        };
-
-        dispatch(addTransaction(transaction));
-      }
-    }
-
-    // Close modal
     setPositionToAssign(null);
   };
 
@@ -2260,7 +1799,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
           isOpen={!!positionToView}
           onClose={() => setPositionToView(null)}
           onSave={(updatedPosition) => {
-            dispatch(updatePosition(updatedPosition));
+            dispatch(editPosition(updatedPosition, new Date().toISOString()));
             setPositionToView(null);
           }}
           position={positionToView}
@@ -2276,7 +1815,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
           onSave={(updatedLegs) => {
             // Update both legs
             updatedLegs.forEach((leg) => {
-              dispatch(updatePosition(leg));
+              dispatch(editPosition(leg, new Date().toISOString()));
             });
             setSpreadToView(null);
           }}

@@ -8,9 +8,6 @@ export { Sidebar } from './layout/Sidebar';
 export { ImageCropModal } from './modals/ImageCropModal';
 export { ConfirmDialog } from './modals/ConfirmDialog';
 
-// Forms
-export { default as DailyRoutineForm } from './forms/DailyRoutineForm';
-
 // Widgets
 export { default as TodoListWidget } from './widgets/TodoListWidget';
 export { GoalsOverview } from './widgets/GoalsOverview';

@@ -24,7 +24,10 @@ import { BackupWarning } from '../../components/widgets/BackupWarning';
 import { PortfolioValueChart } from '../../components/widgets/PortfolioValueChart';
 import { MultiPortfolioChart } from '../../components/widgets/MultiPortfolioChart';
 import { PortfolioOverview } from '../../components/widgets/PortfolioOverview';
-import { selectPortfolioSummaries } from '../../store/slices/portfoliosSlice';
+import {
+  selectPortfolioSummaries,
+  selectEquitySeries,
+} from '../../store/slices/portfoliosSlice';
 import { formatCurrency } from '../../utils/numberFormat';
 import logo from '../../assets/app/logo.png';
 
@@ -42,7 +45,7 @@ export const Dashboard: React.FC = () => {
   );
   const positions = useAppSelector((state) => state.positions.positions);
   const alerts = useAppSelector((state) => state.alerts.alerts);
-  const dailyData = useAppSelector((state) => state.portfolios.dailyData);
+  const dailyData = useAppSelector(selectEquitySeries);
 
   useEffect(() => {
     setPageTitle(t('dashboard.pageTitle'), t('dashboard.pageSubtitle'));

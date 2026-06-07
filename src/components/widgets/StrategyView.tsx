@@ -2,13 +2,13 @@ import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { selectStrategiesByPortfolio } from '../../store/slices/strategiesSlice';
 import {
-  selectStrategiesByPortfolio,
-  addStrategy,
+  createStrategy,
   deleteStrategy,
-  removePositionFromStrategy,
-  addPositionToStrategy,
-} from '../../store/slices/strategiesSlice';
+  linkPositionToStrategy,
+  unlinkPositionFromStrategy,
+} from '../../store/commands/strategyCommands';
 import {
   Layers,
   Plus,
@@ -144,7 +144,7 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
       createdAt: new Date().toISOString(),
     };
 
-    dispatch(addStrategy(strategy));
+    dispatch(createStrategy(strategy, new Date().toISOString()));
     setNewStrategyName('');
     setNewStrategyDescription('');
     setIsCreating(false);
@@ -152,18 +152,18 @@ export const StrategyView: React.FC<StrategyViewProps> = ({ portfolioName, curre
 
   // Delete strategy
   const handleDeleteStrategy = (strategyId: string) => {
-    dispatch(deleteStrategy(strategyId));
+    dispatch(deleteStrategy(strategyId, new Date().toISOString()));
   };
 
   // Link position to strategy
   const handleLinkPosition = (strategyId: string, positionId: string) => {
-    dispatch(addPositionToStrategy({ strategyId, positionId }));
+    dispatch(linkPositionToStrategy(strategyId, positionId, new Date().toISOString()));
     setSelectedStrategyForLinking(null);
   };
 
   // Unlink position from strategy
   const handleUnlinkPosition = (strategyId: string, positionId: string) => {
-    dispatch(removePositionFromStrategy({ strategyId, positionId }));
+    dispatch(unlinkPositionFromStrategy(strategyId, positionId, new Date().toISOString()));
   };
 
   // Get position display info

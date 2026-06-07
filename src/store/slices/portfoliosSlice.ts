@@ -6,91 +6,51 @@ import type {
   PortfolioSummary,
   DailyPortfolioData,
   PortfolioTransaction,
+  Position,
 } from '../../types';
 import type { RootState } from '../index';
+import { appendEvents, replayEvents } from '../events/eventsSlice';
+import { applyPortfolioEvent } from '../events/projectPortfolios';
+import { applyTransactionEvent } from '../events/projectTransactions';
+import { applyPositionEvent } from '../events/projectPositions';
+import type { DomainEvent } from '../events/types';
 
 interface PortfoliosState {
   portfolios: Portfolio[];
   summaries: PortfolioSummary[];
-  dailyData: DailyPortfolioData[];
-  transactions: PortfolioTransaction[]; // Portfolio transacties per portfolio
+  transactions: PortfolioTransaction[];
 }
 
 const initialState: PortfoliosState = {
   portfolios: [],
   summaries: [],
-  dailyData: [],
   transactions: [],
 };
+
+/** Shared fold helper — mirrors tradesSlice's pattern exactly. */
+function fold(
+  state: PortfoliosState,
+  events: DomainEvent[],
+  positionsSeed: Position[]
+): void {
+  let positions = positionsSeed;
+  for (const event of events) {
+    state.portfolios = applyPortfolioEvent(state.portfolios, event);
+    // applyTransactionEvent needs positionsBefore (i.e. positions BEFORE this event)
+    state.transactions = applyTransactionEvent(state.transactions, event, positions);
+    positions = applyPositionEvent(positions, event);
+  }
+}
 
 const portfoliosSlice = createSlice({
   name: 'portfolios',
   initialState,
   reducers: {
-    setInitialState: (state, action: PayloadAction<Portfolio[]>) => {
-      state.portfolios = action.payload;
-    },
-    loadMockData: (
-      state,
-      action: PayloadAction<{
-        portfolios: Portfolio[];
-        summaries: PortfolioSummary[];
-        dailyData: DailyPortfolioData[];
-        transactions?: PortfolioTransaction[];
-      }>
-    ) => {
-      state.portfolios = action.payload.portfolios;
-      state.summaries = action.payload.summaries;
-      state.dailyData = action.payload.dailyData;
-      if (action.payload.transactions) {
-        state.transactions = action.payload.transactions;
+    updatePortfolioValue: (state, action: PayloadAction<{ portfolio: string; value: number }>) => {
+      const portfolio = state.portfolios.find((b) => b.name === action.payload.portfolio);
+      if (portfolio) {
+        portfolio.currentValue = action.payload.value;
       }
-    },
-    addPortfolio: (state, action: PayloadAction<Portfolio>) => {
-      state.portfolios.push(action.payload);
-    },
-    updatePortfolio: (state, action: PayloadAction<Portfolio & { oldName?: string }>) => {
-      const index = state.portfolios.findIndex((b) => b.id === action.payload.id);
-      if (index !== -1) {
-        const oldPortfolio = state.portfolios[index];
-        const oldName = action.payload.oldName || oldPortfolio.name;
-        const newName = action.payload.name;
-
-        // Update the portfolio
-        state.portfolios[index] = action.payload;
-
-        // If name changed, update all references in summaries, dailyData, and transactions
-        if (oldName !== newName) {
-          // Update summaries (ensure array exists)
-          if (state.summaries && Array.isArray(state.summaries)) {
-            state.summaries = state.summaries.map((summary) =>
-              summary.portfolio === oldName ? { ...summary, portfolio: newName } : summary
-            );
-          }
-
-          // Update dailyData (ensure array exists)
-          if (state.dailyData && Array.isArray(state.dailyData)) {
-            state.dailyData = state.dailyData.map((data) =>
-              data.portfolio === oldName ? { ...data, portfolio: newName } : data
-            );
-          }
-
-          // Update transactions (ensure array exists)
-          if (state.transactions && Array.isArray(state.transactions)) {
-            state.transactions = state.transactions.map((transaction) =>
-              transaction.portfolio === oldName
-                ? { ...transaction, portfolio: newName }
-                : transaction
-            );
-          }
-        }
-      }
-    },
-    deletePortfolio: (state, action: PayloadAction<string>) => {
-      state.portfolios = state.portfolios.filter((b) => b.id !== action.payload);
-    },
-    reorderPortfolios: (state, action: PayloadAction<Portfolio[]>) => {
-      state.portfolios = action.payload;
     },
     updatePortfolioSummary: (state, action: PayloadAction<PortfolioSummary>) => {
       const index = state.summaries.findIndex((b) => b.portfolio === action.payload.portfolio);
@@ -98,111 +58,27 @@ const portfoliosSlice = createSlice({
         state.summaries[index] = action.payload;
       }
     },
-    addDailyData: (state, action: PayloadAction<DailyPortfolioData>) => {
-      state.dailyData.push(action.payload);
-    },
-    updateDailyData: (state, action: PayloadAction<DailyPortfolioData>) => {
-      const index = state.dailyData.findIndex(
-        (d) => d.date === action.payload.date && d.portfolio === action.payload.portfolio
-      );
-      if (index !== -1) {
-        state.dailyData[index] = action.payload;
-      } else {
-        state.dailyData.push(action.payload);
-      }
-    },
-    loadDailyData: (state, action: PayloadAction<DailyPortfolioData[]>) => {
-      state.dailyData = action.payload;
-    },
-    // Portfolio Transaction Actions
-    addTransaction: (state, action: PayloadAction<PortfolioTransaction>) => {
-      // Initialize transactions array if it doesn't exist
-      if (!state.transactions) {
-        state.transactions = [];
-      }
-      state.transactions.push(action.payload);
-
-      // Update portfolio currentValue if transaction includes newValue
-      if (action.payload.newValue !== undefined) {
-        const portfolio = state.portfolios.find((b) => b.name === action.payload.portfolio);
-        if (portfolio) {
-          portfolio.currentValue = action.payload.newValue;
-        }
-
-        // Automatically add/update daily data entry for this transaction date
-        const transactionDate = action.payload.date;
-        const existingDailyDataIndex = state.dailyData.findIndex(
-          (d) => d.date === transactionDate && d.portfolio === action.payload.portfolio
-        );
-
-        // Calculate total transactions for this date
-        const transactionsOnDate = state.transactions.filter(
-          (t) => t.portfolio === action.payload.portfolio && t.date === transactionDate
-        );
-
-        // Sum up all transaction amounts for dailyPnL
-        const dailyPnL = transactionsOnDate.reduce((sum, t) => sum + t.amount, 0);
-
-        // Create or update daily data entry
-        const dailyDataEntry: DailyPortfolioData = {
-          date: transactionDate,
-          portfolio: action.payload.portfolio,
-          totalValue: action.payload.newValue,
-          cash: portfolio?.currentValue || 0, // For now, use currentValue as cash (can be refined later)
-          dailyPnL,
-          weeklyPnL: 0, // Can be calculated later
-        };
-
-        if (existingDailyDataIndex !== -1) {
-          state.dailyData[existingDailyDataIndex] = dailyDataEntry;
-        } else {
-          state.dailyData.push(dailyDataEntry);
-        }
-      }
-    },
-    updateTransaction: (state, action: PayloadAction<PortfolioTransaction>) => {
-      const index = state.transactions.findIndex((t) => t.id === action.payload.id);
-      if (index !== -1) {
-        state.transactions[index] = action.payload;
-      }
-    },
-    deleteTransaction: (state, action: PayloadAction<string>) => {
-      state.transactions = state.transactions.filter((t) => t.id !== action.payload);
-    },
-    updatePortfolioValue: (state, action: PayloadAction<{ portfolio: string; value: number }>) => {
-      const portfolio = state.portfolios.find((b) => b.name === action.payload.portfolio);
-      if (portfolio) {
-        portfolio.currentValue = action.payload.value;
-      }
-    },
     // NOTE: Ticker management lives entirely in tickersSlice (single source of truth).
     // The legacy ticker reducers/selectors that used to live here were removed; see
     // tickerMigration.ts for the one-time migration of older persisted data.
-    resetPortfoliosState: () => initialState,
+  },
+  extraReducers: (builder) => {
+    builder.addCase(appendEvents, (state, action) => {
+      fold(state, action.payload.events, action.payload.positionsBefore);
+    });
+    builder.addCase(replayEvents, (state, action) => {
+      state.portfolios = [];
+      state.transactions = [];
+      // summaries are derived — cleared and recomputed by selectPortfolioSummaries
+      fold(state, action.payload, []);
+    });
   },
 });
 
-export const {
-  setInitialState,
-  loadMockData,
-  addPortfolio,
-  updatePortfolio,
-  deletePortfolio,
-  reorderPortfolios,
-  updatePortfolioSummary,
-  addDailyData,
-  updateDailyData,
-  loadDailyData,
-  addTransaction,
-  updateTransaction,
-  deleteTransaction,
-  updatePortfolioValue,
-  resetPortfoliosState,
-} = portfoliosSlice.actions;
+export const { updatePortfolioValue, updatePortfolioSummary } = portfoliosSlice.actions;
 
 // Base Selectors
 export const selectPortfolios = (state: RootState) => state.portfolios.portfolios;
-export const selectDailyData = (state: RootState) => state.portfolios.dailyData;
 export const selectTransactions = (state: RootState) => state.portfolios.transactions;
 
 // Memoized selector for transactions by portfolio
@@ -211,12 +87,100 @@ export const selectTransactionsByPortfolio = createSelector(
   (transactions, portfolioName) => (transactions || []).filter((t) => t.portfolio === portfolioName)
 );
 
-// Memoized selector to calculate portfolio summaries
-// IMPORTANT: portfolio.currentValue is the single source of truth for current portfolio value
-// dailyData is only used for historical tracking and weekly returns
+/**
+ * Derives a realized equity time-series (DailyPortfolioData[]) from the transaction ledger.
+ *
+ * For each portfolio:
+ * - Sort transactions by date ascending.
+ * - Walk them applying the cash rule: withdrawal subtracts, every other type adds the signed amount.
+ * - Emit one point per (portfolio, date) after all same-date transactions are processed.
+ * - Append a final point whose totalValue is portfolio.currentValue (live mark-to-market), dated at
+ *   the latest transaction date. If there are no transactions, emit a single bootstrap point.
+ *
+ * "Today" is intentionally derived from transaction dates — never from Date.now() — so the selector
+ * stays pure and its output is deterministic for a given store state.
+ */
+export const selectEquitySeries = createSelector(
+  [selectPortfolios, selectTransactions],
+  (portfolios, transactions): DailyPortfolioData[] => {
+    const points: DailyPortfolioData[] = [];
+
+    for (const portfolio of portfolios) {
+      const ptxns = [...(transactions || []).filter((t) => t.portfolio === portfolio.name)].sort(
+        (a, b) => a.date.localeCompare(b.date)
+      );
+
+      if (ptxns.length === 0) {
+        // No transactions yet — emit a single bootstrap point.
+        const bootstrapDate = portfolio.startDate ?? '';
+        points.push({
+          date: bootstrapDate,
+          portfolio: portfolio.name,
+          totalValue: portfolio.currentValue,
+          cash: portfolio.initialCapital,
+          dailyPnL: 0,
+          weeklyPnL: 0,
+        });
+        continue;
+      }
+
+      // Walk transactions, grouping by date.
+      let runningCash = portfolio.initialCapital;
+      let prevCash = portfolio.initialCapital;
+
+      for (let i = 0; i < ptxns.length; i++) {
+        const txn = ptxns[i];
+
+        // Apply the cash rule — mirrors positionValueMiddleware exactly.
+        if (txn.type === 'withdrawal') {
+          runningCash -= txn.amount;
+        } else {
+          // deposit / dividend / position_sell / premium_collected are positive;
+          // position_buy / premium_paid / fee / adjustment / option_roll carry their own sign.
+          runningCash += txn.amount;
+        }
+
+        // Detect date boundary: flush when date changes or at the end of the list.
+        const isLast = i === ptxns.length - 1;
+        const nextDate = isLast ? null : ptxns[i + 1].date;
+
+        if (isLast || nextDate !== txn.date) {
+          points.push({
+            date: txn.date,
+            portfolio: portfolio.name,
+            totalValue: runningCash,
+            cash: runningCash,
+            dailyPnL: runningCash - prevCash,
+            weeklyPnL: 0,
+          });
+          prevCash = runningCash;
+        }
+      }
+
+      // Final "live" point: replace the last emitted point's totalValue with portfolio.currentValue
+      // so the curve ends at the true mark-to-market value. The date stays at the last transaction
+      // date — we never call Date.now() inside a selector.
+      const portfolioPoints = points.filter((p) => p.portfolio === portfolio.name);
+      const lastPoint = portfolioPoints[portfolioPoints.length - 1];
+      if (lastPoint) {
+        // Compute the second-to-last totalValue for the live dailyPnL.
+        const prevPoint = portfolioPoints[portfolioPoints.length - 2];
+        const prevValue = prevPoint?.totalValue ?? portfolio.initialCapital;
+        lastPoint.totalValue = portfolio.currentValue;
+        lastPoint.dailyPnL = portfolio.currentValue - prevValue;
+      }
+    }
+
+    return points;
+  }
+);
+
+// Memoized selector to calculate portfolio summaries.
+// IMPORTANT: portfolio.currentValue is the single source of truth for current portfolio value.
+// Weekly/yearly returns are derived from selectEquitySeries.
 export const selectPortfolioSummaries = createSelector(
-  [selectPortfolios, selectDailyData, (state: RootState) => state.positions.positions],
-  (portfolios, dailyData, positions): PortfolioSummary[] => {
+  [selectPortfolios, selectEquitySeries, (state: RootState) => state.positions.positions],
+  (portfolios, equitySeries, positions): PortfolioSummary[] => {
     return portfolios.map((portfolio) => {
       // SINGLE SOURCE OF TRUTH: portfolio.currentValue
       const totalValue = portfolio.currentValue || 0;
@@ -284,28 +248,33 @@ export const selectPortfolioSummaries = createSelector(
       // This follows the formula: Portfolio Value = Cash + Long - Short
       const cash = Math.max(0, totalValue - longValue + shortValue);
 
-      // Get weekly return from latest daily data if available
-      const portfolioData = dailyData.filter((d) => d.portfolio === portfolio.name);
+      // Derive weekly/yearly returns from the equity series for this portfolio.
+      const portfolioSeries = equitySeries
+        .filter((d) => d.portfolio === portfolio.name)
+        .sort((a, b) => a.date.localeCompare(b.date));
+
       let weeklyReturn = 0;
       let yearlyReturn = 0;
 
-      if (portfolioData.length > 0) {
-        // Sort by date descending
-        const sortedData = [...portfolioData].sort(
-          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-        );
-        const latestData = sortedData[0];
-        weeklyReturn = latestData.weeklyPnL || 0;
+      if (portfolioSeries.length >= 2) {
+        // Anchor the lookback to the series' latest point date (not the wall clock):
+        // keeps this memoized selector pure/stable and matches the realized-series design
+        // where everything is keyed off ledger dates.
+        const latestMs = new Date(portfolioSeries[portfolioSeries.length - 1].date).getTime();
+        const DAY = 24 * 60 * 60 * 1000;
 
-        // Calculate yearly return from historical data
-        // Find data from approximately 1 year ago
-        const oneYearAgo = new Date();
-        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+        // Weekly: value ~7 days back vs the current (live) value.
+        const oneWeekAgoIso = new Date(latestMs - 7 * DAY).toISOString().slice(0, 10);
+        const weekAgoPoint = [...portfolioSeries].reverse().find((d) => d.date <= oneWeekAgoIso);
+        if (weekAgoPoint && weekAgoPoint.totalValue > 0) {
+          weeklyReturn = ((totalValue - weekAgoPoint.totalValue) / weekAgoPoint.totalValue) * 100;
+        }
 
-        const yearAgoData = sortedData.find((d) => new Date(d.date) <= oneYearAgo);
-
-        if (yearAgoData && yearAgoData.totalValue > 0) {
-          yearlyReturn = ((totalValue - yearAgoData.totalValue) / yearAgoData.totalValue) * 100;
+        // Yearly: value ~1 year back vs the current (live) value.
+        const oneYearAgoIso = new Date(latestMs - 365 * DAY).toISOString().slice(0, 10);
+        const yearAgoPoint = [...portfolioSeries].reverse().find((d) => d.date <= oneYearAgoIso);
+        if (yearAgoPoint && yearAgoPoint.totalValue > 0) {
+          yearlyReturn = ((totalValue - yearAgoPoint.totalValue) / yearAgoPoint.totalValue) * 100;
         }
       }
 
@@ -333,10 +302,6 @@ export const selectPortfolioSummaryByName = (portfolioName: string) => (state: R
   const summaries = selectPortfolioSummaries(state);
   return summaries.find((s) => s.portfolio === portfolioName);
 };
-
-// Selector for daily data by portfolio
-export const selectDailyDataByPortfolio = (portfolioName: string) => (state: RootState) =>
-  state.portfolios.dailyData.filter((d) => d.portfolio === portfolioName);
 
 // Centralized selector for portfolio value breakdown
 // This calculates long value, short value, and cash for a portfolio

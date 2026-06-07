@@ -6,6 +6,7 @@ import { createAppStore } from './store';
 import { ToastProvider } from './contexts/ToastContext';
 import { initializeWebSocketService } from './services/priceWebSocketService';
 import { initializeIBWebSocketService } from './services/ibWebSocketService';
+import { bootstrapFromEventStore } from './store/events/bootstrap';
 import './i18n/config'; // Initialize i18n
 import { getSavedTheme, applyTheme } from './constants/themes';
 import './index.css';
@@ -26,20 +27,27 @@ const getCurrentUsername = (): string | undefined => {
 };
 
 const username = getCurrentUsername();
-const { store, persistor } = createAppStore(username);
+const { store, persistor, eventStore } = createAppStore(username);
 
 // Initialize WebSocket services with store reference
 initializeWebSocketService(store);
 initializeIBWebSocketService(store);
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <ToastProvider>
-          <App />
-        </ToastProvider>
-      </PersistGate>
-    </Provider>
-  </StrictMode>
-);
+async function bootstrap() {
+  // Rebuild financial projections from the persisted event log before render.
+  await bootstrapFromEventStore(store, eventStore);
+
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <ToastProvider>
+            <App />
+          </ToastProvider>
+        </PersistGate>
+      </Provider>
+    </StrictMode>
+  );
+}
+
+void bootstrap();

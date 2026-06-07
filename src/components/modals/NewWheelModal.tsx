@@ -3,9 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { X, RefreshCw, Info, ArrowLeft, TrendingUp, Building2, Plus } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
-import { addWheel } from '../../store/slices/wheelsSlice';
-import { addPosition, selectPositions, updatePosition } from '../../store/slices/positionsSlice';
-import { ensureTicker } from '../../store/slices/tickersSlice';
+import { startWheelCampaign } from '../../store/commands/wheelCommands';
+import { selectPositions } from '../../store/slices/positionsSlice';
+import { openPosition, editPosition } from '../../store/commands/positionCommands';
+import { ensureTicker } from '../../store/commands/tickerCommands';
 import { TickerSelector } from '../widgets/TickerSelector';
 import type {
   Ticker,
@@ -114,7 +115,7 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({ isOpen, onClose, p
       createdAt: new Date().toISOString(),
     };
 
-    dispatch(addWheel(newWheel));
+    dispatch(startWheelCampaign(newWheel, new Date().toISOString()));
 
     // Handle different start options
     if (startOption === 'new-stock' && stockPurchasePrice) {
@@ -141,16 +142,16 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({ isOpen, onClose, p
         wheelId,
       };
 
-      dispatch(addPosition(stockPosition));
+      dispatch(openPosition(stockPosition, new Date().toISOString()));
     } else if (startOption === 'existing-stock' && selectedPositionId) {
       // Link existing stock to wheel
       const stock = existingPositions.stocks.find((p) => p.id === selectedPositionId);
       if (stock) {
         dispatch(
-          updatePosition({
+          editPosition({
             ...stock,
             wheelId,
-          } as Position)
+          } as Position, new Date().toISOString())
         );
       }
     } else if (startOption === 'existing-csp' && selectedPositionId) {
@@ -158,10 +159,10 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({ isOpen, onClose, p
       const csp = existingPositions.csps.find((p) => p.id === selectedPositionId);
       if (csp) {
         dispatch(
-          updatePosition({
+          editPosition({
             ...csp,
             wheelId,
-          } as Position)
+          } as Position, new Date().toISOString())
         );
       }
     }
@@ -213,7 +214,7 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({ isOpen, onClose, p
       lastUsed: new Date().toISOString(),
     };
 
-    dispatch(ensureTicker(newTicker));
+    dispatch(ensureTicker(newTicker, new Date().toISOString()));
     setSelectedTicker(newTicker);
     setIsCreatingTicker(false);
     setNewTickerData({

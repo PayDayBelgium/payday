@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
-import { selectActiveTodos, addTodo, toggleTodo } from '../../store/slices/todosSlice';
+import { selectActiveTodos } from '../../store/slices/todosSlice';
+import { addTodo, toggleTodo } from '../../store/commands/todoCommands';
+import { uuid } from '../../utils/uuid';
 import { Circle, Plus } from 'lucide-react';
 
 const TodoListWidget: React.FC = () => {
@@ -14,13 +16,19 @@ const TodoListWidget: React.FC = () => {
   const handleAddTodo = (e: React.FormEvent) => {
     e.preventDefault();
     if (newTodoText.trim()) {
-      dispatch(addTodo(newTodoText.trim()));
+      const now = new Date().toISOString();
+      dispatch(
+        addTodo(
+          { id: uuid(), text: newTodoText.trim(), completed: false, createdAt: now },
+          now
+        )
+      );
       setNewTodoText('');
     }
   };
 
   const handleToggleTodo = (id: string) => {
-    dispatch(toggleTodo(id));
+    dispatch(toggleTodo(id, new Date().toISOString()));
   };
 
   return (

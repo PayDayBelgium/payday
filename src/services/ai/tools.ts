@@ -8,13 +8,15 @@ import type {
   CallOption,
   PutOption,
   Ticker,
-  PortfolioTransaction,
+
   CurrencyType,
   UserLevel,
 } from '../../types';
-import { addPortfolio, addTransaction } from '../../store/slices/portfoliosSlice';
-import { addPosition } from '../../store/slices/positionsSlice';
-import { addTicker, updateTickerPrice } from '../../store/slices/tickersSlice';
+import { openPosition } from '../../store/commands/positionCommands';
+import { createPortfolio as createPortfolioCmd } from '../../store/commands/portfolioCommands';
+import { deposit as depositCmd } from '../../store/commands/cashCommands';
+import { updateTickerPrice } from '../../store/slices/tickersSlice';
+import { addTicker as addTickerCommand } from '../../store/commands/tickerCommands';
 import { selectPortfolios } from '../../store/slices/portfoliosSlice';
 import { selectAllTickers } from '../../store/slices/tickersSlice';
 import { selectUnlockedLevels, isFeatureAvailable } from '../../store/slices/userProgressSlice';
@@ -276,32 +278,30 @@ export const executeReadTool = (name: string, getState: () => RootState): string
 let seq = 0;
 const uid = (prefix: string): string => `${prefix}-${Date.now()}-${++seq}`;
 
-const portfolioCurrentValue = (getState: () => RootState, name: string): number =>
-  selectPortfolios(getState()).find((p) => p.name === name)?.currentValue ?? 0;
 
-const ensureTicker = (
+const ensureTickerInStore = (
   getState: () => RootState,
   dispatch: AppDispatch,
   symbol: string,
   name: string,
   type: 'stock' | 'etf',
-  price?: number
+  _price?: number
 ): void => {
   const exists = selectAllTickers(getState()).some(
     (t) => t.symbol.toUpperCase() === symbol.toUpperCase()
   );
   if (exists) return;
+  const ts = new Date().toISOString();
   const ticker: Ticker = {
     symbol,
     name: name || symbol,
     type,
     optionsAvailable: true,
     miniContractsAvailable: false,
-    lastUsed: new Date().toISOString(),
-    currentPrice: price,
-    createdAt: new Date().toISOString(),
+    lastUsed: ts,
+    createdAt: ts,
   };
-  dispatch(addTicker(ticker));
+  dispatch(addTickerCommand(ticker, ts));
 };
 
 // Current value of a position (for the total-deposit calculation).
@@ -316,9 +316,10 @@ const positionValue = (c: ProposedChange): number => {
 
 const createPortfolio = (
   c: Extract<ProposedChange, { kind: 'portfolio' }>,
-  deposit: number,
+  depositAmount: number,
   dispatch: AppDispatch
 ): void => {
+  const ts = new Date().toISOString();
   const portfolio: Portfolio = {
     id: uid('pf'),
     name: c.name,
@@ -329,24 +330,23 @@ const createPortfolio = (
     strategies: [],
     currency: c.currency,
     startDate: today(),
-    initialCapital: deposit,
-    currentValue: deposit,
+    initialCapital: depositAmount,
+    currentValue: depositAmount,
   };
-  dispatch(addPortfolio(portfolio));
-  // Total deposit over time = available cash + value of the positions.
-  if (deposit > 0) {
-    const txn: PortfolioTransaction = {
-      id: uid('txn'),
-      portfolio: c.name,
-      date: today(),
-      type: 'deposit',
-      amount: deposit,
-      description: 'Initiële storting',
-      previousValue: 0,
-      newValue: deposit,
-      createdAt: new Date().toISOString(),
-    };
-    dispatch(addTransaction(txn));
+  dispatch(createPortfolioCmd(portfolio, ts));
+  // Transaction ledger line derived from the CashDeposited event by the transaction projection.
+  if (depositAmount > 0) {
+    dispatch(
+      depositCmd(
+        {
+          portfolio: c.name,
+          amount: depositAmount,
+          date: today(),
+          description: 'Initiële storting',
+        },
+        ts
+      )
+    );
   }
 };
 
@@ -356,7 +356,7 @@ const applyStock = (
   dispatch: AppDispatch
 ): void => {
   const price = c.currentPrice ?? c.purchasePrice;
-  ensureTicker(getState, dispatch, c.ticker, c.name, c.assetType, price);
+  ensureTickerInStore(getState, dispatch, c.ticker, c.name, c.assetType, price);
   // Update the current price on the ticker (even if the ticker already existed),
   // since the current value of stock positions comes from the ticker price.
   if (c.currentPrice !== undefined) {
@@ -379,21 +379,8 @@ const applyStock = (
     optionsSupported: true,
     miniContractsSupported: false,
   };
-  dispatch(addPosition(position));
-  const prev = portfolioCurrentValue(getState, c.portfolio);
-  const txn: PortfolioTransaction = {
-    id: uid('txn'),
-    portfolio: c.portfolio,
-    date: c.openDate,
-    type: 'position_buy',
-    amount: -costBasis,
-    description: `Gekocht ${c.shares} ${c.ticker} @ ${c.purchasePrice}`,
-    relatedPositionId: position.id,
-    previousValue: prev,
-    newValue: prev,
-    createdAt: new Date().toISOString(),
-  };
-  dispatch(addTransaction(txn));
+  dispatch(openPosition(position, new Date().toISOString()));
+  // Transaction ledger line (position_buy) derived from PositionOpened event by the transaction projection.
 };
 
 const applyOption = (
@@ -402,7 +389,7 @@ const applyOption = (
   dispatch: AppDispatch
 ): void => {
   // Create the underlying ticker if needed (asking for the name is done by the agent).
-  ensureTicker(getState, dispatch, c.ticker, c.tickerName ?? c.ticker, 'stock');
+  ensureTickerInStore(getState, dispatch, c.ticker, c.tickerName ?? c.ticker, 'stock');
   const openTotal = c.premium * c.contracts * 100;
   const costBasis = c.action === 'buy' ? openTotal : -openTotal;
   // Current premium (last price) determines the current value; falls back to the open premium.
@@ -434,21 +421,8 @@ const applyOption = (
           ...base,
           cashReserved: c.action === 'sell' ? c.strike * c.contracts * 100 : undefined,
         };
-  dispatch(addPosition(position));
-  const prev = portfolioCurrentValue(getState, c.portfolio);
-  const txn: PortfolioTransaction = {
-    id: uid('txn'),
-    portfolio: c.portfolio,
-    date: c.openDate,
-    type: c.action === 'buy' ? 'premium_paid' : 'premium_collected',
-    amount: c.action === 'buy' ? -openTotal : openTotal,
-    description: `${c.action === 'buy' ? 'Long' : 'Short'} ${c.optionType.toUpperCase()} ${c.ticker} ${c.strike} ×${c.contracts}`,
-    relatedPositionId: position.id,
-    previousValue: prev,
-    newValue: prev,
-    createdAt: new Date().toISOString(),
-  };
-  dispatch(addTransaction(txn));
+  dispatch(openPosition(position, new Date().toISOString()));
+  // Transaction ledger line (premium_paid / premium_collected) derived from PositionOpened event by the transaction projection.
 };
 
 // Level gating for AI proposals: an option proposal may only be applied

@@ -5,7 +5,6 @@ import type {
   StockPosition,
   CreditSpread,
   PortfolioSummary,
-  DailyPortfolioData,
   PositionAlert,
   Portfolio,
 } from '../types';
@@ -204,42 +203,6 @@ export const mockPortfolioSummaries: PortfolioSummary[] = [
     yearlyReturn: 0.08,
     positionCount: 3,
     activeStrategies: ['KaChing'],
-  },
-];
-
-export const mockDailyData: DailyPortfolioData[] = [
-  {
-    date: '2024-11-11',
-    portfolio: 'Lynx',
-    totalValue: 172073,
-    dailyPnL: 850,
-    weeklyPnL: 5600,
-    uncoveredPositions: 1,
-    cash: 50000,
-  },
-  {
-    date: '2024-11-11',
-    portfolio: 'FreeStoxx',
-    totalValue: 207500,
-    dailyPnL: 1200,
-    weeklyPnL: 8300,
-    cash: 75000,
-  },
-  {
-    date: '2024-11-11',
-    portfolio: 'DeGiro',
-    totalValue: 62887,
-    dailyPnL: 320,
-    weeklyPnL: 950,
-    cash: 15000,
-  },
-  {
-    date: '2024-11-11',
-    portfolio: 'SAXO',
-    totalValue: 5049,
-    dailyPnL: 12,
-    weeklyPnL: 4,
-    cash: 1000,
   },
 ];
 

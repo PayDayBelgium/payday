@@ -1,6 +1,6 @@
 import type { Middleware } from '@reduxjs/toolkit';
 import type { RootState } from '../index';
-import { updatePosition, addPriceAlert } from '../slices/positionsSlice';
+import { updatePositionLivePrice, addPriceAlert } from '../slices/positionsSlice';
 import { addAlert } from '../slices/alertsSlice';
 import type {
   Position,
@@ -12,19 +12,15 @@ import type {
 } from '../../types';
 import { formatNumber } from '../../utils/numberFormat';
 
-// Helper to check if action is a ticker price update
+// Helper to check if action is a ticker price update. Ticker identity/metadata is
+// now event-sourced; live prices flow only through the runtime `updateTickerPrice`.
 const isTickerPriceUpdate = (action: any): boolean => {
-  return action.type === 'tickers/updateTicker' || action.type === 'tickers/updateTickerPrice';
+  return action.type === 'tickers/updateTickerPrice';
 };
 
 // Helper to get updated ticker info from action
 const getTickerUpdateInfo = (action: any): { symbol: string; price: number } | null => {
-  if (action.type === 'tickers/updateTicker') {
-    const ticker = action.payload;
-    if (ticker.currentPrice !== undefined) {
-      return { symbol: ticker.symbol, price: ticker.currentPrice };
-    }
-  } else if (action.type === 'tickers/updateTickerPrice') {
+  if (action.type === 'tickers/updateTickerPrice') {
     return { symbol: action.payload.symbol, price: action.payload.price };
   }
   return null;
@@ -99,8 +95,8 @@ export const tickerPriceMiddleware: Middleware = (store) => (next) => (action) =
 
       // Update position with new current value and price
       store.dispatch(
-        updatePosition({
-          ...stockPosition,
+        updatePositionLivePrice({
+          id: stockPosition.id,
           currentPrice: newPrice,
           currentValue: newCurrentValue,
         })
@@ -192,7 +188,7 @@ export const tickerPriceMiddleware: Middleware = (store) => (next) => (action) =
   });
 
   // Note: Portfolio value updates are handled by positionValueMiddleware
-  // when updatePosition is dispatched above
+  // when updatePositionLivePrice is dispatched above
 
   return result;
 };

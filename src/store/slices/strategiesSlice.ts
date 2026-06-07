@@ -2,11 +2,14 @@ import { createSlice, createSelector } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { TradingStrategy, PortfolioName, StrategyRule, StrategyType } from '../../types';
 import type { RootState } from '../index';
+import { applyStrategiesEvent } from '../events/projectStrategies';
+import { appendEvents, replayEvents } from '../events/eventsSlice';
+import type { DomainEvent } from '../events/types';
 
 interface StrategiesState {
   strategies: TradingStrategy[];
   strategyRules: StrategyRule[];
-  dismissedAlerts: string[]; // IDs of dismissed strategy alerts
+  dismissedAlerts: string[]; // IDs of dismissed strategy alerts (UI-ephemeral, not event-sourced)
 }
 
 const initialState: StrategiesState = {
@@ -19,134 +22,77 @@ const strategiesSlice = createSlice({
   name: 'strategies',
   initialState,
   reducers: {
-    // Add a new strategy
-    addStrategy: (state, action: PayloadAction<TradingStrategy>) => {
-      state.strategies.push(action.payload);
-    },
+    // All strategy / strategyRule intent reducers (addStrategy, updateStrategy,
+    // deleteStrategy, addPositionToStrategy, removePositionFromStrategy,
+    // setStrategyPositions, clearPortfolioStrategies, addStrategyRule,
+    // updateStrategyRule, deleteStrategyRule, toggleStrategyRule) have been
+    // replaced by event-sourced commands in src/store/commands/strategyCommands.ts.
 
-    // Update an existing strategy
-    updateStrategy: (state, action: PayloadAction<TradingStrategy>) => {
-      const index = state.strategies.findIndex((s) => s.id === action.payload.id);
-      if (index !== -1) {
-        state.strategies[index] = {
-          ...action.payload,
-          updatedAt: new Date().toISOString(),
-        };
-      }
-    },
-
-    // Delete a strategy
-    deleteStrategy: (state, action: PayloadAction<string>) => {
-      state.strategies = state.strategies.filter((s) => s.id !== action.payload);
-    },
-
-    // Add a position to a strategy
-    addPositionToStrategy: (
-      state,
-      action: PayloadAction<{ strategyId: string; positionId: string }>
-    ) => {
-      const strategy = state.strategies.find((s) => s.id === action.payload.strategyId);
-      if (strategy && !strategy.positionIds.includes(action.payload.positionId)) {
-        strategy.positionIds.push(action.payload.positionId);
-        strategy.updatedAt = new Date().toISOString();
-      }
-    },
-
-    // Remove a position from a strategy
-    removePositionFromStrategy: (
-      state,
-      action: PayloadAction<{ strategyId: string; positionId: string }>
-    ) => {
-      const strategy = state.strategies.find((s) => s.id === action.payload.strategyId);
-      if (strategy) {
-        strategy.positionIds = strategy.positionIds.filter(
-          (id) => id !== action.payload.positionId
-        );
-        strategy.updatedAt = new Date().toISOString();
-      }
-    },
-
-    // Set all positions for a strategy
-    setStrategyPositions: (
-      state,
-      action: PayloadAction<{ strategyId: string; positionIds: string[] }>
-    ) => {
-      const strategy = state.strategies.find((s) => s.id === action.payload.strategyId);
-      if (strategy) {
-        strategy.positionIds = action.payload.positionIds;
-        strategy.updatedAt = new Date().toISOString();
-      }
-    },
-
-    // Load all strategies (for initialization)
+    /**
+     * Runtime-only: load strategies from a backup restore.
+     * Deferred until the backup/restore path is fully event-sourced.
+     * Kept as a harmless runtime reducer so backupActions.ts continues to work.
+     */
     loadStrategies: (state, action: PayloadAction<TradingStrategy[]>) => {
       state.strategies = action.payload;
     },
 
-    // Clear all strategies for a portfolio
-    clearPortfolioStrategies: (state, action: PayloadAction<PortfolioName>) => {
-      state.strategies = state.strategies.filter((s) => s.portfolio !== action.payload);
-    },
-
-    // Strategy Rules actions
-    addStrategyRule: (state, action: PayloadAction<StrategyRule>) => {
-      state.strategyRules.push(action.payload);
-    },
-
-    updateStrategyRule: (state, action: PayloadAction<StrategyRule>) => {
-      const index = state.strategyRules.findIndex((r) => r.id === action.payload.id);
-      if (index !== -1) {
-        state.strategyRules[index] = action.payload;
-      }
-    },
-
-    deleteStrategyRule: (state, action: PayloadAction<string>) => {
-      state.strategyRules = state.strategyRules.filter((r) => r.id !== action.payload);
-    },
-
-    toggleStrategyRule: (state, action: PayloadAction<string>) => {
-      const rule = state.strategyRules.find((r) => r.id === action.payload);
-      if (rule) {
-        rule.enabled = !rule.enabled;
-      }
-    },
-
+    /**
+     * Runtime-only: load strategy rules from a backup restore.
+     * Deferred until the backup/restore path is fully event-sourced.
+     * Kept as a harmless runtime reducer so backupActions.ts continues to work.
+     */
     loadStrategyRules: (state, action: PayloadAction<StrategyRule[]>) => {
       state.strategyRules = action.payload;
     },
 
-    // Dismissed alerts actions
+    /**
+     * Runtime-only: dismiss a strategy alert by ID.
+     * dismissedAlerts is UI-ephemeral — it is not event-sourced because alert
+     * dismissals are transient UI state that should reset on reload (acceptable).
+     */
     dismissStrategyAlert: (state, action: PayloadAction<string>) => {
       if (!state.dismissedAlerts.includes(action.payload)) {
         state.dismissedAlerts.push(action.payload);
       }
     },
 
+    /** Runtime-only: clear all dismissed alerts. */
     clearDismissedAlerts: (state) => {
       state.dismissedAlerts = [];
     },
 
-    // Clear dismissed alerts for a specific portfolio
+    /** Runtime-only: clear dismissed alerts for a specific portfolio. */
     clearPortfolioDismissedAlerts: (state, action: PayloadAction<string>) => {
       // Remove alerts that contain the portfolio name in their ID
       state.dismissedAlerts = state.dismissedAlerts.filter((id) => !id.includes(action.payload));
     },
   },
+  extraReducers: (builder) => {
+    const fold = (state: StrategiesState, events: DomainEvent[]) => {
+      let next = { strategies: state.strategies, strategyRules: state.strategyRules };
+      for (const event of events) {
+        next = applyStrategiesEvent(next, event);
+      }
+      state.strategies = next.strategies;
+      state.strategyRules = next.strategyRules;
+      // dismissedAlerts is left untouched on append — it is runtime-only state.
+    };
+    builder.addCase(appendEvents, (state, action) => fold(state, action.payload.events));
+    builder.addCase(replayEvents, (state, action) => {
+      // On cold-boot replay: reset both projected arrays and dismissedAlerts
+      // (dismissedAlerts is not persisted after removing 'strategies' from the
+      // whitelist, so an empty reset is the correct starting point anyway).
+      state.strategies = [];
+      state.strategyRules = [];
+      state.dismissedAlerts = [];
+      fold(state, action.payload);
+    });
+  },
 });
 
 export const {
-  addStrategy,
-  updateStrategy,
-  deleteStrategy,
-  addPositionToStrategy,
-  removePositionFromStrategy,
-  setStrategyPositions,
   loadStrategies,
-  clearPortfolioStrategies,
-  addStrategyRule,
-  updateStrategyRule,
-  deleteStrategyRule,
-  toggleStrategyRule,
   loadStrategyRules,
   dismissStrategyAlert,
   clearDismissedAlerts,

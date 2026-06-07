@@ -1,6 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
+import type { RootState } from '../index';
 import type { TradingRule } from '../../types';
+import { applyRuleEvent } from '../events/projectRules';
+import { appendEvents, replayEvents } from '../events/eventsSlice';
+import type { DomainEvent } from '../events/types';
 
 interface RulesState {
   rules: TradingRule[];
@@ -42,28 +45,26 @@ const initialState: RulesState = {
 const rulesSlice = createSlice({
   name: 'rules',
   initialState,
-  reducers: {
-    addRule: (state, action: PayloadAction<TradingRule>) => {
-      state.rules.push(action.payload);
-    },
-    updateRule: (state, action: PayloadAction<TradingRule>) => {
-      const index = state.rules.findIndex((r) => r.id === action.payload.id);
-      if (index !== -1) {
-        state.rules[index] = action.payload;
+  // All user-intent reducers (addRule, updateRule, removeRule, toggleRule)
+  // have been replaced by event-sourced commands in src/store/commands/ruleCommands.ts.
+  reducers: {},
+  extraReducers: (builder) => {
+    const fold = (state: RulesState, events: DomainEvent[]) => {
+      for (const event of events) {
+        state.rules = applyRuleEvent(state.rules, event);
       }
-    },
-    removeRule: (state, action: PayloadAction<string>) => {
-      state.rules = state.rules.filter((r) => r.id !== action.payload);
-    },
-    toggleRule: (state, action: PayloadAction<string>) => {
-      const rule = state.rules.find((r) => r.id === action.payload);
-      if (rule) {
-        rule.enabled = !rule.enabled;
-      }
-    },
+    };
+    builder.addCase(appendEvents, (state, action) => fold(state, action.payload.events));
+    builder.addCase(replayEvents, (state, action) => {
+      state.rules = [];
+      fold(state, action.payload);
+    });
   },
 });
 
-export const { addRule, updateRule, removeRule, toggleRule } = rulesSlice.actions;
+// Selectors
+export const selectRules = (state: RootState) => state.rules.rules;
+export const selectEnabledRules = (state: RootState) =>
+  state.rules.rules.filter((r) => r.enabled);
 
 export default rulesSlice.reducer;

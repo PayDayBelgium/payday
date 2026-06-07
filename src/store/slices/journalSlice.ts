@@ -2,6 +2,9 @@ import { createSlice, createSelector } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { JournalEntry, JournalGoal } from '../../types';
 import type { RootState } from '../index';
+import { applyJournalEvent } from '../events/projectJournal';
+import { appendEvents, replayEvents } from '../events/eventsSlice';
+import type { DomainEvent } from '../events/types';
 
 interface JournalState {
   entries: JournalEntry[];
@@ -17,43 +20,18 @@ const journalSlice = createSlice({
   name: 'journal',
   initialState,
   reducers: {
-    // Entry actions
-    addEntry: (state, action: PayloadAction<JournalEntry>) => {
-      state.entries.unshift(action.payload);
-    },
-    updateEntry: (state, action: PayloadAction<JournalEntry>) => {
-      const index = state.entries.findIndex((e) => e.id === action.payload.id);
-      if (index !== -1) {
-        state.entries[index] = {
-          ...action.payload,
-          updatedAt: new Date().toISOString(),
-        };
-      }
-    },
-    deleteEntry: (state, action: PayloadAction<string>) => {
-      state.entries = state.entries.filter((e) => e.id !== action.payload);
-    },
+    // All user-intent reducers (addEntry, updateEntry, deleteEntry, addGoal,
+    // updateGoal, deleteGoal, completeGoal) have been replaced by event-sourced
+    // commands in src/store/commands/journalCommands.ts.
 
-    // Goal actions
-    addGoal: (state, action: PayloadAction<JournalGoal>) => {
-      state.goals.push(action.payload);
-    },
-    updateGoal: (state, action: PayloadAction<JournalGoal>) => {
-      const index = state.goals.findIndex((g) => g.id === action.payload.id);
-      if (index !== -1) {
-        state.goals[index] = action.payload;
-      }
-    },
-    deleteGoal: (state, action: PayloadAction<string>) => {
-      state.goals = state.goals.filter((g) => g.id !== action.payload);
-    },
-    completeGoal: (state, action: PayloadAction<string>) => {
-      const goal = state.goals.find((g) => g.id === action.payload);
-      if (goal) {
-        goal.completed = true;
-        goal.completedAt = new Date().toISOString();
-      }
-    },
+    /**
+     * Runtime-only: update the derived currentValue of a goal (e.g. when
+     * portfolio value changes). This is NOT event-sourced because currentValue
+     * is derived from live portfolio state and recomputed on render — logging
+     * every portfolio tick would pollute the event log with meaningless noise.
+     * Auto-completion (when target is reached) is also handled here because it
+     * is a direct consequence of the derived progress update.
+     */
     updateGoalProgress: (state, action: PayloadAction<{ id: string; currentValue: number }>) => {
       const goal = state.goals.find((g) => g.id === action.payload.id);
       if (goal) {
@@ -67,18 +45,25 @@ const journalSlice = createSlice({
       }
     },
   },
+  extraReducers: (builder) => {
+    const fold = (state: JournalState, events: DomainEvent[]) => {
+      let next: JournalState = { entries: state.entries, goals: state.goals };
+      for (const event of events) {
+        next = applyJournalEvent(next, event);
+      }
+      state.entries = next.entries;
+      state.goals = next.goals;
+    };
+    builder.addCase(appendEvents, (state, action) => fold(state, action.payload.events));
+    builder.addCase(replayEvents, (state, action) => {
+      state.entries = [];
+      state.goals = [];
+      fold(state, action.payload);
+    });
+  },
 });
 
-export const {
-  addEntry,
-  updateEntry,
-  deleteEntry,
-  addGoal,
-  updateGoal,
-  deleteGoal,
-  completeGoal,
-  updateGoalProgress,
-} = journalSlice.actions;
+export const { updateGoalProgress } = journalSlice.actions;
 
 // Base Selectors
 export const selectJournalEntries = (state: RootState) => state.journal.entries;

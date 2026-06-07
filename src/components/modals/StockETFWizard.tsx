@@ -4,9 +4,8 @@ import { WizardModal, type WizardStep } from './WizardModal';
 import { TickerSelector } from '../widgets/TickerSelector';
 import { TrendingUp, Building2, Calendar, DollarSign, Hash, Info } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
-import { addPosition } from '../../store/slices/positionsSlice';
-import { addTransaction } from '../../store/slices/portfoliosSlice';
-import { ensureTicker } from '../../store/slices/tickersSlice';
+import { openPosition } from '../../store/commands/positionCommands';
+import { ensureTicker } from '../../store/commands/tickerCommands';
 import type { Ticker, StockPosition, PortfolioName, CurrencyType } from '../../types';
 import { getCurrencySymbol } from '../../utils/currency';
 import { formatNumber } from '../../utils/numberFormat';
@@ -82,7 +81,7 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
       currentPrice: 10, // Default price for new tickers
     };
 
-    dispatch(ensureTicker(newTicker));
+    dispatch(ensureTicker(newTicker, new Date().toISOString()));
     setSelectedTicker(newTicker);
     setIsCreatingTicker(false);
   };
@@ -111,37 +110,23 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
     };
 
     // Ensure ticker exists in central store
+    const stockTs = new Date().toISOString();
     dispatch(
-      ensureTicker({
-        symbol: selectedTicker.symbol,
-        name: selectedTicker.name,
-        type: positionType,
-        optionsAvailable: selectedTicker.optionsAvailable,
-        miniContractsAvailable: selectedTicker.miniContractsAvailable,
-        currentPrice: purchaseDetails.purchasePrice,
-      })
+      ensureTicker(
+        {
+          symbol: selectedTicker.symbol,
+          name: selectedTicker.name,
+          type: positionType,
+          optionsAvailable: selectedTicker.optionsAvailable,
+          miniContractsAvailable: selectedTicker.miniContractsAvailable,
+        },
+        stockTs
+      )
     );
 
-    // Add position
-    dispatch(addPosition(newPosition));
-
-    // Log transaction
-    // Portfolio value stays the same when buying stocks (Cash decreases, Long increases)
-    const transaction = {
-      id: `txn-${Date.now()}`,
-      portfolio: portfolio.name,
-      date: purchaseDetails.purchaseDate,
-      type: 'position_buy' as const,
-      amount: -costBasis, // Negative because it's a purchase
-      description: `Gekocht ${purchaseDetails.shares} ${selectedTicker.symbol} @ ${getCurrencySymbol(portfolio.currency)}${formatNumber(purchaseDetails.purchasePrice, 2)}`,
-      relatedPositionId: newPosition.id,
-      previousValue: portfolio.currentValue,
-      newValue: portfolio.currentValue, // Portfolio value stays the same
-      createdAt: new Date().toISOString(),
-      notes: purchaseDetails.notes || undefined,
-    };
-
-    dispatch(addTransaction(transaction));
+    // Add position — the transaction ledger line is derived automatically
+    // from the PositionOpened event by the transaction projection.
+    dispatch(openPosition(newPosition, new Date().toISOString()));
 
     // Reset and close
     handleReset();

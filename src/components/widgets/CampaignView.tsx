@@ -3,16 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { TrendingUp, Layers, Zap, X as XIcon, RefreshCw, Trash2 } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
-import { closePosition, updatePosition, addPosition } from '../../store/slices/positionsSlice';
-import { addTransaction } from '../../store/slices/portfoliosSlice';
+import { closePosition, editPosition } from '../../store/commands/positionCommands';
+import { rollOption, recordAssignment } from '../../store/commands/rollCommands';
+import { deleteWheel } from '../../store/commands/wheelCommands';
 import { selectAllTickers } from '../../store/slices/tickersSlice';
-import {
-  selectWheelsByPortfolio,
-  removeWheel,
-  updateWheelPhase,
-  incrementWheelCycle,
-  updateWheelPremium,
-} from '../../store/slices/wheelsSlice';
+import { selectWheelsByPortfolio } from '../../store/slices/wheelsSlice';
 import { detectCampaigns, buildWheelCampaign } from '../../utils/campaignDetector';
 import type { Campaign, CampaignType } from '../../utils/campaignDetector';
 import type {
@@ -22,11 +17,8 @@ import type {
   CallOption,
   PutOption,
   Position,
-  StockPosition,
 } from '../../types';
 import { getCurrencySymbol } from '../../utils/currency';
-import { formatCurrency, formatNumber } from '../../utils/numberFormat';
-import { calculateOptionRealizedPnL } from '../../utils/pnlCalculations';
 import { CallOptionWizard } from '../modals/CallOptionWizard';
 import { PutOptionWizard } from '../modals/PutOptionWizard';
 import { RollOptionModal } from '../modals/RollOptionModal';
@@ -219,7 +211,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
 
   // Handle delete wheel
   const handleDeleteWheel = (wheelId: string) => {
-    dispatch(removeWheel(wheelId));
+    dispatch(deleteWheel(wheelId, new Date().toISOString()));
     setWheelToDelete(null);
   };
 
@@ -242,7 +234,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
         closePrice: closeData.closePrice,
         realizedPnL: closeData.realizedPnL,
         notes: closeData.notes,
-      })
+      }, new Date().toISOString())
     );
 
     setPositionToClose(null);
@@ -251,6 +243,8 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
   // Handle roll option
   const handleRollOption = (rollData: {
     closePremium: number;
+    closeDate: string;
+    newContracts: number;
     newStrike: number;
     newExpiration: string;
     newPremium: number;
@@ -258,102 +252,21 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
   }) => {
     if (!positionToRoll) return;
 
-    const today = new Date().toISOString().split('T')[0];
-    const option = positionToRoll;
-
-    // Calculate realized P&L for closing the old position using utility function
-    const realizedPnL = calculateOptionRealizedPnL({
-      action: option.action,
-      costBasis: option.costBasis,
-      closePremium: rollData.closePremium,
-      contracts: option.contracts,
-    });
-
-    const isSell = option.action === 'sell';
-
-    // Close the old position
     dispatch(
-      closePosition({
-        id: option.id,
-        closeDate: today,
-        closePremium: rollData.closePremium,
-        realizedPnL,
-        notes: rollData.notes
-          ? `Rolled to $${rollData.newStrike} ${rollData.newExpiration}. ${rollData.notes}`
-          : `Rolled to $${rollData.newStrike} ${rollData.newExpiration}`,
-      })
+      rollOption(
+        {
+          positionId: positionToRoll.id,
+          closePremium: rollData.closePremium,
+          closeDate: rollData.closeDate,
+          newContracts: rollData.newContracts,
+          newStrike: rollData.newStrike,
+          newExpiration: rollData.newExpiration,
+          newPremium: rollData.newPremium,
+          notes: rollData.notes,
+        },
+        new Date().toISOString()
+      )
     );
-
-    // Create the new rolled position
-    const newCostBasis = isSell
-      ? -(rollData.newPremium * option.contracts * 100)
-      : rollData.newPremium * option.contracts * 100;
-
-    // Calculate cashReserved for the new position (for CSPs)
-    // For short puts, cash reserved is strike * contracts * 100
-    let newCashReserved: number | undefined;
-    if (option.type === 'put' && option.action === 'sell') {
-      newCashReserved = rollData.newStrike * option.contracts * 100;
-    }
-
-    const newPosition: CallOption | PutOption = {
-      id: `${option.type}-${Date.now()}`,
-      type: option.type,
-      ticker: option.ticker,
-      name: option.name,
-      portfolio: option.portfolio,
-      action: option.action,
-      strike: rollData.newStrike,
-      expiration: rollData.newExpiration,
-      premium: rollData.newPremium,
-      contracts: option.contracts,
-      costBasis: newCostBasis,
-      currentValue: newCostBasis,
-      openDate: today,
-      status: 'open',
-      notes: `Rolled from $${option.strike} ${option.expiration}`,
-      // Preserve wheel and underlying links when rolling
-      wheelId: option.wheelId,
-      underlyingId: option.underlyingId,
-      // Preserve cashReserved for CSPs
-      ...(newCashReserved !== undefined && { cashReserved: newCashReserved }),
-    };
-
-    dispatch(addPosition(newPosition));
-
-    // Calculate net credit/debit for the roll
-    const contractMultiplier = 100;
-    let netCredit = 0;
-    if (isSell) {
-      // Close: buy back (debit), Open: sell new (credit)
-      const closeValue = -rollData.closePremium * option.contracts * contractMultiplier;
-      const openValue = rollData.newPremium * option.contracts * contractMultiplier;
-      netCredit = openValue + closeValue;
-    } else {
-      // Close: sell (credit), Open: buy new (debit)
-      const closeValue = rollData.closePremium * option.contracts * contractMultiplier;
-      const openValue = -rollData.newPremium * option.contracts * contractMultiplier;
-      netCredit = closeValue + openValue;
-    }
-
-    // Add transaction for the roll
-    // Get current portfolio value for tracking
-    const portfolioCurrentValue = portfolio.currentValue;
-
-    const transaction = {
-      id: `txn-roll-${Date.now()}`,
-      portfolio: option.portfolio,
-      date: today,
-      type: 'option_roll' as const,
-      amount: netCredit,
-      description: `Roll ${option.type.toUpperCase()} ${option.ticker} $${option.strike} → $${rollData.newStrike}`,
-      relatedPositionId: newPosition.id,
-      previousValue: portfolioCurrentValue,
-      newValue: portfolioCurrentValue + realizedPnL,
-      createdAt: new Date().toISOString(),
-      notes: rollData.notes || undefined,
-    };
-    dispatch(addTransaction(transaction));
 
     setPositionToRoll(null);
   };
@@ -366,153 +279,17 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
   }) => {
     if (!positionToAssign) return;
 
-    const option = positionToAssign;
-    const isPut = option.type === 'put';
-    const contractMultiplier = 100;
-    const shares = option.contracts * contractMultiplier;
-
-    // Calculate realized P&L for the option (assigned = closes at 0)
-    const realizedPnL = calculateOptionRealizedPnL({
-      action: option.action,
-      costBasis: option.costBasis,
-      closePremium: 0, // Option expires worthless for the short seller when assigned
-      contracts: option.contracts,
-    });
-
-    // Close the option position
     dispatch(
-      closePosition({
-        id: option.id,
-        closeDate: assignmentData.assignmentDate,
-        closePremium: 0,
-        realizedPnL,
-        notes: assignmentData.notes ? `Assignment: ${assignmentData.notes}` : 'Assigned',
-      })
+      recordAssignment(
+        {
+          optionId: positionToAssign.id,
+          assignmentDate: assignmentData.assignmentDate,
+          assignmentPrice: assignmentData.assignmentPrice,
+          notes: assignmentData.notes,
+        },
+        new Date().toISOString()
+      )
     );
-
-    if (isPut) {
-      // Short PUT assigned: create stock position
-      const totalCost = option.strike * shares;
-      const premiumReceived = Math.abs(option.costBasis);
-      const effectiveCost = totalCost - premiumReceived;
-
-      const newStockPosition: StockPosition = {
-        id: `stock-${Date.now()}`,
-        type: 'stock',
-        ticker: option.ticker,
-        name: option.name,
-        portfolio: option.portfolio,
-        status: 'open',
-        shares,
-        costBasis: effectiveCost,
-        purchasePrice: effectiveCost / shares,
-        currentPrice: assignmentData.assignmentPrice,
-        currentValue: shares * assignmentData.assignmentPrice,
-        optionsSupported: true,
-        miniContractsSupported: false,
-        openDate: assignmentData.assignmentDate,
-        notes: `Assigned from Cash Secured Put at $${option.strike}. Premium: $${formatNumber(premiumReceived, 2)}`,
-        wheelId: option.wheelId,
-      };
-
-      dispatch(addPosition(newStockPosition));
-
-      // Update Wheel phase if linked
-      if (option.wheelId) {
-        dispatch(
-          updateWheelPhase({
-            id: option.wheelId,
-            phase: 'stock',
-          })
-        );
-      }
-
-      // Log transaction
-      dispatch(
-        addTransaction({
-          id: `txn-${Date.now()}`,
-          portfolio: option.portfolio,
-          createdAt: new Date().toISOString(),
-          date: assignmentData.assignmentDate,
-          type: 'position_buy' as const,
-          amount: -effectiveCost,
-          description: `Assignment: ${shares} ${option.ticker} @ $${option.strike}`,
-          notes: `Assigned from Cash Secured Put. Effective cost: ${formatCurrency(effectiveCost, currencySymbol)}`,
-        })
-      );
-    } else {
-      // Short CALL assigned: remove stock and realize gain
-      const stockPosition = openPositions.find(
-        (p) =>
-          (p.type === 'stock' || p.type === 'etf') &&
-          p.ticker.toUpperCase() === option.ticker.toUpperCase()
-      );
-
-      if (stockPosition && 'shares' in stockPosition) {
-        const totalProceeds = option.strike * shares;
-        const premiumReceived = Math.abs(option.costBasis);
-        const stockCostBasis = (stockPosition.costBasis / stockPosition.shares) * shares;
-        const stockRealizedPnL = totalProceeds - stockCostBasis;
-
-        // Close or reduce stock position
-        if (stockPosition.shares <= shares) {
-          dispatch(
-            closePosition({
-              id: stockPosition.id,
-              closeDate: assignmentData.assignmentDate,
-              closePrice: option.strike,
-              realizedPnL: stockRealizedPnL,
-              notes: `Assigned from covered call at $${option.strike}`,
-            })
-          );
-        } else {
-          const remainingShares = stockPosition.shares - shares;
-          const remainingCostBasis =
-            (stockPosition.costBasis / stockPosition.shares) * remainingShares;
-
-          dispatch(
-            updatePosition({
-              ...stockPosition,
-              shares: remainingShares,
-              costBasis: remainingCostBasis,
-              currentValue: remainingShares * (stockPosition.currentValue / stockPosition.shares),
-            } as any)
-          );
-        }
-
-        // Update Wheel if linked
-        if (option.wheelId) {
-          dispatch(incrementWheelCycle(option.wheelId));
-          dispatch(
-            updateWheelPhase({
-              id: option.wheelId,
-              phase: 'csp',
-            })
-          );
-          dispatch(
-            updateWheelPremium({
-              id: option.wheelId,
-              premiumCollected: 0,
-              realizedPnL: stockRealizedPnL,
-            })
-          );
-        }
-
-        // Log transaction
-        dispatch(
-          addTransaction({
-            id: `txn-${Date.now()}`,
-            portfolio: option.portfolio,
-            createdAt: new Date().toISOString(),
-            date: assignmentData.assignmentDate,
-            type: 'position_sell' as const,
-            amount: totalProceeds + premiumReceived,
-            description: `Assignment: Verkoop ${shares} ${option.ticker} @ $${option.strike}`,
-            notes: `Assigned from covered call. Stock P&L: ${formatCurrency(stockRealizedPnL, currencySymbol)}, Premium: ${formatCurrency(premiumReceived, currencySymbol)}`,
-          })
-        );
-      }
-    }
 
     setPositionToAssign(null);
   };
@@ -782,7 +559,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
           isOpen={!!positionToView}
           onClose={() => setPositionToView(null)}
           onSave={(updatedPosition) => {
-            dispatch(updatePosition(updatedPosition));
+            dispatch(editPosition(updatedPosition, new Date().toISOString()));
             setPositionToView(null);
           }}
           position={positionToView}

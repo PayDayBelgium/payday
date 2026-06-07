@@ -3,16 +3,18 @@ import { usePageTitle } from '../../contexts/PageTitleContext';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import {
-  addEntry,
-  updateEntry,
-  deleteEntry,
-  addGoal,
-  updateGoal,
-  deleteGoal,
   selectJournalEntries,
   selectActiveGoals,
   selectCompletedGoals,
 } from '../../store/slices/journalSlice';
+import {
+  writeEntry,
+  editEntry,
+  deleteEntry,
+  createGoal,
+  editGoal,
+  deleteGoal,
+} from '../../store/commands/journalCommands';
 import type { JournalEntry, JournalGoal, GoalType } from '../../types';
 import { formatNumber } from '../../utils/numberFormat';
 import {
@@ -127,19 +129,24 @@ export const Journal: React.FC = () => {
       .map((t) => t.trim())
       .filter((t) => t.length > 0);
 
+    const ts = new Date().toISOString();
     if (editingEntry) {
       // Update existing entry
       dispatch(
-        updateEntry({
-          ...editingEntry,
-          title: entryForm.title,
-          content: entryForm.content,
-          date: entryForm.date,
-          portfolio: entryForm.portfolio || undefined,
-          tags: tags.length > 0 ? tags : undefined,
-          mood: entryForm.mood,
-          pnl: entryForm.pnl,
-        })
+        editEntry(
+          {
+            ...editingEntry,
+            title: entryForm.title,
+            content: entryForm.content,
+            date: entryForm.date,
+            portfolio: entryForm.portfolio || undefined,
+            tags: tags.length > 0 ? tags : undefined,
+            mood: entryForm.mood,
+            pnl: entryForm.pnl,
+            updatedAt: ts,
+          },
+          ts
+        )
       );
     } else {
       // Add new entry
@@ -152,9 +159,9 @@ export const Journal: React.FC = () => {
         tags: tags.length > 0 ? tags : undefined,
         mood: entryForm.mood,
         pnl: entryForm.pnl,
-        createdAt: new Date().toISOString(),
+        createdAt: ts,
       };
-      dispatch(addEntry(newEntry));
+      dispatch(writeEntry(newEntry, ts));
     }
 
     // Reset form
@@ -187,7 +194,7 @@ export const Journal: React.FC = () => {
 
   const handleDeleteEntry = () => {
     if (entryToDelete) {
-      dispatch(deleteEntry(entryToDelete.id));
+      dispatch(deleteEntry(entryToDelete.id, new Date().toISOString()));
       setEntryToDelete(null);
     }
   };
@@ -198,17 +205,21 @@ export const Journal: React.FC = () => {
       return;
     }
 
+    const ts = new Date().toISOString();
     if (editingGoal) {
       // Update existing goal
       dispatch(
-        updateGoal({
-          ...editingGoal,
-          type: goalForm.type,
-          title: goalForm.title,
-          description: goalForm.description || undefined,
-          targetValue: goalForm.targetValue,
-          deadline: goalForm.deadline || undefined,
-        })
+        editGoal(
+          {
+            ...editingGoal,
+            type: goalForm.type,
+            title: goalForm.title,
+            description: goalForm.description || undefined,
+            targetValue: goalForm.targetValue,
+            deadline: goalForm.deadline || undefined,
+          },
+          ts
+        )
       );
     } else {
       // Add new goal
@@ -219,10 +230,10 @@ export const Journal: React.FC = () => {
         description: goalForm.description || undefined,
         targetValue: goalForm.targetValue,
         deadline: goalForm.deadline || undefined,
-        createdAt: new Date().toISOString(),
+        createdAt: ts,
         completed: false,
       };
-      dispatch(addGoal(newGoal));
+      dispatch(createGoal(newGoal, ts));
     }
 
     // Reset form
@@ -251,7 +262,7 @@ export const Journal: React.FC = () => {
 
   const handleDeleteGoal = () => {
     if (goalToDelete) {
-      dispatch(deleteGoal(goalToDelete.id));
+      dispatch(deleteGoal(goalToDelete.id, new Date().toISOString()));
       setGoalToDelete(null);
     }
   };
