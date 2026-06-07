@@ -6,14 +6,23 @@ import type {
   PortfolioSummary,
   DailyPortfolioData,
   PortfolioTransaction,
+  Position,
 } from '../../types';
 import type { RootState } from '../index';
+import { appendEvents, replayEvents } from '../events/eventsSlice';
+import { applyPortfolioEvent } from '../events/projectPortfolios';
+import { applyTransactionEvent } from '../events/projectTransactions';
+import { applyPositionEvent } from '../events/projectPositions';
+import type { DomainEvent } from '../events/types';
 
 interface PortfoliosState {
   portfolios: Portfolio[];
   summaries: PortfolioSummary[];
+  // NOTE: dailyData (equity time-series) is never written by event projections.
+  // The event-sourced daily/equity time-series is a deferred follow-up; this
+  // array is kept for backward-compat with selectors and persisted data.
   dailyData: DailyPortfolioData[];
-  transactions: PortfolioTransaction[]; // Portfolio transacties per portfolio
+  transactions: PortfolioTransaction[];
 }
 
 const initialState: PortfoliosState = {
@@ -23,74 +32,30 @@ const initialState: PortfoliosState = {
   transactions: [],
 };
 
+/** Shared fold helper — mirrors tradesSlice's pattern exactly. */
+function fold(
+  state: PortfoliosState,
+  events: DomainEvent[],
+  positionsSeed: Position[]
+): void {
+  let positions = positionsSeed;
+  for (const event of events) {
+    state.portfolios = applyPortfolioEvent(state.portfolios, event);
+    // applyTransactionEvent needs positionsBefore (i.e. positions BEFORE this event)
+    state.transactions = applyTransactionEvent(state.transactions, event, positions);
+    positions = applyPositionEvent(positions, event);
+  }
+}
+
 const portfoliosSlice = createSlice({
   name: 'portfolios',
   initialState,
   reducers: {
-    setInitialState: (state, action: PayloadAction<Portfolio[]>) => {
-      state.portfolios = action.payload;
-    },
-    loadMockData: (
-      state,
-      action: PayloadAction<{
-        portfolios: Portfolio[];
-        summaries: PortfolioSummary[];
-        dailyData: DailyPortfolioData[];
-        transactions?: PortfolioTransaction[];
-      }>
-    ) => {
-      state.portfolios = action.payload.portfolios;
-      state.summaries = action.payload.summaries;
-      state.dailyData = action.payload.dailyData;
-      if (action.payload.transactions) {
-        state.transactions = action.payload.transactions;
+    updatePortfolioValue: (state, action: PayloadAction<{ portfolio: string; value: number }>) => {
+      const portfolio = state.portfolios.find((b) => b.name === action.payload.portfolio);
+      if (portfolio) {
+        portfolio.currentValue = action.payload.value;
       }
-    },
-    addPortfolio: (state, action: PayloadAction<Portfolio>) => {
-      state.portfolios.push(action.payload);
-    },
-    updatePortfolio: (state, action: PayloadAction<Portfolio & { oldName?: string }>) => {
-      const index = state.portfolios.findIndex((b) => b.id === action.payload.id);
-      if (index !== -1) {
-        const oldPortfolio = state.portfolios[index];
-        const oldName = action.payload.oldName || oldPortfolio.name;
-        const newName = action.payload.name;
-
-        // Update the portfolio
-        state.portfolios[index] = action.payload;
-
-        // If name changed, update all references in summaries, dailyData, and transactions
-        if (oldName !== newName) {
-          // Update summaries (ensure array exists)
-          if (state.summaries && Array.isArray(state.summaries)) {
-            state.summaries = state.summaries.map((summary) =>
-              summary.portfolio === oldName ? { ...summary, portfolio: newName } : summary
-            );
-          }
-
-          // Update dailyData (ensure array exists)
-          if (state.dailyData && Array.isArray(state.dailyData)) {
-            state.dailyData = state.dailyData.map((data) =>
-              data.portfolio === oldName ? { ...data, portfolio: newName } : data
-            );
-          }
-
-          // Update transactions (ensure array exists)
-          if (state.transactions && Array.isArray(state.transactions)) {
-            state.transactions = state.transactions.map((transaction) =>
-              transaction.portfolio === oldName
-                ? { ...transaction, portfolio: newName }
-                : transaction
-            );
-          }
-        }
-      }
-    },
-    deletePortfolio: (state, action: PayloadAction<string>) => {
-      state.portfolios = state.portfolios.filter((b) => b.id !== action.payload);
-    },
-    reorderPortfolios: (state, action: PayloadAction<Portfolio[]>) => {
-      state.portfolios = action.payload;
     },
     updatePortfolioSummary: (state, action: PayloadAction<PortfolioSummary>) => {
       const index = state.summaries.findIndex((b) => b.portfolio === action.payload.portfolio);
@@ -98,107 +63,44 @@ const portfoliosSlice = createSlice({
         state.summaries[index] = action.payload;
       }
     },
-    addDailyData: (state, action: PayloadAction<DailyPortfolioData>) => {
-      state.dailyData.push(action.payload);
-    },
-    updateDailyData: (state, action: PayloadAction<DailyPortfolioData>) => {
-      const index = state.dailyData.findIndex(
-        (d) => d.date === action.payload.date && d.portfolio === action.payload.portfolio
-      );
-      if (index !== -1) {
-        state.dailyData[index] = action.payload;
-      } else {
-        state.dailyData.push(action.payload);
-      }
-    },
-    loadDailyData: (state, action: PayloadAction<DailyPortfolioData[]>) => {
-      state.dailyData = action.payload;
-    },
-    // Portfolio Transaction Actions
-    addTransaction: (state, action: PayloadAction<PortfolioTransaction>) => {
-      // Initialize transactions array if it doesn't exist
-      if (!state.transactions) {
-        state.transactions = [];
-      }
-      state.transactions.push(action.payload);
-
-      // Update portfolio currentValue if transaction includes newValue
-      if (action.payload.newValue !== undefined) {
-        const portfolio = state.portfolios.find((b) => b.name === action.payload.portfolio);
-        if (portfolio) {
-          portfolio.currentValue = action.payload.newValue;
-        }
-
-        // Automatically add/update daily data entry for this transaction date
-        const transactionDate = action.payload.date;
-        const existingDailyDataIndex = state.dailyData.findIndex(
-          (d) => d.date === transactionDate && d.portfolio === action.payload.portfolio
-        );
-
-        // Calculate total transactions for this date
-        const transactionsOnDate = state.transactions.filter(
-          (t) => t.portfolio === action.payload.portfolio && t.date === transactionDate
-        );
-
-        // Sum up all transaction amounts for dailyPnL
-        const dailyPnL = transactionsOnDate.reduce((sum, t) => sum + t.amount, 0);
-
-        // Create or update daily data entry
-        const dailyDataEntry: DailyPortfolioData = {
-          date: transactionDate,
-          portfolio: action.payload.portfolio,
-          totalValue: action.payload.newValue,
-          cash: portfolio?.currentValue || 0, // For now, use currentValue as cash (can be refined later)
-          dailyPnL,
-          weeklyPnL: 0, // Can be calculated later
-        };
-
-        if (existingDailyDataIndex !== -1) {
-          state.dailyData[existingDailyDataIndex] = dailyDataEntry;
-        } else {
-          state.dailyData.push(dailyDataEntry);
-        }
-      }
-    },
-    updateTransaction: (state, action: PayloadAction<PortfolioTransaction>) => {
-      const index = state.transactions.findIndex((t) => t.id === action.payload.id);
-      if (index !== -1) {
-        state.transactions[index] = action.payload;
-      }
-    },
-    deleteTransaction: (state, action: PayloadAction<string>) => {
-      state.transactions = state.transactions.filter((t) => t.id !== action.payload);
-    },
-    updatePortfolioValue: (state, action: PayloadAction<{ portfolio: string; value: number }>) => {
-      const portfolio = state.portfolios.find((b) => b.name === action.payload.portfolio);
-      if (portfolio) {
-        portfolio.currentValue = action.payload.value;
-      }
+    /**
+     * Bulk-load a persisted/backup snapshot of portfolio state directly into the slice.
+     * This is NOT an intent reducer — it is a maintenance/restore action used by
+     * backupActions.ts. Domain mutations must go through the event log (appendEvents).
+     */
+    loadPortfoliosSnapshot: (
+      state,
+      action: PayloadAction<{
+        portfolios: Portfolio[];
+        summaries?: PortfolioSummary[];
+        dailyData?: DailyPortfolioData[];
+        transactions?: PortfolioTransaction[];
+      }>
+    ) => {
+      state.portfolios = action.payload.portfolios;
+      if (action.payload.summaries) state.summaries = action.payload.summaries;
+      if (action.payload.dailyData) state.dailyData = action.payload.dailyData;
+      if (action.payload.transactions) state.transactions = action.payload.transactions;
     },
     // NOTE: Ticker management lives entirely in tickersSlice (single source of truth).
     // The legacy ticker reducers/selectors that used to live here were removed; see
     // tickerMigration.ts for the one-time migration of older persisted data.
-    resetPortfoliosState: () => initialState,
+  },
+  extraReducers: (builder) => {
+    builder.addCase(appendEvents, (state, action) => {
+      fold(state, action.payload.events, action.payload.positionsBefore);
+    });
+    builder.addCase(replayEvents, (state, action) => {
+      state.portfolios = [];
+      state.transactions = [];
+      // summaries and dailyData are left as [] (derived/deferred — not replayed from events)
+      fold(state, action.payload, []);
+    });
   },
 });
 
-export const {
-  setInitialState,
-  loadMockData,
-  addPortfolio,
-  updatePortfolio,
-  deletePortfolio,
-  reorderPortfolios,
-  updatePortfolioSummary,
-  addDailyData,
-  updateDailyData,
-  loadDailyData,
-  addTransaction,
-  updateTransaction,
-  deleteTransaction,
-  updatePortfolioValue,
-  resetPortfoliosState,
-} = portfoliosSlice.actions;
+export const { updatePortfolioValue, updatePortfolioSummary, loadPortfoliosSnapshot } =
+  portfoliosSlice.actions;
 
 // Base Selectors
 export const selectPortfolios = (state: RootState) => state.portfolios.portfolios;

@@ -22,10 +22,9 @@ const isPositionMutation = (action: any): boolean => {
   );
 };
 
-// Helper to check if action is a transaction that affects portfolio value
-const isTransactionMutation = (action: any): boolean => {
-  return action.type === 'portfolios/addTransaction';
-};
+// NOTE: Transaction mutations previously dispatched via `portfolios/addTransaction` now flow
+// through `events/appendEvents` (the ledger projection folds CashDeposited, OptionRolled, etc.).
+// `isPositionMutation` already covers `events/appendEvents`, so no separate transaction check is needed.
 
 // Calculate portfolio value from positions
 const calculatePortfolioValue = (state: RootState, portfolioName: string): number => {
@@ -90,6 +89,17 @@ const calculatePortfolioValue = (state: RootState, portfolioName: string): numbe
       // Cash spent buying options (amount is negative)
       cashBalance += transaction.amount;
     }
+    // Previously omitted types — now included so rolls/dividends/fees affect cash balance:
+    else if (transaction.type === 'option_roll') {
+      // Net signed cash flow of the roll (positive = credit roll, negative = debit roll)
+      cashBalance += transaction.amount;
+    } else if (transaction.type === 'dividend') {
+      // Dividend received (positive amount)
+      cashBalance += transaction.amount;
+    } else if (transaction.type === 'fee') {
+      // Transaction fee (stored as negative amount by the ledger projection)
+      cashBalance += transaction.amount;
+    }
   });
 
   // Total portfolio value = cash + current value of positions
@@ -146,17 +156,15 @@ const getAffectedPortfolios = (
       );
     }
 
-    case 'portfolios/addTransaction':
-      return dedupe([action.payload.portfolio]);
-
     default:
       return [];
   }
 };
 
 export const positionValueMiddleware: Middleware = (store) => (next) => (action) => {
-  // Only process position mutations and transaction mutations
-  if (!isPositionMutation(action) && !isTransactionMutation(action)) {
+  // Only process position mutations (position lifecycle + live-price ticks).
+  // Transaction mutations now flow through events/appendEvents (already in isPositionMutation).
+  if (!isPositionMutation(action)) {
     return next(action);
   }
 

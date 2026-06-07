@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { X, RefreshCw, Info, ArrowLeft, TrendingUp, Building2, Plus } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
-import { addWheel } from '../../store/slices/wheelsSlice';
+import { startWheelCampaign } from '../../store/commands/wheelCommands';
 import { selectPositions } from '../../store/slices/positionsSlice';
 import { openPosition, editPosition } from '../../store/commands/positionCommands';
 import { ensureTicker } from '../../store/commands/tickerCommands';
@@ -115,7 +115,7 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({ isOpen, onClose, p
       createdAt: new Date().toISOString(),
     };
 
-    dispatch(addWheel(newWheel));
+    dispatch(startWheelCampaign(newWheel, new Date().toISOString()));
 
     // Handle different start options
     if (startOption === 'new-stock' && stockPurchasePrice) {

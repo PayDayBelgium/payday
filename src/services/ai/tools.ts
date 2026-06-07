@@ -8,12 +8,13 @@ import type {
   CallOption,
   PutOption,
   Ticker,
-  PortfolioTransaction,
+
   CurrencyType,
   UserLevel,
 } from '../../types';
-import { addPortfolio, addTransaction } from '../../store/slices/portfoliosSlice';
 import { openPosition } from '../../store/commands/positionCommands';
+import { createPortfolio as createPortfolioCmd } from '../../store/commands/portfolioCommands';
+import { deposit as depositCmd } from '../../store/commands/cashCommands';
 import { updateTickerPrice } from '../../store/slices/tickersSlice';
 import { addTicker as addTickerCommand } from '../../store/commands/tickerCommands';
 import { selectPortfolios } from '../../store/slices/portfoliosSlice';
@@ -277,8 +278,6 @@ export const executeReadTool = (name: string, getState: () => RootState): string
 let seq = 0;
 const uid = (prefix: string): string => `${prefix}-${Date.now()}-${++seq}`;
 
-const portfolioCurrentValue = (getState: () => RootState, name: string): number =>
-  selectPortfolios(getState()).find((p) => p.name === name)?.currentValue ?? 0;
 
 const ensureTickerInStore = (
   getState: () => RootState,
@@ -317,9 +316,10 @@ const positionValue = (c: ProposedChange): number => {
 
 const createPortfolio = (
   c: Extract<ProposedChange, { kind: 'portfolio' }>,
-  deposit: number,
+  depositAmount: number,
   dispatch: AppDispatch
 ): void => {
+  const ts = new Date().toISOString();
   const portfolio: Portfolio = {
     id: uid('pf'),
     name: c.name,
@@ -330,24 +330,23 @@ const createPortfolio = (
     strategies: [],
     currency: c.currency,
     startDate: today(),
-    initialCapital: deposit,
-    currentValue: deposit,
+    initialCapital: depositAmount,
+    currentValue: depositAmount,
   };
-  dispatch(addPortfolio(portfolio));
-  // Total deposit over time = available cash + value of the positions.
-  if (deposit > 0) {
-    const txn: PortfolioTransaction = {
-      id: uid('txn'),
-      portfolio: c.name,
-      date: today(),
-      type: 'deposit',
-      amount: deposit,
-      description: 'Initiële storting',
-      previousValue: 0,
-      newValue: deposit,
-      createdAt: new Date().toISOString(),
-    };
-    dispatch(addTransaction(txn));
+  dispatch(createPortfolioCmd(portfolio, ts));
+  // Transaction ledger line derived from the CashDeposited event by the transaction projection.
+  if (depositAmount > 0) {
+    dispatch(
+      depositCmd(
+        {
+          portfolio: c.name,
+          amount: depositAmount,
+          date: today(),
+          description: 'Initiële storting',
+        },
+        ts
+      )
+    );
   }
 };
 
@@ -381,20 +380,7 @@ const applyStock = (
     miniContractsSupported: false,
   };
   dispatch(openPosition(position, new Date().toISOString()));
-  const prev = portfolioCurrentValue(getState, c.portfolio);
-  const txn: PortfolioTransaction = {
-    id: uid('txn'),
-    portfolio: c.portfolio,
-    date: c.openDate,
-    type: 'position_buy',
-    amount: -costBasis,
-    description: `Gekocht ${c.shares} ${c.ticker} @ ${c.purchasePrice}`,
-    relatedPositionId: position.id,
-    previousValue: prev,
-    newValue: prev,
-    createdAt: new Date().toISOString(),
-  };
-  dispatch(addTransaction(txn));
+  // Transaction ledger line (position_buy) derived from PositionOpened event by the transaction projection.
 };
 
 const applyOption = (
@@ -436,20 +422,7 @@ const applyOption = (
           cashReserved: c.action === 'sell' ? c.strike * c.contracts * 100 : undefined,
         };
   dispatch(openPosition(position, new Date().toISOString()));
-  const prev = portfolioCurrentValue(getState, c.portfolio);
-  const txn: PortfolioTransaction = {
-    id: uid('txn'),
-    portfolio: c.portfolio,
-    date: c.openDate,
-    type: c.action === 'buy' ? 'premium_paid' : 'premium_collected',
-    amount: c.action === 'buy' ? -openTotal : openTotal,
-    description: `${c.action === 'buy' ? 'Long' : 'Short'} ${c.optionType.toUpperCase()} ${c.ticker} ${c.strike} ×${c.contracts}`,
-    relatedPositionId: position.id,
-    previousValue: prev,
-    newValue: prev,
-    createdAt: new Date().toISOString(),
-  };
-  dispatch(addTransaction(txn));
+  // Transaction ledger line (premium_paid / premium_collected) derived from PositionOpened event by the transaction projection.
 };
 
 // Level gating for AI proposals: an option proposal may only be applied

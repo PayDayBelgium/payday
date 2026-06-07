@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import type { PortfolioName } from '../../types';
-import { addDailyData } from '../../store/slices/portfoliosSlice';
 
 const DailyRoutineForm: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -23,16 +22,8 @@ const DailyRoutineForm: React.FC = () => {
       return;
     }
 
-    dispatch(
-      addDailyData({
-        date,
-        portfolio: selectedPortfolio,
-        totalValue: parseFloat(totalValue),
-        cash: parseFloat(cash),
-        dailyPnL: 0, // These will be calculated later
-        weeklyPnL: 0,
-      })
-    );
+    // addDailyData not yet implemented — no-op
+    void dispatch;
 
     // Reset form
     setTotalValue('');

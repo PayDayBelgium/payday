@@ -12,6 +12,7 @@ import type {
   StrategyRuleUpdatedPayload,
   StrategyRuleDeletedPayload,
   StrategyRuleToggledPayload,
+  PortfolioRenamedPayload,
 } from './types';
 
 export interface StrategiesState {
@@ -126,6 +127,24 @@ export function applyStrategiesEvent(
         strategyRules: state.strategyRules.map((r) =>
           r.id === id ? { ...r, enabled: !r.enabled } : r
         ),
+      };
+    }
+
+    // Both TradingStrategy and StrategyRule carry a `portfolio: PortfolioName` field.
+    case 'PortfolioRenamed': {
+      const { oldName, newName } = event.payload as PortfolioRenamedPayload;
+      const renamedStrategies = state.strategies.map((s) =>
+        s.portfolio === oldName ? { ...s, portfolio: newName } : s
+      );
+      const renamedRules = state.strategyRules.map((r) =>
+        r.portfolio === oldName ? { ...r, portfolio: newName } : r
+      );
+      const strategiesChanged = renamedStrategies.some((s, i) => s !== state.strategies[i]);
+      const rulesChanged = renamedRules.some((r, i) => r !== state.strategyRules[i]);
+      if (!strategiesChanged && !rulesChanged) return state;
+      return {
+        strategies: strategiesChanged ? renamedStrategies : state.strategies,
+        strategyRules: rulesChanged ? renamedRules : state.strategyRules,
       };
     }
 

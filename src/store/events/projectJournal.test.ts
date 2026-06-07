@@ -157,3 +157,52 @@ describe('applyJournalEvent — cross-slice', () => {
     expect(next.entries).toBe(initial.entries);
   });
 });
+
+// ---------------------------------------------------------------------------
+// PortfolioRenamed cascade — entries only (goals have no portfolio field)
+// ---------------------------------------------------------------------------
+
+describe('applyJournalEvent — PortfolioRenamed', () => {
+  it('renames portfolio on matching entries', () => {
+    const e1 = makeEntry('e1', { portfolio: 'Old' });
+    const e2 = makeEntry('e2', { portfolio: 'Other' });
+    const initial: JournalState = { entries: [e1, e2], goals: [] };
+    const next = applyJournalEvent(
+      initial,
+      event('PortfolioRenamed', { oldName: 'Old', newName: 'New' })
+    );
+    expect(next.entries[0].portfolio).toBe('New');
+    expect(next.entries[1].portfolio).toBe('Other'); // unrelated — unchanged
+  });
+
+  it('does not touch entries without a portfolio field', () => {
+    const e1 = makeEntry('e1'); // no portfolio set
+    const initial: JournalState = { entries: [e1], goals: [] };
+    const next = applyJournalEvent(
+      initial,
+      event('PortfolioRenamed', { oldName: 'Old', newName: 'New' })
+    );
+    expect(next).toBe(initial); // nothing matched → same ref
+  });
+
+  it('never touches goals (goals have no portfolio field)', () => {
+    const g1 = makeGoal('g1');
+    const e1 = makeEntry('e1', { portfolio: 'Old' });
+    const initial: JournalState = { entries: [e1], goals: [g1] };
+    const next = applyJournalEvent(
+      initial,
+      event('PortfolioRenamed', { oldName: 'Old', newName: 'New' })
+    );
+    expect(next.goals).toBe(initial.goals); // goals array is the same reference
+  });
+
+  it('is a no-op (same ref) when no entry matches oldName', () => {
+    const e1 = makeEntry('e1', { portfolio: 'Main' });
+    const initial: JournalState = { entries: [e1], goals: [] };
+    const next = applyJournalEvent(
+      initial,
+      event('PortfolioRenamed', { oldName: 'DoesNotExist', newName: 'New' })
+    );
+    expect(next).toBe(initial);
+  });
+});
