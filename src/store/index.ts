@@ -60,15 +60,16 @@ export const createAppStore = (username?: string) => {
       'adminAuth',
       'portfolios',
       'tickers',
-      'strategies',
       'wheels',
       'userProgress',
       'community',
       'mentorship',
     ], // Persist auth and adminAuth to remember sessions
+    // v5 (event-sourcing phase 2): `strategies` removed — rebuilt from IndexedDB event log on boot.
     // v4 (event-sourcing phase 2): `todos`, `rules`, and `journal` removed — rebuilt from IndexedDB event log on boot.
     // blacklist: ['alerts', 'ibConnection'], // Don't persist these
     version: 4,
+    // v5 (event-sourcing phase 2): `strategies` removed — rebuilt from IndexedDB event log on boot.
     // v4 (event-sourcing phase 2): `journal` removed — rebuilt from IndexedDB event log on boot.
     // v3 (event-sourcing phase 2): `todos` and `rules` removed — rebuilt from IndexedDB event log on boot.
     // v2 (event-sourcing): `positions` and `trades` were removed from the whitelist —

@@ -1,4 +1,4 @@
-import type { Position, PriceAlertRule, Trade, PortfolioName, TradingRule, JournalEntry, JournalGoal } from '../../types';
+import type { Position, PriceAlertRule, Trade, PortfolioName, TradingRule, JournalEntry, JournalGoal, TradingStrategy, StrategyRule } from '../../types';
 import type { Todo } from '../slices/todosSlice';
 import { uuid } from '../../utils/uuid';
 
@@ -30,7 +30,19 @@ export type DomainEventType =
   | 'GoalCreated'
   | 'GoalEdited'
   | 'GoalDeleted'
-  | 'GoalCompleted';
+  | 'GoalCompleted'
+  // --- Phase 2: strategies aggregate ---
+  | 'TradingStrategyCreated'
+  | 'TradingStrategyUpdated'
+  | 'TradingStrategyDeleted'
+  | 'PositionLinkedToStrategy'
+  | 'PositionUnlinkedFromStrategy'
+  | 'StrategyPositionsSet'
+  | 'PortfolioStrategiesCleared'
+  | 'StrategyRuleCreated'
+  | 'StrategyRuleUpdated'
+  | 'StrategyRuleDeleted'
+  | 'StrategyRuleToggled';
 
 // --- Phase 1 payloads ---
 export interface PositionOpenedPayload {
@@ -123,6 +135,18 @@ export interface DomainEventPayloads {
   GoalEdited: GoalEditedPayload;
   GoalDeleted: GoalDeletedPayload;
   GoalCompleted: GoalCompletedPayload;
+  // --- Phase 2: strategies ---
+  TradingStrategyCreated: TradingStrategyCreatedPayload;
+  TradingStrategyUpdated: TradingStrategyUpdatedPayload;
+  TradingStrategyDeleted: TradingStrategyDeletedPayload;
+  PositionLinkedToStrategy: PositionLinkedToStrategyPayload;
+  PositionUnlinkedFromStrategy: PositionUnlinkedFromStrategyPayload;
+  StrategyPositionsSet: StrategyPositionsSetPayload;
+  PortfolioStrategiesCleared: PortfolioStrategiesClearedPayload;
+  StrategyRuleCreated: StrategyRuleCreatedPayload;
+  StrategyRuleUpdated: StrategyRuleUpdatedPayload;
+  StrategyRuleDeleted: StrategyRuleDeletedPayload;
+  StrategyRuleToggled: StrategyRuleToggledPayload;
 }
 
 /** A persisted domain event (has seq + actor). */
@@ -184,5 +208,43 @@ export interface GoalCompletedPayload {
   completedAt: string;
 }
 
+// --- Phase 2 payloads: strategies ---
+export interface TradingStrategyCreatedPayload {
+  strategy: TradingStrategy;
+}
+export interface TradingStrategyUpdatedPayload {
+  strategy: TradingStrategy;
+}
+export interface TradingStrategyDeletedPayload {
+  id: string;
+}
+export interface PositionLinkedToStrategyPayload {
+  strategyId: string;
+  positionId: string;
+}
+export interface PositionUnlinkedFromStrategyPayload {
+  strategyId: string;
+  positionId: string;
+}
+export interface StrategyPositionsSetPayload {
+  strategyId: string;
+  positionIds: string[];
+}
+export interface PortfolioStrategiesClearedPayload {
+  portfolio: string;
+}
+export interface StrategyRuleCreatedPayload {
+  rule: StrategyRule;
+}
+export interface StrategyRuleUpdatedPayload {
+  rule: StrategyRule;
+}
+export interface StrategyRuleDeletedPayload {
+  id: string;
+}
+export interface StrategyRuleToggledPayload {
+  id: string;
+}
+
 // Re-export domain aliases used by payloads for convenience.
-export type { Position, PriceAlertRule, Trade, PortfolioName, Todo, TradingRule, JournalEntry, JournalGoal };
+export type { Position, PriceAlertRule, Trade, PortfolioName, Todo, TradingRule, JournalEntry, JournalGoal, TradingStrategy, StrategyRule };
