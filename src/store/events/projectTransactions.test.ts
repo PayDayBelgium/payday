@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { applyTransactionEvent } from './projectTransactions';
-import type { Position, StockPosition, CallOption, PutOption, PortfolioTransaction } from '../../types';
+import type { StockPosition, CallOption, PutOption, PortfolioTransaction } from '../../types';
 import type { DomainEvent } from './types';
 
 // ---------------------------------------------------------------------------

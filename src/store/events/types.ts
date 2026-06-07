@@ -419,6 +419,13 @@ export interface OptionAssignedCallPayload {
         remainingShares: number;
         remainingCostBasis: number;
         remainingCurrentValue: number;
+        /**
+         * The realized P&L on the shares called away (partial call-assignment).
+         * Both PortfolioView and CampaignView book this to the wheel via
+         * updateWheelPremium({ realizedPnL: stockRealizedPnL }) even on a partial
+         * close, so we carry it here so the wheel projection can match that behaviour.
+         */
+        stockRealizedPnL: number;
       };
 }
 

@@ -18,15 +18,12 @@ import type {
  * behaviour reproduced by wheelsSlice + the option wizard handlers.
  *
  * NOTE: For a *partial* call-assignment (`stockClose.fullClose === false`) the
- * OptionAssignedCallPayload does not carry `stockRealizedPnL` because the stock
- * position is only partially closed (the remaining shares keep their cost basis;
- * no realized P&L is settled yet). The projection therefore adds 0 to
- * `totalRealizedPnL` for partial call-assignments.
- *
- * TODO (C4/C5): Confirm that the `OptionAssigned` command always provides the
- * realized stock P&L for *full* closes and explicitly documents that partial
- * closes carry 0 realized P&L so later commands (e.g. a subsequent
- * full call-assignment) can capture the remainder correctly.
+ * OptionAssignedCallPayload carries a `stockRealizedPnL` field equal to the P&L
+ * on the shares called away. Both PortfolioView and CampaignView book this value
+ * to the wheel via `updateWheelPremium({ realizedPnL: stockRealizedPnL })` even
+ * for partial closes, so the projection adds it to `totalRealizedPnL` here.
+ * Only the remaining shares (not yet called away) retain their un-realised cost
+ * basis; that portion is captured on any subsequent call-assignment event.
  */
 export function applyWheelEvent(wheels: WheelCampaign[], event: DomainEvent): WheelCampaign[] {
   switch (event.type) {
@@ -96,12 +93,8 @@ export function applyWheelEvent(wheels: WheelCampaign[], event: DomainEvent): Wh
       if (payload.kind === 'call') {
         const callPayload = payload as OptionAssignedCallPayload;
         // Call assigned → stock called away. Increment cycle, return to 'csp' phase.
-        // Realized stock P&L is available only on full closes.
-        const stockRealizedPnL =
-          callPayload.stockClose.fullClose === true
-            ? (callPayload.stockClose as { fullClose: true; closePrice: number; stockRealizedPnL: number }).stockRealizedPnL
-            : 0;
-        // See NOTE above for why partial closes add 0.
+        // stockRealizedPnL is present on both full and partial closes (see NOTE above).
+        const stockRealizedPnL = callPayload.stockClose.stockRealizedPnL;
         const updated = wheels.map((w) =>
           w.id === wheelId
             ? {

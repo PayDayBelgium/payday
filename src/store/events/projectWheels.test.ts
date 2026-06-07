@@ -314,7 +314,8 @@ describe('applyWheelEvent', () => {
   });
 
   // --- OptionAssigned: call (partial close) ---
-  it('OptionAssigned (call, partial close) increments cycles, sets phase=csp, adds 0 to totalRealizedPnL', () => {
+  it('OptionAssigned (call, partial close) increments cycles, sets phase=csp, adds stockRealizedPnL (zero case)', () => {
+    // When stockRealizedPnL = 0 the wheel totalRealizedPnL stays unchanged.
     const w1 = wheel('w1', { phase: 'stock', totalRealizedPnL: 100, cycles: 0 });
     const next = applyWheelEvent(
       [w1],
@@ -333,13 +334,43 @@ describe('applyWheelEvent', () => {
           remainingShares: 50,
           remainingCostBasis: 7_500,
           remainingCurrentValue: 7_500,
+          // Both PortfolioView and CampaignView book stockRealizedPnL to the wheel
+          // even on partial closes; the command sets this value.
+          stockRealizedPnL: 0,
         },
       })
     );
     expect(next[0].cycles).toBe(1);
     expect(next[0].phase).toBe('csp');
-    // Partial close → no realized P&L added (see NOTE in projectWheels.ts)
-    expect(next[0].totalRealizedPnL).toBe(100);
+    expect(next[0].totalRealizedPnL).toBe(100); // 100 + 0
+  });
+
+  it('OptionAssigned (call, partial close) adds non-zero stockRealizedPnL to wheel', () => {
+    const w1 = wheel('w1', { phase: 'stock', totalRealizedPnL: 100, cycles: 0 });
+    const next = applyWheelEvent(
+      [w1],
+      event('OptionAssigned', {
+        kind: 'call',
+        optionId: 'opt2',
+        assignmentDate: '2026-03-15',
+        optionRealizedPnL: 200,
+        stockId: 'stk1',
+        portfolio: 'Main',
+        totalProceeds: 5_000,
+        premiumReceived: 200,
+        wheelId: 'w1',
+        stockClose: {
+          fullClose: false,
+          remainingShares: 50,
+          remainingCostBasis: 7_500,
+          remainingCurrentValue: 7_500,
+          stockRealizedPnL: 350,
+        },
+      })
+    );
+    expect(next[0].cycles).toBe(1);
+    expect(next[0].phase).toBe('csp');
+    expect(next[0].totalRealizedPnL).toBe(450); // 100 + 350
   });
 
   it('OptionAssigned (call, no wheelId) is a no-op for wheels', () => {
