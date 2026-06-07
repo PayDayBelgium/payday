@@ -293,3 +293,69 @@ describe('applyStrategiesEvent — cross-slice', () => {
     expect(next.strategies).toBe(initial.strategies);
   });
 });
+
+// ---------------------------------------------------------------------------
+// PortfolioRenamed cascade
+// ---------------------------------------------------------------------------
+
+describe('applyStrategiesEvent — PortfolioRenamed', () => {
+  it('renames portfolio on matching strategies', () => {
+    const s1 = makeStrategy('s1', { portfolio: 'Old' });
+    const s2 = makeStrategy('s2', { portfolio: 'Other' });
+    const initial: StrategiesState = { strategies: [s1, s2], strategyRules: [] };
+    const next = applyStrategiesEvent(
+      initial,
+      event('PortfolioRenamed', { oldName: 'Old', newName: 'New' })
+    );
+    expect(next.strategies[0].portfolio).toBe('New');
+    expect(next.strategies[1].portfolio).toBe('Other'); // unrelated — unchanged
+  });
+
+  it('renames portfolio on matching strategyRules', () => {
+    const r1 = makeRule('r1', { portfolio: 'Old' });
+    const r2 = makeRule('r2', { portfolio: 'Other' });
+    const initial: StrategiesState = { strategies: [], strategyRules: [r1, r2] };
+    const next = applyStrategiesEvent(
+      initial,
+      event('PortfolioRenamed', { oldName: 'Old', newName: 'New' })
+    );
+    expect(next.strategyRules[0].portfolio).toBe('New');
+    expect(next.strategyRules[1].portfolio).toBe('Other'); // unrelated — unchanged
+  });
+
+  it('renames both strategies and strategyRules in one event', () => {
+    const s1 = makeStrategy('s1', { portfolio: 'Old' });
+    const r1 = makeRule('r1', { portfolio: 'Old' });
+    const initial: StrategiesState = { strategies: [s1], strategyRules: [r1] };
+    const next = applyStrategiesEvent(
+      initial,
+      event('PortfolioRenamed', { oldName: 'Old', newName: 'New' })
+    );
+    expect(next.strategies[0].portfolio).toBe('New');
+    expect(next.strategyRules[0].portfolio).toBe('New');
+  });
+
+  it('is a no-op (same ref) when nothing matches oldName', () => {
+    const initial: StrategiesState = {
+      strategies: [makeStrategy('s1', { portfolio: 'Main' })],
+      strategyRules: [makeRule('r1', { portfolio: 'Main' })],
+    };
+    const next = applyStrategiesEvent(
+      initial,
+      event('PortfolioRenamed', { oldName: 'DoesNotExist', newName: 'New' })
+    );
+    expect(next).toBe(initial);
+  });
+
+  it('preserves unmatched strategies/rules array refs when only one side changes', () => {
+    const s1 = makeStrategy('s1', { portfolio: 'Old' });
+    const r1 = makeRule('r1', { portfolio: 'Main' }); // not matching
+    const initial: StrategiesState = { strategies: [s1], strategyRules: [r1] };
+    const next = applyStrategiesEvent(
+      initial,
+      event('PortfolioRenamed', { oldName: 'Old', newName: 'New' })
+    );
+    expect(next.strategies[0].portfolio).toBe('New');
+    expect(next.strategyRules).toBe(initial.strategyRules); // unchanged ref
+  });
+});

@@ -70,6 +70,27 @@ describe('applyPositionEvent', () => {
     expect(next[0].portfolio).toBe('New');
   });
 
+  it('PortfolioRenamed rewrites the portfolio key (unified rename)', () => {
+    const p1 = stock('p1', 'Old');
+    const p2 = stock('p2', 'Other');
+    const opened = [p1, p2];
+    const next = applyPositionEvent(
+      opened,
+      event('PortfolioRenamed', { oldName: 'Old', newName: 'New' })
+    );
+    expect(next[0].portfolio).toBe('New');
+    expect(next[1].portfolio).toBe('Other'); // unrelated — unchanged
+  });
+
+  it('PortfolioRenamed is a no-op when no position matches oldName', () => {
+    const opened = applyPositionEvent([], event('PositionOpened', { position: stock('p1', 'Main') }));
+    const next = applyPositionEvent(
+      opened,
+      event('PortfolioRenamed', { oldName: 'DoesNotExist', newName: 'New' })
+    );
+    expect(next[0]).toBe(opened[0]);
+  });
+
   it('ignores unrelated event types', () => {
     const opened = applyPositionEvent([], event('PositionOpened', { position: stock('p1') }));
     const next = applyPositionEvent(opened, event('PriceAlertRuleDeleted', { id: 'x' }));

@@ -7,6 +7,7 @@ import type {
   OptionRolledPayload,
   SpreadRolledPayload,
   OptionAssignedPayload,
+  PortfolioRenamedPayload,
 } from './types';
 
 // ---------------------------------------------------------------------------
@@ -349,6 +350,19 @@ export function applyTransactionEvent(
           createdAt,
         }),
       ];
+    }
+
+    // -----------------------------------------------------------------------
+    // PortfolioRenamed — rewrite the portfolio ref on every matching transaction
+    // -----------------------------------------------------------------------
+
+    case 'PortfolioRenamed': {
+      const { oldName, newName } = event.payload as PortfolioRenamedPayload;
+      const renamed = transactions.map((t) =>
+        t.portfolio === oldName ? { ...t, portfolio: newName } : t
+      );
+      // Return same reference if nothing changed (cheap no-op detection).
+      return renamed.some((t, i) => t !== transactions[i]) ? renamed : transactions;
     }
 
     // -----------------------------------------------------------------------

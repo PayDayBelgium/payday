@@ -8,6 +8,7 @@ import type {
   GoalEditedPayload,
   GoalDeletedPayload,
   GoalCompletedPayload,
+  PortfolioRenamedPayload,
 } from './types';
 
 export interface JournalState {
@@ -71,6 +72,18 @@ export function applyJournalEvent(state: JournalState, event: DomainEvent): Jour
           g.id === id ? { ...g, completed: true, completedAt } : g
         ),
       };
+    }
+
+    // JournalEntry has an optional `portfolio` field; JournalGoal does not.
+    // Only rename entries — goals are portfolio-agnostic.
+    case 'PortfolioRenamed': {
+      const { oldName, newName } = event.payload as PortfolioRenamedPayload;
+      const renamedEntries = state.entries.map((e) =>
+        e.portfolio === oldName ? { ...e, portfolio: newName } : e
+      );
+      const changed = renamedEntries.some((e, i) => e !== state.entries[i]);
+      if (!changed) return state;
+      return { ...state, entries: renamedEntries };
     }
 
     default:

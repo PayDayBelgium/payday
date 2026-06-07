@@ -8,6 +8,7 @@ import type {
   PositionOpenedPayload,
   OptionAssignedPayload,
   OptionAssignedCallPayload,
+  PortfolioRenamedPayload,
 } from './types';
 
 /**
@@ -109,6 +110,14 @@ export function applyWheelEvent(wheels: WheelCampaign[], event: DomainEvent): Wh
       }
 
       return wheels;
+    }
+
+    case 'PortfolioRenamed': {
+      const { oldName, newName } = event.payload as PortfolioRenamedPayload;
+      const renamed = wheels.map((w) =>
+        w.portfolio === oldName ? { ...w, portfolio: newName } : w
+      );
+      return renamed.some((w, i) => w !== wheels[i]) ? renamed : wheels;
     }
 
     default:

@@ -400,4 +400,26 @@ describe('applyWheelEvent', () => {
     const next = applyWheelEvent(initial, event('PositionClosed', { id: 'p1', closeDate: '2026-06-01' }));
     expect(next).toBe(initial);
   });
+
+  // --- PortfolioRenamed ---
+  it('PortfolioRenamed renames portfolio on matching wheels', () => {
+    const w1 = wheel('w1', { portfolio: 'Old' });
+    const w2 = wheel('w2', { portfolio: 'Other' });
+    const next = applyWheelEvent(
+      [w1, w2],
+      event('PortfolioRenamed', { oldName: 'Old', newName: 'New' })
+    );
+    expect(next[0].portfolio).toBe('New');
+    expect(next[1].portfolio).toBe('Other'); // unrelated — unchanged
+  });
+
+  it('PortfolioRenamed is a no-op (same ref) when no wheel matches oldName', () => {
+    const w1 = wheel('w1', { portfolio: 'Main' });
+    const initial = [w1];
+    const next = applyWheelEvent(
+      initial,
+      event('PortfolioRenamed', { oldName: 'DoesNotExist', newName: 'New' })
+    );
+    expect(next).toBe(initial);
+  });
 });

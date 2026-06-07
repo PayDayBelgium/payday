@@ -5,6 +5,7 @@ import type {
   PositionEditedPayload,
   PositionClosedPayload,
   PositionsPortfolioRenamedPayload,
+  PortfolioRenamedPayload,
   OptionRolledPayload,
   SpreadRolledPayload,
   OptionAssignedPayload,
@@ -71,6 +72,15 @@ export function applyPositionEvent(positions: Position[], event: DomainEvent): P
 
     case 'PositionsPortfolioRenamed': {
       const { oldName, newName } = event.payload as PositionsPortfolioRenamedPayload;
+      return positions.map((p) =>
+        p.portfolio === oldName ? { ...p, portfolio: newName as PortfolioName } : p
+      );
+    }
+
+    // Unified rename event — rewrite the same portfolio ref as PositionsPortfolioRenamed.
+    // Kept alongside the legacy case for back-compat with persisted Phase 1 events.
+    case 'PortfolioRenamed': {
+      const { oldName, newName } = event.payload as PortfolioRenamedPayload;
       return positions.map((p) =>
         p.portfolio === oldName ? { ...p, portfolio: newName as PortfolioName } : p
       );

@@ -469,3 +469,45 @@ describe('accumulation across multiple events', () => {
     expect(txns[2].id).toBe('txn-e3');
   });
 });
+
+// ---------------------------------------------------------------------------
+// PortfolioRenamed — ledger portfolio-ref cascade
+// ---------------------------------------------------------------------------
+
+describe('applyTransactionEvent — PortfolioRenamed', () => {
+  function txn(overrides: Partial<PortfolioTransaction> = {}): PortfolioTransaction {
+    return {
+      id: 't1',
+      portfolio: 'Old',
+      date: '2026-01-01',
+      type: 'deposit',
+      amount: 1000,
+      description: 'Deposit',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      ...overrides,
+    };
+  }
+
+  it('PortfolioRenamed renames portfolio on matching transactions', () => {
+    const t1 = txn({ id: 't1', portfolio: 'Old' });
+    const t2 = txn({ id: 't2', portfolio: 'Other' });
+    const next = applyTransactionEvent(
+      [t1, t2],
+      event('PortfolioRenamed', { oldName: 'Old', newName: 'New' }),
+      []
+    );
+    expect(next[0].portfolio).toBe('New');
+    expect(next[1].portfolio).toBe('Other'); // unrelated — unchanged
+  });
+
+  it('PortfolioRenamed is a no-op (same ref) when no transaction matches oldName', () => {
+    const t1 = txn({ portfolio: 'Main' });
+    const initial = [t1];
+    const next = applyTransactionEvent(
+      initial,
+      event('PortfolioRenamed', { oldName: 'DoesNotExist', newName: 'New' }),
+      []
+    );
+    expect(next).toBe(initial);
+  });
+});
