@@ -972,7 +972,7 @@ import type { DomainEvent } from '../events/types';
 import type { Position } from '../../types';
 ```
 
-4b. Remove `addTrade` from the `reducers` block and from the exported actions (trades are now projected). Keep `updateTrade`, `removeTrade`, `setFilter`, `clearFilter`, `loadTrades`.
+4b. **Keep `addTrade` for now** (do NOT remove it in this task). `tradeMiddleware` still imports `addTrade` and stays wired until Task 12; removing it here would break that import. After Task 8 the trades projection is the only path that adds trades (`positions/closePosition` is no longer dispatched, so `tradeMiddleware` never fires — no double trades). `addTrade` and `tradeMiddleware` are removed together in Task 12. Keep all existing trades reducers (`addTrade`, `updateTrade`, `removeTrade`, `setFilter`, `clearFilter`, `loadTrades`).
 
 4c. Add `extraReducers`. The trade fold needs positions-*before* each close. On `appendEvents`
 that seed comes from `action.payload.positionsBefore` (attached by `commit`); on `replayEvents`
@@ -997,15 +997,22 @@ it starts empty and is rebuilt inline from the same stream:
   },
 ```
 
-- [ ] **Step 5: Run tests to verify they pass**
+- [ ] **Step 5: Run targeted tests to verify they pass**
 
 Run: `npx vitest run src/store/slices/positionsSlice.test.ts src/store/events/eventsSlice.test.ts`
 Expected: PASS.
 
+> **IMPORTANT — expected red state from here until Task 13:** removing the raw intent action
+> creators from `positionsSlice` breaks every UI call site that imported them, so `npm run
+> typecheck` and the FULL `npm test` suite are expected to FAIL until the Task 13 sweep fixes
+> the call sites. That is by design. In Tasks 8–12 only run the *targeted* test files named in
+> each step; do NOT run full `npm test`/`npm run typecheck` as a gate, and do NOT fix call sites
+> outside the files this task names (that is Task 13's job).
+
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/store/slices/positionsSlice.ts src/store/slices/tradesSlice.ts src/store/slices/positionsSlice.test.ts src/store/events/eventsSlice.ts src/store/events/eventsSlice.test.ts
+git add src/store/slices/positionsSlice.ts src/store/slices/tradesSlice.ts src/store/slices/positionsSlice.test.ts
 git commit -m "feat(store): fold position/trade projections from event log"
 ```
 
@@ -1445,6 +1452,11 @@ to:
 ```
 Remove the now-unused `import { tradeMiddleware } from './middleware/tradeMiddleware';`.
 
+1e-bis. Now that `tradeMiddleware` is unwired, remove the dead trade-creation path (deferred from Task 8):
+- In `src/store/slices/tradesSlice.ts`: remove the `addTrade` reducer from the `reducers` block and from the exported `tradesSlice.actions` destructuring. Keep `updateTrade`, `removeTrade`, `setFilter`, `clearFilter`, `loadTrades`.
+- Delete the file `src/store/middleware/tradeMiddleware.ts` (it imported `addTrade` and is fully replaced by the trades projection). There is no `tradeMiddleware.test.ts` to remove.
+- `git rm src/store/middleware/tradeMiddleware.ts`.
+
 1f. Add `'positions/addPosition'` / `'trades/addTrade'` are gone; update the `ignoredActions` list to drop those two entries and add `'events/appendEvents'`, `'events/replayEvents'` (event payloads contain Position objects, which are serializable, but this silences any date/string-key checks):
 ```ts
           ignoredActions: [
@@ -1470,7 +1482,8 @@ Expected: errors ONLY at the call sites of the removed raw actions (`addPosition
 - [ ] **Step 3: Commit**
 
 ```bash
-git add src/store/index.ts
+git add src/store/index.ts src/store/slices/tradesSlice.ts
+git rm src/store/middleware/tradeMiddleware.ts
 git commit -m "feat(store): wire event log into the store, drop tradeMiddleware"
 ```
 
