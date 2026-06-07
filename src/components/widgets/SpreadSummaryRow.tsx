@@ -128,7 +128,7 @@ export const SpreadSummaryRow: React.FC<SpreadSummaryRowProps> = React.memo(
                       triggerRef={getTooltipRef(`spread-alert-${spread.id}`)}
                       show={showTooltip === `spread-alert-${spread.id}`}
                     >
-                      <div className="w-72 p-3 bg-white dark:bg-trading-dark-800 border-2 border-caution-500/30 dark:border-caution-600/40 rounded-lg shadow-xl">
+                      <div className="w-72 p-3 bg-white dark:bg-trading-dark-800 border border-caution-500/30 dark:border-caution-600/40 rounded-lg shadow-xl">
                         <AlertTooltipContent
                           items={
                             uniqueSpreadAlerts.length > 0
@@ -162,7 +162,7 @@ export const SpreadSummaryRow: React.FC<SpreadSummaryRowProps> = React.memo(
                       triggerRef={getTooltipRef(`spread-opp-${spread.id}`)}
                       show={showTooltip === `spread-opp-${spread.id}`}
                     >
-                      <div className="w-72 p-3 bg-white dark:bg-trading-dark-800 border-2 border-positive-500/20 dark:border-positive-700/30 rounded-lg shadow-xl">
+                      <div className="w-72 p-3 bg-white dark:bg-trading-dark-800 border border-positive-500/20 dark:border-positive-700/30 rounded-lg shadow-xl">
                         <AlertTooltipContent
                           items={[
                             {

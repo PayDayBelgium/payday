@@ -158,7 +158,7 @@ export const OptionRow: React.FC<OptionRowProps> = ({
                 triggerRef={getTooltipRef(`action-${option.id}`)}
                 show={showTooltip === `action-${option.id}`}
               >
-                <div className="w-64 p-3 bg-white dark:bg-trading-dark-800 border-2 border-surface-line dark:border-trading-dark-600 rounded-lg shadow-xl">
+                <div className="w-64 p-3 bg-white dark:bg-trading-dark-800 border border-surface-line dark:border-trading-dark-600 rounded-lg shadow-xl">
                   <p className="text-xs text-ink-600 dark:text-ink-300">
                     {isBuy ? t('optionRow.longTooltip') : t('optionRow.shortTooltip')}
                   </p>
@@ -192,7 +192,7 @@ export const OptionRow: React.FC<OptionRowProps> = ({
                   triggerRef={getTooltipRef(`alert-${option.id}`)}
                   show={showTooltip === `alert-${option.id}`}
                 >
-                  <div className="w-72 p-3 bg-white dark:bg-trading-dark-800 border-2 border-negative-500/20 dark:border-negative-700/30 rounded-lg shadow-xl">
+                  <div className="w-72 p-3 bg-white dark:bg-trading-dark-800 border border-negative-500/20 dark:border-negative-700/30 rounded-lg shadow-xl">
                     <div className="flex items-start gap-2">
                       <AlertCircle className="w-4 h-4 text-negative-600 dark:text-negative-500 flex-shrink-0 mt-0.5" />
                       <div>
@@ -221,7 +221,7 @@ export const OptionRow: React.FC<OptionRowProps> = ({
                   triggerRef={getTooltipRef(`opportunity-${option.id}`)}
                   show={showTooltip === `opportunity-${option.id}`}
                 >
-                  <div className="w-72 p-3 bg-white dark:bg-trading-dark-800 border-2 border-positive-500/20 dark:border-positive-700/30 rounded-lg shadow-xl">
+                  <div className="w-72 p-3 bg-white dark:bg-trading-dark-800 border border-positive-500/20 dark:border-positive-700/30 rounded-lg shadow-xl">
                     <div className="flex items-start gap-2">
                       <Target className="w-4 h-4 text-positive-600 dark:text-positive-500 flex-shrink-0 mt-0.5" />
                       <div>
@@ -254,7 +254,7 @@ export const OptionRow: React.FC<OptionRowProps> = ({
                     triggerRef={getTooltipRef(`notes-${option.id}`)}
                     show={showTooltip === `notes-${option.id}`}
                   >
-                    <div className="w-72 p-3 bg-white dark:bg-trading-dark-800 border-2 border-primary-200 dark:border-primary-800 rounded-lg shadow-xl">
+                    <div className="w-72 p-3 bg-white dark:bg-trading-dark-800 border border-primary-200 dark:border-primary-800 rounded-lg shadow-xl">
                       <div className="flex items-start gap-2">
                         <MessageSquare className="w-4 h-4 text-primary-600 dark:text-primary-300 flex-shrink-0 mt-0.5" />
                         <div>
@@ -442,7 +442,7 @@ export const OptionRow: React.FC<OptionRowProps> = ({
                 triggerRef={getTooltipRef(`collateral-${option.id}`)}
                 show={showTooltip === `collateral-${option.id}`}
               >
-                <div className="w-72 p-3 bg-white dark:bg-trading-dark-800 border-2 border-surface-line dark:border-trading-dark-600 rounded-lg shadow-xl">
+                <div className="w-72 p-3 bg-white dark:bg-trading-dark-800 border border-surface-line dark:border-trading-dark-600 rounded-lg shadow-xl">
                   <div className="flex items-start gap-2">
                     <div>
                       <p className="font-semibold text-sm text-ink-900 dark:text-white mb-1">

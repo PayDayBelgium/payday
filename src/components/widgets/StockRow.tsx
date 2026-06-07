@@ -147,7 +147,7 @@ export const StockRow: React.FC<StockRowProps> = ({
                 {showTooltip &&
                   createPortal(
                     <div
-                      className="fixed w-64 p-3 bg-white dark:bg-trading-dark-800 border-2 border-positive-500/20 dark:border-positive-700/30 rounded-lg shadow-xl z-[9999]"
+                      className="fixed w-64 p-3 bg-white dark:bg-trading-dark-800 border border-positive-500/20 dark:border-positive-700/30 rounded-lg shadow-xl z-[9999]"
                       style={{ top: tooltipPosition.top, left: tooltipPosition.left }}
                       onMouseEnter={() => setShowTooltip(true)}
                       onMouseLeave={() => setShowTooltip(false)}
