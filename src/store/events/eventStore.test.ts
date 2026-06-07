@@ -28,7 +28,7 @@ describe('eventStore', () => {
 
     const all = await store.loadAll();
     expect(all.map((e) => e.seq)).toEqual([1, 2, 3]);
-    expect(all[0].payload.id).toBe('p1');
+    expect((all[0] as DomainEvent<'PositionClosed'>).payload.id).toBe('p1');
   });
 
   it('isolates events per user (db name)', async () => {
