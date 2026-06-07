@@ -9,7 +9,7 @@ import { useNavigation } from '../../contexts/NavigationContext';
 import { FridayDatePicker } from '../../components/common/FridayDatePicker';
 import { TickerSelector } from '../../components/widgets/TickerSelector';
 import { PortalTooltip } from '../../components/common/PortalTooltip';
-import { addTicker } from '../../store/slices/tickersSlice';
+import { addTicker } from '../../store/commands/tickerCommands';
 import { formatNumber } from '../../utils/numberFormat';
 import type { Ticker } from '../../types';
 
@@ -123,7 +123,7 @@ export const PMCCCalculator: React.FC = () => {
       currentPrice: inputs.underlyingPrice || 0,
     };
 
-    dispatch(addTicker(ticker));
+    dispatch(addTicker(ticker, new Date().toISOString()));
     handleInputChange('ticker', ticker.symbol);
     setIsCreatingTicker(false);
     setNewTickerData({

@@ -6,7 +6,8 @@ import { useAppSelector } from '../../hooks/useAppSelector';
 import { selectPositions } from '../../store/slices/positionsSlice';
 import { openPosition } from '../../store/commands/positionCommands';
 import { addTransaction } from '../../store/slices/portfoliosSlice';
-import { ensureTicker, selectAllTickers } from '../../store/slices/tickersSlice';
+import { selectAllTickers } from '../../store/slices/tickersSlice';
+import { ensureTicker } from '../../store/commands/tickerCommands';
 import { selectActiveWheels, updateWheelPremium } from '../../store/slices/wheelsSlice';
 import { selectUnlockedLevels, isFeatureAvailable } from '../../store/slices/userProgressSlice';
 import { getOptionActionFeature } from '../../utils/optionFeatureAccess';
@@ -181,7 +182,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
       currentPrice: 10, // Default price for new tickers
     };
 
-    dispatch(ensureTicker(ticker));
+    dispatch(ensureTicker(ticker, new Date().toISOString()));
     setSelectedTicker(ticker);
     setIsCreatingTicker(false);
     setNewTickerData({
@@ -288,14 +289,18 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
       };
 
       // Ensure ticker exists in central store
+      const spreadTs = new Date().toISOString();
       dispatch(
-        ensureTicker({
-          symbol: selectedTicker.symbol,
-          name: selectedTicker.name,
-          type: 'stock',
-          optionsAvailable: selectedTicker.optionsAvailable,
-          miniContractsAvailable: selectedTicker.miniContractsAvailable,
-        })
+        ensureTicker(
+          {
+            symbol: selectedTicker.symbol,
+            name: selectedTicker.name,
+            type: 'stock',
+            optionsAvailable: selectedTicker.optionsAvailable,
+            miniContractsAvailable: selectedTicker.miniContractsAvailable,
+          },
+          spreadTs
+        )
       );
 
       dispatch(openPosition(longPosition, new Date().toISOString()));
@@ -395,14 +400,18 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
       }
 
       // Ensure ticker exists in central store
+      const callTs = new Date().toISOString();
       dispatch(
-        ensureTicker({
-          symbol: selectedTicker.symbol,
-          name: selectedTicker.name,
-          type: 'stock',
-          optionsAvailable: selectedTicker.optionsAvailable,
-          miniContractsAvailable: selectedTicker.miniContractsAvailable,
-        })
+        ensureTicker(
+          {
+            symbol: selectedTicker.symbol,
+            name: selectedTicker.name,
+            type: 'stock',
+            optionsAvailable: selectedTicker.optionsAvailable,
+            miniContractsAvailable: selectedTicker.miniContractsAvailable,
+          },
+          callTs
+        )
       );
 
       dispatch(openPosition(newPosition, new Date().toISOString()));

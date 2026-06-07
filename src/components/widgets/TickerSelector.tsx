@@ -3,7 +3,8 @@ import { Search, Plus, TrendingUp, Building2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
-import { selectTickersSorted, addTicker } from '../../store/slices/tickersSlice';
+import { selectTickersSorted } from '../../store/slices/tickersSlice';
+import { updateTicker } from '../../store/commands/tickerCommands';
 import type { Ticker } from '../../types';
 
 interface TickerSelectorProps {
@@ -83,8 +84,9 @@ export const TickerSelector: React.FC<TickerSelectorProps> = ({
     setSearchTerm(ticker.symbol);
     setIsOpen(false);
 
-    // Update lastUsed timestamp
-    dispatch(addTicker({ ...ticker, lastUsed: new Date().toISOString() }));
+    // Update lastUsed timestamp so the ticker sorts to the top of the list.
+    const ts = new Date().toISOString();
+    dispatch(updateTicker({ symbol: ticker.symbol, lastUsed: ts }, ts));
   };
 
   const handleCreateNew = () => {

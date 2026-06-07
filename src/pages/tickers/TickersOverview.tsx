@@ -4,12 +4,13 @@ import { Filter, Eye, Briefcase, ExternalLink, Plus, Trash2, Edit2, X, Check } f
 import { usePageTitle } from '../../contexts/PageTitleContext';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { selectAllTickers } from '../../store/slices/tickersSlice';
 import {
-  selectAllTickers,
   addToWatchlist,
   removeTicker,
   updateTicker,
-} from '../../store/slices/tickersSlice';
+} from '../../store/commands/tickerCommands';
+import { updateTickerPrice } from '../../store/slices/tickersSlice';
 import { ConfirmModal } from '../../components/modals/ConfirmModal';
 import type { PortfolioName, Ticker, Position } from '../../types';
 import { formatNumber } from '../../utils/numberFormat';
@@ -187,7 +188,7 @@ export const TickersOverview: React.FC = () => {
       isWatchlist: true,
     };
 
-    dispatch(addToWatchlist(ticker));
+    dispatch(addToWatchlist(ticker, new Date().toISOString()));
     setNewWatchlistTicker({ symbol: '', name: '', price: '' });
     setIsAddWatchlistOpen(false);
   };
@@ -197,7 +198,7 @@ export const TickersOverview: React.FC = () => {
   };
 
   const confirmDeleteTicker = () => {
-    dispatch(removeTicker(deleteConfirm.symbol));
+    dispatch(removeTicker(deleteConfirm.symbol, new Date().toISOString()));
     setDeleteConfirm({ isOpen: false, symbol: '', name: '' });
   };
 
@@ -210,13 +211,12 @@ export const TickersOverview: React.FC = () => {
   };
 
   const saveEdit = (symbol: string) => {
-    dispatch(
-      updateTicker({
-        symbol,
-        name: editValues.name,
-        currentPrice: editValues.price ? parseFloat(editValues.price) : undefined,
-      })
-    );
+    // Name/metadata is an event-sourced intent; the live price is runtime-only
+    // (not part of the event log), so set it via the runtime price reducer.
+    dispatch(updateTicker({ symbol, name: editValues.name }, new Date().toISOString()));
+    if (editValues.price) {
+      dispatch(updateTickerPrice({ symbol, price: parseFloat(editValues.price) }));
+    }
     setEditingTicker(null);
   };
 

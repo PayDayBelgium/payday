@@ -2,6 +2,9 @@ import { createSlice, createSelector } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { Ticker } from '../../types';
 import type { RootState } from '../index';
+import { applyTickerEvent } from '../events/projectTickers';
+import { appendEvents, replayEvents } from '../events/eventsSlice';
+import type { DomainEvent } from '../events/types';
 
 interface TickersState {
   tickers: Ticker[];
@@ -15,130 +18,54 @@ const tickersSlice = createSlice({
   name: 'tickers',
   initialState,
   reducers: {
-    // Add a new ticker
-    addTicker: (state, action: PayloadAction<Ticker>) => {
-      // Check if ticker already exists
-      const existingIndex = state.tickers.findIndex(
-        (t) => t.symbol.toUpperCase() === action.payload.symbol.toUpperCase()
-      );
-      if (existingIndex === -1) {
-        state.tickers.push({
-          ...action.payload,
-          symbol: action.payload.symbol.toUpperCase(),
-          createdAt: action.payload.createdAt || new Date().toISOString(),
-        });
-      }
-    },
-
-    // Update ticker (name, price, etc.)
-    updateTicker: (state, action: PayloadAction<Partial<Ticker> & { symbol: string }>) => {
-      const index = state.tickers.findIndex(
-        (t) => t.symbol.toUpperCase() === action.payload.symbol.toUpperCase()
-      );
-      if (index !== -1) {
-        // Ensure currentPrice doesn't go below 0
-        const updatedPayload = { ...action.payload };
-        if (updatedPayload.currentPrice !== undefined && updatedPayload.currentPrice < 0) {
-          updatedPayload.currentPrice = 0;
-        }
-        state.tickers[index] = {
-          ...state.tickers[index],
-          ...updatedPayload,
-          symbol: action.payload.symbol.toUpperCase(),
-        };
-      }
-    },
-
-    // Update ticker price
+    // -----------------------------------------------------------------
+    // Runtime-only: live price from the WebSocket feed.
+    // This is NOT event-sourced — prices are transient runtime values
+    // that the feed repopulates after each reload.
+    // tickerPriceMiddleware triggers on this action to propagate the new
+    // price to open positions and fire ITM/price-change alerts.
+    // -----------------------------------------------------------------
     updateTickerPrice: (state, action: PayloadAction<{ symbol: string; price: number }>) => {
       const ticker = state.tickers.find(
         (t) => t.symbol.toUpperCase() === action.payload.symbol.toUpperCase()
       );
       if (ticker) {
-        // Ensure price doesn't go below 0
         ticker.currentPrice = Math.max(0, action.payload.price);
       }
     },
 
-    // Update ticker name
-    updateTickerName: (state, action: PayloadAction<{ symbol: string; name: string }>) => {
-      const ticker = state.tickers.find(
-        (t) => t.symbol.toUpperCase() === action.payload.symbol.toUpperCase()
-      );
-      if (ticker) {
-        ticker.name = action.payload.name;
-      }
-    },
-
-    // Remove ticker
-    removeTicker: (state, action: PayloadAction<string>) => {
-      state.tickers = state.tickers.filter(
-        (t) => t.symbol.toUpperCase() !== action.payload.toUpperCase()
-      );
-    },
-
-    // Add to watchlist (create ticker if doesn't exist, or mark as watchlist)
-    addToWatchlist: (state, action: PayloadAction<Ticker>) => {
-      const existingIndex = state.tickers.findIndex(
-        (t) => t.symbol.toUpperCase() === action.payload.symbol.toUpperCase()
-      );
-      if (existingIndex === -1) {
-        state.tickers.push({
-          ...action.payload,
-          symbol: action.payload.symbol.toUpperCase(),
-          isWatchlist: true,
-          createdAt: new Date().toISOString(),
-        });
-      } else {
-        state.tickers[existingIndex].isWatchlist = true;
-      }
-    },
-
-    // Remove from watchlist
-    removeFromWatchlist: (state, action: PayloadAction<string>) => {
-      const ticker = state.tickers.find(
-        (t) => t.symbol.toUpperCase() === action.payload.toUpperCase()
-      );
-      if (ticker) {
-        ticker.isWatchlist = false;
-      }
-    },
-
-    // Load all tickers (for initialization)
+    // -----------------------------------------------------------------
+    // Runtime-only: bulk load from backup/restore path.
+    // Deferred until the backup/restore path is fully event-sourced.
+    // Kept as a harmless runtime reducer so backupActions.ts continues
+    // to work.
+    // -----------------------------------------------------------------
     loadTickers: (state, action: PayloadAction<Ticker[]>) => {
       state.tickers = action.payload;
     },
-
-    // Ensure ticker exists (used when creating positions)
-    ensureTicker: (state, action: PayloadAction<Ticker>) => {
-      const existingIndex = state.tickers.findIndex(
-        (t) => t.symbol.toUpperCase() === action.payload.symbol.toUpperCase()
-      );
-      if (existingIndex === -1) {
-        state.tickers.push({
-          ...action.payload,
-          symbol: action.payload.symbol.toUpperCase(),
-          createdAt: new Date().toISOString(),
-        });
-      } else {
-        // Update lastUsed
-        state.tickers[existingIndex].lastUsed = new Date().toISOString();
+  },
+  extraReducers: (builder) => {
+    const fold = (state: TickersState, events: DomainEvent[]) => {
+      let next = state.tickers;
+      for (const event of events) {
+        next = applyTickerEvent(next, event);
       }
-    },
+      state.tickers = next;
+    };
+
+    builder.addCase(appendEvents, (state, action) => fold(state, action.payload.events));
+
+    builder.addCase(replayEvents, (state, action) => {
+      // Cold-boot replay: reset the tickers list and replay the full event log.
+      // currentPrice values are NOT in the event log — they will be repopulated
+      // by the live price feed after boot.
+      state.tickers = [];
+      fold(state, action.payload);
+    });
   },
 });
 
-export const {
-  addTicker,
-  updateTicker,
-  updateTickerPrice,
-  updateTickerName,
-  removeTicker,
-  addToWatchlist,
-  removeFromWatchlist,
-  loadTickers,
-  ensureTicker,
-} = tickersSlice.actions;
+export const { updateTickerPrice, loadTickers } = tickersSlice.actions;
 
 // Base Selectors
 export const selectAllTickers = (state: RootState) => state.tickers.tickers;

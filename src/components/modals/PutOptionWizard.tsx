@@ -5,7 +5,8 @@ import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useSelector } from 'react-redux';
 import { openPosition } from '../../store/commands/positionCommands';
 import { addTransaction } from '../../store/slices/portfoliosSlice';
-import { ensureTicker, selectAllTickers } from '../../store/slices/tickersSlice';
+import { selectAllTickers } from '../../store/slices/tickersSlice';
+import { ensureTicker } from '../../store/commands/tickerCommands';
 import { selectActiveWheels, updateWheelPremium } from '../../store/slices/wheelsSlice';
 import { selectUnlockedLevels, isFeatureAvailable } from '../../store/slices/userProgressSlice';
 import { getOptionActionFeature } from '../../utils/optionFeatureAccess';
@@ -135,7 +136,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
       currentPrice: 10, // Default price for new tickers
     };
 
-    dispatch(ensureTicker(ticker));
+    dispatch(ensureTicker(ticker, new Date().toISOString()));
     setSelectedTicker(ticker);
     setIsCreatingTicker(false);
     setNewTickerData({
@@ -226,14 +227,18 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
       };
 
       // Ensure ticker exists in central store
+      const spreadTs = new Date().toISOString();
       dispatch(
-        ensureTicker({
-          symbol: selectedTicker.symbol,
-          name: selectedTicker.name,
-          type: 'stock',
-          optionsAvailable: selectedTicker.optionsAvailable,
-          miniContractsAvailable: selectedTicker.miniContractsAvailable,
-        })
+        ensureTicker(
+          {
+            symbol: selectedTicker.symbol,
+            name: selectedTicker.name,
+            type: 'stock',
+            optionsAvailable: selectedTicker.optionsAvailable,
+            miniContractsAvailable: selectedTicker.miniContractsAvailable,
+          },
+          spreadTs
+        )
       );
 
       dispatch(openPosition(longPosition, new Date().toISOString()));
@@ -299,14 +304,18 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
       }
 
       // Ensure ticker exists in central store
+      const putTs = new Date().toISOString();
       dispatch(
-        ensureTicker({
-          symbol: selectedTicker.symbol,
-          name: selectedTicker.name,
-          type: 'stock',
-          optionsAvailable: selectedTicker.optionsAvailable,
-          miniContractsAvailable: selectedTicker.miniContractsAvailable,
-        })
+        ensureTicker(
+          {
+            symbol: selectedTicker.symbol,
+            name: selectedTicker.name,
+            type: 'stock',
+            optionsAvailable: selectedTicker.optionsAvailable,
+            miniContractsAvailable: selectedTicker.miniContractsAvailable,
+          },
+          putTs
+        )
       );
 
       dispatch(openPosition(newPosition, new Date().toISOString()));

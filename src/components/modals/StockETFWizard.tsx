@@ -6,7 +6,7 @@ import { TrendingUp, Building2, Calendar, DollarSign, Hash, Info } from 'lucide-
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { openPosition } from '../../store/commands/positionCommands';
 import { addTransaction } from '../../store/slices/portfoliosSlice';
-import { ensureTicker } from '../../store/slices/tickersSlice';
+import { ensureTicker } from '../../store/commands/tickerCommands';
 import type { Ticker, StockPosition, PortfolioName, CurrencyType } from '../../types';
 import { getCurrencySymbol } from '../../utils/currency';
 import { formatNumber } from '../../utils/numberFormat';
@@ -82,7 +82,7 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
       currentPrice: 10, // Default price for new tickers
     };
 
-    dispatch(ensureTicker(newTicker));
+    dispatch(ensureTicker(newTicker, new Date().toISOString()));
     setSelectedTicker(newTicker);
     setIsCreatingTicker(false);
   };
@@ -111,15 +111,18 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
     };
 
     // Ensure ticker exists in central store
+    const stockTs = new Date().toISOString();
     dispatch(
-      ensureTicker({
-        symbol: selectedTicker.symbol,
-        name: selectedTicker.name,
-        type: positionType,
-        optionsAvailable: selectedTicker.optionsAvailable,
-        miniContractsAvailable: selectedTicker.miniContractsAvailable,
-        currentPrice: purchaseDetails.purchasePrice,
-      })
+      ensureTicker(
+        {
+          symbol: selectedTicker.symbol,
+          name: selectedTicker.name,
+          type: positionType,
+          optionsAvailable: selectedTicker.optionsAvailable,
+          miniContractsAvailable: selectedTicker.miniContractsAvailable,
+        },
+        stockTs
+      )
     );
 
     // Add position
