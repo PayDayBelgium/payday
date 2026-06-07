@@ -18,17 +18,12 @@ import type { DomainEvent } from '../events/types';
 interface PortfoliosState {
   portfolios: Portfolio[];
   summaries: PortfolioSummary[];
-  // NOTE: dailyData (equity time-series) is never written by event projections.
-  // The event-sourced daily/equity time-series is a deferred follow-up; this
-  // array is kept for backward-compat with selectors and persisted data.
-  dailyData: DailyPortfolioData[];
   transactions: PortfolioTransaction[];
 }
 
 const initialState: PortfoliosState = {
   portfolios: [],
   summaries: [],
-  dailyData: [],
   transactions: [],
 };
 
@@ -74,7 +69,7 @@ const portfoliosSlice = createSlice({
     builder.addCase(replayEvents, (state, action) => {
       state.portfolios = [];
       state.transactions = [];
-      // summaries and dailyData are left as [] (derived/deferred — not replayed from events)
+      // summaries are derived — cleared and recomputed by selectPortfolioSummaries
       fold(state, action.payload, []);
     });
   },
@@ -84,7 +79,6 @@ export const { updatePortfolioValue, updatePortfolioSummary } = portfoliosSlice.
 
 // Base Selectors
 export const selectPortfolios = (state: RootState) => state.portfolios.portfolios;
-export const selectDailyData = (state: RootState) => state.portfolios.dailyData;
 export const selectTransactions = (state: RootState) => state.portfolios.transactions;
 
 // Memoized selector for transactions by portfolio
@@ -93,12 +87,100 @@ export const selectTransactionsByPortfolio = createSelector(
   (transactions, portfolioName) => (transactions || []).filter((t) => t.portfolio === portfolioName)
 );
 
-// Memoized selector to calculate portfolio summaries
-// IMPORTANT: portfolio.currentValue is the single source of truth for current portfolio value
-// dailyData is only used for historical tracking and weekly returns
+/**
+ * Derives a realized equity time-series (DailyPortfolioData[]) from the transaction ledger.
+ *
+ * For each portfolio:
+ * - Sort transactions by date ascending.
+ * - Walk them applying the cash rule: withdrawal subtracts, every other type adds the signed amount.
+ * - Emit one point per (portfolio, date) after all same-date transactions are processed.
+ * - Append a final point whose totalValue is portfolio.currentValue (live mark-to-market), dated at
+ *   the latest transaction date. If there are no transactions, emit a single bootstrap point.
+ *
+ * "Today" is intentionally derived from transaction dates — never from Date.now() — so the selector
+ * stays pure and its output is deterministic for a given store state.
+ */
+export const selectEquitySeries = createSelector(
+  [selectPortfolios, selectTransactions],
+  (portfolios, transactions): DailyPortfolioData[] => {
+    const points: DailyPortfolioData[] = [];
+
+    for (const portfolio of portfolios) {
+      const ptxns = [...(transactions || []).filter((t) => t.portfolio === portfolio.name)].sort(
+        (a, b) => a.date.localeCompare(b.date)
+      );
+
+      if (ptxns.length === 0) {
+        // No transactions yet — emit a single bootstrap point.
+        const bootstrapDate = portfolio.startDate ?? '';
+        points.push({
+          date: bootstrapDate,
+          portfolio: portfolio.name,
+          totalValue: portfolio.currentValue,
+          cash: portfolio.initialCapital,
+          dailyPnL: 0,
+          weeklyPnL: 0,
+        });
+        continue;
+      }
+
+      // Walk transactions, grouping by date.
+      let runningCash = portfolio.initialCapital;
+      let prevCash = portfolio.initialCapital;
+
+      for (let i = 0; i < ptxns.length; i++) {
+        const txn = ptxns[i];
+
+        // Apply the cash rule — mirrors positionValueMiddleware exactly.
+        if (txn.type === 'withdrawal') {
+          runningCash -= txn.amount;
+        } else {
+          // deposit / dividend / position_sell / premium_collected are positive;
+          // position_buy / premium_paid / fee / adjustment / option_roll carry their own sign.
+          runningCash += txn.amount;
+        }
+
+        // Detect date boundary: flush when date changes or at the end of the list.
+        const isLast = i === ptxns.length - 1;
+        const nextDate = isLast ? null : ptxns[i + 1].date;
+
+        if (isLast || nextDate !== txn.date) {
+          points.push({
+            date: txn.date,
+            portfolio: portfolio.name,
+            totalValue: runningCash,
+            cash: runningCash,
+            dailyPnL: runningCash - prevCash,
+            weeklyPnL: 0,
+          });
+          prevCash = runningCash;
+        }
+      }
+
+      // Final "live" point: replace the last emitted point's totalValue with portfolio.currentValue
+      // so the curve ends at the true mark-to-market value. The date stays at the last transaction
+      // date — we never call Date.now() inside a selector.
+      const portfolioPoints = points.filter((p) => p.portfolio === portfolio.name);
+      const lastPoint = portfolioPoints[portfolioPoints.length - 1];
+      if (lastPoint) {
+        // Compute the second-to-last totalValue for the live dailyPnL.
+        const prevPoint = portfolioPoints[portfolioPoints.length - 2];
+        const prevValue = prevPoint?.totalValue ?? portfolio.initialCapital;
+        lastPoint.totalValue = portfolio.currentValue;
+        lastPoint.dailyPnL = portfolio.currentValue - prevValue;
+      }
+    }
+
+    return points;
+  }
+);
+
+// Memoized selector to calculate portfolio summaries.
+// IMPORTANT: portfolio.currentValue is the single source of truth for current portfolio value.
+// Weekly/yearly returns are derived from selectEquitySeries.
 export const selectPortfolioSummaries = createSelector(
-  [selectPortfolios, selectDailyData, (state: RootState) => state.positions.positions],
-  (portfolios, dailyData, positions): PortfolioSummary[] => {
+  [selectPortfolios, selectEquitySeries, (state: RootState) => state.positions.positions],
+  (portfolios, equitySeries, positions): PortfolioSummary[] => {
     return portfolios.map((portfolio) => {
       // SINGLE SOURCE OF TRUTH: portfolio.currentValue
       const totalValue = portfolio.currentValue || 0;
@@ -166,28 +248,35 @@ export const selectPortfolioSummaries = createSelector(
       // This follows the formula: Portfolio Value = Cash + Long - Short
       const cash = Math.max(0, totalValue - longValue + shortValue);
 
-      // Get weekly return from latest daily data if available
-      const portfolioData = dailyData.filter((d) => d.portfolio === portfolio.name);
+      // Derive weekly/yearly returns from the equity series for this portfolio.
+      const portfolioSeries = equitySeries
+        .filter((d) => d.portfolio === portfolio.name)
+        .sort((a, b) => a.date.localeCompare(b.date));
+
       let weeklyReturn = 0;
       let yearlyReturn = 0;
 
-      if (portfolioData.length > 0) {
-        // Sort by date descending
-        const sortedData = [...portfolioData].sort(
-          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-        );
-        const latestData = sortedData[0];
-        weeklyReturn = latestData.weeklyPnL || 0;
+      if (portfolioSeries.length >= 2) {
+        // Weekly: value 7 days back vs now.
+        const oneWeekAgoIso = new Date(
+          Date.now() - 7 * 24 * 60 * 60 * 1000
+        ).toISOString().slice(0, 10);
+        const weekAgoPoint = [...portfolioSeries]
+          .reverse()
+          .find((d) => d.date <= oneWeekAgoIso);
+        if (weekAgoPoint && weekAgoPoint.totalValue > 0) {
+          weeklyReturn = ((totalValue - weekAgoPoint.totalValue) / weekAgoPoint.totalValue) * 100;
+        }
 
-        // Calculate yearly return from historical data
-        // Find data from approximately 1 year ago
-        const oneYearAgo = new Date();
-        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-
-        const yearAgoData = sortedData.find((d) => new Date(d.date) <= oneYearAgo);
-
-        if (yearAgoData && yearAgoData.totalValue > 0) {
-          yearlyReturn = ((totalValue - yearAgoData.totalValue) / yearAgoData.totalValue) * 100;
+        // Yearly: value ~1 year back vs now.
+        const oneYearAgoIso = new Date(
+          Date.now() - 365 * 24 * 60 * 60 * 1000
+        ).toISOString().slice(0, 10);
+        const yearAgoPoint = [...portfolioSeries]
+          .reverse()
+          .find((d) => d.date <= oneYearAgoIso);
+        if (yearAgoPoint && yearAgoPoint.totalValue > 0) {
+          yearlyReturn = ((totalValue - yearAgoPoint.totalValue) / yearAgoPoint.totalValue) * 100;
         }
       }
 
@@ -215,10 +304,6 @@ export const selectPortfolioSummaryByName = (portfolioName: string) => (state: R
   const summaries = selectPortfolioSummaries(state);
   return summaries.find((s) => s.portfolio === portfolioName);
 };
-
-// Selector for daily data by portfolio
-export const selectDailyDataByPortfolio = (portfolioName: string) => (state: RootState) =>
-  state.portfolios.dailyData.filter((d) => d.portfolio === portfolioName);
 
 // Centralized selector for portfolio value breakdown
 // This calculates long value, short value, and cash for a portfolio

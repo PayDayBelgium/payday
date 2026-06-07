@@ -30,7 +30,7 @@ import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import {
   selectTransactionsByPortfolio,
-  selectDailyData,
+  selectEquitySeries,
 } from '../../store/slices/portfoliosSlice';
 import { deposit, withdraw, adjustValue } from '../../store/commands/cashCommands';
 import { selectAllTickers } from '../../store/slices/tickersSlice';
@@ -106,7 +106,7 @@ export const PortfolioDetail: React.FC = () => {
   const transactions = useAppSelector((state) =>
     selectTransactionsByPortfolio(state, portfolioName || '')
   );
-  const dailyData = useAppSelector(selectDailyData);
+  const dailyData = useAppSelector(selectEquitySeries);
   const unlockedLevels = useAppSelector(selectUnlockedLevels);
 
   // Check feature access for options

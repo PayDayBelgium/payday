@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { mockPortfolios, mockPortfolioSummaries, mockDailyData } from '../../utils/mockData';
+import { mockPortfolios, mockPortfolioSummaries } from '../../utils/mockData';
 import { LoadingOverlay } from '../../components/common/LoadingOverlay';
 import { updateUserLastLogin } from '../../utils/userManagement';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
@@ -77,7 +77,6 @@ const LoginPage: React.FC = () => {
           portfolios: JSON.stringify({
             portfolios: mockPortfolios,
             summaries: mockPortfolioSummaries,
-            dailyData: mockDailyData,
           }),
           positions: JSON.stringify({ positions: [] }),
           trades: JSON.stringify({ trades: [] }),
@@ -92,7 +91,7 @@ const LoginPage: React.FC = () => {
       try {
         const newUserStore = {
           auth: JSON.stringify({ isAuthenticated: true, user: username }),
-          portfolios: JSON.stringify({ portfolios: [], summaries: [], dailyData: [] }),
+          portfolios: JSON.stringify({ portfolios: [], summaries: [] }),
           positions: JSON.stringify({ positions: [] }),
           trades: JSON.stringify({ trades: [] }),
           rules: JSON.stringify({ rules: [] }),
