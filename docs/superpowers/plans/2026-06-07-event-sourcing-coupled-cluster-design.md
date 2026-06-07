@@ -5,16 +5,21 @@ entangled: the transaction ledger feeds the cash balance, position/roll/assignme
 ledger, and wheel phase/cycles/totals are driven by assignment/roll flows. A slice cannot be
 half-event-sourced, so portfolios + wheels are cut over together with the roll/assignment commands.
 
-**Guiding principle: reproduce current behavior EXACTLY (including known quirks). No financial
-drift during the refactor.** Equivalence tests assert the new event-driven flow yields the same
-`positions`, `transactions`, and `portfolio.currentValue` as the old flow.
+**Guiding principle: reproduce current position/ledger behavior via events, and FIX the cash-sum
+bug (decision below).** Equivalence tests assert the new event-driven flow yields the expected
+`positions`, `transactions`, and `portfolio.currentValue` computed from the documented formulas
+(with the corrected cash inclusion).
 
-## Known pre-existing quirk to PRESERVE (not fix here)
-`positionValueMiddleware.calculatePortfolioValue` sums only `deposit, withdrawal, adjustment,
-position_buy, position_sell, premium_collected, premium_paid` into the cash balance — it IGNORES
-`option_roll`, `dividend`, `fee`. We preserve this exactly (so portfolio values are unchanged).
-The ledger projection still RECORDS `option_roll` entries (for the audit trail/UI) but they remain
-excluded from the cash sum, matching today. Fixing this cash bug is a separate, explicit follow-up.
+## DECISION: FIX the cash-sum bug (user-approved)
+`positionValueMiddleware.calculatePortfolioValue` currently sums only `deposit, withdrawal,
+adjustment, position_buy, position_sell, premium_collected, premium_paid` and IGNORES `option_roll`,
+`dividend`, `fee`. **Fix it: include `option_roll`, `dividend`, `fee` in the cash balance.** This
+intentionally changes portfolio values for portfolios that have rolls/dividends/fees (now correct).
+Cash rule (so `cash += amount` works uniformly): store signed amounts —
+deposit(+), dividend(+), position_sell(+), premium_collected(+); position_buy(−), premium_paid(−),
+fee(−); adjustment(±), option_roll(± net). **Exception:** withdrawal keeps the existing
+`cash -= amount` with a positive magnitude (do not change withdrawal behavior). Add `option_roll`,
+`dividend`, `fee` to the sum loop accordingly. Cover with a unit test on `calculatePortfolioValue`.
 
 ## Event models
 
@@ -135,14 +140,31 @@ then assert identical `positions`, `transactions` (type+amount+order), and `port
 (Where the old path's code is being removed, snapshot its expected outputs as fixtures derived from
 the formulas above.) These tests gate the phase.
 
-## Sub-phase task order
-1. Portfolio CRUD + cash events + ledger projection for cash + portfolio projection + commands +
-   rename cascade (strategies/journal/wheels) + remove `portfolios` from persist (positions-derived
-   ledger entries still come from existing position events). Equivalence tests for cash + open/close.
-2. Roll/assignment composite events + commands + positions projection handling + ledger derivation
-   for roll/assignment; move orchestration out of PortfolioView/CampaignView. Equivalence tests.
-3. Wheels: WheelCampaignStarted + CRUD events + derived phase/cycles/totals projection + remove
-   `wheels` from persist. Equivalence tests for wheel lifecycle.
-4. Final: full verification (typecheck/test/lint/build), holistic review, merge.
+## Sub-phase task order (atomic cutover — persist removal happens LAST)
+The portfolios/wheels slices cannot leave redux-persist until their FULL state (incl. the
+position-derived ledger) is event-sourced — otherwise rehydrate + replay double-apply. So we BUILD
+everything additively (app stays green on the old paths), then flip in one atomic sweep.
 
-Each sub-phase ends green (typecheck+test+lint) and is committed.
+1. **Event types** — add ALL cluster event types + payloads to `types.ts` (portfolio CRUD, cash,
+   `OptionRolled`, `SpreadRolled`, `OptionAssigned`, wheel events). Additive, green.
+2. **Pure projections + tests (not wired yet):**
+   - `projectPortfolios.ts` (CRUD + `PortfolioRenamed` cascade over portfolios/summaries/dailyData/transactions refs).
+   - extend `projectPositions.ts` to apply `OptionRolled`/`SpreadRolled`/`OptionAssigned` (close+open/edit from payload).
+   - `projectTransactions.ts` (the ledger: cash events + PositionOpened/Closed + composite roll/assignment events → PortfolioTransaction[]).
+   - `projectWheels.ts` (WheelCampaignStarted + CRUD + derived phase/cycles/totals from wheel-linked position + assignment events).
+3. **Commands + tests:** `portfolioCommands` (create/edit/rename/delete/reorder), `cashCommands`
+   (deposit/withdraw/fee/dividend/adjust), `wheelCommands` (start/edit/close/delete), and
+   `rollOption`/`rollSpread`/`recordAssignment` (emit the composite events).
+4. **Cash-bug fix + tests:** update `positionValueMiddleware.calculatePortfolioValue` to include
+   `option_roll`/`dividend`/`fee` per the cash rule; unit-test it.
+5. **Equivalence tests:** for open/close/roll/spread-roll/put-assign/call-assign(full+partial),
+   assert the composite-event flow yields the documented positions + transactions + portfolio value.
+6. **ATOMIC CUTOVER (one big step):** wire `portfoliosSlice`/`wheelsSlice` `extraReducers` to fold
+   their events (transactions become a projection); remove the raw intent reducers (addWheel,
+   addTransaction, addPortfolio, updatePortfolio, etc.); sweep ALL call sites (wizards, PortfolioView,
+   CampaignView, NewWheelModal, PortfolioManagement, PortfolioDetail, ai/tools.ts) to commands;
+   unify portfolio rename onto the single `PortfolioRenamed` event (retire `renamePortfolioPositions`);
+   remove `portfolios` + `wheels` from the persist whitelist. Green.
+7. **Final:** full verification (typecheck/test/lint/build), holistic review (drift focus), merge.
+
+Each step ends green (typecheck+test+lint) and is committed.
