@@ -5,23 +5,29 @@ import type {
   CallOption,
   PutOption,
 } from '../../types';
-import type { DomainEvent, PositionClosedPayload } from './types';
+import type {
+  DomainEvent,
+  PositionClosedPayload,
+  OptionRolledPayload,
+  SpreadRolledPayload,
+  OptionAssignedPayload,
+} from './types';
 
 /**
  * Build a Trade from a closed position (lifted from the former tradeMiddleware).
- * The trade id is derived from the close event so replays are deterministic.
+ * `tradeId` is the full id to use for the produced trade (caller ensures uniqueness).
  */
 function buildTrade(
   position: Position,
   close: PositionClosedPayload,
-  eventId: string
+  tradeId: string
 ): Trade | null {
   if (position.type === 'stock' || position.type === 'etf') {
     const stockPos = position as StockPosition;
     const exitPrice = close.closePrice ?? stockPos.currentPrice ?? stockPos.purchasePrice;
     const realizedPnL = (exitPrice - stockPos.purchasePrice) * stockPos.shares;
     return {
-      id: `trade-${eventId}`,
+      id: `trade-${tradeId}`,
       ticker: position.ticker,
       portfolio: position.portfolio,
       strategy: position.type === 'etf' ? 'ETF' : 'Aandelen',
@@ -45,7 +51,7 @@ function buildTrade(
       ? (option.premium - exitPremium) * option.contracts * 100
       : (exitPremium - option.premium) * option.contracts * 100;
     return {
-      id: `trade-${eventId}`,
+      id: `trade-${tradeId}`,
       ticker: position.ticker,
       portfolio: position.portfolio,
       strategy: isSell
@@ -72,18 +78,94 @@ function buildTrade(
 }
 
 /**
- * Trades are a projection of PositionClosed events. `positionsBefore` is the
- * positions projection state *before* this event is folded (the open position).
+ * Trades are a projection of PositionClosed and composite roll/assignment events.
+ * `positionsBefore` is the positions projection state *before* this event is folded
+ * (so the positions being closed are still present).
  */
 export function applyTradeEvent(
   trades: Trade[],
   event: DomainEvent,
   positionsBefore: Position[]
 ): Trade[] {
-  if (event.type !== 'PositionClosed') return trades;
-  const payload = event.payload as PositionClosedPayload;
-  const position = positionsBefore.find((p) => p.id === payload.id);
-  if (!position) return trades;
-  const trade = buildTrade(position, payload, event.id);
-  return trade ? [...trades, trade] : trades;
+  const byId = (id: string) => positionsBefore.find((p) => p.id === id);
+
+  if (event.type === 'PositionClosed') {
+    const payload = event.payload as PositionClosedPayload;
+    const position = byId(payload.id);
+    if (!position) return trades;
+    const trade = buildTrade(position, payload, event.id);
+    return trade ? [...trades, trade] : trades;
+  }
+
+  if (event.type === 'OptionRolled') {
+    const payload = event.payload as OptionRolledPayload;
+    const position = byId(payload.oldPositionId);
+    if (!position) return trades;
+    const trade = buildTrade(
+      position,
+      { id: payload.oldPositionId, closeDate: payload.closeDate, closePremium: payload.closePremium, realizedPnL: payload.realizedPnL },
+      event.id
+    );
+    return trade ? [...trades, trade] : trades;
+  }
+
+  if (event.type === 'SpreadRolled') {
+    const payload = event.payload as SpreadRolledPayload;
+    const newTrades: Trade[] = [];
+    payload.legs.forEach((leg, index) => {
+      const position = byId(leg.oldPositionId);
+      if (!position) return;
+      const trade = buildTrade(
+        position,
+        { id: leg.oldPositionId, closeDate: payload.rollDate, closePremium: leg.closePremium, realizedPnL: leg.realizedPnL },
+        `${event.id}-${index}`
+      );
+      if (trade) newTrades.push(trade);
+    });
+    return newTrades.length > 0 ? [...trades, ...newTrades] : trades;
+  }
+
+  if (event.type === 'OptionAssigned') {
+    const payload = event.payload as OptionAssignedPayload;
+    const newTrades: Trade[] = [];
+
+    if (payload.kind === 'put') {
+      const position = byId(payload.optionId);
+      if (position) {
+        const trade = buildTrade(
+          position,
+          { id: payload.optionId, closeDate: payload.assignmentDate, closePremium: 0, realizedPnL: payload.optionRealizedPnL },
+          `${event.id}-option`
+        );
+        if (trade) newTrades.push(trade);
+      }
+    } else {
+      // kind === 'call'
+      const optionPosition = byId(payload.optionId);
+      if (optionPosition) {
+        const trade = buildTrade(
+          optionPosition,
+          { id: payload.optionId, closeDate: payload.assignmentDate, closePremium: 0, realizedPnL: payload.optionRealizedPnL },
+          `${event.id}-option`
+        );
+        if (trade) newTrades.push(trade);
+      }
+
+      if (payload.stockClose.fullClose === true) {
+        const stockPosition = byId(payload.stockId);
+        if (stockPosition) {
+          const trade = buildTrade(
+            stockPosition,
+            { id: payload.stockId, closeDate: payload.assignmentDate, closePrice: payload.stockClose.closePrice, realizedPnL: payload.stockClose.stockRealizedPnL },
+            `${event.id}-stock`
+          );
+          if (trade) newTrades.push(trade);
+        }
+      }
+    }
+
+    return newTrades.length > 0 ? [...trades, ...newTrades] : trades;
+  }
+
+  return trades;
 }
