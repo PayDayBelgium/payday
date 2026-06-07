@@ -4,10 +4,9 @@ import { TrendingUp, TrendingDown, ArrowRightLeft, BarChart3, RefreshCw } from '
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useSelector } from 'react-redux';
 import { openPosition } from '../../store/commands/positionCommands';
-import { addTransaction } from '../../store/slices/portfoliosSlice';
 import { selectAllTickers } from '../../store/slices/tickersSlice';
 import { ensureTicker } from '../../store/commands/tickerCommands';
-import { selectActiveWheels, updateWheelPremium } from '../../store/slices/wheelsSlice';
+import { selectActiveWheels } from '../../store/slices/wheelsSlice';
 import { selectUnlockedLevels, isFeatureAvailable } from '../../store/slices/userProgressSlice';
 import { getOptionActionFeature } from '../../utils/optionFeatureAccess';
 import { WizardModal, type WizardStep } from './WizardModal';
@@ -181,7 +180,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
       // Create spread position (to be implemented with SpreadPosition type)
       // For now, we'll create two separate put options linked together
       const spreadId = `spread-${Date.now()}`;
-      const spreadType = action === 'credit-spread' ? 'Credit' : 'Debit';
+      const _spreadType = action === 'credit-spread' ? 'Credit' : 'Debit';
 
       // For Credit Spread: Short leg = higher strike, Long leg = lower strike
       // For Debit Spread: Long leg = higher strike, Short leg = lower strike
@@ -241,31 +240,9 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
         )
       );
 
+      // Transaction ledger lines are derived from PositionOpened events.
       dispatch(openPosition(longPosition, new Date().toISOString()));
       dispatch(openPosition(shortPosition, new Date().toISOString()));
-
-      // Log transaction for net credit/debit
-      const netAmount = costBasis;
-      // Portfolio value doesn't change - the spread position value offsets the cash change
-
-      const transaction = {
-        id: `txn-${Date.now()}`,
-        portfolio: portfolio.name,
-        date: purchaseDate,
-        type: netAmount < 0 ? ('premium_collected' as const) : ('premium_paid' as const),
-        amount: netAmount < 0 ? Math.abs(netAmount) : -netAmount, // Positive for credit (cash in), negative for debit (cash out)
-        description: `Put ${spreadType} Spread: ${selectedTicker.symbol} $${longLeg.strike}/$${shortLeg.strike} ${longLeg.expiration}`,
-        relatedPositionId: spreadId,
-        previousValue: portfolio.currentValue,
-        newValue: portfolio.currentValue, // Portfolio value stays the same
-        createdAt: new Date().toISOString(),
-        notes: `${longLeg.contracts} contracts${action === 'credit-spread' ? ` - Collateral: $${formatNumber(cashReserved, 2)}` : ''}`,
-      };
-
-      dispatch(addTransaction(transaction));
-
-      // Portfolio value doesn't change when opening spread positions
-      // The spread position value offsets the cash change
     } else {
       // Single option position
       const newPosition: PutOption = {
@@ -291,17 +268,8 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
         wheelId: action === 'sell' && selectedWheelId ? selectedWheelId : undefined,
       };
 
-      // Update wheel premium if linked
-      if (action === 'sell' && selectedWheelId) {
-        const premiumCollected = longLeg.premium * longLeg.contracts * 100;
-        dispatch(
-          updateWheelPremium({
-            id: selectedWheelId,
-            premiumCollected,
-            realizedPnL: 0, // P&L will be realized when the option closes
-          })
-        );
-      }
+      // Wheel premium accrual is now derived by the wheels projection
+      // from the PositionOpened event (which carries wheelId).
 
       // Ensure ticker exists in central store
       const putTs = new Date().toISOString();
@@ -318,33 +286,8 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
         )
       );
 
+      // Transaction ledger line is derived from PositionOpened event.
       dispatch(openPosition(newPosition, new Date().toISOString()));
-
-      // Log transaction
-      // When buying/selling options, the portfolio value doesn't change
-      // Cash decreases/increases, but the position value compensates
-      // For buy: cash -$20, position +$20 = net 0
-      // For sell: cash +$20, position -$20 (liability) = net 0
-
-      const transaction = {
-        id: `txn-${Date.now()}`,
-        portfolio: portfolio.name,
-        date: purchaseDate,
-        type: action === 'buy' ? ('premium_paid' as const) : ('premium_collected' as const),
-        amount: action === 'buy' ? -costBasis : Math.abs(costBasis), // Negative for buy (cash out), positive for sell (cash in)
-        description: `${action === 'buy' ? 'Buy' : 'Sell'} Put${action === 'sell' ? ' (CSP)' : ''}: ${selectedTicker.symbol} $${longLeg.strike} ${longLeg.expiration}`,
-        relatedPositionId: newPosition.id,
-        previousValue: portfolio.currentValue,
-        newValue: portfolio.currentValue, // Portfolio value stays the same
-        createdAt: new Date().toISOString(),
-        notes: `${longLeg.contracts} contracts @ $${longLeg.premium}${action === 'sell' ? ` • Cash reserved: $${formatNumber(cashReserved, 2)}` : ''}`,
-      };
-
-      dispatch(addTransaction(transaction));
-
-      // Portfolio value doesn't change when opening option positions
-      // The position value offsets the cash change
-      // No need to update portfolio value here
     }
 
     // Reset form and close

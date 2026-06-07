@@ -30,9 +30,9 @@ import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import {
   selectTransactionsByPortfolio,
-  addTransaction,
   selectDailyData,
 } from '../../store/slices/portfoliosSlice';
+import { deposit, withdraw, adjustValue } from '../../store/commands/cashCommands';
 import { selectAllTickers } from '../../store/slices/tickersSlice';
 import type { Ticker } from '../../types';
 import { selectUnlockedLevels, isFeatureAvailable } from '../../store/slices/userProgressSlice';
@@ -260,18 +260,22 @@ export const PortfolioDetail: React.FC = () => {
   }) => {
     if (!portfolio) return;
 
-    const newValue = portfolio.currentValue + transactionData.amount;
-
-    const transaction = {
-      id: `txn-${Date.now()}`,
+    const ts = new Date().toISOString();
+    const input = {
       portfolio: portfolio.name,
-      ...transactionData,
-      previousValue: portfolio.currentValue,
-      newValue,
-      createdAt: new Date().toISOString(),
+      amount: Math.abs(transactionData.amount),
+      date: transactionData.date,
+      description: transactionData.description,
     };
 
-    dispatch(addTransaction(transaction as any));
+    if (transactionData.type === 'deposit') {
+      dispatch(deposit(input, ts));
+    } else if (transactionData.type === 'withdrawal') {
+      dispatch(withdraw(input, ts));
+    } else {
+      // adjustment or any other type — positive or negative value change
+      dispatch(adjustValue({ ...input, amount: transactionData.amount }, ts));
+    }
   };
 
   // If portfolio not found, show error

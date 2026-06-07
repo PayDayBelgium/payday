@@ -17,16 +17,15 @@ import { usePageTitle } from '../../contexts/PageTitleContext';
 import { useNavigation } from '../../contexts/NavigationContext';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { selectPortfolios } from '../../store/slices/portfoliosSlice';
 import {
-  addPortfolio,
-  updatePortfolio,
-  deletePortfolio,
-  reorderPortfolios,
-  selectPortfolios,
-  addTransaction,
-} from '../../store/slices/portfoliosSlice';
-import { renamePortfolioPositions } from '../../store/commands/positionCommands';
-import { updateWheelPortfolioName } from '../../store/slices/wheelsSlice';
+  createPortfolio as createPortfolioCmd,
+  editPortfolio as editPortfolioCmd,
+  renamePortfolio as renamePortfolioCmd,
+  deletePortfolio as deletePortfolioCmd,
+  reorderPortfolios as reorderPortfoliosCmd,
+} from '../../store/commands/portfolioCommands';
+import { deposit } from '../../store/commands/cashCommands';
 import type { Portfolio, CurrencyType, ImageMetadata } from '../../types';
 import { getCurrencySymbol } from '../../utils/currency';
 import { ConfirmDialog } from '../../components/modals/ConfirmDialog';
@@ -210,8 +209,9 @@ export const PortfolioManagement: React.FC = () => {
       return;
     }
 
+    const ts = new Date().toISOString();
     if (editingPortfolioId === 'new') {
-      // Add new portfolio
+      // Create new portfolio via event command
       const newPortfolio: Portfolio = {
         id: Date.now().toString(),
         hasOptions: true,
@@ -221,52 +221,41 @@ export const PortfolioManagement: React.FC = () => {
         logoMetadata,
         currentValue: formData.initialCapital, // Initial value equals initial capital
       };
-      console.log('Adding new portfolio:', newPortfolio);
-      dispatch(addPortfolio(newPortfolio));
+      dispatch(createPortfolioCmd(newPortfolio, ts));
 
-      // Log initial deposit transaction if there's initial capital
+      // Log initial deposit as a cash event if there is initial capital
       if (formData.initialCapital > 0) {
-        const depositTransaction = {
-          id: `txn-${Date.now()}`,
-          portfolio: formData.name,
-          date: formData.startDate,
-          type: 'deposit' as const,
-          amount: formData.initialCapital,
-          description: 'Initial capital deposit',
-          previousValue: 0,
-          newValue: formData.initialCapital,
-          createdAt: new Date().toISOString(),
-          notes: t('pagesB.portfolioManagement.initialDepositNote'),
-        };
-        dispatch(addTransaction(depositTransaction));
-        console.log('Initial deposit logged:', depositTransaction);
-      }
-
-      console.log('Portfolio added to Redux');
-    } else if (editingPortfolioId) {
-      // Update existing portfolio - pass oldName to cascade name changes
-      console.log('Updating portfolio:', editingPortfolioId, formData);
-
-      // If name changed, update positions and wheels first
-      if (originalPortfolioName && originalPortfolioName !== formData.name) {
-        dispatch(renamePortfolioPositions(originalPortfolioName, formData.name, new Date().toISOString()));
         dispatch(
-          updateWheelPortfolioName({ oldName: originalPortfolioName, newName: formData.name })
+          deposit(
+            {
+              portfolio: formData.name,
+              amount: formData.initialCapital,
+              date: formData.startDate,
+              description: t('pagesB.portfolioManagement.initialDepositNote'),
+            },
+            ts
+          )
         );
+      }
+    } else if (editingPortfolioId) {
+      // Rename cascades to positions/wheels/strategies/journal/transactions automatically.
+      if (originalPortfolioName && originalPortfolioName !== formData.name) {
+        dispatch(renamePortfolioCmd(originalPortfolioName, formData.name, ts));
       }
 
       dispatch(
-        updatePortfolio({
-          id: editingPortfolioId,
-          hasOptions: true,
-          strategies: [],
-          ...formData,
-          logoOriginal: logoOriginal ?? undefined,
-          logoMetadata,
-          oldName: originalPortfolioName || undefined,
-        })
+        editPortfolioCmd(
+          {
+            id: editingPortfolioId,
+            hasOptions: true,
+            strategies: [],
+            ...formData,
+            logoOriginal: logoOriginal ?? undefined,
+            logoMetadata,
+          },
+          ts
+        )
       );
-      console.log('Portfolio updated in Redux');
     }
 
     setEditingPortfolioId(null);
@@ -327,7 +316,7 @@ export const PortfolioManagement: React.FC = () => {
 
   const confirmDeletePortfolio = () => {
     if (portfolioToDelete) {
-      dispatch(deletePortfolio(portfolioToDelete.id));
+      dispatch(deletePortfolioCmd(portfolioToDelete.id, new Date().toISOString()));
       setPortfolioToDelete(null);
     }
   };
@@ -370,7 +359,7 @@ export const PortfolioManagement: React.FC = () => {
     const [draggedPortfolio] = newPortfolios.splice(draggedIndex, 1);
     newPortfolios.splice(targetIndex, 0, draggedPortfolio);
 
-    dispatch(reorderPortfolios(newPortfolios));
+    dispatch(reorderPortfoliosCmd(newPortfolios.map((p) => p.id), new Date().toISOString()));
     setDraggedPortfolioId(null);
     setDragOverPortfolioId(null);
   };
