@@ -237,6 +237,9 @@ export const widgetsB = {
       // GroupedLeapsList
       sectionStocksEtfs: "Stocks & ETFs",
       sectionLeaps: "LEAPS",
+      sectionCashSecuredPuts: 'Cash Secured Puts',
+      sectionSpreads: 'Spreads',
+      sectionOther: 'Other',
       leapsWriteShortCallTitle: 'Write a short call against this LEAPS (PMCC)',
       leapsNoShortCallsYet: 'No short calls written against this LEAPS yet.',
       // CommunityWidget
@@ -482,6 +485,9 @@ export const widgetsB = {
       // GroupedLeapsList
       sectionStocksEtfs: "Aandelen & ETF's",
       sectionLeaps: "LEAPS",
+      sectionCashSecuredPuts: 'Cash Secured Puts',
+      sectionSpreads: 'Spreads',
+      sectionOther: 'Overige',
       leapsWriteShortCallTitle: 'Schrijf een short call tegen deze LEAPS (PMCC)',
       leapsNoShortCallsYet: 'Nog geen short calls geschreven tegen deze LEAPS.',
       // CommunityWidget
@@ -728,6 +734,9 @@ export const widgetsB = {
       // GroupedLeapsList
       sectionStocksEtfs: "Actions & ETF",
       sectionLeaps: "LEAPS",
+      sectionCashSecuredPuts: 'Cash Secured Puts',
+      sectionSpreads: 'Spreads',
+      sectionOther: 'Autres',
       leapsWriteShortCallTitle: 'Écrire un short call contre ce LEAPS (PMCC)',
       leapsNoShortCallsYet: "Aucun short call écrit contre ce LEAPS pour l'instant.",
       // CommunityWidget
