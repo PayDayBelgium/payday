@@ -30,24 +30,47 @@ export const isLEAPS = (position: Position): boolean => {
 };
 
 /**
- * Build the set of position IDs that belong to the LEAPS section:
- * every open non-wheel, non-spread-leg LEAPS call + every short call
- * that the allocator assigns to one of those LEAPS.
+ * A single LEAPS entry with its allocator-assigned short calls and coverage info.
+ * Defined here (single source of truth) and re-exported by GroupedLeapsList.tsx.
+ */
+export interface LeapsGroup {
+  leap: CallOption;
+  /** Short calls assigned to this LEAPS by the allocator. */
+  assigned: CallOption[];
+  /** How many contracts of this LEAPS are NOT yet covered by a short call. */
+  freeContracts: number;
+  /** How many contracts of this LEAPS are covered by a short call. */
+  coveredContracts: number;
+  /** Current price of the underlying, used by OptionRow for price display. */
+  currentPrice: number;
+}
+
+/**
+ * Build the LEAPS section data and dedup set in a single allocator pass per ticker.
  *
- * Pure function: receives the allocator inputs directly so the caller
- * (PortfolioView) can share ONE allocator pass for both the section
- * data and this dedup Set.
+ * Returns:
+ *   - `groups`: ordered LeapsGroup[] for rendering (sorted by ticker then openDate)
+ *   - `sectionIds`: Set of every position ID that belongs to the LEAPS section
+ *     (every qualifying LEAPS id + every short-call id assigned to one of those LEAPS).
+ *     Use this to exclude those positions from the strategy-grouped table.
  *
- * @param openPositions   All open positions for the portfolio (no status filter needed — only open are passed).
+ * A LEAPS is included when it is:
+ *   - open, non-wheel (`wheelId` absent), non-spread-leg (`getSpreadId` returns null)
+ *   - qualifies as LEAPS per campaignDetector.isLEAPS (isLeapsForCoverage)
+ *
+ * Pure function — no React, no store.
+ *
+ * @param openPositions   All open positions for the portfolio (pre-filtered to status === 'open').
  * @param tickers         Ticker store slice (for currentPrice lookups).
  */
-export function collectLeapsSectionIds(
+export function buildLeapsSection(
   openPositions: Position[],
   tickers: Ticker[]
-): Set<string> {
-  const ids = new Set<string>();
+): { groups: LeapsGroup[]; sectionIds: Set<string> } {
+  const groups: LeapsGroup[] = [];
+  const sectionIds = new Set<string>();
 
-  // Group by ticker, mirroring the callCoverageByCallId memo in PortfolioView
+  // Group by ticker, excluding wheel-linked positions
   const openByTicker = new Map<string, Position[]>();
   for (const p of openPositions) {
     if ((p as { wheelId?: string }).wheelId) continue;
@@ -75,19 +98,40 @@ export function collectLeapsSectionIds(
     if (leaps.length === 0) continue;
 
     const price = tickers.find((t) => t.symbol.toUpperCase() === ticker)?.currentPrice;
+    // ONE allocator pass per ticker — result feeds BOTH groups[] and sectionIds
     const alloc = allocateCallCoverage({ stocks, leaps, shortCalls, currentPrice: price });
 
     for (const leap of leaps) {
-      ids.add(leap.id);
-    }
-    for (const la of alloc.leaps) {
-      for (const c of la.assigned) {
-        ids.add(c.id);
+      sectionIds.add(leap.id);
+
+      const la = alloc.leaps.find((l) => l.parentId === leap.id);
+      const assigned = la?.assigned ?? [];
+      const freeContracts = la?.freeContracts ?? leap.contracts ?? 0;
+      const coveredContracts = la?.coveredContracts ?? 0;
+
+      // Add assigned short-call IDs to the dedup set
+      for (const c of assigned) {
+        sectionIds.add(c.id);
       }
+
+      groups.push({
+        leap,
+        assigned,
+        freeContracts,
+        coveredContracts,
+        currentPrice: price ?? 0,
+      });
     }
   }
 
-  return ids;
+  // Sort groups by ticker then by LEAPS openDate (oldest first)
+  groups.sort((a, b) => {
+    const tc = a.leap.ticker.localeCompare(b.leap.ticker);
+    if (tc !== 0) return tc;
+    return new Date(a.leap.openDate).getTime() - new Date(b.leap.openDate).getTime();
+  });
+
+  return { groups, sectionIds };
 }
 
 /**

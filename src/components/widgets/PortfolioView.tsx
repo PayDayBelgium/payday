@@ -40,11 +40,10 @@ import { isLEAPS as isLeapsForCoverage } from '../../utils/campaignDetector';
 import { StockRow } from './StockRow';
 import { GroupedStockList } from './GroupedStockList';
 import { GroupedLeapsList } from './GroupedLeapsList';
-import type { LeapsGroup } from './GroupedLeapsList';
 import { OptionRow } from './OptionRow';
 import type { CollateralType } from './OptionRow';
 import { SpreadSummaryRow } from './SpreadSummaryRow';
-import { isLEAPS, calculateSpreadSummary } from '../../utils/positionHelpers';
+import { isLEAPS, calculateSpreadSummary, buildLeapsSection } from '../../utils/positionHelpers';
 
 type SortField = 'expiration' | 'ticker' | 'strike' | 'premium' | 'dte' | 'pnl';
 type SortDirection = 'asc' | 'desc';
@@ -136,83 +135,19 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
   /**
    * ONE memo for both the LEAPS section data (LeapsGroup[]) and the dedup set
-   * (leapsSectionIds). Both are derived from a single allocateCallCoverage pass
-   * per ticker — never re-run the allocator separately.
-   *
-   * A LEAPS is included here when it is:
-   *  - open, non-wheel, non-spread-leg (getSpreadId returns null)
-   *  - qualifies as LEAPS per campaignDetector.isLEAPS (isLeapsForCoverage)
+   * (leapsSectionIds). Delegates to buildLeapsSection (single source of truth)
+   * which runs ONE allocateCallCoverage pass per ticker so groups and sectionIds
+   * can never diverge.
    *
    * The resulting leapsSectionIds Set is the single dedup point used by
    * groupedAllPositions to exclude these positions from the strategy-grouped table.
    */
   const { leapsGroups, leapsSectionIds } = useMemo(() => {
-    const groups: LeapsGroup[] = [];
-    const ids = new Set<string>();
-
-    // Build a per-ticker map of open, non-wheel positions (same logic as callCoverageByCallId)
-    const openByTicker = new Map<string, Position[]>();
-    for (const p of positions) {
-      if (p.status !== 'open') continue;
-      if ((p as { wheelId?: string }).wheelId) continue;
-      const key = p.ticker.toUpperCase();
-      const list = openByTicker.get(key) ?? [];
-      list.push(p);
-      openByTicker.set(key, list);
-    }
-
-    for (const [ticker, group] of openByTicker) {
-      const shortCalls = group.filter(
-        (p) => p.type === 'call' && (p as CallOption).action === 'sell'
-      ) as CallOption[];
-      const stocks = group.filter(
-        (p) => p.type === 'stock' || p.type === 'etf'
-      ) as StockPosition[];
-      const leaps = group.filter(
-        (p) =>
-          p.type === 'call' &&
-          (p as CallOption).action === 'buy' &&
-          isLeapsForCoverage(p as CallOption) &&
-          !getSpreadId(p) // spread-diagonal legs stay in the spread renderer
-      ) as CallOption[];
-
-      if (leaps.length === 0) continue;
-
-      const price = tickers.find((tk) => tk.symbol.toUpperCase() === ticker)?.currentPrice;
-      // ONE allocator pass for this ticker — result feeds BOTH groups[] and ids
-      const alloc = allocateCallCoverage({ stocks, leaps, shortCalls, currentPrice: price });
-
-      for (const leap of leaps) {
-        ids.add(leap.id);
-
-        const la = alloc.leaps.find((l) => l.parentId === leap.id);
-        const assigned = la?.assigned ?? [];
-        const freeContracts = la?.freeContracts ?? leap.contracts ?? 0;
-        const coveredContracts = la?.coveredContracts ?? 0;
-
-        // Add assigned short-call IDs to the dedup set
-        for (const c of assigned) {
-          ids.add(c.id);
-        }
-
-        groups.push({
-          leap,
-          assigned,
-          freeContracts,
-          coveredContracts,
-          currentPrice: price ?? 0,
-        });
-      }
-    }
-
-    // Sort groups by ticker then by LEAPS openDate
-    groups.sort((a, b) => {
-      const tc = a.leap.ticker.localeCompare(b.leap.ticker);
-      if (tc !== 0) return tc;
-      return new Date(a.leap.openDate).getTime() - new Date(b.leap.openDate).getTime();
-    });
-
-    return { leapsGroups: groups, leapsSectionIds: ids };
+    const openPositions = positions.filter(
+      (p) => p.status === 'open'
+    );
+    const { groups, sectionIds } = buildLeapsSection(openPositions, tickers);
+    return { leapsGroups: groups, leapsSectionIds: sectionIds };
   }, [positions, tickers]);
 
   // Use central alerts hook for this portfolio

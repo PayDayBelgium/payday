@@ -1,25 +1,14 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronRight, Target } from 'lucide-react';
+import { ChevronDown, ChevronRight, AlertCircle, Target } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { CallOption, PutOption, Portfolio, Ticker } from '../../types';
 import { useFeatureAccess } from '../../hooks/useFeatureAccess';
 import { formatCurrency } from '../../utils/numberFormat';
 import { OptionRow } from './OptionRow';
+import type { LeapsGroup } from '../../utils/positionHelpers';
 
-/**
- * A single LEAPS entry with its allocator-assigned short calls and coverage info.
- */
-export interface LeapsGroup {
-  leap: CallOption;
-  /** Short calls assigned to this LEAPS by the allocator. */
-  assigned: CallOption[];
-  /** How many contracts of this LEAPS are NOT yet covered by a short call. */
-  freeContracts: number;
-  /** How many contracts of this LEAPS are covered by a short call. */
-  coveredContracts: number;
-  /** Current price of the underlying, used by OptionRow for price display. */
-  currentPrice: number;
-}
+// Re-export so existing imports from this module continue to work.
+export type { LeapsGroup };
 
 interface GroupedLeapsListProps {
   groups: LeapsGroup[];
@@ -135,9 +124,9 @@ export const GroupedLeapsList: React.FC<GroupedLeapsListProps> = ({
                       {hasAlert && (
                         <div
                           className="flex items-center gap-1 px-2 py-1 bg-negative-50 dark:bg-negative-700/25 text-negative-700 dark:text-negative-500 rounded-full text-xs font-medium"
-                          title={alertMessage}
+                          title={alertMessage || t('widgetsB.priceWarningsTitle')}
                         >
-                          ⚠ {t('widgetsB.colActions')}
+                          <AlertCircle className="w-3.5 h-3.5" />
                         </div>
                       )}
                       {hasOpportunity && (
