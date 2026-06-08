@@ -39,6 +39,10 @@ import {
   calculateCallValues,
 } from './optionWizardUtils';
 
+// Wizard step order is fixed: action(0) → ticker(1) → details(2). A pre-filled
+// open (ticker + action already chosen via a suggestion) jumps straight to details.
+const DETAILS_STEP_INDEX = 2;
+
 interface CallOptionWizardProps {
   isOpen: boolean;
   onClose: () => void;
@@ -415,8 +419,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
     if (initialStep !== undefined) {
       setCurrentStepIndex(initialStep);
     } else if (initialTicker && initialAction) {
-      // steps is not in scope here; use the constant index: action(0) → ticker(1) → details(2)
-      setCurrentStepIndex(2);
+      setCurrentStepIndex(DETAILS_STEP_INDEX);
     } else {
       setCurrentStepIndex(0);
     }
@@ -436,7 +439,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
       if (initialStep !== undefined) {
         setCurrentStepIndex(initialStep);
       } else if (initialTicker && initialAction) {
-        setCurrentStepIndex(2);
+        setCurrentStepIndex(DETAILS_STEP_INDEX);
       }
       if (initialWheelId) {
         setSelectedWheelId(initialWheelId);
