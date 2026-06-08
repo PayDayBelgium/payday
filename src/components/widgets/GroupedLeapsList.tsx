@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import type { CallOption, PutOption, Portfolio, Ticker } from '../../types';
 import { formatCurrency } from '../../utils/numberFormat';
 import { OptionRow } from './OptionRow';
+import { PositionColumnHeader } from './PositionColumnHeader';
 import { CoveredCallSuggestionBadge } from './CoveredCallSuggestionBadge';
 import type { LeapsGroup } from '../../utils/positionHelpers';
 
@@ -259,6 +260,8 @@ export const GroupedLeapsList: React.FC<GroupedLeapsListProps> = ({
             {/* Expanded content — nested short calls */}
             {isExpanded && assigned.length > 0 && (
               <div className="border-t border-surface-line dark:border-trading-dark-600 bg-surface dark:bg-trading-dark-900/50">
+                {/* Labels-only column header above nested short-call rows */}
+                <PositionColumnHeader />
                 <div className="divide-y divide-surface-line dark:divide-trading-dark-600">
                   {assigned.map((shortCall) => {
                     const shortTickerData = tickers.find(

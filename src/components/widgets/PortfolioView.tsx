@@ -3,8 +3,6 @@ import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import {
   TrendingUp,
-  ChevronDown,
-  ChevronUp,
   Target,
   AlertCircle,
   Lightbulb,
@@ -30,7 +28,7 @@ import { AssignmentModal } from '../modals/AssignmentModal';
 import { rollOption, rollSpread, recordAssignment } from '../../store/commands/rollCommands';
 import type { StockPosition } from '../../types';
 import type { Position, CurrencyType, CallOption, PutOption } from '../../types';
-import { POSITION_GRID_COLS } from './positionGrid';
+import { PositionColumnHeader } from './PositionColumnHeader';
 import { getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency, formatNumber } from '../../utils/numberFormat';
 import { getSpreadId } from '../../utils/spreadHelpers';
@@ -1219,112 +1217,64 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
           </CollapsibleSection>
         )}
 
-        {/* ── Sections 3-5 share a column header row ─────────────────── */}
-        {(cspPositions.length > 0 || spreads.length > 0 || overigePositions.length > 0) && (
-          <div className="bg-surface dark:bg-trading-dark-800/50 overflow-x-auto">
-            {/* Column Headers */}
-            <div className="px-6 py-2 bg-surface-subtle dark:bg-trading-dark-900/50 border-b border-surface-line dark:border-trading-dark-600 border-l-4 border-l-transparent">
-              <div
-                className={`grid ${POSITION_GRID_COLS} gap-2 text-xs font-semibold text-ink-600 dark:text-ink-400 items-center`}
-              >
-                <div></div> {/* Icon */}
-                <button
-                  onClick={() => handleSort('ticker')}
-                  className="text-left hover:text-ink-900 dark:hover:text-ink-200 flex items-center gap-1"
-                >
-                  {t('widgetsB.colTicker')}{' '}
-                  {sortField === 'ticker' &&
-                    (sortDirection === 'asc' ? (
-                      <ChevronUp className="w-3 h-3" />
-                    ) : (
-                      <ChevronDown className="w-3 h-3" />
-                    ))}
-                </button>
-                <button
-                  onClick={() => handleSort('expiration')}
-                  className="text-left hover:text-ink-900 dark:hover:text-ink-200 flex items-center gap-1"
-                >
-                  {t('widgetsB.colExpiration')}{' '}
-                  {sortField === 'expiration' &&
-                    (sortDirection === 'asc' ? (
-                      <ChevronUp className="w-3 h-3" />
-                    ) : (
-                      <ChevronDown className="w-3 h-3" />
-                    ))}
-                </button>
-                <button
-                  onClick={() => handleSort('strike')}
-                  className="text-left hover:text-ink-900 dark:hover:text-ink-200 flex items-center gap-1"
-                >
-                  {t('widgetsB.colStrike')}{' '}
-                  {sortField === 'strike' &&
-                    (sortDirection === 'asc' ? (
-                      <ChevronUp className="w-3 h-3" />
-                    ) : (
-                      <ChevronDown className="w-3 h-3" />
-                    ))}
-                </button>
-                <div>{t('widgetsB.colStockPrice')}</div>
-                <div>{t('widgetsB.colDifference')}</div>
-                <div>{t('widgetsB.colOpen')}</div>
-                <div>{t('widgetsB.colCurrent')}</div>
-                <button
-                  onClick={() => handleSort('pnl')}
-                  className="text-left hover:text-ink-900 dark:hover:text-ink-200 flex items-center gap-1"
-                >
-                  {t('widgetsB.colProfitLoss')}{' '}
-                  {sortField === 'pnl' &&
-                    (sortDirection === 'asc' ? (
-                      <ChevronUp className="w-3 h-3" />
-                    ) : (
-                      <ChevronDown className="w-3 h-3" />
-                    ))}
-                </button>
-                <div>{t('widgetsB.colCollateral')}</div>
-                <div></div> {/* Spacer */}
-                <div className="text-right">{t('widgetsB.colActions')}</div>
-              </div>
+        {/* ── Section 3: Cash Secured Puts ─────────────────────────── */}
+        {cspPositions.length > 0 && (
+          <CollapsibleSection
+            id="csp"
+            title={t('widgetsB.sectionCashSecuredPuts')}
+            count={cspPositions.length}
+            collapsed={collapsedSections.has('csp')}
+            onToggle={toggleSection}
+          >
+            <div className="overflow-x-auto">
+              <PositionColumnHeader
+                sortField={sortField}
+                sortDirection={sortDirection}
+                onSort={handleSort}
+              />
+              {cspPositions.map((p) => renderOptionRow(p))}
             </div>
+          </CollapsibleSection>
+        )}
 
-            {/* ── Section 3: Cash Secured Puts ─────────────────────────── */}
-            {cspPositions.length > 0 && (
-              <CollapsibleSection
-                id="csp"
-                title={t('widgetsB.sectionCashSecuredPuts')}
-                count={cspPositions.length}
-                collapsed={collapsedSections.has('csp')}
-                onToggle={toggleSection}
-              >
-                {cspPositions.map((p) => renderOptionRow(p))}
-              </CollapsibleSection>
-            )}
+        {/* ── Section 4: Spreads ────────────────────────────────────── */}
+        {spreads.length > 0 && (
+          <CollapsibleSection
+            id="spreads"
+            title={t('widgetsB.sectionSpreads')}
+            count={spreads.length}
+            collapsed={collapsedSections.has('spreads')}
+            onToggle={toggleSection}
+          >
+            <div className="overflow-x-auto">
+              <PositionColumnHeader
+                sortField={sortField}
+                sortDirection={sortDirection}
+                onSort={handleSort}
+              />
+              {spreads.map((spread) => renderSpread(spread))}
+            </div>
+          </CollapsibleSection>
+        )}
 
-            {/* ── Section 4: Spreads ────────────────────────────────────── */}
-            {spreads.length > 0 && (
-              <CollapsibleSection
-                id="spreads"
-                title={t('widgetsB.sectionSpreads')}
-                count={spreads.length}
-                collapsed={collapsedSections.has('spreads')}
-                onToggle={toggleSection}
-              >
-                {spreads.map((spread) => renderSpread(spread))}
-              </CollapsibleSection>
-            )}
-
-            {/* ── Section 5: Overige ────────────────────────────────────── */}
-            {overigePositions.length > 0 && (
-              <CollapsibleSection
-                id="overige"
-                title={t('widgetsB.sectionOther')}
-                count={overigePositions.length}
-                collapsed={collapsedSections.has('overige')}
-                onToggle={toggleSection}
-              >
-                {overigePositions.map((p) => renderOptionRow(p))}
-              </CollapsibleSection>
-            )}
-          </div>
+        {/* ── Section 5: Overige ────────────────────────────────────── */}
+        {overigePositions.length > 0 && (
+          <CollapsibleSection
+            id="overige"
+            title={t('widgetsB.sectionOther')}
+            count={overigePositions.length}
+            collapsed={collapsedSections.has('overige')}
+            onToggle={toggleSection}
+          >
+            <div className="overflow-x-auto">
+              <PositionColumnHeader
+                sortField={sortField}
+                sortDirection={sortDirection}
+                onSort={handleSort}
+              />
+              {overigePositions.map((p) => renderOptionRow(p))}
+            </div>
+          </CollapsibleSection>
         )}
       </div>
 

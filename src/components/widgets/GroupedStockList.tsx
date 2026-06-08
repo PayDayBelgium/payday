@@ -20,6 +20,7 @@ import { updateTickerPrice } from '../../store/slices/tickersSlice';
 import { computeCoveredCallCapacity } from '../../utils/coveredCallEligibility';
 import { OptionRow } from './OptionRow';
 import type { CollateralType } from './OptionRow';
+import { PositionColumnHeader } from './PositionColumnHeader';
 // import { SellStockModal } from '../modals/SellStockModal';
 // import { ConfirmModal } from '../modals/ConfirmModal';
 
@@ -516,69 +517,67 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                     the transaction log, not here. */}
                 {isExpanded && (
                   <div className="border-t border-surface-line dark:border-trading-dark-600 bg-surface dark:bg-trading-dark-900/50">
-                    <div className="divide-y divide-surface-line dark:divide-trading-dark-600">
-                      {/* ── Covered calls nested under this stock ── */}
-                      {(() => {
-                        if (!coveredCallsByTicker) {
-                          return (
-                            <div className="px-8 py-4">
-                              <p className="text-sm text-ink-500 dark:text-ink-400">
-                                {t('widgetsB.stockNoCoveredCallsYet')}
-                              </p>
-                            </div>
-                          );
-                        }
-                        const calls = coveredCallsByTicker.get(group.ticker.toUpperCase()) ?? [];
-                        if (calls.length === 0) {
-                          return (
-                            <div className="px-8 py-4">
-                              <p className="text-sm text-ink-500 dark:text-ink-400">
-                                {t('widgetsB.stockNoCoveredCallsYet')}
-                              </p>
-                            </div>
-                          );
-                        }
-                        return calls.map((call) => {
-                          const tickerEntry = tickers?.find(
-                            (tk) => tk.symbol.toUpperCase() === call.ticker.toUpperCase()
-                          );
-                          const stockPrice = tickerEntry?.currentPrice ?? 0;
-                          const totalShares = group.totalShares;
-                          const totalCostBasis = group.totalCostBasis;
-                          const collateralType: CollateralType = 'stock';
-                          const collateralDescription = t('widgetsB.callCoveredByShares', {
-                            shares: totalShares,
-                            ticker: call.ticker,
-                          });
-                          const hasOpp = positionHasOpportunity?.get(call.id) ?? false;
-                          const oppMsg = positionOpportunityMessage?.get(call.id) ?? '';
-                          const hasAlertFlag = positionHasAlert?.get(call.id) ?? false;
-                          const alertMsg = positionAlertMessage?.get(call.id) ?? '';
-                          return (
-                            <OptionRow
-                              key={call.id}
-                              option={call}
-                              currencySymbol={currencySymbol}
-                              tickerData={tickerEntry}
-                              stockPrice={stockPrice}
-                              onRoll={onRoll ? (opt) => onRoll(opt as CallOption) : undefined}
-                              onClose={onClose ? (opt) => onClose(opt as CallOption) : undefined}
-                              onAssign={onAssign ? (opt) => onAssign(opt as CallOption) : undefined}
-                              onClick={onView ? (opt) => onView(opt as CallOption) : undefined}
-                              showActions={true}
-                              collateralType={collateralType}
-                              collateralValue={totalCostBasis}
-                              collateralDescription={collateralDescription}
-                              hasOpportunity={hasOpp}
-                              opportunityMessage={oppMsg}
-                              hasAlert={hasAlertFlag}
-                              alertMessage={alertMsg}
-                              isSubItem={true}
-                            />
-                          );
-                        });
-                      })()}
-                    </div>
+                    {/* ── Covered calls nested under this stock ── */}
+                    {(() => {
+                      const calls =
+                        coveredCallsByTicker?.get(group.ticker.toUpperCase()) ?? [];
+                      if (calls.length === 0) {
+                        return (
+                          <div className="px-8 py-4">
+                            <p className="text-sm text-ink-500 dark:text-ink-400">
+                              {t('widgetsB.stockNoCoveredCallsYet')}
+                            </p>
+                          </div>
+                        );
+                      }
+                      return (
+                        <>
+                          {/* Labels-only column header above nested call rows */}
+                          <PositionColumnHeader />
+                          <div className="divide-y divide-surface-line dark:divide-trading-dark-600">
+                            {calls.map((call) => {
+                              const tickerEntry = tickers?.find(
+                                (tk) => tk.symbol.toUpperCase() === call.ticker.toUpperCase()
+                              );
+                              const stockPrice = tickerEntry?.currentPrice ?? 0;
+                              const totalShares = group.totalShares;
+                              const totalCostBasis = group.totalCostBasis;
+                              const collateralType: CollateralType = 'stock';
+                              const collateralDescription = t('widgetsB.callCoveredByShares', {
+                                shares: totalShares,
+                                ticker: call.ticker,
+                              });
+                              const hasOpp = positionHasOpportunity?.get(call.id) ?? false;
+                              const oppMsg = positionOpportunityMessage?.get(call.id) ?? '';
+                              const hasAlertFlag = positionHasAlert?.get(call.id) ?? false;
+                              const alertMsg = positionAlertMessage?.get(call.id) ?? '';
+                              return (
+                                <OptionRow
+                                  key={call.id}
+                                  option={call}
+                                  currencySymbol={currencySymbol}
+                                  tickerData={tickerEntry}
+                                  stockPrice={stockPrice}
+                                  onRoll={onRoll ? (opt) => onRoll(opt as CallOption) : undefined}
+                                  onClose={onClose ? (opt) => onClose(opt as CallOption) : undefined}
+                                  onAssign={onAssign ? (opt) => onAssign(opt as CallOption) : undefined}
+                                  onClick={onView ? (opt) => onView(opt as CallOption) : undefined}
+                                  showActions={true}
+                                  collateralType={collateralType}
+                                  collateralValue={totalCostBasis}
+                                  collateralDescription={collateralDescription}
+                                  hasOpportunity={hasOpp}
+                                  opportunityMessage={oppMsg}
+                                  hasAlert={hasAlertFlag}
+                                  alertMessage={alertMsg}
+                                  isSubItem={true}
+                                />
+                              );
+                            })}
+                          </div>
+                        </>
+                      );
+                    })()}
                   </div>
                 )}
 
