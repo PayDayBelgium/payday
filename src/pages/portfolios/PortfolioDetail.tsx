@@ -129,8 +129,11 @@ export const PortfolioDetail: React.FC = () => {
     undefined
   );
   const [callWizardInitialAction, setCallWizardInitialAction] = useState<
-    'covered-call' | undefined
+    'covered-call' | 'buy' | undefined
   >(undefined);
+  const [stockWizardInitialTicker, setStockWizardInitialTicker] = useState<Ticker | undefined>(
+    undefined
+  );
   const [isPutOptionWizardOpen, setIsPutOptionWizardOpen] = useState(false);
   const [expandedTickers, setExpandedTickers] = useState<Set<string>>(new Set());
 
@@ -139,6 +142,21 @@ export const PortfolioDetail: React.FC = () => {
     const ticker = tickerList.find((t) => t.symbol.toUpperCase() === tickerSymbol.toUpperCase());
     setCallWizardInitialTicker(ticker);
     setCallWizardInitialAction('covered-call');
+    setIsCallOptionWizardOpen(true);
+  };
+
+  // Open the stock wizard pre-filled to buy more shares of a specific ticker.
+  const handleBuyStock = (tickerSymbol: string) => {
+    const ticker = tickerList.find((t) => t.symbol.toUpperCase() === tickerSymbol.toUpperCase());
+    setStockWizardInitialTicker(ticker);
+    setIsStockWizardOpen(true);
+  };
+
+  // Open the call wizard pre-filled to buy more long calls (LEAPS) for a specific ticker.
+  const handleBuyLeaps = (tickerSymbol: string) => {
+    const ticker = tickerList.find((t) => t.symbol.toUpperCase() === tickerSymbol.toUpperCase());
+    setCallWizardInitialTicker(ticker);
+    setCallWizardInitialAction('buy');
     setIsCallOptionWizardOpen(true);
   };
 
@@ -526,7 +544,10 @@ export const PortfolioDetail: React.FC = () => {
               {/* Quick Actions */}
               <div className="flex gap-2 flex-shrink-0 mb-4">
                 <button
-                  onClick={() => setIsStockWizardOpen(true)}
+                  onClick={() => {
+                    setStockWizardInitialTicker(undefined);
+                    setIsStockWizardOpen(true);
+                  }}
                   className="flex items-center gap-2 px-3 py-2 bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-50 dark:hover:bg-primary-900/25 rounded-lg border border-primary-200 dark:border-primary-800 hover:border-primary-400 dark:hover:border-primary-700 transition-all text-left cursor-pointer w-36"
                 >
                   <Plus className="w-4 h-4 text-primary-700 dark:text-primary-300 flex-shrink-0" />
@@ -583,6 +604,8 @@ export const PortfolioDetail: React.FC = () => {
                   portfolioCurrentValue={portfolio?.currentValue || 0}
                   onNavigateToCampaigns={() => setActiveTab('campaigns')}
                   onWriteCoveredCall={handleWriteCoveredCall}
+                  onBuyStock={handleBuyStock}
+                  onBuyLeaps={handleBuyLeaps}
                 />
               </div>
             </div>
@@ -1296,7 +1319,11 @@ export const PortfolioDetail: React.FC = () => {
 
           <StockETFWizard
             isOpen={isStockWizardOpen}
-            onClose={() => setIsStockWizardOpen(false)}
+            onClose={() => {
+              setIsStockWizardOpen(false);
+              setStockWizardInitialTicker(undefined);
+            }}
+            initialTicker={stockWizardInitialTicker}
             portfolio={{
               name: portfolio.name,
               currency: portfolio.currency,

@@ -30,6 +30,8 @@ interface GroupedLeapsListProps {
   onAssign?: (position: CallOption | PutOption) => void;
   /** Opens a pre-filled covered-call wizard for the LEAPS' ticker (PMCC short call). */
   onWriteCoveredCall?: (ticker: string) => void;
+  /** Opens the call wizard pre-filled to buy more long calls for this LEAPS ticker. */
+  onBuy?: (ticker: string) => void;
   /** Currency symbol for formatting amounts. */
   currencySymbol: string;
 }
@@ -51,6 +53,7 @@ export const GroupedLeapsList: React.FC<GroupedLeapsListProps> = ({
   onClose,
   onAssign,
   onWriteCoveredCall,
+  onBuy,
   currencySymbol,
 }) => {
   const { t } = useTranslation();
@@ -239,19 +242,35 @@ export const GroupedLeapsList: React.FC<GroupedLeapsListProps> = ({
                   })()}
                 </div>
 
-                {/* Close button */}
-                {onClose && (
-                  <div className="flex-shrink-0 bg-surface-subtle dark:bg-trading-dark-700/50 rounded-lg px-3 py-3">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onClose(leap);
-                      }}
-                      className="w-8 h-8 flex items-center justify-center bg-ink-200 dark:bg-trading-dark-600 hover:bg-ink-300 dark:hover:bg-ink-400 text-ink-700 dark:text-ink-200 rounded font-semibold text-sm transition-colors"
-                      title={t('widgetsB.close')}
-                    >
-                      S
-                    </button>
+                {/* Buy / Close buttons in gray zone.
+                    Buy opens the call wizard pre-filled to buy more long calls
+                    for this LEAPS ticker. Close delegates to the LEAPS position. */}
+                {(onBuy || onClose) && (
+                  <div className="flex-shrink-0 bg-surface-subtle dark:bg-trading-dark-700/50 rounded-lg px-3 py-3 flex items-center gap-1">
+                    {onBuy && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onBuy(leap.ticker);
+                        }}
+                        className="w-8 h-8 flex items-center justify-center bg-ink-200 dark:bg-trading-dark-600 hover:bg-ink-300 dark:hover:bg-ink-400 text-ink-700 dark:text-ink-200 rounded font-semibold text-sm transition-colors"
+                        title={t('widgetsB.buy')}
+                      >
+                        B
+                      </button>
+                    )}
+                    {onClose && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onClose(leap);
+                        }}
+                        className="w-8 h-8 flex items-center justify-center bg-ink-200 dark:bg-trading-dark-600 hover:bg-ink-300 dark:hover:bg-ink-400 text-ink-700 dark:text-ink-200 rounded font-semibold text-sm transition-colors"
+                        title={t('widgetsB.close')}
+                      >
+                        S
+                      </button>
+                    )}
                   </div>
                 )}
               </div>

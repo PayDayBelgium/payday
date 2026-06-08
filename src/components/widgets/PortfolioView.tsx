@@ -52,6 +52,10 @@ interface PortfolioViewProps {
   onNavigateToCampaigns?: () => void;
   /** Opens the covered-call wizard for a ticker (threaded down to the grouped stock list). */
   onWriteCoveredCall?: (ticker: string) => void;
+  /** Opens the stock wizard pre-filled to buy more shares of the given ticker. */
+  onBuyStock?: (ticker: string) => void;
+  /** Opens the call wizard pre-filled to buy more long calls (LEAPS) for the given ticker. */
+  onBuyLeaps?: (ticker: string) => void;
 }
 
 export const PortfolioView: React.FC<PortfolioViewProps> = ({
@@ -62,6 +66,8 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   className = '',
   onNavigateToCampaigns,
   onWriteCoveredCall,
+  onBuyStock,
+  onBuyLeaps,
 }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
@@ -1099,6 +1105,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                 onEditPosition={setPositionToView}
                 onWriteCoveredCall={onWriteCoveredCall}
                 onSellPosition={setPositionToClose}
+                onBuyPosition={onBuyStock}
                 coveredCallsByTicker={coveredCallsByTicker}
                 tickers={tickers}
                 currencySymbol={currencySymbol}
@@ -1211,6 +1218,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                 onClose={(pos) => setPositionToClose(pos)}
                 onAssign={(pos) => setPositionToAssign(pos as CallOption | PutOption)}
                 onWriteCoveredCall={onWriteCoveredCall}
+                onBuy={onBuyLeaps}
                 currencySymbol={currencySymbol}
               />
             </div>

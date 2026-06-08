@@ -41,6 +41,8 @@ interface GroupedStockListProps {
   onWriteCoveredCall?: (ticker: string) => void;
   /** When provided, a sell button is shown that delegates selling a lot to the host's close/sell flow. */
   onSellPosition?: (position: StockPosition) => void;
+  /** When provided, a buy button is shown to open the stock wizard pre-filled for this ticker. */
+  onBuyPosition?: (ticker: string) => void;
   // ── Covered-call nesting (optional, additive) ──────────────────────────────
   /** Map of ticker (upper-cased) → covered calls assigned to that stock by the allocator. */
   coveredCallsByTicker?: Map<string, CallOption[]>;
@@ -89,6 +91,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
   onDismissStrategyAlert: _onDismissStrategyAlert,
   onWriteCoveredCall,
   onSellPosition,
+  onBuyPosition,
   coveredCallsByTicker,
   tickers,
   currencySymbol = '$',
@@ -491,22 +494,36 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                       </p>
                     </div>
 
-                    {/* Sell button in gray zone.
-                        Per-lot selling is handled via the position/close flow;
-                        the header button always delegates to the first lot as a
-                        representative for the ticker group. */}
-                    {onSellPosition && (
-                      <div className="flex-shrink-0 bg-surface-subtle dark:bg-trading-dark-700/50 rounded-lg px-3 py-3">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onSellPosition(group.positions[0]);
-                          }}
-                          className="w-8 h-8 flex items-center justify-center bg-ink-200 dark:bg-trading-dark-600 hover:bg-ink-300 dark:hover:bg-ink-400 text-ink-700 dark:text-ink-200 rounded font-semibold text-sm transition-colors"
-                          title={t('widgetsB.sell')}
-                        >
-                          S
-                        </button>
+                    {/* Buy / Sell buttons in gray zone.
+                        Buy opens the stock wizard pre-filled for this ticker.
+                        Sell delegates to the first lot as a representative for
+                        the ticker group (per-lot selling is in the close flow). */}
+                    {(onBuyPosition || onSellPosition) && (
+                      <div className="flex-shrink-0 bg-surface-subtle dark:bg-trading-dark-700/50 rounded-lg px-3 py-3 flex items-center gap-1">
+                        {onBuyPosition && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onBuyPosition(group.ticker);
+                            }}
+                            className="w-8 h-8 flex items-center justify-center bg-ink-200 dark:bg-trading-dark-600 hover:bg-ink-300 dark:hover:bg-ink-400 text-ink-700 dark:text-ink-200 rounded font-semibold text-sm transition-colors"
+                            title={t('widgetsB.buy')}
+                          >
+                            B
+                          </button>
+                        )}
+                        {onSellPosition && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onSellPosition(group.positions[0]);
+                            }}
+                            className="w-8 h-8 flex items-center justify-center bg-ink-200 dark:bg-trading-dark-600 hover:bg-ink-300 dark:hover:bg-ink-400 text-ink-700 dark:text-ink-200 rounded font-semibold text-sm transition-colors"
+                            title={t('widgetsB.sell')}
+                          >
+                            S
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>

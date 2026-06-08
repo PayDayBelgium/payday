@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { WizardModal, type WizardStep } from './WizardModal';
 import { TickerSelector } from '../widgets/TickerSelector';
@@ -18,9 +18,11 @@ interface StockETFWizardProps {
     currency: CurrencyType;
     currentValue: number;
   };
+  /** When provided, pre-selects this ticker when the wizard opens (buy-more flow). */
+  initialTicker?: Ticker;
 }
 
-export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose, portfolio }) => {
+export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose, portfolio, initialTicker }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
@@ -45,6 +47,21 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
     purchaseDate: new Date().toISOString().split('T')[0],
     notes: '',
   });
+
+  // When the wizard opens with an initialTicker, pre-select that ticker and
+  // match the position type so the wizard skips straight to the details step.
+  // Mirrors the pattern used by CallOptionWizard for its initialTicker prop.
+  useEffect(() => {
+    if (isOpen && initialTicker) {
+      setSelectedTicker(initialTicker);
+      if (initialTicker.type === 'stock' || initialTicker.type === 'etf') {
+        setPositionType(initialTicker.type);
+      }
+    } else if (!isOpen) {
+      // Clear the pre-selection on close so a fresh open starts blank.
+      setSelectedTicker(null);
+    }
+  }, [isOpen, initialTicker]);
 
   // Auto-fill purchase price when ticker is selected
   React.useEffect(() => {
