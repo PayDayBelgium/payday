@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { POSITION_GRID_COLS } from './positionGrid';
+import { POSITION_GRID_COLS, POSITION_GRID_COLS_SUBITEM } from './positionGrid';
 
 type SortField = 'expiration' | 'ticker' | 'strike' | 'premium' | 'dte' | 'pnl';
 type SortDirection = 'asc' | 'desc';
@@ -12,6 +12,9 @@ export interface PositionColumnHeaderProps {
   /** When provided, Ticker/Expiration/Strike/Profit-Loss become sort buttons with chevron
    *  indicators. When omitted, all four are rendered as plain non-interactive labels. */
   onSort?: (field: 'ticker' | 'expiration' | 'strike' | 'pnl') => void;
+  /** Align with indented sub-item rows (nested covered calls inside a stock/LEAPS card),
+   *  which use the SUBITEM grid with a leading 16px spacer. */
+  isSubItem?: boolean;
 }
 
 /**
@@ -31,6 +34,7 @@ export const PositionColumnHeader: React.FC<PositionColumnHeaderProps> = ({
   sortField,
   sortDirection,
   onSort,
+  isSubItem = false,
 }) => {
   const { t } = useTranslation();
 
@@ -59,8 +63,9 @@ export const PositionColumnHeader: React.FC<PositionColumnHeaderProps> = ({
   return (
     <div className="px-6 py-2 bg-surface-subtle dark:bg-trading-dark-900/50 border-b border-surface-line dark:border-trading-dark-600 border-l-4 border-l-transparent">
       <div
-        className={`grid ${POSITION_GRID_COLS} gap-2 text-xs font-semibold text-ink-600 dark:text-ink-400 items-center`}
+        className={`grid ${isSubItem ? POSITION_GRID_COLS_SUBITEM : POSITION_GRID_COLS} gap-2 text-xs font-semibold text-ink-600 dark:text-ink-400 items-center`}
       >
+        {isSubItem && <div></div>} {/* Leading 16px spacer (sub-item alignment) */}
         <div></div> {/* Icon */}
         {sortableCell('ticker', t('widgetsB.colTicker'))}
         {sortableCell('expiration', t('widgetsB.colExpiration'))}

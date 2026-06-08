@@ -533,7 +533,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                       return (
                         <>
                           {/* Labels-only column header above nested call rows */}
-                          <PositionColumnHeader />
+                          <PositionColumnHeader isSubItem />
                           <div className="divide-y divide-surface-line dark:divide-trading-dark-600">
                             {calls.map((call) => {
                               const tickerEntry = tickers?.find(
