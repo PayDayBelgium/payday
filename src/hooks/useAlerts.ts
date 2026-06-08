@@ -150,8 +150,15 @@ export const useAlerts = (portfolioFilter?: string) => {
     (positionId: string): AlertItem[] => {
       const position = positionsById.get(positionId);
       return opportunities.filter((opp) => {
-        // Stock CC opportunities are aggregated per ticker+portfolio
-        if (position && opp.id === `stock-cc-opportunity-${position.ticker}-${position.portfolio}`)
+        // Stock CC opportunities are aggregated per ticker+portfolio. Only attach
+        // them to the STOCK/ETF position itself — otherwise a LEAPS (or any other
+        // position sharing the same ticker+portfolio) would also pick up the stock
+        // covered-call message (e.g. it leaked into the LEAPS suggestion tooltip).
+        if (
+          position &&
+          (position.type === 'stock' || position.type === 'etf') &&
+          opp.id === `stock-cc-opportunity-${position.ticker}-${position.portfolio}`
+        )
           return true;
         // LEAPS CC: leaps-cc-opportunity-{positionId}
         if (opp.id === `leaps-cc-opportunity-${positionId}`) return true;
