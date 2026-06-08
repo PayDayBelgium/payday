@@ -349,7 +349,7 @@ export const PortfolioOverview: React.FC = memo(() => {
                       {/* Stats - all aligned left */}
                       <div className="space-y-1.5 text-xs flex-1">
                         <div className="flex">
-                          <span className="text-ink-500 dark:text-ink-400 w-20">
+                          <span className="text-ink-500 dark:text-ink-400 w-28 flex-shrink-0 whitespace-nowrap">
                             {t('widgetsB.longPositions')}
                           </span>
                           <span className="font-medium text-ink-900 dark:text-white">
@@ -357,7 +357,7 @@ export const PortfolioOverview: React.FC = memo(() => {
                           </span>
                         </div>
                         <div className="flex">
-                          <span className="text-ink-500 dark:text-ink-400 w-20">
+                          <span className="text-ink-500 dark:text-ink-400 w-28 flex-shrink-0 whitespace-nowrap">
                             {t('widgetsB.shortPositions')}
                           </span>
                           <span className="font-medium text-ink-900 dark:text-white">
@@ -365,7 +365,7 @@ export const PortfolioOverview: React.FC = memo(() => {
                           </span>
                         </div>
                         <div className="flex">
-                          <span className="text-ink-500 dark:text-ink-400 w-20">
+                          <span className="text-ink-500 dark:text-ink-400 w-28 flex-shrink-0 whitespace-nowrap">
                             {t('widgetsB.cash')}
                           </span>
                           <span className="font-medium text-ink-900 dark:text-white">
@@ -373,7 +373,7 @@ export const PortfolioOverview: React.FC = memo(() => {
                           </span>
                         </div>
                         <div className="flex">
-                          <span className="text-ink-500 dark:text-ink-400 w-20">
+                          <span className="text-ink-500 dark:text-ink-400 w-28 flex-shrink-0 whitespace-nowrap">
                             {t('widgetsB.freeCash')}
                           </span>
                           <span
