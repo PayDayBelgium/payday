@@ -234,6 +234,11 @@ export const widgetsB = {
       copyToClipboard: 'Copy to clipboard (Excel)',
       valueTooltip: 'Value',
       portfolioValueSeries: 'Portfolio value',
+      // GroupedLeapsList
+      sectionStocksEtfs: "Stocks & ETFs",
+      sectionLeaps: "LEAPS",
+      leapsWriteShortCallTitle: 'Write a short call against this LEAPS (PMCC)',
+      leapsNoShortCallsYet: 'No short calls written against this LEAPS yet.',
       // CommunityWidget
       conversations: 'Conversations',
       community: 'Community',
@@ -474,6 +479,11 @@ export const widgetsB = {
       copyToClipboard: 'Kopieer naar clipboard (Excel)',
       valueTooltip: 'Waarde',
       portfolioValueSeries: 'Portfolio waarde',
+      // GroupedLeapsList
+      sectionStocksEtfs: "Aandelen & ETF's",
+      sectionLeaps: "LEAPS",
+      leapsWriteShortCallTitle: 'Schrijf een short call tegen deze LEAPS (PMCC)',
+      leapsNoShortCallsYet: 'Nog geen short calls geschreven tegen deze LEAPS.',
       // CommunityWidget
       conversations: 'Gesprekken',
       community: 'Community',
@@ -715,6 +725,11 @@ export const widgetsB = {
       copyToClipboard: 'Copier dans le presse-papiers (Excel)',
       valueTooltip: 'Valeur',
       portfolioValueSeries: 'Valeur du portefeuille',
+      // GroupedLeapsList
+      sectionStocksEtfs: "Actions & ETF",
+      sectionLeaps: "LEAPS",
+      leapsWriteShortCallTitle: 'Écrire un short call contre ce LEAPS (PMCC)',
+      leapsNoShortCallsYet: "Aucun short call écrit contre ce LEAPS pour l'instant.",
       // CommunityWidget
       conversations: 'Conversations',
       community: 'Communauté',

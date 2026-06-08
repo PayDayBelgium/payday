@@ -39,6 +39,8 @@ import { allocateCallCoverage } from '../../utils/coverageAllocation';
 import { isLEAPS as isLeapsForCoverage } from '../../utils/campaignDetector';
 import { StockRow } from './StockRow';
 import { GroupedStockList } from './GroupedStockList';
+import { GroupedLeapsList } from './GroupedLeapsList';
+import type { LeapsGroup } from './GroupedLeapsList';
 import { OptionRow } from './OptionRow';
 import type { CollateralType } from './OptionRow';
 import { SpreadSummaryRow } from './SpreadSummaryRow';
@@ -130,6 +132,87 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
     }
 
     return map;
+  }, [positions, tickers]);
+
+  /**
+   * ONE memo for both the LEAPS section data (LeapsGroup[]) and the dedup set
+   * (leapsSectionIds). Both are derived from a single allocateCallCoverage pass
+   * per ticker — never re-run the allocator separately.
+   *
+   * A LEAPS is included here when it is:
+   *  - open, non-wheel, non-spread-leg (getSpreadId returns null)
+   *  - qualifies as LEAPS per campaignDetector.isLEAPS (isLeapsForCoverage)
+   *
+   * The resulting leapsSectionIds Set is the single dedup point used by
+   * groupedAllPositions to exclude these positions from the strategy-grouped table.
+   */
+  const { leapsGroups, leapsSectionIds } = useMemo(() => {
+    const groups: LeapsGroup[] = [];
+    const ids = new Set<string>();
+
+    // Build a per-ticker map of open, non-wheel positions (same logic as callCoverageByCallId)
+    const openByTicker = new Map<string, Position[]>();
+    for (const p of positions) {
+      if (p.status !== 'open') continue;
+      if ((p as { wheelId?: string }).wheelId) continue;
+      const key = p.ticker.toUpperCase();
+      const list = openByTicker.get(key) ?? [];
+      list.push(p);
+      openByTicker.set(key, list);
+    }
+
+    for (const [ticker, group] of openByTicker) {
+      const shortCalls = group.filter(
+        (p) => p.type === 'call' && (p as CallOption).action === 'sell'
+      ) as CallOption[];
+      const stocks = group.filter(
+        (p) => p.type === 'stock' || p.type === 'etf'
+      ) as StockPosition[];
+      const leaps = group.filter(
+        (p) =>
+          p.type === 'call' &&
+          (p as CallOption).action === 'buy' &&
+          isLeapsForCoverage(p as CallOption) &&
+          !getSpreadId(p) // spread-diagonal legs stay in the spread renderer
+      ) as CallOption[];
+
+      if (leaps.length === 0) continue;
+
+      const price = tickers.find((tk) => tk.symbol.toUpperCase() === ticker)?.currentPrice;
+      // ONE allocator pass for this ticker — result feeds BOTH groups[] and ids
+      const alloc = allocateCallCoverage({ stocks, leaps, shortCalls, currentPrice: price });
+
+      for (const leap of leaps) {
+        ids.add(leap.id);
+
+        const la = alloc.leaps.find((l) => l.parentId === leap.id);
+        const assigned = la?.assigned ?? [];
+        const freeContracts = la?.freeContracts ?? leap.contracts ?? 0;
+        const coveredContracts = la?.coveredContracts ?? 0;
+
+        // Add assigned short-call IDs to the dedup set
+        for (const c of assigned) {
+          ids.add(c.id);
+        }
+
+        groups.push({
+          leap,
+          assigned,
+          freeContracts,
+          coveredContracts,
+          currentPrice: price ?? 0,
+        });
+      }
+    }
+
+    // Sort groups by ticker then by LEAPS openDate
+    groups.sort((a, b) => {
+      const tc = a.leap.ticker.localeCompare(b.leap.ticker);
+      if (tc !== 0) return tc;
+      return new Date(a.leap.openDate).getTime() - new Date(b.leap.openDate).getTime();
+    });
+
+    return { leapsGroups: groups, leapsSectionIds: ids };
   }, [positions, tickers]);
 
   // Use central alerts hook for this portfolio
@@ -489,10 +572,12 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   // Group all positions by strategy if needed
   // This groups both standalone positions and spreads
   const groupedAllPositions = useMemo(() => {
-    // Stocks/ETFs are rendered separately by GroupedStockList â€” keep them out of the
+    // Stocks/ETFs are rendered separately by GroupedStockList — keep them out of the
     // strategy/expiry/ticker grouping so they don't appear twice.
+    // LEAPS + their assigned short calls are rendered by GroupedLeapsList — exclude
+    // them via leapsSectionIds (built from the same allocator pass) to avoid double-rendering.
     const nonStockPositions = filteredPositions.filter(
-      (p) => p.type !== 'stock' && p.type !== 'etf'
+      (p) => p.type !== 'stock' && p.type !== 'etf' && !leapsSectionIds.has(p.id)
     );
 
     if (groupBy === 'none') {
@@ -606,7 +691,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
     });
 
     return sortedGroups;
-  }, [filteredPositions, groupBy, spreads, t]);
+  }, [filteredPositions, groupBy, spreads, t, leapsSectionIds]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -994,17 +1079,88 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
       {/* Position List - Scrollable */}
       <div className="divide-y divide-surface-line dark:divide-trading-dark-600 flex-1 overflow-y-auto">
-        {/* Grouped Stock/ETF Tree */}
+        {/* ── Aandelen & ETF's section ── */}
         {stockLots.length > 0 && (
           <div className="mb-4">
-            <GroupedStockList
-              positions={stockLots}
-              alerts={priceAlerts}
-              allPortfolios={portfolios}
-              onEditPosition={setPositionToView}
-              onWriteCoveredCall={onWriteCoveredCall}
-              onSellPosition={setPositionToClose}
-            />
+            <div className="px-6 py-2 bg-surface-subtle dark:bg-trading-dark-900/40 border-b border-surface-line dark:border-trading-dark-600">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-ink-500 dark:text-ink-400">
+                {t('widgetsB.sectionStocksEtfs')}
+              </h3>
+            </div>
+            <div className="p-4">
+              <GroupedStockList
+                positions={stockLots}
+                alerts={priceAlerts}
+                allPortfolios={portfolios}
+                onEditPosition={setPositionToView}
+                onWriteCoveredCall={onWriteCoveredCall}
+                onSellPosition={setPositionToClose}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* ── LEAPS section ── */}
+        {leapsGroups.length > 0 && (
+          <div className="mb-4">
+            <div className="px-6 py-2 bg-surface-subtle dark:bg-trading-dark-900/40 border-b border-surface-line dark:border-trading-dark-600">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-ink-500 dark:text-ink-400">
+                {t('widgetsB.sectionLeaps')}
+              </h3>
+            </div>
+            <div className="p-4">
+              <GroupedLeapsList
+                groups={leapsGroups}
+                allPortfolios={portfolios}
+                currency={currency}
+                tickers={tickers}
+                positionHasOpportunity={
+                  new Map(
+                    leapsGroups.flatMap(({ leap, assigned }) =>
+                      [leap, ...assigned].map((p) => [
+                        p.id,
+                        (positionOpportunities.get(p.id) ?? []).length > 0,
+                      ])
+                    )
+                  )
+                }
+                positionOpportunityMessage={
+                  new Map(
+                    leapsGroups.flatMap(({ leap, assigned }) =>
+                      [leap, ...assigned].map((p) => [
+                        p.id,
+                        (positionOpportunities.get(p.id) ?? []).map((o) => o.message).join('\n'),
+                      ])
+                    )
+                  )
+                }
+                positionHasAlert={
+                  new Map(
+                    leapsGroups.flatMap(({ leap, assigned }) =>
+                      [leap, ...assigned].map((p) => [
+                        p.id,
+                        (positionAlerts.get(p.id) ?? []).length > 0,
+                      ])
+                    )
+                  )
+                }
+                positionAlertMessage={
+                  new Map(
+                    leapsGroups.flatMap(({ leap, assigned }) =>
+                      [leap, ...assigned].map((p) => [
+                        p.id,
+                        (positionAlerts.get(p.id) ?? []).map((a) => a.message).join('\n'),
+                      ])
+                    )
+                  )
+                }
+                onView={(pos) => setPositionToView(pos)}
+                onRoll={(pos) => setPositionToRoll(pos as CallOption | PutOption)}
+                onClose={(pos) => setPositionToClose(pos)}
+                onAssign={(pos) => setPositionToAssign(pos as CallOption | PutOption)}
+                currencySymbol={currencySymbol}
+              />
+            </div>
           </div>
         )}
 

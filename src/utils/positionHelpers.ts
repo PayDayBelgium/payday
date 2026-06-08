@@ -1,5 +1,8 @@
-import type { Position, CallOption, PutOption } from '../types';
+import type { Position, CallOption, PutOption, StockPosition, Ticker } from '../types';
 import { getDaysToExpiration } from './dateHelpers';
+import { isLEAPS as isLeapsForCoverage } from './campaignDetector';
+import { getSpreadId } from './spreadHelpers';
+import { allocateCallCoverage } from './coverageAllocation';
 
 /**
  * Calculate the number of days to expiration (DTE) for an option.
@@ -25,6 +28,67 @@ export const isLEAPS = (position: Position): boolean => {
   const option = position as CallOption;
   return calculateDTE(option.expiration) > 90;
 };
+
+/**
+ * Build the set of position IDs that belong to the LEAPS section:
+ * every open non-wheel, non-spread-leg LEAPS call + every short call
+ * that the allocator assigns to one of those LEAPS.
+ *
+ * Pure function: receives the allocator inputs directly so the caller
+ * (PortfolioView) can share ONE allocator pass for both the section
+ * data and this dedup Set.
+ *
+ * @param openPositions   All open positions for the portfolio (no status filter needed — only open are passed).
+ * @param tickers         Ticker store slice (for currentPrice lookups).
+ */
+export function collectLeapsSectionIds(
+  openPositions: Position[],
+  tickers: Ticker[]
+): Set<string> {
+  const ids = new Set<string>();
+
+  // Group by ticker, mirroring the callCoverageByCallId memo in PortfolioView
+  const openByTicker = new Map<string, Position[]>();
+  for (const p of openPositions) {
+    if ((p as { wheelId?: string }).wheelId) continue;
+    const key = p.ticker.toUpperCase();
+    const list = openByTicker.get(key) ?? [];
+    list.push(p);
+    openByTicker.set(key, list);
+  }
+
+  for (const [ticker, group] of openByTicker) {
+    const shortCalls = group.filter(
+      (p) => p.type === 'call' && (p as CallOption).action === 'sell'
+    ) as CallOption[];
+    const stocks = group.filter(
+      (p) => p.type === 'stock' || p.type === 'etf'
+    ) as StockPosition[];
+    const leaps = group.filter(
+      (p) =>
+        p.type === 'call' &&
+        (p as CallOption).action === 'buy' &&
+        isLeapsForCoverage(p as CallOption) &&
+        !getSpreadId(p) // spread-diagonal legs stay in the spread renderer
+    ) as CallOption[];
+
+    if (leaps.length === 0) continue;
+
+    const price = tickers.find((t) => t.symbol.toUpperCase() === ticker)?.currentPrice;
+    const alloc = allocateCallCoverage({ stocks, leaps, shortCalls, currentPrice: price });
+
+    for (const leap of leaps) {
+      ids.add(leap.id);
+    }
+    for (const la of alloc.leaps) {
+      for (const c of la.assigned) {
+        ids.add(c.id);
+      }
+    }
+  }
+
+  return ids;
+}
 
 /**
  * Calculate the summary of a spread (2 legs: long + short).
