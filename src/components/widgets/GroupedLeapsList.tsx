@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { ChevronDown, ChevronRight, AlertCircle, Target } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { CallOption, PutOption, Portfolio, Ticker } from '../../types';
-import { useFeatureAccess } from '../../hooks/useFeatureAccess';
 import { formatCurrency } from '../../utils/numberFormat';
 import { OptionRow } from './OptionRow';
 import type { LeapsGroup } from '../../utils/positionHelpers';
@@ -27,6 +26,8 @@ interface GroupedLeapsListProps {
   onRoll?: (position: CallOption | PutOption) => void;
   onClose?: (position: CallOption | PutOption) => void;
   onAssign?: (position: CallOption | PutOption) => void;
+  /** Opens a pre-filled covered-call wizard for the LEAPS' ticker (PMCC short call). */
+  onWriteCoveredCall?: (ticker: string) => void;
   /** Currency symbol for formatting amounts. */
   currencySymbol: string;
 }
@@ -47,12 +48,10 @@ export const GroupedLeapsList: React.FC<GroupedLeapsListProps> = ({
   onRoll,
   onClose,
   onAssign,
+  onWriteCoveredCall,
   currencySymbol,
 }) => {
   const { t } = useTranslation();
-  // "@" badge (free contracts = can write more short calls) is an opportunity
-  // → level-gated at covered_calls (medior), same as GroupedStockList.
-  const { hasAccess: canUseCoveredCalls } = useFeatureAccess('covered_calls');
   const [expandedLeaps, setExpandedLeaps] = useState<Set<string>>(new Set());
 
   const toggleExpanded = (leapId: string) => {
@@ -71,7 +70,7 @@ export const GroupedLeapsList: React.FC<GroupedLeapsListProps> = ({
 
   return (
     <div className="space-y-3">
-      {groups.map(({ leap, assigned, freeContracts, currentPrice }) => {
+      {groups.map(({ leap, assigned, currentPrice }) => {
         const isExpanded = expandedLeaps.has(leap.id);
         const tickerData = tickers.find(
           (tk) => tk.symbol.toUpperCase() === leap.ticker.toUpperCase()
@@ -85,9 +84,6 @@ export const GroupedLeapsList: React.FC<GroupedLeapsListProps> = ({
         const opportunityMessage = positionOpportunityMessage?.get(leap.id) ?? '';
         const hasAlert = positionHasAlert?.get(leap.id) ?? false;
         const alertMessage = positionAlertMessage?.get(leap.id) ?? '';
-
-        // "@" badge: can still write short calls against this LEAPS
-        const showTargetBadge = canUseCoveredCalls && freeContracts > 0;
 
         return (
           <div
@@ -129,23 +125,18 @@ export const GroupedLeapsList: React.FC<GroupedLeapsListProps> = ({
                           <AlertCircle className="w-3.5 h-3.5" />
                         </div>
                       )}
+                      {/* Single covered-call suggestion: the central-evaluator opportunity
+                          (carries the specific "sell N covered calls" message). Clicking it
+                          opens a pre-filled covered-call wizard; the allocator links the new
+                          short call to this LEAPS (PMCC). */}
                       {hasOpportunity && (
-                        <div
-                          className="flex items-center gap-1 px-2 py-1 bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 rounded-full text-xs font-medium"
-                          title={opportunityMessage}
-                        >
-                          <Target className="w-3.5 h-3.5" />
-                        </div>
-                      )}
-                      {/* "@" badge — write a short call against this LEAPS (gated) */}
-                      {showTargetBadge && (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            onView?.(leap as CallOption | PutOption);
+                            onWriteCoveredCall?.(leap.ticker);
                           }}
                           className="flex items-center gap-1 px-2 py-1 bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 rounded-full text-xs font-medium hover:bg-positive-100 dark:hover:bg-positive-700/40 transition-colors"
-                          title={t('widgetsB.leapsWriteShortCallTitle')}
+                          title={opportunityMessage || t('widgetsB.leapsWriteShortCallTitle')}
                         >
                           <Target className="w-3.5 h-3.5" />
                         </button>

@@ -1093,6 +1093,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                 onRoll={(pos) => setPositionToRoll(pos as CallOption | PutOption)}
                 onClose={(pos) => setPositionToClose(pos)}
                 onAssign={(pos) => setPositionToAssign(pos as CallOption | PutOption)}
+                onWriteCoveredCall={onWriteCoveredCall}
                 currencySymbol={currencySymbol}
               />
             </div>
