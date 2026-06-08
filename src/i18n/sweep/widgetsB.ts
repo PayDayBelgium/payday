@@ -242,6 +242,7 @@ export const widgetsB = {
       sectionOther: 'Other',
       leapsWriteShortCallTitle: 'Write a short call against this LEAPS (PMCC)',
       leapsNoShortCallsYet: 'No short calls written against this LEAPS yet.',
+      stockNoCoveredCallsYet: 'No covered calls written on these shares yet.',
       // CommunityWidget
       conversations: 'Conversations',
       community: 'Community',
@@ -490,6 +491,7 @@ export const widgetsB = {
       sectionOther: 'Overige',
       leapsWriteShortCallTitle: 'Schrijf een short call tegen deze LEAPS (PMCC)',
       leapsNoShortCallsYet: 'Nog geen short calls geschreven tegen deze LEAPS.',
+      stockNoCoveredCallsYet: 'Nog geen covered calls geschreven op deze aandelen.',
       // CommunityWidget
       conversations: 'Gesprekken',
       community: 'Community',
@@ -739,6 +741,7 @@ export const widgetsB = {
       sectionOther: 'Autres',
       leapsWriteShortCallTitle: 'Écrire un short call contre ce LEAPS (PMCC)',
       leapsNoShortCallsYet: "Aucun short call écrit contre ce LEAPS pour l'instant.",
+      stockNoCoveredCallsYet: "Aucun covered call encore écrit sur ces actions.",
       // CommunityWidget
       conversations: 'Conversations',
       community: 'Communauté',

@@ -407,8 +407,19 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
     setNotes('');
     // Reset wheel linking - use initialWheelId if provided
     setSelectedWheelId(initialWheelId || null);
-    // Reset to initial step if provided, otherwise 0
-    setCurrentStepIndex(initialStep || 0);
+    // Resolve initial step:
+    //   - explicit initialStep always wins
+    //   - when both initialTicker and initialAction are provided (pre-filled open),
+    //     jump straight to the details step so only strike/expiration/premium remain
+    //   - otherwise start at step 0
+    if (initialStep !== undefined) {
+      setCurrentStepIndex(initialStep);
+    } else if (initialTicker && initialAction) {
+      // steps is not in scope here; use the constant index: action(0) → ticker(1) → details(2)
+      setCurrentStepIndex(2);
+    } else {
+      setCurrentStepIndex(0);
+    }
   };
 
   // Effect to initialize values when wizard opens with initial values
@@ -420,8 +431,12 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
       if (initialTicker) {
         setSelectedTicker(initialTicker);
       }
+      // Resolve initial step (same logic as resetForm):
+      //   explicit prop wins; both ticker+action → details(2); otherwise step 0.
       if (initialStep !== undefined) {
         setCurrentStepIndex(initialStep);
+      } else if (initialTicker && initialAction) {
+        setCurrentStepIndex(2);
       }
       if (initialWheelId) {
         setSelectedWheelId(initialWheelId);

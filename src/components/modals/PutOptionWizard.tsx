@@ -307,8 +307,17 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
     // Reset wheel linking
     setSelectedWheelId(null);
     setShowWheelLinking(false);
-    // Reset to initial step if provided, otherwise 0
-    setCurrentStepIndex(initialStep || 0);
+    // Resolve initial step (mirrors CallOptionWizard):
+    //   - explicit initialStep always wins
+    //   - both initialTicker + initialAction provided → jump to details(2)
+    //   - otherwise start at step 0
+    if (initialStep !== undefined) {
+      setCurrentStepIndex(initialStep);
+    } else if (initialTicker && initialAction) {
+      setCurrentStepIndex(2);
+    } else {
+      setCurrentStepIndex(0);
+    }
   };
 
   // Effect to initialize values when wizard opens with initial values
@@ -320,8 +329,12 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
       if (initialTicker) {
         setSelectedTicker(initialTicker);
       }
+      // Resolve initial step (same logic as resetForm):
+      //   explicit prop wins; both ticker+action → details(2); otherwise no change.
       if (initialStep !== undefined) {
         setCurrentStepIndex(initialStep);
+      } else if (initialTicker && initialAction) {
+        setCurrentStepIndex(2);
       }
       // Auto-select wheel if initialWheelId is provided
       if (initialWheelId) {

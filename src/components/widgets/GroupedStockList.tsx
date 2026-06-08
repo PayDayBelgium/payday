@@ -7,6 +7,7 @@ import {
   X,
   Target,
 } from 'lucide-react';
+import { CoveredCallSuggestionBadge } from './CoveredCallSuggestionBadge';
 import { useTranslation } from 'react-i18next';
 import type { StockPosition, PriceAlert, Portfolio, CallOption, Ticker } from '../../types';
 import { formatCurrency } from '../../utils/currencyHelpers';
@@ -83,8 +84,8 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
   alerts,
   strategyAlertsMap = EMPTY_STRATEGY_ALERTS,
   allPortfolios,
-  onEditPosition,
-  onDismissStrategyAlert,
+  onEditPosition: _onEditPosition,
+  onDismissStrategyAlert: _onDismissStrategyAlert,
   onWriteCoveredCall,
   onSellPosition,
   coveredCallsByTicker,
@@ -247,7 +248,8 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
     }
   };
 
-  const handleDismissStrategyAlert = (e: React.MouseEvent, alertId: string, message: string) => {
+  // Kept for future use when per-lot strategy-alert dismissal is re-enabled.
+  const _handleDismissStrategyAlert = (e: React.MouseEvent, alertId: string, message: string) => {
     e.stopPropagation();
     setDismissStrategyConfirm({ isOpen: true, alertId, message });
   };
@@ -366,26 +368,14 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                               {ruleOpportunities.length}
                             </div>
                           )}
-                          {canWriteCoveredCalls &&
-                            (onWriteCoveredCall ? (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  onWriteCoveredCall(group.ticker);
-                                }}
-                                className="flex items-center gap-1 px-2 py-1 bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 rounded-full text-xs font-medium hover:bg-positive-100 dark:hover:bg-positive-700/40 transition-colors"
-                                title={t('widgetsB.writeCoveredCallTitle')}
-                              >
-                                <Target className="w-3.5 h-3.5" />
-                              </button>
-                            ) : (
-                              <div
-                                className="flex items-center gap-1 px-2 py-1 bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 rounded-full text-xs font-medium"
-                                title={t('widgetsB.coveredCallsPossibleTitle')}
-                              >
-                                <Target className="w-3.5 h-3.5" />
-                              </div>
-                            ))}
+                          {canWriteCoveredCalls && (
+                            <CoveredCallSuggestionBadge
+                              message={t('widgetsA.writeCoveredCallsOpportunity', {
+                                count: ccCapacity.freeContracts,
+                              })}
+                              onClick={onWriteCoveredCall ? () => onWriteCoveredCall(group.ticker) : undefined}
+                            />
+                          )}
                         </div>
 
                         {/* Data fields in a flex layout */}
@@ -500,25 +490,19 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                       </p>
                     </div>
 
-                    {/* Sell button in gray zone */}
+                    {/* Sell button in gray zone.
+                        Per-lot selling is handled via the position/close flow;
+                        the header button always delegates to the first lot as a
+                        representative for the ticker group. */}
                     {onSellPosition && (
                       <div className="flex-shrink-0 bg-surface-subtle dark:bg-trading-dark-700/50 rounded-lg px-3 py-3">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            if (group.positions.length === 1) {
-                              onSellPosition(group.positions[0]);
-                            } else {
-                              // Multiple lots: expand so the user can sell a specific lot
-                              setExpandedTickers((prev) => new Set(prev).add(group.ticker));
-                            }
+                            onSellPosition(group.positions[0]);
                           }}
                           className="w-8 h-8 flex items-center justify-center bg-ink-200 dark:bg-trading-dark-600 hover:bg-ink-300 dark:hover:bg-ink-400 text-ink-700 dark:text-ink-200 rounded font-semibold text-sm transition-colors"
-                          title={
-                            group.positions.length === 1
-                              ? t('widgetsB.sell')
-                              : t('widgetsB.sellLotExpand')
-                          }
+                          title={t('widgetsB.sell')}
                         >
                           S
                         </button>
@@ -527,15 +511,33 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                   </div>
                 </div>
 
-                {/* Expanded Content - Individual Positions */}
+                {/* Expanded Content — shows covered calls written against this stock.
+                    Share-purchase lot rows are transaction history; they belong in
+                    the transaction log, not here. */}
                 {isExpanded && (
                   <div className="border-t border-surface-line dark:border-trading-dark-600 bg-surface dark:bg-trading-dark-900/50">
                     <div className="divide-y divide-surface-line dark:divide-trading-dark-600">
                       {/* ── Covered calls nested under this stock ── */}
                       {(() => {
-                        if (!coveredCallsByTicker) return null;
+                        if (!coveredCallsByTicker) {
+                          return (
+                            <div className="px-8 py-4">
+                              <p className="text-sm text-ink-500 dark:text-ink-400">
+                                {t('widgetsB.stockNoCoveredCallsYet')}
+                              </p>
+                            </div>
+                          );
+                        }
                         const calls = coveredCallsByTicker.get(group.ticker.toUpperCase()) ?? [];
-                        if (calls.length === 0) return null;
+                        if (calls.length === 0) {
+                          return (
+                            <div className="px-8 py-4">
+                              <p className="text-sm text-ink-500 dark:text-ink-400">
+                                {t('widgetsB.stockNoCoveredCallsYet')}
+                              </p>
+                            </div>
+                          );
+                        }
                         return calls.map((call) => {
                           const tickerEntry = tickers?.find(
                             (tk) => tk.symbol.toUpperCase() === call.ticker.toUpperCase()
@@ -576,219 +578,6 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                           );
                         });
                       })()}
-                      {group.positions.map((position) => {
-                        const posProfit = position.currentValue - position.costBasis;
-                        const posProfitPct =
-                          position.costBasis > 0 ? (posProfit / position.costBasis) * 100 : 0;
-                        const isPosProfit = posProfit >= 0;
-
-                        // Get alerts for this specific position
-                        const positionAlerts = alerts.filter(
-                          (a) => a.positionId === position.id && !a.isRead
-                        );
-                        const positionStrategyAlerts = strategyAlertsMap.get(position.id) || [];
-
-                        return (
-                          <div key={position.id}>
-                            <div
-                              onClick={() => onEditPosition(position)}
-                              className="p-4 hover:bg-white dark:hover:bg-trading-dark-800 cursor-pointer transition-colors"
-                            >
-                              <div className="flex items-center gap-4">
-                                {/* Left: Chevron spacer + Data fields matching header */}
-                                <div className="flex items-center gap-3 flex-1">
-                                  {/* Spacer for chevron alignment */}
-                                  <div className="w-5 flex-shrink-0">
-                                    {/* Alert/Opportunity indicators */}
-                                    {(positionAlerts.length > 0 ||
-                                      positionStrategyAlerts.length > 0) && (
-                                      <div className="flex flex-col gap-0.5">
-                                        {positionAlerts.some(
-                                          (a) => !a.category || a.category === 'alert'
-                                        ) && (
-                                          <AlertCircle className="w-3.5 h-3.5 text-negative-600 dark:text-negative-500" />
-                                        )}
-                                        {positionStrategyAlerts.some(
-                                          (a: StrategyAlert) => a.category === 'alert'
-                                        ) && (
-                                          <AlertCircle className="w-3.5 h-3.5 text-caution-600 dark:text-caution-500" />
-                                        )}
-                                        {(positionAlerts.some(
-                                          (a: any) => a.category === 'opportunity'
-                                        ) ||
-                                          positionStrategyAlerts.some(
-                                            (a: StrategyAlert) => a.category === 'opportunity'
-                                          )) && (
-                                          <Target className="w-3.5 h-3.5 text-positive-600 dark:text-positive-500" />
-                                        )}
-                                      </div>
-                                    )}
-                                  </div>
-
-                                  {/* Data fields matching header layout */}
-                                  <div className="flex items-center gap-6 text-sm">
-                                    <div className="w-24 flex-shrink-0">
-                                      <p className="text-sm font-medium text-ink-900 dark:text-white">
-                                        {new Date(position.openDate).toLocaleDateString('nl-NL')}
-                                      </p>
-                                    </div>
-                                    <div className="w-16 flex-shrink-0">
-                                      <p className="text-sm font-medium text-ink-900 dark:text-white">
-                                        {position.shares}
-                                      </p>
-                                    </div>
-                                    <div className="w-20 flex-shrink-0">
-                                      <p className="text-sm font-medium text-ink-900 dark:text-white">
-                                        {formatCurrency(position.purchasePrice, allPortfolios)}
-                                      </p>
-                                    </div>
-                                    <div className="w-28 flex-shrink-0">
-                                      <p className="text-sm font-medium text-ink-900 dark:text-white">
-                                        {formatCurrency(position.costBasis, allPortfolios)}
-                                      </p>
-                                    </div>
-                                    <div className="w-24 flex-shrink-0">
-                                      <p className="text-sm font-medium text-ink-900 dark:text-white">
-                                        {formatCurrency(position.currentPrice, allPortfolios)}
-                                      </p>
-                                    </div>
-                                    <div className="w-28 flex-shrink-0">
-                                      <p className="text-sm font-medium text-ink-900 dark:text-white">
-                                        {formatCurrency(position.currentValue, allPortfolios)}
-                                      </p>
-                                    </div>
-                                  </div>
-                                </div>
-
-                                {/* P&L - right-aligned */}
-                                <div
-                                  className="flex-shrink-0 text-right"
-                                  style={{ width: '180px' }}
-                                >
-                                  <p
-                                    className={`text-lg font-bold ${
-                                      isPosProfit
-                                        ? 'text-positive-600 dark:text-positive-500'
-                                        : 'text-negative-600 dark:text-negative-500'
-                                    }`}
-                                  >
-                                    {isPosProfit ? '+' : ''}
-                                    {formatCurrency(Math.abs(posProfit), allPortfolios)}
-                                  </p>
-                                  <p
-                                    className={`text-xs font-medium ${
-                                      isPosProfit
-                                        ? 'text-positive-600 dark:text-positive-500'
-                                        : 'text-negative-600 dark:text-negative-500'
-                                    }`}
-                                  >
-                                    {isPosProfit ? '+' : ''}
-                                    {formatNumber(posProfitPct, 2)}%
-                                  </p>
-                                </div>
-
-                                {onSellPosition && (
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      onSellPosition(position);
-                                    }}
-                                    className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-surface-muted dark:bg-trading-dark-600 hover:bg-ink-200 dark:hover:bg-ink-400 text-ink-700 dark:text-ink-200 rounded font-semibold text-sm transition-colors"
-                                    title={t('widgetsB.sellThisLot')}
-                                  >
-                                    S
-                                  </button>
-                                )}
-                              </div>
-                            </div>
-
-                            {/* Position-specific alerts */}
-                            {(positionAlerts.length > 0 || positionStrategyAlerts.length > 0) && (
-                              <div className="px-4 pb-3 space-y-2">
-                                {/* Price Alerts */}
-                                {positionAlerts.map((alert) => {
-                                  const isOpportunity = alert.category === 'opportunity';
-                                  const bgColor = isOpportunity
-                                    ? 'bg-positive-50 dark:bg-positive-700/15 border-positive-500/20 dark:border-positive-700/30'
-                                    : 'bg-negative-50 dark:bg-negative-700/15 border-negative-500/20 dark:border-negative-700/30';
-                                  const iconColor = isOpportunity
-                                    ? 'text-positive-600 dark:text-positive-500'
-                                    : 'text-negative-600 dark:text-negative-500';
-                                  const textColor = isOpportunity
-                                    ? 'text-positive-700 dark:text-positive-500'
-                                    : 'text-negative-700 dark:text-negative-500';
-
-                                  return (
-                                    <div
-                                      key={alert.id}
-                                      className={`flex items-start gap-2 p-2 ml-8 ${bgColor} border rounded text-xs`}
-                                    >
-                                      {isOpportunity ? (
-                                        <Target
-                                          className={`w-3.5 h-3.5 ${iconColor} mt-0.5 flex-shrink-0`}
-                                        />
-                                      ) : (
-                                        <AlertCircle
-                                          className={`w-3.5 h-3.5 ${iconColor} mt-0.5 flex-shrink-0`}
-                                        />
-                                      )}
-                                      <p className={`${textColor} flex-1`}>{alert.message}</p>
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          setDismissConfirm({ isOpen: true, alert });
-                                        }}
-                                        className={`p-0.5 hover:bg-surface-muted dark:hover:bg-trading-dark-700 rounded transition-colors flex-shrink-0`}
-                                        title={t('widgetsB.closeAlert')}
-                                      >
-                                        <X className="w-3.5 h-3.5" />
-                                      </button>
-                                    </div>
-                                  );
-                                })}
-
-                                {/* Strategy Alerts */}
-                                {positionStrategyAlerts.map((alert: StrategyAlert) => {
-                                  const isAlert = alert.category === 'alert';
-                                  const Icon = isAlert ? AlertCircle : Target;
-                                  const bgColor = isAlert
-                                    ? 'bg-caution-50 dark:bg-caution-600/15 border-caution-500/30 dark:border-caution-600/40'
-                                    : 'bg-positive-50 dark:bg-positive-700/15 border-positive-500/20 dark:border-positive-700/30';
-                                  const iconColor = isAlert
-                                    ? 'text-caution-600 dark:text-caution-500'
-                                    : 'text-positive-600 dark:text-positive-500';
-                                  const textColor = isAlert
-                                    ? 'text-caution-600 dark:text-amber-200'
-                                    : 'text-positive-700 dark:text-positive-500';
-
-                                  return (
-                                    <div
-                                      key={alert.id}
-                                      className={`flex items-start gap-2 p-2 ml-8 ${bgColor} border rounded text-xs`}
-                                    >
-                                      <Icon
-                                        className={`w-3.5 h-3.5 ${iconColor} mt-0.5 flex-shrink-0`}
-                                      />
-                                      <p className={`${textColor} flex-1`}>{alert.message}</p>
-                                      {onDismissStrategyAlert && (
-                                        <button
-                                          onClick={(e) =>
-                                            handleDismissStrategyAlert(e, alert.id, alert.message)
-                                          }
-                                          className={`p-0.5 hover:bg-surface-muted dark:hover:bg-trading-dark-700 rounded transition-colors flex-shrink-0`}
-                                          title={t('widgetsB.closeAlert')}
-                                        >
-                                          <X className="w-3.5 h-3.5" />
-                                        </button>
-                                      )}
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
                     </div>
                   </div>
                 )}
