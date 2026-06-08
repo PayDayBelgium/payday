@@ -356,7 +356,6 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   // Pre-process positions to identify spreads
   const { spreads } = useMemo(() => {
     const spreadMap = new Map<string, Position[]>();
-    const standalone: Position[] = [];
 
     filteredPositions.forEach((position) => {
       const spreadId = getSpreadId(position);
@@ -365,14 +364,11 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
           spreadMap.set(spreadId, []);
         }
         spreadMap.get(spreadId)!.push(position);
-      } else {
-        standalone.push(position);
       }
     });
 
     return {
       spreads: Array.from(spreadMap.entries()).map(([id, legs]) => ({ id, legs })),
-      standalonePositions: standalone,
     };
   }, [filteredPositions]);
 
