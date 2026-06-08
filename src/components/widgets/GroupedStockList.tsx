@@ -3,7 +3,6 @@ import {
   ChevronDown,
   ChevronRight,
   AlertCircle,
-  CheckCircle,
   Search,
   X,
   Target,
@@ -345,16 +344,14 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                                 className="flex items-center gap-1 px-2 py-1 bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 rounded-full text-xs font-medium hover:bg-positive-100 dark:hover:bg-positive-700/40 transition-colors"
                                 title={t('widgetsB.writeCoveredCallTitle')}
                               >
-                                <CheckCircle className="w-3.5 h-3.5" />
-                                CC
+                                <Target className="w-3.5 h-3.5" />
                               </button>
                             ) : (
                               <div
                                 className="flex items-center gap-1 px-2 py-1 bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 rounded-full text-xs font-medium"
                                 title={t('widgetsB.coveredCallsPossibleTitle')}
                               >
-                                <CheckCircle className="w-3.5 h-3.5" />
-                                CC
+                                <Target className="w-3.5 h-3.5" />
                               </div>
                             ))}
                         </div>

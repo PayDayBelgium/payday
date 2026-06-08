@@ -5,7 +5,9 @@ import { configureStore } from '@reduxjs/toolkit';
 import positionsReducer from '../../store/slices/positionsSlice';
 import userProgressReducer, { unlockLevel } from '../../store/slices/userProgressSlice';
 import { GroupedStockList } from './GroupedStockList';
-import '../../i18n/config'; // initialize i18n so t() resolves
+import i18n from '../../i18n/config'; // initialize i18n so t() resolves
+
+const ccTitle = () => i18n.t('widgetsB.coveredCallsPossibleTitle');
 import type { StockPosition, Portfolio } from '../../types';
 
 // A coverable lot: 100 shares, no sold calls → computeCoveredCallCapacity allows a CC.
@@ -54,12 +56,12 @@ function renderList(unlockMedior: boolean) {
 describe('GroupedStockList — covered-call opportunity gating', () => {
   it('hides the CC badge on green slope (beginner: covered_calls locked)', () => {
     renderList(false);
-    // The "CC" opportunity badge must not appear before the covered_calls feature is unlocked.
-    expect(screen.queryByText('CC')).toBeNull();
+    // The covered-call opportunity badge must not appear before covered_calls is unlocked.
+    expect(screen.queryByTitle(ccTitle())).toBeNull();
   });
 
   it('shows the CC badge once covered_calls is unlocked (medior)', () => {
     renderList(true);
-    expect(screen.queryByText('CC')).not.toBeNull();
+    expect(screen.queryByTitle(ccTitle())).not.toBeNull();
   });
 });

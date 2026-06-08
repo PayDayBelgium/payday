@@ -16,8 +16,8 @@ describe('getOpportunityRequiredFeature', () => {
     expect(getOpportunityRequiredFeature('stock-cc-opportunity-AAPL-Test')).toBe('covered_calls');
   });
 
-  it('koppelt LEAPS/PMCC opportunity aan pmcc (senior)', () => {
-    expect(getOpportunityRequiredFeature('leaps-cc-opportunity-123')).toBe('pmcc');
+  it('koppelt LEAPS covered call aan covered_calls (medior)', () => {
+    expect(getOpportunityRequiredFeature('leaps-cc-opportunity-123')).toBe('covered_calls');
   });
 
   it('koppelt kaching aan kaching (expert)', () => {
@@ -47,7 +47,7 @@ describe('getOpportunityRequiredFeature', () => {
 describe('filterOpportunitiesByAccess', () => {
   const opportunities: AlertItem[] = [
     makeOpp('stock-cc-opportunity-AAPL-Test'), // covered_calls (medior)
-    makeOpp('leaps-cc-opportunity-1'), // pmcc (senior)
+    makeOpp('leaps-cc-opportunity-1'), // covered_calls (medior) — CC against a LEAPS
     makeOpp('kaching-opportunity-1'), // kaching (expert)
     makeOpp('pos-1-rule-1'), // no feature (base level)
   ];
@@ -58,19 +58,19 @@ describe('filterOpportunitiesByAccess', () => {
     expect(result.map((o) => o.id)).toEqual(['pos-1-rule-1']);
   });
 
-  it('medior ziet covered call maar niet PMCC of KaChing', () => {
+  it('medior ziet stock- én leaps-covered-call maar niet KaChing', () => {
     const medior: UserLevel[] = ['beginner', 'medior'];
     const result = filterOpportunitiesByAccess(opportunities, medior);
     expect(result.map((o) => o.id).sort()).toEqual(
-      ['pos-1-rule-1', 'stock-cc-opportunity-AAPL-Test'].sort()
+      ['leaps-cc-opportunity-1', 'pos-1-rule-1', 'stock-cc-opportunity-AAPL-Test'].sort()
     );
   });
 
-  it('senior ziet covered call en PMCC maar niet KaChing', () => {
-    const senior: UserLevel[] = ['beginner', 'medior', 'senior'];
-    const result = filterOpportunitiesByAccess(opportunities, senior);
-    expect(result.map((o) => o.id)).not.toContain('kaching-opportunity-1');
+  it('medior ziet de leaps-CC, maar niet KaChing (expert)', () => {
+    const medior: UserLevel[] = ['beginner', 'medior'];
+    const result = filterOpportunitiesByAccess(opportunities, medior);
     expect(result.map((o) => o.id)).toContain('leaps-cc-opportunity-1');
+    expect(result.map((o) => o.id)).not.toContain('kaching-opportunity-1');
   });
 
   it('expert ziet alle opportunities', () => {
