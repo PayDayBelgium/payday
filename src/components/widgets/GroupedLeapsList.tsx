@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import type { CallOption, PutOption, Portfolio, Ticker } from '../../types';
 import { formatCurrency } from '../../utils/numberFormat';
 import { OptionRow } from './OptionRow';
+import { PortalTooltip } from '../common/PortalTooltip';
 import type { LeapsGroup } from '../../utils/positionHelpers';
 
 // Re-export so existing imports from this module continue to work.
@@ -126,20 +127,37 @@ export const GroupedLeapsList: React.FC<GroupedLeapsListProps> = ({
                         </div>
                       )}
                       {/* Single covered-call suggestion: the central-evaluator opportunity
-                          (carries the specific "sell N covered calls" message). Clicking it
-                          opens a pre-filled covered-call wizard; the allocator links the new
-                          short call to this LEAPS (PMCC). */}
+                          (carries the specific "sell N covered calls" message), shown in a
+                          styled multi-line tooltip. Clicking it opens a pre-filled covered-call
+                          wizard; the allocator links the new short call to this LEAPS (PMCC). */}
                       {hasOpportunity && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onWriteCoveredCall?.(leap.ticker);
-                          }}
-                          className="flex items-center gap-1 px-2 py-1 bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 rounded-full text-xs font-medium hover:bg-positive-100 dark:hover:bg-positive-700/40 transition-colors"
-                          title={opportunityMessage || t('widgetsB.leapsWriteShortCallTitle')}
+                        <PortalTooltip
+                          content={
+                            <div className="w-72 p-3 bg-white dark:bg-trading-dark-800 border border-positive-500/20 dark:border-positive-700/30 rounded-lg shadow-xl">
+                              <div className="flex items-start gap-2">
+                                <Target className="w-4 h-4 text-positive-600 dark:text-positive-500 flex-shrink-0 mt-0.5" />
+                                <div>
+                                  <p className="font-semibold text-sm text-ink-900 dark:text-white mb-1">
+                                    {t('optionRow.opportunity')}
+                                  </p>
+                                  <p className="text-xs text-ink-600 dark:text-ink-300 whitespace-pre-line">
+                                    {opportunityMessage || t('widgetsB.leapsWriteShortCallTitle')}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          }
                         >
-                          <Target className="w-3.5 h-3.5" />
-                        </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onWriteCoveredCall?.(leap.ticker);
+                            }}
+                            className="flex items-center gap-1 px-2 py-1 bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 rounded-full text-xs font-medium hover:bg-positive-100 dark:hover:bg-positive-700/40 transition-colors"
+                          >
+                            <Target className="w-3.5 h-3.5" />
+                          </button>
+                        </PortalTooltip>
                       )}
                     </div>
 
