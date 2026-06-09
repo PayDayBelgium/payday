@@ -301,27 +301,19 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
   };
 
   const resetForm = () => {
-    setAction(initialAction || 'buy');
-    setSelectedTicker(initialTicker || null);
+    // Reset to CLEAN defaults — NOT the initial* props. resetForm runs on close; the
+    // open effect re-applies the current initial* props, so a generic open after a
+    // pre-filled one starts blank (no stale ticker/action leaking in on first open).
+    setAction('buy');
+    setSelectedTicker(null);
     setIsCreatingTicker(false);
     setLongLeg({ strike: 0, expiration: '', premium: 0, contracts: 1 });
     setShortLeg({ strike: 0, expiration: '', premium: 0, contracts: 1 });
     setPurchaseDate(new Date().toISOString().split('T')[0]);
     setNotes('');
-    // Reset wheel linking
     setSelectedWheelId(null);
     setShowWheelLinking(false);
-    // Resolve initial step (mirrors CallOptionWizard):
-    //   - explicit initialStep always wins
-    //   - both initialTicker + initialAction provided → jump to details(2)
-    //   - otherwise start at step 0
-    if (initialStep !== undefined) {
-      setCurrentStepIndex(initialStep);
-    } else if (initialTicker && initialAction) {
-      setCurrentStepIndex(DETAILS_STEP_INDEX);
-    } else {
-      setCurrentStepIndex(0);
-    }
+    setCurrentStepIndex(0);
   };
 
   // Effect to initialize values when wizard opens with initial values

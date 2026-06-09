@@ -423,35 +423,20 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
   };
 
   const resetForm = () => {
-    setAction(initialAction || 'buy');
-    setSelectedTicker(initialTicker || null);
+    // Reset to CLEAN defaults — deliberately NOT the initial* props. resetForm runs
+    // on close; the open effect below re-applies the CURRENT initial* props. This way
+    // a generic open after a pre-filled one starts blank (no stale ticker/action/legs
+    // leaking in on the first open).
+    setAction('buy');
+    setSelectedTicker(null);
     setSelectedUnderlying(null);
     setIsCreatingTicker(false);
-    // Base longLeg; merge in initialStrike / initialExpiration when provided so
-    // the LEAPS buy-more flow pre-fills those fields and only premium/contracts/date remain.
-    setLongLeg({
-      strike: initialStrike ?? 0,
-      expiration: initialExpiration ?? '',
-      premium: 0,
-      contracts: 1,
-    });
+    setLongLeg({ strike: 0, expiration: '', premium: 0, contracts: 1 });
     setShortLeg({ strike: 0, expiration: '', premium: 0, contracts: 1 });
     setPurchaseDate(new Date().toISOString().split('T')[0]);
     setNotes('');
-    // Reset wheel linking - use initialWheelId if provided
-    setSelectedWheelId(initialWheelId || null);
-    // Resolve initial step:
-    //   - explicit initialStep always wins
-    //   - when both initialTicker and initialAction are provided (pre-filled open),
-    //     jump straight to the details step so only strike/expiration/premium remain
-    //   - otherwise start at step 0
-    if (initialStep !== undefined) {
-      setCurrentStepIndex(initialStep);
-    } else if (initialTicker && initialAction) {
-      setCurrentStepIndex(DETAILS_STEP_INDEX);
-    } else {
-      setCurrentStepIndex(0);
-    }
+    setSelectedWheelId(null);
+    setCurrentStepIndex(0);
   };
 
   // Effect to initialize values when wizard opens with initial values
@@ -1126,7 +1111,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                       }
                       value={longLeg.contracts || ''}
                       onChange={(e) => {
-                        const requested = parseInt(e.target.value, 10) || 1;
+                        const requested = parseCountInput(e.target.value);
                         const contracts =
                           Number.isFinite(maxCoveredCallContracts) && maxCoveredCallContracts > 0
                             ? Math.min(requested, maxCoveredCallContracts)
