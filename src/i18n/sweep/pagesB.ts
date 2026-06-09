@@ -129,6 +129,10 @@ export const pagesB = {
         noActiveAlerts: 'No active alerts',
         noActiveOpportunities: 'No active opportunities',
         placeTradeHint: 'Open wizard',
+        tabFreeCash: 'Free cash',
+        tabTransactionLog: 'Transaction log',
+        tabInformation: 'Information',
+        tabAlertsOpportunities: 'Alerts & Opportunities',
       },
       portfolioManagement: {
         urlMustStartHttps: 'Portfolio URL must start with https://',
@@ -265,6 +269,10 @@ export const pagesB = {
         noActiveAlerts: 'Geen actieve alerts',
         noActiveOpportunities: 'Geen actieve opportunities',
         placeTradeHint: 'Wizard openen',
+        tabFreeCash: 'Vrije cash',
+        tabTransactionLog: 'Transactielogboek',
+        tabInformation: 'Informatie',
+        tabAlertsOpportunities: 'Alerts & kansen',
       },
       portfolioManagement: {
         urlMustStartHttps: 'Portfolio URL moet beginnen met https://',
@@ -403,6 +411,10 @@ export const pagesB = {
         noActiveAlerts: 'Aucune alerte active',
         noActiveOpportunities: 'Aucune opportunité active',
         placeTradeHint: 'Ouvrir l\'assistant',
+        tabFreeCash: 'Liquidités disponibles',
+        tabTransactionLog: 'Journal des transactions',
+        tabInformation: 'Informations',
+        tabAlertsOpportunities: 'Alertes & opportunités',
       },
       portfolioManagement: {
         urlMustStartHttps: 'L\'URL du portefeuille doit commencer par https://',

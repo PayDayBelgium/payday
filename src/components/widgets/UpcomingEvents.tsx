@@ -1,5 +1,6 @@
 import React from 'react';
 import { Calendar, TrendingUp, DollarSign, Star } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface Event {
   id: string;
@@ -60,6 +61,8 @@ const eventColors = {
 };
 
 export const UpcomingEvents: React.FC = () => {
+  const { t } = useTranslation();
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const today = new Date();
@@ -67,9 +70,9 @@ export const UpcomingEvents: React.FC = () => {
     tomorrow.setDate(tomorrow.getDate() + 1);
 
     if (date.toDateString() === today.toDateString()) {
-      return 'Today';
+      return t('widgetsB.today');
     } else if (date.toDateString() === tomorrow.toDateString()) {
-      return 'Tomorrow';
+      return t('widgetsB.tomorrow');
     } else {
       return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     }
@@ -79,7 +82,7 @@ export const UpcomingEvents: React.FC = () => {
     <div className="bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 p-6">
       <div className="flex items-center gap-2 mb-4">
         <Calendar className="w-5 h-5 text-primary-700 dark:text-primary-300" />
-        <h3 className="text-lg font-semibold text-ink-900 dark:text-white">Upcoming Events</h3>
+        <h3 className="text-lg font-semibold text-ink-900 dark:text-white">{t('widgetsB.upcomingEventsTitle')}</h3>
       </div>
 
       <div className="space-y-3">

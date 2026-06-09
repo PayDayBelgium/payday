@@ -525,7 +525,7 @@ export const PortfolioDetail: React.FC = () => {
                   }`}
                 >
                   <Banknote className="w-4 h-4" />
-                  Free cash
+                  {t('pagesB.portfolioDetail.tabFreeCash')}
                 </button>
               )}
               <button
@@ -548,7 +548,7 @@ export const PortfolioDetail: React.FC = () => {
                 }`}
               >
                 <History className="w-4 h-4" />
-                Transaction log
+                {t('pagesB.portfolioDetail.tabTransactionLog')}
               </button>
               {hasOptionsAccess && (
                 <button
@@ -560,7 +560,7 @@ export const PortfolioDetail: React.FC = () => {
                   }`}
                 >
                   <Info className="w-4 h-4" />
-                  Information
+                  {t('pagesB.portfolioDetail.tabInformation')}
                 </button>
               )}
               {hasOptionsAccess && (
@@ -586,7 +586,7 @@ export const PortfolioDetail: React.FC = () => {
                   }`}
                 >
                   <AlertCircle className="w-4 h-4" />
-                  Alerts & Opportunities
+                  {t('pagesB.portfolioDetail.tabAlertsOpportunities')}
                   {(alertsData.alerts.length > 0 || alertsData.opportunities.length > 0) && (
                     <span className="px-1.5 py-0.5 bg-caution-50 dark:bg-caution-600/25 rounded-full text-xs font-semibold text-caution-600 dark:text-caution-500">
                       {alertsData.alerts.length + alertsData.opportunities.length}

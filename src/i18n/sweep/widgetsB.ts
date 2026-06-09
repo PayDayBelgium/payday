@@ -248,6 +248,16 @@ export const widgetsB = {
       conversations: 'Conversations',
       community: 'Community',
       toTheCommunity: 'To the community',
+      // StockETFCard
+      costBasis: 'Cost Basis',
+      // PortfolioView filter labels
+      filterOpportunities: 'Opportunities',
+      filterAlerts: 'Alerts',
+      filterIdeas: 'Ideas',
+      // UpcomingEvents
+      upcomingEventsTitle: 'Upcoming Events',
+      today: 'Today',
+      tomorrow: 'Tomorrow',
     },
   },
   nl: {
@@ -498,6 +508,16 @@ export const widgetsB = {
       conversations: 'Gesprekken',
       community: 'Community',
       toTheCommunity: 'Naar de community',
+      // StockETFCard
+      costBasis: 'Kostbasis',
+      // PortfolioView filter labels
+      filterOpportunities: 'Kansen',
+      filterAlerts: 'Alerts',
+      filterIdeas: 'Ideeën',
+      // UpcomingEvents
+      upcomingEventsTitle: 'Aankomende gebeurtenissen',
+      today: 'Vandaag',
+      tomorrow: 'Morgen',
     },
   },
   fr: {
@@ -749,6 +769,16 @@ export const widgetsB = {
       conversations: 'Conversations',
       community: 'Communauté',
       toTheCommunity: 'Vers la communauté',
+      // StockETFCard
+      costBasis: 'Prix de revient',
+      // PortfolioView filter labels
+      filterOpportunities: 'Opportunités',
+      filterAlerts: 'Alertes',
+      filterIdeas: 'Idées',
+      // UpcomingEvents
+      upcomingEventsTitle: 'Événements à venir',
+      today: "Aujourd'hui",
+      tomorrow: 'Demain',
     },
   },
 };

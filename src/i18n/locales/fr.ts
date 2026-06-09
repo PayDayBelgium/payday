@@ -78,6 +78,20 @@ const frBase = {
     language: 'Langue',
     logout: 'Déconnexion',
     loggingOut: 'Déconnexion et effacement de la session...',
+    helpPortal: "Portail d'aide",
+    optionsTrader: 'Trader en options',
+    settings: 'Paramètres',
+    help: 'Aide',
+    preferences: 'Préférences',
+    data: 'Données',
+    backup: 'Sauvegarde',
+    restore: 'Restaurer',
+    hideExplanation: "Masquer l'explication",
+    showExplanation: "Afficher l'explication",
+    hideWarning: "Masquer l'avertissement",
+    showWarning: "Afficher l'avertissement",
+    expandSidebar: 'Développer la barre latérale',
+    collapseSidebar: 'Réduire la barre latérale',
   },
 
   // Sidebar
@@ -105,6 +119,8 @@ const frBase = {
     quantTrading: 'Trading quant',
     mentorship: 'Mentorat',
     optionCheck: "Vérification d'options",
+    coveredCallSimulator: 'Simulateur Covered Call',
+    pnlSimulator: 'Simulateur P&L',
   },
 
   // Strategies

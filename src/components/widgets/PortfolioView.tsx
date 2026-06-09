@@ -1052,7 +1052,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                     className="w-4 h-4 rounded border-ink-200 dark:border-trading-dark-500"
                                   />
                                   <Target className="w-4 h-4 text-positive-600 dark:text-positive-500" />
-                                  <span>Opportunities</span>
+                                  <span>{t('widgetsB.filterOpportunities')}</span>
                                 </label>
                                 <label className="flex items-center gap-2 text-sm text-ink-700 dark:text-ink-300 cursor-pointer p-2 rounded hover:bg-surface dark:hover:bg-trading-dark-700/50">
                                   <input
@@ -1062,7 +1062,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                     className="w-4 h-4 rounded border-ink-200 dark:border-trading-dark-500"
                                   />
                                   <AlertCircle className="w-4 h-4 text-negative-600 dark:text-negative-500" />
-                                  <span>Alerts</span>
+                                  <span>{t('widgetsB.filterAlerts')}</span>
                                 </label>
                                 <label className="flex items-center gap-2 text-sm text-ink-700 dark:text-ink-300 cursor-pointer p-2 rounded hover:bg-surface dark:hover:bg-trading-dark-700/50">
                                   <input
@@ -1072,7 +1072,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                     className="w-4 h-4 rounded border-ink-200 dark:border-trading-dark-500"
                                   />
                                   <Lightbulb className="w-4 h-4 text-caution-600 dark:text-caution-500" />
-                                  <span>Ideas</span>
+                                  <span>{t('widgetsB.filterIdeas')}</span>
                                 </label>
                               </div>
                             </div>

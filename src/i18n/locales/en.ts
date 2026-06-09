@@ -78,6 +78,20 @@ const enBase = {
     language: 'Language',
     logout: 'Logout',
     loggingOut: 'Logging out and clearing session...',
+    helpPortal: 'Help Portal',
+    optionsTrader: 'Options Trader',
+    settings: 'Settings',
+    help: 'Help',
+    preferences: 'Preferences',
+    data: 'Data',
+    backup: 'Backup',
+    restore: 'Restore',
+    hideExplanation: 'Hide explanation',
+    showExplanation: 'Show explanation',
+    hideWarning: 'Hide warning',
+    showWarning: 'Show warning',
+    expandSidebar: 'Expand sidebar',
+    collapseSidebar: 'Collapse sidebar',
   },
 
   // Sidebar
@@ -105,6 +119,8 @@ const enBase = {
     quantTrading: 'Quant trading',
     mentorship: 'Mentorship',
     optionCheck: 'Option check',
+    coveredCallSimulator: 'Covered Call Simulator',
+    pnlSimulator: 'P&L Simulator',
   },
 
   // Strategies

@@ -307,16 +307,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '', isCollapsed })
             <NavLink
               to="/tools/covered-call-simulator"
               onClick={() =>
-                handleMenuClick('/tools/covered-call-simulator', 'Covered Call Simulator')
+                handleMenuClick('/tools/covered-call-simulator', t('sidebar.coveredCallSimulator'))
               }
               className={({ isActive }) => navClass(isActive, isCollapsed)}
-              title={isCollapsed ? 'Covered Call Simulator' : ''}
+              title={isCollapsed ? t('sidebar.coveredCallSimulator') : ''}
             >
               {({ isActive }) => (
                 <>
                   <ActiveBar active={isActive} />
                   <Target className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={1.75} />
-                  {!isCollapsed && <span>Covered Call Simulator</span>}
+                  {!isCollapsed && <span>{t('sidebar.coveredCallSimulator')}</span>}
                 </>
               )}
             </NavLink>
@@ -340,13 +340,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '', isCollapsed })
             <NavLink
               to="/tools/pnl-simulator"
               className={({ isActive }) => navClass(isActive, isCollapsed)}
-              title={isCollapsed ? 'P&L simulator' : ''}
+              title={isCollapsed ? t('sidebar.pnlSimulator') : ''}
             >
               {({ isActive }) => (
                 <>
                   <ActiveBar active={isActive} />
                   <LineChart className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={1.75} />
-                  {!isCollapsed && <span>P&L simulator</span>}
+                  {!isCollapsed && <span>{t('sidebar.pnlSimulator')}</span>}
                 </>
               )}
             </NavLink>
