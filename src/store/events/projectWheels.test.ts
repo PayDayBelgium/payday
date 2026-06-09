@@ -393,6 +393,85 @@ describe('applyWheelEvent', () => {
     expect(next[0]).toBe(w1);
   });
 
+  // --- OptionAssigned call: new-path (lotCloses present) ---
+
+  it('OptionAssigned call new-path: reads aggregate top-level stockRealizedPnL', () => {
+    const w1 = wheel('w1', { phase: 'stock', totalRealizedPnL: 200, cycles: 0 });
+    const next = applyWheelEvent(
+      [w1],
+      event('OptionAssigned', {
+        kind: 'call',
+        optionId: 'opt2',
+        assignmentDate: '2026-03-15',
+        optionRealizedPnL: 200,
+        stockId: 'lot-1',
+        portfolio: 'Main',
+        totalProceeds: 31_000,
+        premiumReceived: 200,
+        wheelId: 'w1',
+        stockClose: { fullClose: true, closePrice: 310, stockRealizedPnL: 999 }, // legacy — must be IGNORED
+        lotCloses: [
+          { stockId: 'lot-1', fullClose: true, sharesSold: 99, closePrice: 310, lotCostBasisForShares: 9_900 },
+          { stockId: 'lot-2', fullClose: false, sharesSold: 1, closePrice: 310, lotCostBasisForShares: 220,
+            remainingShares: 49, remainingCostBasis: 10_780, remainingCurrentValue: 11_270 },
+        ],
+        sharesSold: 100,
+        stockRealizedPnL: 1_200, // aggregate GAK P&L — must be used, not 999 from stockClose
+      })
+    );
+    expect(next[0].cycles).toBe(1);
+    expect(next[0].phase).toBe('csp');
+    // Must use aggregate stockRealizedPnL (1200), NOT stockClose.stockRealizedPnL (999)
+    expect(next[0].totalRealizedPnL).toBe(1_400); // 200 + 1200
+  });
+
+  it('OptionAssigned call new-path: missing stockRealizedPnL defaults to 0', () => {
+    const w1 = wheel('w1', { phase: 'stock', totalRealizedPnL: 100, cycles: 0 });
+    const next = applyWheelEvent(
+      [w1],
+      event('OptionAssigned', {
+        kind: 'call',
+        optionId: 'opt2',
+        assignmentDate: '2026-03-15',
+        optionRealizedPnL: 100,
+        stockId: 'lot-1',
+        portfolio: 'Main',
+        totalProceeds: 10_000,
+        premiumReceived: 100,
+        wheelId: 'w1',
+        stockClose: { fullClose: true, closePrice: 100, stockRealizedPnL: 999 }, // legacy
+        lotCloses: [
+          { stockId: 'lot-1', fullClose: true, sharesSold: 100, closePrice: 100, lotCostBasisForShares: 10_000 },
+        ],
+        sharesSold: 100,
+        // stockRealizedPnL deliberately absent → defaults to 0
+      })
+    );
+    expect(next[0].totalRealizedPnL).toBe(100); // 100 + 0
+  });
+
+  it('OptionAssigned call backward-compat: old event (no lotCloses) reads stockClose.stockRealizedPnL', () => {
+    const w1 = wheel('w1', { phase: 'stock', totalRealizedPnL: 50, cycles: 0 });
+    const next = applyWheelEvent(
+      [w1],
+      event('OptionAssigned', {
+        kind: 'call',
+        optionId: 'opt2',
+        assignmentDate: '2026-03-15',
+        optionRealizedPnL: 200,
+        stockId: 'stk1',
+        portfolio: 'Main',
+        totalProceeds: 15_000,
+        premiumReceived: 200,
+        wheelId: 'w1',
+        stockClose: { fullClose: true, closePrice: 150, stockRealizedPnL: 400 },
+        // No lotCloses — old event; must use stockClose.stockRealizedPnL
+      })
+    );
+    expect(next[0].cycles).toBe(1);
+    expect(next[0].totalRealizedPnL).toBe(450); // 50 + 400
+  });
+
   // --- default / no-op ---
   it('ignores unrelated event types and returns the same reference', () => {
     const w1 = wheel('w1');

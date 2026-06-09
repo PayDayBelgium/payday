@@ -13,6 +13,7 @@ import type { AppDispatch, RootState } from '../index';
 import { commit } from '../events/eventsSlice';
 import { createEvent } from '../events/types';
 import type { CallOption, PutOption, StockPosition } from '../../types';
+import type { AssignmentLotClose } from '../events/types';
 import { uuid } from '../../utils/uuid';
 
 // ---------------------------------------------------------------------------
@@ -315,7 +316,7 @@ export const rollSpread =
  * Emits `OptionAssigned` matching the formulas from PortfolioView.handleAssignment
  * and CampaignView.handleAssignment exactly.
  *
- * PUT assigned:
+ * PUT assigned (unchanged):
  *   shares           = contracts * 100
  *   optionRealizedPnL = Math.abs(costBasis)   (premium kept)
  *   effectiveCost    = strike * shares - Math.abs(costBasis)
@@ -324,23 +325,22 @@ export const rollSpread =
  *   newStock.currentPrice  = assignmentPrice
  *   newStock.currentValue  = shares * assignmentPrice
  *
- * CALL assigned (full: stock.shares <= shares):
- *   totalProceeds    = strike * shares
- *   stockCostBasis   = (stock.costBasis / stock.shares) * shares
- *   stockRealizedPnL = totalProceeds - stockCostBasis
- *   stockClose = { fullClose: true, closePrice: strike, stockRealizedPnL }
+ * CALL assigned — FIFO across all open lots of the same ticker+portfolio:
+ *   Gather ALL open stock/ETF lots sorted FIFO (oldest openDate first, then id).
+ *   Remove exactly `shares = contracts * 100` shares across lots in order.
+ *   avgCost = totalCostBasis / totalShares (GAK / weighted average over all open lots).
+ *   aggregate stockRealizedPnL = strike * shares − avgCost * shares  (GAK P&L)
+ *   totalProceeds = strike * shares
+ *   optionRealizedPnL = premiumReceived = |costBasis|
  *
- * CALL assigned (partial: stock.shares > shares):
- *   remainingShares       = stock.shares - shares
- *   remainingCostBasis    = (stock.costBasis / stock.shares) * remainingShares
- *   remainingCurrentValue = remainingShares * (stock.currentValue / stock.shares)
- *   stockRealizedPnL      = totalProceeds - (stock.costBasis / stock.shares) * shares
- *   stockClose = { fullClose: false, remainingShares, remainingCostBasis,
- *                  remainingCurrentValue, stockRealizedPnL }
+ *   Per lot a `AssignmentLotClose` entry is added to `lotCloses`.
+ *   Full lot close: { stockId, fullClose: true, sharesSold, closePrice, lotCostBasisForShares }
+ *   Partial lot close: adds remainingShares, remainingCostBasis, remainingCurrentValue.
  *
- * NOTE: Both current handlers book stockRealizedPnL to the wheel via
- * updateWheelPremium for BOTH full and partial closes. We carry stockRealizedPnL
- * in the partial stockClose variant so the wheel projection can match this.
+ *   The old fields (`stockId`, `stockClose`) are populated with representative values
+ *   for type-level backward-compat; projection consumers MUST branch on `lotCloses` first.
+ *
+ *   Guard: throws if totalShares < shares.
  */
 export const recordAssignment =
   (input: RecordAssignmentInput, ts: string) =>
@@ -405,88 +405,135 @@ export const recordAssignment =
         ])
       );
     } else {
-      // --- CALL assigned → stock called away ---
-      // Scope to the option's own portfolio: the same ticker may be held open in
-      // multiple portfolios, and we must close the covered stock in THIS one.
-      const stockPos = positions.find(
-        (p) =>
+      // --- CALL assigned → stock called away (FIFO across all lots) ---
+      // Scope to the option's own portfolio: the same ticker may be held in
+      // multiple portfolios, and we must close covered stock in THIS one only.
+
+      // 1. Gather ALL open stock/ETF lots for this ticker + portfolio.
+      const lots = positions.filter(
+        (p): p is StockPosition =>
           (p.type === 'stock' || p.type === 'etf') &&
           p.ticker.toUpperCase() === ticker.toUpperCase() &&
           p.portfolio === portfolio &&
-          p.status === 'open'
+          p.status === 'open' &&
+          'shares' in p
       );
 
-      if (!stockPos || !('shares' in stockPos)) {
+      if (!lots.length) {
         throw new Error(
           `recordAssignment: no open stock position found for call assignment on ${ticker}`
         );
       }
 
-      const stock = stockPos as StockPosition;
+      // 2. FIFO sort: oldest openDate first, then by id as tie-break.
+      lots.sort((a, b) => {
+        const dateA = a.openDate ?? '';
+        const dateB = b.openDate ?? '';
+        if (dateA !== dateB) return dateA < dateB ? -1 : 1;
+        return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+      });
+
+      // 3. Compute aggregate totals for GAK (gewogen gemiddelde kostprijs).
+      const totalShares = lots.reduce((sum, l) => sum + l.shares, 0);
+      const totalCostBasis = lots.reduce((sum, l) => sum + l.costBasis, 0);
+
+      if (totalShares < shares) {
+        throw new Error(
+          `recordAssignment: insufficient open shares for call assignment on ${ticker}` +
+            ` (need ${shares}, have ${totalShares})`
+        );
+      }
+
+      const avgCost = totalCostBasis / totalShares;
+
+      // 4. Compute proceeds and P&L.
       const optionRealizedPnL = Math.abs(costBasis);
       const premiumReceived = Math.abs(costBasis);
       const totalProceeds = strike * shares;
-      const stockCostBasisForShares = (stock.costBasis / stock.shares) * shares;
-      const stockRealizedPnL = totalProceeds - stockCostBasisForShares;
+      // GAK P&L: use weighted average cost, not per-lot cost.
+      const aggregateStockRealizedPnL = strike * shares - avgCost * shares;
 
-      if (stock.shares <= shares) {
-        // Full close
-        dispatch(
-          commit([
-            createEvent(
-              'OptionAssigned',
-              {
-                kind: 'call',
-                optionId,
-                assignmentDate,
-                optionRealizedPnL,
-                stockId: stock.id,
-                portfolio,
-                totalProceeds,
-                premiumReceived,
-                wheelId,
-                stockClose: {
-                  fullClose: true as const,
-                  closePrice: strike,
-                  stockRealizedPnL,
-                },
-              },
-              ts
-            ),
-          ])
-        );
-      } else {
-        // Partial close
-        const remainingShares = stock.shares - shares;
-        const remainingCostBasis = (stock.costBasis / stock.shares) * remainingShares;
-        const remainingCurrentValue = remainingShares * (stock.currentValue / stock.shares);
+      // 5. FIFO loop — remove exactly `shares` across lots.
+      let remaining = shares;
+      const lotCloses: AssignmentLotClose[] = [];
 
-        dispatch(
-          commit([
-            createEvent(
-              'OptionAssigned',
-              {
-                kind: 'call',
-                optionId,
-                assignmentDate,
-                optionRealizedPnL,
-                stockId: stock.id,
-                portfolio,
-                totalProceeds,
-                premiumReceived,
-                wheelId,
-                stockClose: {
-                  fullClose: false as const,
-                  remainingShares,
-                  remainingCostBasis,
-                  remainingCurrentValue,
-                  stockRealizedPnL,
-                },
-              },
-              ts
-            ),
-          ])
-        );
+      for (const lot of lots) {
+        if (remaining <= 0) break;
+
+        const perShareCost = lot.costBasis / lot.shares;
+        const perShareValue = lot.currentValue / lot.shares;
+
+        if (lot.shares <= remaining) {
+          // Full close of this lot.
+          lotCloses.push({
+            stockId: lot.id,
+            fullClose: true,
+            sharesSold: lot.shares,
+            closePrice: strike,
+            lotCostBasisForShares: perShareCost * lot.shares,
+          });
+          remaining -= lot.shares;
+        } else {
+          // Partial close — only `remaining` shares taken from this lot.
+          const sold = remaining;
+          const remainingShares = lot.shares - sold;
+          lotCloses.push({
+            stockId: lot.id,
+            fullClose: false,
+            sharesSold: sold,
+            closePrice: strike,
+            lotCostBasisForShares: perShareCost * sold,
+            remainingShares,
+            remainingCostBasis: perShareCost * remainingShares,
+            remainingCurrentValue: perShareValue * remainingShares,
+          });
+          remaining = 0;
+        }
       }
+
+      // 6. Populate legacy `stockClose` from the first lot for type-compat.
+      //    New-path consumers branch on `lotCloses` first so this is never read
+      //    by the projections for new events, but it must be type-valid.
+      const firstLc = lotCloses[0];
+      const legacyStockClose = firstLc.fullClose
+        ? ({
+            fullClose: true as const,
+            closePrice: strike,
+            stockRealizedPnL: aggregateStockRealizedPnL,
+          })
+        : ({
+            fullClose: false as const,
+            remainingShares: firstLc.remainingShares!,
+            remainingCostBasis: firstLc.remainingCostBasis!,
+            remainingCurrentValue: firstLc.remainingCurrentValue!,
+            stockRealizedPnL: aggregateStockRealizedPnL,
+          });
+
+      dispatch(
+        commit([
+          createEvent(
+            'OptionAssigned',
+            {
+              kind: 'call',
+              optionId,
+              assignmentDate,
+              optionRealizedPnL,
+              // Legacy representative stockId (first lot).
+              stockId: firstLc.stockId,
+              portfolio,
+              totalProceeds,
+              premiumReceived,
+              wheelId,
+              // Legacy stockClose — kept for type-compat; new readers ignore it.
+              stockClose: legacyStockClose,
+              // New multi-lot fields.
+              lotCloses,
+              sharesSold: shares,
+              stockRealizedPnL: aggregateStockRealizedPnL,
+            },
+            ts
+          ),
+        ])
+      );
     }
   };

@@ -401,12 +401,40 @@ export interface OptionAssignedPutPayload {
   wheelId?: string;
 }
 
+/**
+ * Describes a single lot that is (fully or partially) closed during a
+ * multi-lot FIFO call assignment.  Present only on new-path events
+ * (`OptionAssignedCallPayload.lotCloses`).
+ */
+export interface AssignmentLotClose {
+  /** The position id of the stock/ETF lot. */
+  stockId: string;
+  /** True when the entire lot is consumed; false when only part is called away. */
+  fullClose: boolean;
+  /** Remaining shares after partial assignment — only when `!fullClose`. */
+  remainingShares?: number;
+  /** Remaining cost basis after partial assignment — only when `!fullClose`. */
+  remainingCostBasis?: number;
+  /** Remaining current value after partial assignment — only when `!fullClose`. */
+  remainingCurrentValue?: number;
+  /** Number of shares removed from THIS lot. */
+  sharesSold: number;
+  /** The price per share at which shares were called away (= strike). */
+  closePrice: number;
+  /** Pro-rata cost basis for the shares removed: (lot.costBasis / lot.shares) * sharesSold. */
+  lotCostBasisForShares: number;
+}
+
 /** Call-assignment: stock is called away; full or partial close. */
 export interface OptionAssignedCallPayload {
   kind: 'call';
   optionId: string;
   assignmentDate: string;
   optionRealizedPnL: number;
+  /**
+   * Representative lot id.  Required for backward-compat (old events have only this field).
+   * New-path consumers MUST check `lotCloses` first and fall back to `stockClose` otherwise.
+   */
   stockId: string;
   portfolio: PortfolioName;
   totalProceeds: number;
@@ -427,6 +455,26 @@ export interface OptionAssignedCallPayload {
          */
         stockRealizedPnL: number;
       };
+
+  // ---------------------------------------------------------------------------
+  // New-path fields (additive — absent on old persisted events).
+  // Consumers MUST branch: if (payload.lotCloses) { new path } else { old path }.
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Per-lot FIFO close instructions.  Present only on events produced by the
+   * new multi-lot recordAssignment path.  When absent, fall back to `stockClose`.
+   */
+  lotCloses?: AssignmentLotClose[];
+  /** Aggregate shares sold across all lots (= contracts * 100).  New-path only. */
+  sharesSold?: number;
+  /**
+   * Aggregate GAK realized P&L on the called-away shares.
+   * Formula: strike * sharesSold − avgCost * sharesSold
+   * where avgCost = totalCostBasis / totalShares over ALL open lots.
+   * New-path only.
+   */
+  stockRealizedPnL?: number;
 }
 
 /** Discriminated union payload for OptionAssigned events. */

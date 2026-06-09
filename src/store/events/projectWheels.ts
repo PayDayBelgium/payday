@@ -94,8 +94,11 @@ export function applyWheelEvent(wheels: WheelCampaign[], event: DomainEvent): Wh
       if (payload.kind === 'call') {
         const callPayload = payload as OptionAssignedCallPayload;
         // Call assigned → stock called away. Increment cycle, return to 'csp' phase.
-        // stockRealizedPnL is present on both full and partial closes (see NOTE above).
-        const stockRealizedPnL = callPayload.stockClose.stockRealizedPnL;
+        // Dual-path: new events carry aggregate stockRealizedPnL at top level;
+        // old events carry it inside stockClose (both full and partial variants).
+        const stockRealizedPnL = callPayload.lotCloses
+          ? (callPayload.stockRealizedPnL ?? 0)
+          : callPayload.stockClose.stockRealizedPnL;
         const updated = wheels.map((w) =>
           w.id === wheelId
             ? {

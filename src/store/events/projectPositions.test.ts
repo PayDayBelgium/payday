@@ -298,4 +298,197 @@ describe('applyPositionEvent', () => {
 
     expect(next).toHaveLength(2);
   });
+
+  // -------------------------------------------------------------------------
+  // OptionAssigned — call, new multi-lot FIFO path (lotCloses present)
+  // -------------------------------------------------------------------------
+
+  it('OptionAssigned call new-path multi-lot: lot1 fully closed, lot2 partially edited', () => {
+    // Two lots: lot1 = 99 shares, lot2 = 50 shares. Assign 100 (FIFO: lot1 full, lot2 -1).
+    const lot1 = {
+      ...stock('lot1'),
+      shares: 99,
+      costBasis: 9900,
+      currentValue: 10395,
+    } as unknown as Position;
+    const lot2 = {
+      ...stock('lot2'),
+      shares: 50,
+      costBasis: 5500,
+      currentValue: 5750,
+    } as unknown as Position;
+    const initialPositions = [option('opt1'), lot1, lot2];
+
+    // lot1 perShareCost = 9900/99 = 100, lot2 perShareCost = 5500/50 = 110
+    // lot1 full close: lotCostBasisForShares = 100*99 = 9900, sharesSold=99, realizedPnL = 99*110 - 9900 = 990
+    // lot2 partial: sharesSold=1, remainingShares=49, remainingCostBasis=110*49=5390, remainingCurrentValue=5750/50*49=5635
+    const perShareValue2 = 5750 / 50; // 115
+    const next = applyPositionEvent(
+      initialPositions,
+      event('OptionAssigned', {
+        kind: 'call',
+        optionId: 'opt1',
+        assignmentDate: '2026-05-01',
+        optionRealizedPnL: 200,
+        stockId: 'lot1',
+        portfolio: 'Main',
+        totalProceeds: 11000,
+        premiumReceived: 200,
+        stockClose: { fullClose: true, closePrice: 110, stockRealizedPnL: 100 }, // legacy — ignored on new path
+        lotCloses: [
+          { stockId: 'lot1', fullClose: true, sharesSold: 99, closePrice: 110, lotCostBasisForShares: 9900 },
+          {
+            stockId: 'lot2', fullClose: false, sharesSold: 1, closePrice: 110,
+            lotCostBasisForShares: 110,
+            remainingShares: 49,
+            remainingCostBasis: 110 * 49,
+            remainingCurrentValue: perShareValue2 * 49,
+          },
+        ],
+        sharesSold: 100,
+        stockRealizedPnL: 1100,
+      })
+    );
+
+    // Option closed
+    const closedOpt = next.find((p) => p.id === 'opt1')!;
+    expect(closedOpt.status).toBe('closed');
+    expect(closedOpt.realizedPnL).toBe(200);
+
+    // lot1 fully closed
+    const closedLot1 = next.find((p) => p.id === 'lot1')!;
+    expect(closedLot1.status).toBe('closed');
+    expect(closedLot1.closeDate).toBe('2026-05-01');
+    // realizedPnL = sharesSold*closePrice - lotCostBasisForShares = 99*110 - 9900 = 990
+    expect(closedLot1.realizedPnL).toBe(990);
+    expect(closedLot1.notes).toContain('Assigned from covered call');
+
+    // lot2 partially edited (still open), shares reduced by 1
+    const editedLot2 = next.find((p) => p.id === 'lot2')!;
+    expect(editedLot2.status).toBe('open');
+    expect((editedLot2 as any).shares).toBe(49);
+    expect((editedLot2 as any).costBasis).toBeCloseTo(110 * 49, 8);
+    expect((editedLot2 as any).currentValue).toBeCloseTo(perShareValue2 * 49, 8);
+
+    // Total remaining: 3 positions (closed opt, closed lot1, open lot2)
+    expect(next).toHaveLength(3);
+    // Total shares across open positions: 49
+    const openShares = next
+      .filter((p) => p.status === 'open')
+      .reduce((s, p) => s + ((p as any).shares ?? 0), 0);
+    expect(openShares).toBe(49);
+  });
+
+  it('OptionAssigned call new-path: total shares removed is exactly sharesSold', () => {
+    // 3 lots: 40+40+40 = 120 shares; assign 100 → 40+40+20 removed, 20 remaining in lot3
+    const makeLot = (id: string, shares: number): Position =>
+      ({ ...stock(id), shares, costBasis: shares * 100, currentValue: shares * 110 }) as unknown as Position;
+
+    const initialPositions = [option('opt1'), makeLot('l1', 40), makeLot('l2', 40), makeLot('l3', 40)];
+
+    const next = applyPositionEvent(
+      initialPositions,
+      event('OptionAssigned', {
+        kind: 'call',
+        optionId: 'opt1',
+        assignmentDate: '2026-05-01',
+        optionRealizedPnL: 200,
+        stockId: 'l1',
+        portfolio: 'Main',
+        totalProceeds: 10500,
+        premiumReceived: 200,
+        stockClose: { fullClose: true, closePrice: 105, stockRealizedPnL: 500 }, // legacy
+        lotCloses: [
+          { stockId: 'l1', fullClose: true, sharesSold: 40, closePrice: 105, lotCostBasisForShares: 4000 },
+          { stockId: 'l2', fullClose: true, sharesSold: 40, closePrice: 105, lotCostBasisForShares: 4000 },
+          { stockId: 'l3', fullClose: false, sharesSold: 20, closePrice: 105, lotCostBasisForShares: 2000, remainingShares: 20, remainingCostBasis: 2000, remainingCurrentValue: 2200 },
+        ],
+        sharesSold: 100,
+        stockRealizedPnL: 500,
+      })
+    );
+
+    const openShares = next
+      .filter((p) => p.status === 'open')
+      .reduce((s, p) => s + ((p as any).shares ?? 0), 0);
+    // Only lot3 is open with 20 remaining shares
+    expect(openShares).toBe(20);
+
+    const closedPositions = next.filter((p) => p.status === 'closed');
+    // opt1 + l1 + l2 = 3 closed
+    expect(closedPositions.filter((p) => p.id !== 'opt1')).toHaveLength(2);
+  });
+
+  // -------------------------------------------------------------------------
+  // BACKWARD-COMPAT: old event (no lotCloses) → old fold still works
+  // -------------------------------------------------------------------------
+
+  it('OptionAssigned call old-path backward-compat: no lotCloses → uses stockClose (full)', () => {
+    const initialPositions = [option('opt1'), stock('stk1')];
+
+    // Old event shape: stockClose.fullClose=true, no lotCloses
+    const next = applyPositionEvent(
+      initialPositions,
+      event('OptionAssigned', {
+        kind: 'call',
+        optionId: 'opt1',
+        assignmentDate: '2026-04-15',
+        optionRealizedPnL: 120,
+        stockId: 'stk1',
+        portfolio: 'Main',
+        totalProceeds: 1100,
+        premiumReceived: 120,
+        stockClose: {
+          fullClose: true,
+          closePrice: 110,
+          stockRealizedPnL: 100,
+        },
+        // No lotCloses — old event
+      })
+    );
+
+    // Option closed
+    const closedOpt = next.find((p) => p.id === 'opt1')!;
+    expect(closedOpt.status).toBe('closed');
+
+    // Stock fully closed via old path
+    const closedStk = next.find((p) => p.id === 'stk1')!;
+    expect(closedStk.status).toBe('closed');
+    expect(closedStk.closePrice).toBe(110);
+    expect(closedStk.realizedPnL).toBe(100);
+    expect(closedStk.notes).toContain('Assigned from covered call');
+  });
+
+  it('OptionAssigned call old-path backward-compat: no lotCloses → uses stockClose (partial)', () => {
+    const initialPositions = [option('opt1'), stock('stk1')];
+
+    // Old event shape: stockClose.fullClose=false, no lotCloses
+    const next = applyPositionEvent(
+      initialPositions,
+      event('OptionAssigned', {
+        kind: 'call',
+        optionId: 'opt1',
+        assignmentDate: '2026-04-15',
+        optionRealizedPnL: 120,
+        stockId: 'stk1',
+        portfolio: 'Main',
+        totalProceeds: 550,
+        premiumReceived: 120,
+        stockClose: {
+          fullClose: false,
+          remainingShares: 5,
+          remainingCostBasis: 500,
+          remainingCurrentValue: 550,
+          stockRealizedPnL: 50,
+        },
+        // No lotCloses — old event
+      })
+    );
+
+    const editedStk = next.find((p) => p.id === 'stk1')!;
+    expect(editedStk.status).toBe('open'); // partial → still open
+    expect((editedStk as any).shares).toBe(5);
+    expect((editedStk as any).costBasis).toBe(500);
+    expect((editedStk as any).currentValue).toBe(550);
+  });
 });

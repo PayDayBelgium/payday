@@ -412,6 +412,43 @@ describe('OptionAssigned kind=call', () => {
 });
 
 // ---------------------------------------------------------------------------
+// OptionAssigned — call with lotCloses (new multi-lot path) → ONE position_sell
+// ---------------------------------------------------------------------------
+
+describe('OptionAssigned kind=call new-path (lotCloses)', () => {
+  it('new-path multi-lot: still produces exactly ONE position_sell (lot-agnostic)', () => {
+    const ev = event('OptionAssigned', {
+      kind: 'call',
+      optionId: 'pos-call-1',
+      assignmentDate: '2026-03-21',
+      optionRealizedPnL: 300,
+      stockId: 'lot-1',
+      portfolio: 'Main',
+      totalProceeds: 31_000,
+      premiumReceived: 300,
+      stockClose: { fullClose: true, closePrice: 310, stockRealizedPnL: 999 }, // legacy
+      lotCloses: [
+        { stockId: 'lot-1', fullClose: true, sharesSold: 99, closePrice: 310, lotCostBasisForShares: 9_900 },
+        {
+          stockId: 'lot-2', fullClose: false, sharesSold: 1, closePrice: 310,
+          lotCostBasisForShares: 220, remainingShares: 49, remainingCostBasis: 10_780, remainingCurrentValue: 11_270,
+        },
+      ],
+      sharesSold: 100,
+      stockRealizedPnL: 10_000,
+    });
+    const result = applyTransactionEvent(EMPTY, ev, []);
+    expect(result).toHaveLength(1);
+    const [txn] = result;
+    expect(txn.type).toBe('position_sell');
+    // amount = totalProceeds + premiumReceived = 31000 + 300 = 31300
+    expect(txn.amount).toBe(31_300);
+    expect(txn.portfolio).toBe('Main');
+    expect(txn.date).toBe('2026-03-21');
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Unrelated events → same reference
 // ---------------------------------------------------------------------------
 

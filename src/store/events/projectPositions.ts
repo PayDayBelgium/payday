@@ -126,9 +126,9 @@ export function applyPositionEvent(positions: Position[], event: DomainEvent): P
       }
 
       // kind === 'call'
-      const { optionId, assignmentDate, optionRealizedPnL, stockId, stockClose } = payload;
+      const { optionId, assignmentDate, optionRealizedPnL } = payload;
 
-      // Close the option leg
+      // Close the option leg first (same on both paths).
       let result = closeOne(positions, {
         id: optionId,
         closeDate: assignmentDate,
@@ -136,6 +136,42 @@ export function applyPositionEvent(positions: Position[], event: DomainEvent): P
         realizedPnL: optionRealizedPnL,
       });
 
+      if (payload.lotCloses) {
+        // -----------------------------------------------------------------------
+        // NEW PATH — multi-lot FIFO (new events emitted by the updated command).
+        // Process each lot close instruction in order.
+        // -----------------------------------------------------------------------
+        for (const lc of payload.lotCloses) {
+          if (lc.fullClose) {
+            // Full lot close: mark position as closed.
+            result = closeOne(result, {
+              id: lc.stockId,
+              closeDate: assignmentDate,
+              closePrice: lc.closePrice,
+              realizedPnL: lc.sharesSold * lc.closePrice - lc.lotCostBasisForShares,
+              notes: 'Assigned from covered call',
+            });
+          } else {
+            // Partial lot close: edit position in-place (still open).
+            result = result.map((p) => {
+              if (p.id !== lc.stockId) return p;
+              return {
+                ...p,
+                shares: lc.remainingShares,
+                costBasis: lc.remainingCostBasis,
+                currentValue: lc.remainingCurrentValue,
+              } as Position;
+            });
+          }
+        }
+        return result;
+      }
+
+      // -----------------------------------------------------------------------
+      // OLD PATH — backward-compat: single stockId + stockClose (old events).
+      // UNCHANGED from original — must stay verbatim for old event replay.
+      // -----------------------------------------------------------------------
+      const { stockId, stockClose } = payload;
       if (stockClose.fullClose === true) {
         // Full close: mark the stock position as closed
         result = closeOne(result, {
