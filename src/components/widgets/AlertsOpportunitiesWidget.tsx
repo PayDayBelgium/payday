@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigation } from '../../contexts/NavigationContext';
 import { ConfirmModal } from '../modals/ConfirmModal';
 import { useAlerts } from '../../hooks/useAlerts';
+import { parseCoveredCallOpportunity } from '../../utils/opportunityActions';
 
 interface AlertsOpportunitiesWidgetProps {
   type?: 'alerts' | 'opportunities' | 'both';
@@ -35,6 +36,17 @@ export const AlertsOpportunitiesWidget: React.FC<AlertsOpportunitiesWidgetProps>
     });
 
     const handleItemClick = (portfolio: string, ticker: string, alertId: string) => {
+      // CC opportunities: navigate to the portfolio and pass wizard-open state so
+      // PortfolioDetail opens the covered-call wizard immediately on arrival.
+      const ccTarget = parseCoveredCallOpportunity({ id: alertId, ticker, portfolio });
+      if (ccTarget) {
+        pushNavigation(`/portfolio/${encodeURIComponent(portfolio)}`, portfolio);
+        navigate(`/portfolio/${encodeURIComponent(portfolio)}`, {
+          state: { openCoveredCallWizard: { ticker: ccTarget.ticker, underlyingId: ccTarget.underlyingId } },
+        });
+        return;
+      }
+
       // Navigate based on alert type
       if (alertId.startsWith('negative-cash-')) {
         pushNavigation(`/portfolio/${portfolio}`, portfolio);

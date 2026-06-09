@@ -128,6 +128,7 @@ export const pagesB = {
         totalVirtualPortfolio: 'Total Virtual portfolio',
         noActiveAlerts: 'No active alerts',
         noActiveOpportunities: 'No active opportunities',
+        placeTradeHint: 'Open wizard',
       },
       portfolioManagement: {
         urlMustStartHttps: 'Portfolio URL must start with https://',
@@ -263,6 +264,7 @@ export const pagesB = {
         totalVirtualPortfolio: 'Totaal Virtueel portfolio',
         noActiveAlerts: 'Geen actieve alerts',
         noActiveOpportunities: 'Geen actieve opportunities',
+        placeTradeHint: 'Wizard openen',
       },
       portfolioManagement: {
         urlMustStartHttps: 'Portfolio URL moet beginnen met https://',
@@ -400,6 +402,7 @@ export const pagesB = {
         totalVirtualPortfolio: 'Total portefeuille virtuel',
         noActiveAlerts: 'Aucune alerte active',
         noActiveOpportunities: 'Aucune opportunité active',
+        placeTradeHint: 'Ouvrir l\'assistant',
       },
       portfolioManagement: {
         urlMustStartHttps: 'L\'URL du portefeuille doit commencer par https://',

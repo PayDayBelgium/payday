@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { usePageTitle } from '../../contexts/PageTitleContext';
 import { useNavigation } from '../../contexts/NavigationContext';
@@ -49,6 +49,7 @@ import { PutOptionWizard } from '../../components/modals/PutOptionWizard';
 import { getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency, formatNumber } from '../../utils/numberFormat';
 import { getSpreadId } from '../../utils/spreadHelpers';
+import { parseCoveredCallOpportunity } from '../../utils/opportunityActions';
 
 type TabType =
   | 'portfolio'
@@ -96,6 +97,8 @@ const getAlertIcon = (message: string, isAlert: boolean): LucideIcon => {
 export const PortfolioDetail: React.FC = () => {
   const { t } = useTranslation();
   const { portfolioName: portfolioParam } = useParams<{ portfolioName: string }>();
+  const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useAppDispatch();
   const { setPageTitle, setTitleIcon } = usePageTitle();
   const { canGoBack, pushNavigation } = useNavigation();
@@ -222,6 +225,20 @@ export const PortfolioDetail: React.FC = () => {
       setTitleIcon(null);
     };
   }, [setPageTitle, setTitleIcon, portfolioName, portfolio?.logo, t, canGoBack, pushNavigation]);
+
+  // When navigated here from the Dashboard widget with an openCoveredCallWizard state,
+  // open the wizard immediately and then clear the state so it doesn't re-fire on re-render.
+  // Guard on `portfolio` being loaded so the wizard has access to tickers.
+  useEffect(() => {
+    const wizardState = location.state?.openCoveredCallWizard as
+      | { ticker: string; underlyingId?: string }
+      | undefined;
+    if (!wizardState || !portfolio) return;
+    handleWriteCoveredCall(wizardState.ticker, wizardState.underlyingId);
+    // Clear the state so a back/forward navigation or re-render does not re-fire the wizard.
+    navigate(location.pathname, { replace: true, state: null });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.key, portfolio]);
 
   // Calculate portfolio stats from positions
   const portfolioStats = useMemo(() => {
@@ -1311,6 +1328,39 @@ export const PortfolioDetail: React.FC = () => {
                     ) : (
                       alertsData.opportunities.map((item) => {
                         const OppIcon = getAlertIcon(item.message, false);
+                        const ccTarget = parseCoveredCallOpportunity(item);
+                        if (ccTarget) {
+                          return (
+                            <button
+                              key={item.id}
+                              type="button"
+                              className="w-full text-left p-3 bg-surface dark:bg-trading-dark-700/50 hover:bg-surface-subtle dark:hover:bg-trading-dark-700 rounded-lg cursor-pointer transition-colors"
+                              onClick={() =>
+                                handleWriteCoveredCall(ccTarget.ticker, ccTarget.underlyingId)
+                              }
+                            >
+                              <div className="flex items-start gap-2">
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <div className="p-1 rounded bg-positive-50 dark:bg-positive-700/25">
+                                      <OppIcon className="w-3 h-3 text-positive-600 dark:text-positive-500" />
+                                    </div>
+                                    <p className="text-sm font-semibold text-ink-900 dark:text-white truncate">
+                                      {item.ticker}
+                                    </p>
+                                    <span className="ml-auto flex items-center gap-1 text-xs text-positive-600 dark:text-positive-400 shrink-0">
+                                      <Plus className="w-3 h-3" />
+                                      {t('pagesB.portfolioDetail.placeTradeHint')}
+                                    </span>
+                                  </div>
+                                  <p className="text-xs text-ink-600 dark:text-ink-400 ml-6 whitespace-pre-line">
+                                    {item.message}
+                                  </p>
+                                </div>
+                              </div>
+                            </button>
+                          );
+                        }
                         return (
                           <div
                             key={item.id}
