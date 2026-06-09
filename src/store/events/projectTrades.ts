@@ -184,7 +184,10 @@ export function applyTradeEvent(
           strategy: stockStrategy,
           openDate: earliestOpenDate ?? payload.assignmentDate,
           closeDate: payload.assignmentDate,
-          entryPrice: sharesSold > 0 ? (payload.lotCloses.reduce((s, lc) => s + lc.lotCostBasisForShares, 0) / sharesSold) : 0,
+          // Derive the entry price from the GAK realized P&L so the trade record is
+          // internally consistent: (exitPrice - entryPrice) * quantity === realizedPnL.
+          // This equals the weighted-average cost (GAK) over the whole holding.
+          entryPrice: sharesSold > 0 ? exitPrice - aggregateRealizedPnL / sharesSold : 0,
           exitPrice,
           quantity: sharesSold,
           commission: 0,
