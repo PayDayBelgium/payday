@@ -106,6 +106,7 @@ import { useAppSelector } from './hooks/useAppSelector';
 import { useAppDispatch } from './hooks/useAppDispatch';
 import { selectIsAuthenticated } from './store/slices/authSlice';
 import { migrateTickersToStore } from './utils/tickerMigration';
+import { seedDefaultTickersIfMissing } from './utils/tickerSeeding';
 import { useStore } from 'react-redux';
 import type { AppStore } from './store';
 
@@ -130,9 +131,12 @@ function AppContent() {
   // Initialize IB WebSocket connection (disabled for now)
   useIBConnection(false);
 
-  // Migrate tickers from portfoliosSlice to tickersSlice on first load
+  // Migrate legacy tickers, then seed the default tickers for a brand-new account.
+  // Migration runs first so a freshly-migrated (non-empty) account is not seeded.
   useEffect(() => {
     migrateTickersToStore(dispatch, store.getState);
+    const username = localStorage.getItem('payday-current-user') ?? undefined;
+    seedDefaultTickersIfMissing(dispatch, store.getState, username);
   }, [dispatch, store]);
 
   return (
