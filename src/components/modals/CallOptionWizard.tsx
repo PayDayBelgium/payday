@@ -1363,7 +1363,9 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
         onClose();
         resetForm();
       }}
-      title={t('callWizard.title')}
+      title={
+        selectedTicker ? `${t('callWizard.title')} · ${selectedTicker.symbol}` : t('callWizard.title')
+      }
       steps={steps}
       onComplete={handleComplete}
       completeButtonLabel={t('callWizard.completeButton')}

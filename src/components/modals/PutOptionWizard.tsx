@@ -1184,7 +1184,9 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
         onClose();
         resetForm();
       }}
-      title={t('putWizard.title')}
+      title={
+        selectedTicker ? `${t('putWizard.title')} · ${selectedTicker.symbol}` : t('putWizard.title')
+      }
       steps={steps}
       onComplete={handleComplete}
       completeButtonLabel={t('putWizard.completeButton')}

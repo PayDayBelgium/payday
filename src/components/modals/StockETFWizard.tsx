@@ -543,13 +543,13 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
         handleReset();
         onClose();
       }}
-      title={
+      title={`${
         positionType === 'stock'
           ? t('stockWizard.titleStock')
           : positionType === 'etf'
             ? t('stockWizard.titleETF')
             : t('stockWizard.titlePosition')
-      }
+      }${selectedTicker ? ` · ${selectedTicker.symbol}` : ''}`}
       steps={steps}
       onComplete={handleComplete}
       completeButtonLabel={t('stockWizard.completeButton')}
