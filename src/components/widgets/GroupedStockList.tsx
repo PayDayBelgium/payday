@@ -291,17 +291,21 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
             const portfolio = allPortfolios.find((b) => b.name === group.positions[0].portfolio);
             const portfolioSupportsOptions = portfolio?.hasOptions ?? false;
 
-            // Sold calls for this ticker+portfolio come from the full store (the
-            // positions prop only carries stock lots), so the badge reflects FREE
-            // (uncovered) contracts — consistent with the wizard and alerts.
-            const groupSoldCalls = allStorePositions.filter(
-              (p): p is CallOption =>
-                p.type === 'call' &&
-                (p as CallOption).action === 'sell' &&
-                p.status === 'open' &&
-                p.portfolio === group.positions[0].portfolio &&
-                p.ticker === group.ticker
-            );
+            // Calls that actually cover THIS stock come from the central allocator
+            // (coveredCallsByTicker), NOT every sold call on the ticker: a covered
+            // call linked to a LEAPS must not count as covering the shares (otherwise
+            // the stock looks "covered" while the CC really sits on the LEAPS). Fall
+            // back to the legacy per-ticker filter only when the allocator map is absent.
+            const groupSoldCalls: CallOption[] = coveredCallsByTicker
+              ? (coveredCallsByTicker.get(group.ticker.toUpperCase()) ?? [])
+              : allStorePositions.filter(
+                  (p): p is CallOption =>
+                    p.type === 'call' &&
+                    (p as CallOption).action === 'sell' &&
+                    p.status === 'open' &&
+                    p.portfolio === group.positions[0].portfolio &&
+                    p.ticker === group.ticker
+                );
             const ccCapacity = computeCoveredCallCapacity(
               group.positions as StockPosition[],
               groupSoldCalls
