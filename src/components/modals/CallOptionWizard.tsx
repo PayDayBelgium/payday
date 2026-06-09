@@ -56,6 +56,10 @@ interface CallOptionWizardProps {
   initialTicker?: Ticker;
   initialStep?: number;
   initialWheelId?: string;
+  /** Pre-fill the strike for the LEAPS buy-more flow; leave undefined for other opens. */
+  initialStrike?: number;
+  /** Pre-fill the expiration (ISO date string) for the LEAPS buy-more flow; leave undefined for other opens. */
+  initialExpiration?: string;
 }
 
 export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
@@ -66,6 +70,8 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
   initialTicker,
   initialStep,
   initialWheelId,
+  initialStrike,
+  initialExpiration,
 }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
@@ -405,7 +411,14 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
     setSelectedTicker(initialTicker || null);
     setSelectedUnderlying(null);
     setIsCreatingTicker(false);
-    setLongLeg({ strike: 0, expiration: '', premium: 0, contracts: 1 });
+    // Base longLeg; merge in initialStrike / initialExpiration when provided so
+    // the LEAPS buy-more flow pre-fills those fields and only premium/contracts/date remain.
+    setLongLeg({
+      strike: initialStrike ?? 0,
+      expiration: initialExpiration ?? '',
+      premium: 0,
+      contracts: 1,
+    });
     setShortLeg({ strike: 0, expiration: '', premium: 0, contracts: 1 });
     setPurchaseDate(new Date().toISOString().split('T')[0]);
     setNotes('');
@@ -434,6 +447,15 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
       if (initialTicker) {
         setSelectedTicker(initialTicker);
       }
+      // Pre-fill strike and/or expiration when provided (LEAPS buy-more flow).
+      // Use functional updates so we don't clobber already-set fields.
+      if (initialStrike !== undefined || initialExpiration !== undefined) {
+        setLongLeg((prev) => ({
+          ...prev,
+          strike: initialStrike ?? prev.strike,
+          expiration: initialExpiration ?? prev.expiration,
+        }));
+      }
       // Resolve initial step (same logic as resetForm):
       //   explicit prop wins; both ticker+action → details(2); otherwise step 0.
       if (initialStep !== undefined) {
@@ -449,7 +471,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
         }
       }
     }
-  }, [isOpen, initialAction, initialTicker, initialStep, initialWheelId, initialWheel]);
+  }, [isOpen, initialAction, initialTicker, initialStep, initialWheelId, initialWheel, initialStrike, initialExpiration]);
 
   // Effect to sync contracts when wheel selection changes
   React.useEffect(() => {

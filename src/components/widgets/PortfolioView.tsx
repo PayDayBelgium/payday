@@ -54,8 +54,9 @@ interface PortfolioViewProps {
   onWriteCoveredCall?: (ticker: string) => void;
   /** Opens the stock wizard pre-filled to buy more shares of the given ticker. */
   onBuyStock?: (ticker: string) => void;
-  /** Opens the call wizard pre-filled to buy more long calls (LEAPS) for the given ticker. */
-  onBuyLeaps?: (ticker: string) => void;
+  /** Opens the call wizard pre-filled to buy more long calls (LEAPS) for the given position.
+   *  Carries ticker, strike, and expiration so the wizard can pre-fill those fields. */
+  onBuyLeaps?: (info: { ticker: string; strike: number; expiration: string }) => void;
 }
 
 export const PortfolioView: React.FC<PortfolioViewProps> = ({

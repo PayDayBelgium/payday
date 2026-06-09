@@ -26,6 +26,10 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
+  // Controlled step index so the wizard can jump straight to the details step
+  // when initialTicker is provided (buy-more flow). Step order: type(0) → ticker(1) → details(2).
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+
   // Step 1: Type selection (stock or ETF) - default to 'stock'
   const [positionType, setPositionType] = useState<'stock' | 'etf' | null>('stock');
 
@@ -48,18 +52,22 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
     notes: '',
   });
 
-  // When the wizard opens with an initialTicker, pre-select that ticker and
-  // match the position type so the wizard skips straight to the details step.
-  // Mirrors the pattern used by CallOptionWizard for its initialTicker prop.
+  // When the wizard opens with an initialTicker, pre-select that ticker,
+  // match the position type, and jump straight to the details step (index 2)
+  // so the user only needs to fill in shares/price/date.
+  // A generic open (no initialTicker) always starts at step 0 (type selection).
   useEffect(() => {
     if (isOpen && initialTicker) {
       setSelectedTicker(initialTicker);
       if (initialTicker.type === 'stock' || initialTicker.type === 'etf') {
         setPositionType(initialTicker.type);
       }
+      // details step is always at index 2: type(0) → ticker(1) → details(2)
+      setCurrentStepIndex(2);
     } else if (!isOpen) {
-      // Clear the pre-selection on close so a fresh open starts blank.
+      // Reset to blank state on close so a fresh generic open starts at step 0.
       setSelectedTicker(null);
+      setCurrentStepIndex(0);
     }
   }, [isOpen, initialTicker]);
 
@@ -154,6 +162,7 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
     setPositionType('stock'); // Reset to default 'stock' selection
     setSelectedTicker(null);
     setIsCreatingTicker(false);
+    setCurrentStepIndex(0); // Always return to step 0 after a completed or reset form
     setNewTickerData({
       symbol: '',
       name: '',
@@ -544,6 +553,8 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
       steps={steps}
       onComplete={handleComplete}
       completeButtonLabel={t('stockWizard.completeButton')}
+      currentStepIndex={currentStepIndex}
+      onStepChange={setCurrentStepIndex}
     />
   );
 };

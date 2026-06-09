@@ -30,8 +30,9 @@ interface GroupedLeapsListProps {
   onAssign?: (position: CallOption | PutOption) => void;
   /** Opens a pre-filled covered-call wizard for the LEAPS' ticker (PMCC short call). */
   onWriteCoveredCall?: (ticker: string) => void;
-  /** Opens the call wizard pre-filled to buy more long calls for this LEAPS ticker. */
-  onBuy?: (ticker: string) => void;
+  /** Opens the call wizard pre-filled to buy more long calls for this LEAPS position.
+   *  Carries the ticker, strike, and expiration so the wizard can pre-fill those fields. */
+  onBuy?: (info: { ticker: string; strike: number; expiration: string }) => void;
   /** Currency symbol for formatting amounts. */
   currencySymbol: string;
 }
@@ -251,7 +252,7 @@ export const GroupedLeapsList: React.FC<GroupedLeapsListProps> = ({
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          onBuy(leap.ticker);
+                          onBuy({ ticker: leap.ticker, strike: leap.strike, expiration: leap.expiration });
                         }}
                         className="w-8 h-8 flex items-center justify-center bg-ink-200 dark:bg-trading-dark-600 hover:bg-ink-300 dark:hover:bg-ink-400 text-ink-700 dark:text-ink-200 rounded font-semibold text-sm transition-colors"
                         title={t('widgetsB.buy')}

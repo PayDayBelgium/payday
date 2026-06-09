@@ -146,6 +146,15 @@ export const PortfolioDetail: React.FC = () => {
   const [callWizardInitialAction, setCallWizardInitialAction] = useState<
     'covered-call' | 'buy' | undefined
   >(undefined);
+  // Pre-fill strike and expiration for the LEAPS buy-more flow only.
+  // These must be cleared (set to undefined) on every other call-wizard open path
+  // so covered-call and generic opens are NOT pre-filled.
+  const [callWizardInitialStrike, setCallWizardInitialStrike] = useState<number | undefined>(
+    undefined
+  );
+  const [callWizardInitialExpiration, setCallWizardInitialExpiration] = useState<
+    string | undefined
+  >(undefined);
   const [stockWizardInitialTicker, setStockWizardInitialTicker] = useState<Ticker | undefined>(
     undefined
   );
@@ -153,10 +162,13 @@ export const PortfolioDetail: React.FC = () => {
   const [expandedTickers, setExpandedTickers] = useState<Set<string>>(new Set());
 
   // Open the call wizard pre-filled to write a covered call on a specific ticker.
+  // Clear the LEAPS-specific strike/expiration pre-fill so this path is not affected.
   const handleWriteCoveredCall = (tickerSymbol: string) => {
     const ticker = tickerList.find((t) => t.symbol.toUpperCase() === tickerSymbol.toUpperCase());
     setCallWizardInitialTicker(ticker);
     setCallWizardInitialAction('covered-call');
+    setCallWizardInitialStrike(undefined);
+    setCallWizardInitialExpiration(undefined);
     setIsCallOptionWizardOpen(true);
   };
 
@@ -167,11 +179,14 @@ export const PortfolioDetail: React.FC = () => {
     setIsStockWizardOpen(true);
   };
 
-  // Open the call wizard pre-filled to buy more long calls (LEAPS) for a specific ticker.
-  const handleBuyLeaps = (tickerSymbol: string) => {
-    const ticker = tickerList.find((t) => t.symbol.toUpperCase() === tickerSymbol.toUpperCase());
+  // Open the call wizard pre-filled to buy more long calls (LEAPS) for a specific position.
+  // Passes strike + expiration so the wizard jumps straight to details with those fields filled.
+  const handleBuyLeaps = (info: { ticker: string; strike: number; expiration: string }) => {
+    const ticker = tickerList.find((t) => t.symbol.toUpperCase() === info.ticker.toUpperCase());
     setCallWizardInitialTicker(ticker);
     setCallWizardInitialAction('buy');
+    setCallWizardInitialStrike(info.strike);
+    setCallWizardInitialExpiration(info.expiration);
     setIsCallOptionWizardOpen(true);
   };
 
@@ -576,6 +591,8 @@ export const PortfolioDetail: React.FC = () => {
                     onClick={() => {
                       setCallWizardInitialTicker(undefined);
                       setCallWizardInitialAction(undefined);
+                      setCallWizardInitialStrike(undefined);
+                      setCallWizardInitialExpiration(undefined);
                       setIsCallOptionWizardOpen(true);
                     }}
                     className="flex items-center gap-2 px-3 py-2 bg-positive-50 dark:bg-positive-700/15 hover:bg-positive-50 dark:hover:bg-positive-700/25 rounded-lg border border-positive-500/20 dark:border-positive-700/30 hover:border-positive-500/40 dark:hover:border-positive-600 transition-all text-left cursor-pointer w-36"
@@ -1351,6 +1368,8 @@ export const PortfolioDetail: React.FC = () => {
             onClose={() => setIsCallOptionWizardOpen(false)}
             initialTicker={callWizardInitialTicker}
             initialAction={callWizardInitialAction}
+            initialStrike={callWizardInitialStrike}
+            initialExpiration={callWizardInitialExpiration}
             portfolio={{
               name: portfolio.name,
               currency: portfolio.currency,
