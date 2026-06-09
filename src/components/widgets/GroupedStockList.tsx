@@ -37,8 +37,10 @@ interface GroupedStockListProps {
   allPortfolios: Portfolio[];
   onEditPosition: (position: StockPosition) => void;
   onDismissStrategyAlert?: (alertId: string) => void;
-  /** When provided, the "CC" badge becomes a button that opens the covered-call wizard for the ticker. */
-  onWriteCoveredCall?: (ticker: string) => void;
+  /** When provided, the "CC" badge becomes a button that opens the covered-call wizard for the ticker.
+   *  The optional second argument is the initiating position id (for future per-lot linking);
+   *  stock-initiated covered calls pass no underlyingId — the wizard's default parent resolution applies. */
+  onWriteCoveredCall?: (ticker: string, underlyingId?: string) => void;
   /** When provided, a sell button is shown that delegates selling a lot to the host's close/sell flow. */
   onSellPosition?: (position: StockPosition) => void;
   /** When provided, a buy button is shown to open the stock wizard pre-filled for this ticker. */
@@ -374,9 +376,12 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                           )}
                           {canWriteCoveredCalls && (
                             <CoveredCallSuggestionBadge
-                              message={t('widgetsA.writeCoveredCallsOpportunity', {
-                                count: ccCapacity.freeContracts,
-                              })}
+                              message={
+                                positionOpportunityMessage?.get(group.positions[0].id) ||
+                                t('widgetsA.writeCoveredCallsOpportunity', {
+                                  count: ccCapacity.freeContracts,
+                                })
+                              }
                               onClick={onWriteCoveredCall ? () => onWriteCoveredCall(group.ticker) : undefined}
                             />
                           )}

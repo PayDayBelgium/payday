@@ -28,8 +28,10 @@ interface GroupedLeapsListProps {
   onRoll?: (position: CallOption | PutOption) => void;
   onClose?: (position: CallOption | PutOption) => void;
   onAssign?: (position: CallOption | PutOption) => void;
-  /** Opens a pre-filled covered-call wizard for the LEAPS' ticker (PMCC short call). */
-  onWriteCoveredCall?: (ticker: string) => void;
+  /** Opens a pre-filled covered-call wizard for the LEAPS' ticker (PMCC short call).
+   *  The second argument is the initiating LEAPS position id so the wizard links
+   *  the new short call to that LEAPS rather than the default stock parent. */
+  onWriteCoveredCall?: (ticker: string, underlyingId?: string) => void;
   /** Opens the call wizard pre-filled to buy more long calls for this LEAPS position.
    *  Carries the ticker, strike, and expiration so the wizard can pre-fill those fields. */
   onBuy?: (info: { ticker: string; strike: number; expiration: string }) => void;
@@ -139,7 +141,7 @@ export const GroupedLeapsList: React.FC<GroupedLeapsListProps> = ({
                       {hasOpportunity && (
                         <CoveredCallSuggestionBadge
                           message={opportunityMessage || t('widgetsB.leapsWriteShortCallTitle')}
-                          onClick={onWriteCoveredCall ? () => onWriteCoveredCall(leap.ticker) : undefined}
+                          onClick={onWriteCoveredCall ? () => onWriteCoveredCall(leap.ticker, leap.id) : undefined}
                         />
                       )}
                     </div>

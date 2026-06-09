@@ -155,6 +155,14 @@ export const PortfolioDetail: React.FC = () => {
   const [callWizardInitialExpiration, setCallWizardInitialExpiration] = useState<
     string | undefined
   >(undefined);
+  // When the wizard is opened from a specific LEAPS or stock suggestion badge, hold the
+  // initiating position's id here so the wizard can link the new short call to that parent
+  // (LEAPS → PMCC; stock lot → standard CC on that lot).
+  // MUST be cleared to undefined for every non-suggestion open path (handleBuyLeaps,
+  // generic "add call" button) so those uses fall back to default parent resolution.
+  const [callWizardInitialUnderlyingId, setCallWizardInitialUnderlyingId] = useState<
+    string | undefined
+  >(undefined);
   const [stockWizardInitialTicker, setStockWizardInitialTicker] = useState<Ticker | undefined>(
     undefined
   );
@@ -162,13 +170,17 @@ export const PortfolioDetail: React.FC = () => {
   const [expandedTickers, setExpandedTickers] = useState<Set<string>>(new Set());
 
   // Open the call wizard pre-filled to write a covered call on a specific ticker.
-  // Clear the LEAPS-specific strike/expiration pre-fill so this path is not affected.
-  const handleWriteCoveredCall = (tickerSymbol: string) => {
+  // When called from a LEAPS suggestion badge, `underlyingId` is the leap's position id so
+  // the wizard links the new short call to that LEAPS (PMCC). When called from a stock badge
+  // or without an explicit initiator, `underlyingId` is undefined → default parent resolution.
+  // Always clear the LEAPS buy-more strike/expiration pre-fill so this path is not affected.
+  const handleWriteCoveredCall = (tickerSymbol: string, underlyingId?: string) => {
     const ticker = tickerList.find((t) => t.symbol.toUpperCase() === tickerSymbol.toUpperCase());
     setCallWizardInitialTicker(ticker);
     setCallWizardInitialAction('covered-call');
     setCallWizardInitialStrike(undefined);
     setCallWizardInitialExpiration(undefined);
+    setCallWizardInitialUnderlyingId(underlyingId);
     setIsCallOptionWizardOpen(true);
   };
 
@@ -181,12 +193,14 @@ export const PortfolioDetail: React.FC = () => {
 
   // Open the call wizard pre-filled to buy more long calls (LEAPS) for a specific position.
   // Passes strike + expiration so the wizard jumps straight to details with those fields filled.
+  // Clears initialUnderlyingId — buying a LEAPS is not a short-call parent-linking scenario.
   const handleBuyLeaps = (info: { ticker: string; strike: number; expiration: string }) => {
     const ticker = tickerList.find((t) => t.symbol.toUpperCase() === info.ticker.toUpperCase());
     setCallWizardInitialTicker(ticker);
     setCallWizardInitialAction('buy');
     setCallWizardInitialStrike(info.strike);
     setCallWizardInitialExpiration(info.expiration);
+    setCallWizardInitialUnderlyingId(undefined);
     setIsCallOptionWizardOpen(true);
   };
 
@@ -593,6 +607,7 @@ export const PortfolioDetail: React.FC = () => {
                       setCallWizardInitialAction(undefined);
                       setCallWizardInitialStrike(undefined);
                       setCallWizardInitialExpiration(undefined);
+                      setCallWizardInitialUnderlyingId(undefined);
                       setIsCallOptionWizardOpen(true);
                     }}
                     className="flex items-center gap-2 px-3 py-2 bg-positive-50 dark:bg-positive-700/15 hover:bg-positive-50 dark:hover:bg-positive-700/25 rounded-lg border border-positive-500/20 dark:border-positive-700/30 hover:border-positive-500/40 dark:hover:border-positive-600 transition-all text-left cursor-pointer w-36"
@@ -1370,6 +1385,7 @@ export const PortfolioDetail: React.FC = () => {
             initialAction={callWizardInitialAction}
             initialStrike={callWizardInitialStrike}
             initialExpiration={callWizardInitialExpiration}
+            initialUnderlyingId={callWizardInitialUnderlyingId}
             portfolio={{
               name: portfolio.name,
               currency: portfolio.currency,

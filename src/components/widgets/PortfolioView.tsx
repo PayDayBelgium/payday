@@ -50,8 +50,10 @@ interface PortfolioViewProps {
   portfolioCurrentValue: number;
   className?: string;
   onNavigateToCampaigns?: () => void;
-  /** Opens the covered-call wizard for a ticker (threaded down to the grouped stock list). */
-  onWriteCoveredCall?: (ticker: string) => void;
+  /** Opens the covered-call wizard for a ticker (threaded down to the grouped stock/LEAPS lists).
+   *  The optional second argument is the initiating position id; LEAPS-initiated opens pass the
+   *  leap id so the wizard links the new short call to that LEAPS (PMCC). */
+  onWriteCoveredCall?: (ticker: string, underlyingId?: string) => void;
   /** Opens the stock wizard pre-filled to buy more shares of the given ticker. */
   onBuyStock?: (ticker: string) => void;
   /** Opens the call wizard pre-filled to buy more long calls (LEAPS) for the given position.

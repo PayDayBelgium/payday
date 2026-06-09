@@ -60,6 +60,14 @@ interface CallOptionWizardProps {
   initialStrike?: number;
   /** Pre-fill the expiration (ISO date string) for the LEAPS buy-more flow; leave undefined for other opens. */
   initialExpiration?: string;
+  /**
+   * When the wizard is opened from a specific LEAPS/stock suggestion badge, this holds the
+   * initiating position's id. For short calls it overrides `pickParentForNewShortCall` so
+   * the new call is explicitly linked to that initiator (LEAPS → PMCC; stock → CC on that lot).
+   * Leave undefined for generic "add call" opens — parent resolution then uses the default
+   * stocks-before-LEAPS allocator.
+   */
+  initialUnderlyingId?: string;
 }
 
 export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
@@ -72,6 +80,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
   initialWheelId,
   initialStrike,
   initialExpiration,
+  initialUnderlyingId,
 }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
@@ -323,37 +332,44 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
       const normalizedAction: 'buy' | 'sell' = isShortCall ? 'sell' : 'buy';
       const shouldLinkToWheel = isShortCall && !!selectedWheelId;
 
-      // Automatic parent linking (shares before LEAPS) for short calls that
-      // aren't tied to a wheel, so the coverage is explicit and visible.
+      // Automatic parent linking for short calls that aren't tied to a wheel.
+      // If an explicit initiator was provided (opened from a specific LEAPS or stock
+      // suggestion badge), honour it directly — that position becomes the parent.
+      // Otherwise fall back to the stocks-before-LEAPS allocator default.
       let underlyingId: string | undefined;
       if (isShortCall && !shouldLinkToWheel) {
-        const tickerSym = selectedTicker.symbol.toUpperCase();
-        const groupPositions = allPositions.filter(
-          (p) =>
-            p.status === 'open' &&
-            p.portfolio === portfolio.name &&
-            p.ticker.toUpperCase() === tickerSym &&
-            !(p as { wheelId?: string }).wheelId
-        );
-        const groupStocks = groupPositions.filter(
-          (p) => p.type === 'stock' || p.type === 'etf'
-        ) as StockPosition[];
-        const groupShortCalls = groupPositions.filter(
-          (p) => p.type === 'call' && (p as CallOption).action === 'sell'
-        ) as CallOption[];
-        const groupLeaps = groupPositions.filter(
-          (p) => p.type === 'call' && (p as CallOption).action === 'buy' && isLEAPS(p as CallOption)
-        ) as CallOption[];
-        const parent = pickParentForNewShortCall(
-          {
-            stocks: groupStocks,
-            leaps: groupLeaps,
-            shortCalls: groupShortCalls,
-            currentPrice: currentTickerPrice ?? undefined,
-          },
-          { strike: longLeg.strike, contracts: longLeg.contracts }
-        );
-        underlyingId = parent?.parentId;
+        if (initialUnderlyingId) {
+          // Explicit initiator wins — link to the initiating position.
+          underlyingId = initialUnderlyingId;
+        } else {
+          const tickerSym = selectedTicker.symbol.toUpperCase();
+          const groupPositions = allPositions.filter(
+            (p) =>
+              p.status === 'open' &&
+              p.portfolio === portfolio.name &&
+              p.ticker.toUpperCase() === tickerSym &&
+              !(p as { wheelId?: string }).wheelId
+          );
+          const groupStocks = groupPositions.filter(
+            (p) => p.type === 'stock' || p.type === 'etf'
+          ) as StockPosition[];
+          const groupShortCalls = groupPositions.filter(
+            (p) => p.type === 'call' && (p as CallOption).action === 'sell'
+          ) as CallOption[];
+          const groupLeaps = groupPositions.filter(
+            (p) => p.type === 'call' && (p as CallOption).action === 'buy' && isLEAPS(p as CallOption)
+          ) as CallOption[];
+          const parent = pickParentForNewShortCall(
+            {
+              stocks: groupStocks,
+              leaps: groupLeaps,
+              shortCalls: groupShortCalls,
+              currentPrice: currentTickerPrice ?? undefined,
+            },
+            { strike: longLeg.strike, contracts: longLeg.contracts }
+          );
+          underlyingId = parent?.parentId;
+        }
       }
 
       const newPosition: CallOption = {
