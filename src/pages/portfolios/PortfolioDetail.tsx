@@ -95,14 +95,29 @@ const getAlertIcon = (message: string, isAlert: boolean): LucideIcon => {
 
 export const PortfolioDetail: React.FC = () => {
   const { t } = useTranslation();
-  const { portfolioName } = useParams<{ portfolioName: string }>();
+  const { portfolioName: portfolioParam } = useParams<{ portfolioName: string }>();
   const dispatch = useAppDispatch();
   const { setPageTitle, setTitleIcon } = usePageTitle();
   const { canGoBack, pushNavigation } = useNavigation();
   const portfolios = useAppSelector((state) => state.portfolios.portfolios);
   const positions = useAppSelector((state) => state.positions.positions);
   const tickerList = useAppSelector(selectAllTickers);
-  const portfolio = portfolios.find((b) => b.name === portfolioName);
+  // The portfolio name travels through the URL. Decode it and fall back to a
+  // Unicode-normalized (NFC) comparison, so the lookup works whether the link
+  // encoded the name or not, and for accented names (e.g. "Björn"). All downstream
+  // code uses the canonical stored name so positions/transactions stay consistent.
+  const decodedParam = (() => {
+    if (!portfolioParam) return '';
+    try {
+      return decodeURIComponent(portfolioParam);
+    } catch {
+      return portfolioParam;
+    }
+  })();
+  const portfolio = portfolios.find(
+    (b) => b.name === decodedParam || b.name.normalize('NFC') === decodedParam.normalize('NFC')
+  );
+  const portfolioName = portfolio?.name ?? decodedParam;
   const transactions = useAppSelector((state) =>
     selectTransactionsByPortfolio(state, portfolioName || '')
   );

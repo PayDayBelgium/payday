@@ -190,8 +190,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '', isCollapsed })
               portfolios.map((portfolio) => (
                 <NavLink
                   key={portfolio.id}
-                  to={`/portfolio/${portfolio.name}`}
-                  onClick={() => handleMenuClick(`/portfolio/${portfolio.name}`, portfolio.name)}
+                  to={`/portfolio/${encodeURIComponent(portfolio.name)}`}
+                  onClick={() =>
+                    handleMenuClick(
+                      `/portfolio/${encodeURIComponent(portfolio.name)}`,
+                      portfolio.name
+                    )
+                  }
                   className={({ isActive }) => navClass(isActive, isCollapsed)}
                 >
                   {({ isActive }) => (
@@ -212,7 +217,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '', isCollapsed })
               portfolios.map((portfolio) => (
                 <NavLink
                   key={portfolio.id}
-                  to={`/portfolio/${portfolio.name}`}
+                  to={`/portfolio/${encodeURIComponent(portfolio.name)}`}
                   className={({ isActive }) => navClass(isActive, isCollapsed)}
                   title={portfolio.name}
                 >
