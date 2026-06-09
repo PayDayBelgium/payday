@@ -1,10 +1,8 @@
-﻿import React, { useMemo, useState, useRef, useEffect } from 'react';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import {
   TrendingUp,
-  ChevronDown,
-  ChevronUp,
   Target,
   AlertCircle,
   Lightbulb,
@@ -30,23 +28,20 @@ import { AssignmentModal } from '../modals/AssignmentModal';
 import { rollOption, rollSpread, recordAssignment } from '../../store/commands/rollCommands';
 import type { StockPosition } from '../../types';
 import type { Position, CurrencyType, CallOption, PutOption } from '../../types';
-import { POSITION_GRID_COLS } from './positionGrid';
+import { PositionColumnHeader } from './PositionColumnHeader';
 import { getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency, formatNumber } from '../../utils/numberFormat';
 import { getSpreadId } from '../../utils/spreadHelpers';
-import { computeCoveredCallCapacity } from '../../utils/coveredCallEligibility';
-import { allocateCallCoverage } from '../../utils/coverageAllocation';
-import { isLEAPS as isLeapsForCoverage } from '../../utils/campaignDetector';
-import { StockRow } from './StockRow';
 import { GroupedStockList } from './GroupedStockList';
+import { GroupedLeapsList } from './GroupedLeapsList';
 import { OptionRow } from './OptionRow';
 import type { CollateralType } from './OptionRow';
 import { SpreadSummaryRow } from './SpreadSummaryRow';
-import { isLEAPS, calculateSpreadSummary } from '../../utils/positionHelpers';
+import { CollapsibleSection } from './CollapsibleSection';
+import { isLEAPS, calculateSpreadSummary, buildPortfolioSections } from '../../utils/positionHelpers';
 
 type SortField = 'expiration' | 'ticker' | 'strike' | 'premium' | 'dte' | 'pnl';
 type SortDirection = 'asc' | 'desc';
-type GroupBy = 'none' | 'strategy' | 'expiry' | 'ticker' | 'action';
 
 interface PortfolioViewProps {
   positions: Position[];
@@ -55,8 +50,15 @@ interface PortfolioViewProps {
   portfolioCurrentValue: number;
   className?: string;
   onNavigateToCampaigns?: () => void;
-  /** Opens the covered-call wizard for a ticker (threaded down to the grouped stock list). */
-  onWriteCoveredCall?: (ticker: string) => void;
+  /** Opens the covered-call wizard for a ticker (threaded down to the grouped stock/LEAPS lists).
+   *  The optional second argument is the initiating position id; LEAPS-initiated opens pass the
+   *  leap id so the wizard links the new short call to that LEAPS (PMCC). */
+  onWriteCoveredCall?: (ticker: string, underlyingId?: string) => void;
+  /** Opens the stock wizard pre-filled to buy more shares of the given ticker. */
+  onBuyStock?: (ticker: string) => void;
+  /** Opens the call wizard pre-filled to buy more long calls (LEAPS) for the given position.
+   *  Carries ticker, strike, and expiration so the wizard can pre-fill those fields. */
+  onBuyLeaps?: (info: { ticker: string; strike: number; expiration: string }) => void;
 }
 
 export const PortfolioView: React.FC<PortfolioViewProps> = ({
@@ -67,6 +69,8 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   className = '',
   onNavigateToCampaigns,
   onWriteCoveredCall,
+  onBuyStock,
+  onBuyLeaps,
 }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
@@ -77,60 +81,58 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   const hasOptionsAccess = isFeatureAvailable('covered_calls', unlockedLevels);
   const currencySymbol = getCurrencySymbol(currency);
 
-  // Per short-call coverage, derived from the shared deterministic allocator
-  // (stocks before LEAPS, honouring underlyingId). This makes the "collateral"
-  // column show the actual parent of each covered call, consistent with the
-  // campaign view and the opportunity logic.
+  /**
+   * ONE memo for ALL fixed-section data: stockGroups, leapsGroups, and the
+   * shared sectionIds dedup set. Uses buildPortfolioSections which runs ONE
+   * allocateCallCoverage pass per ticker — groups and sectionIds can never
+   * diverge.
+   */
+  const { leapsGroups, stockGroups, sectionIds } = useMemo(() => {
+    const openPositions = positions.filter((p) => p.status === 'open');
+    return buildPortfolioSections(openPositions, tickers);
+  }, [positions, tickers]);
+
+  /**
+   * Covered calls keyed by ticker (upper-cased) for GroupedStockList nesting.
+   * Built directly from the stockGroups returned above — same allocator pass.
+   */
+  const coveredCallsByTicker = useMemo(() => {
+    const map = new Map<string, CallOption[]>();
+    for (const sg of stockGroups) {
+      if (sg.assigned.length > 0) {
+        map.set(sg.ticker.toUpperCase(), sg.assigned);
+      }
+    }
+    return map;
+  }, [stockGroups]);
+
+  /**
+   * Per short-call coverage map (used by the standalone OptionRow block to
+   * resolve collateral descriptions). Built from the same stockGroups/leapsGroups
+   * so it always matches sectionIds.
+   */
   const callCoverageByCallId = useMemo(() => {
     type CoverageInfo =
       | { kind: 'stock'; shares: number; costBasis: number }
       | { kind: 'leaps'; leap: CallOption };
     const map = new Map<string, CoverageInfo>();
 
-    const openByTicker = new Map<string, Position[]>();
-    for (const p of positions) {
-      if (p.status !== 'open') continue;
-      if ((p as { wheelId?: string }).wheelId) continue;
-      const key = p.ticker.toUpperCase();
-      const list = openByTicker.get(key) ?? [];
-      list.push(p);
-      openByTicker.set(key, list);
-    }
-
-    for (const [ticker, group] of openByTicker) {
-      const shortCalls = group.filter(
-        (p) => p.type === 'call' && (p as CallOption).action === 'sell'
-      ) as CallOption[];
-      if (shortCalls.length === 0) continue;
-      const stocks = group.filter((p) => p.type === 'stock' || p.type === 'etf') as StockPosition[];
-      const leaps = group.filter(
-        (p) =>
-          p.type === 'call' &&
-          (p as CallOption).action === 'buy' &&
-          isLeapsForCoverage(p as CallOption)
-      ) as CallOption[];
-      const price = tickers.find((t) => t.symbol.toUpperCase() === ticker)?.currentPrice;
-
-      const alloc = allocateCallCoverage({ stocks, leaps, shortCalls, currentPrice: price });
-
-      if (alloc.stock) {
-        const totalShares = stocks.reduce((s, l) => s + l.shares, 0);
-        const totalCost = stocks.reduce((s, l) => s + l.costBasis, 0);
-        for (const c of alloc.stock.assigned) {
-          map.set(c.id, { kind: 'stock', shares: totalShares, costBasis: totalCost });
-        }
-      }
-      for (const la of alloc.leaps) {
-        const leap = leaps.find((l) => l.id === la.parentId);
-        if (!leap) continue;
-        for (const c of la.assigned) {
-          map.set(c.id, { kind: 'leaps', leap });
-        }
+    // Stock-assigned calls
+    for (const sg of stockGroups) {
+      const totalShares = sg.lots.reduce((s, l) => s + l.shares, 0);
+      const totalCost = sg.lots.reduce((s, l) => s + l.costBasis, 0);
+      for (const c of sg.assigned) {
+        map.set(c.id, { kind: 'stock', shares: totalShares, costBasis: totalCost });
       }
     }
-
+    // LEAPS-assigned calls
+    for (const lg of leapsGroups) {
+      for (const c of lg.assigned) {
+        map.set(c.id, { kind: 'leaps', leap: lg.leap });
+      }
+    }
     return map;
-  }, [positions, tickers]);
+  }, [stockGroups, leapsGroups]);
 
   // Use central alerts hook for this portfolio
   const { getAlertsForPosition, getOpportunitiesForPosition } = useAlerts(portfolioName);
@@ -158,6 +160,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
     });
     return map;
   }, [positions, getAlertsForPosition]);
+
   const [positionToClose, setPositionToClose] = useState<Position | null>(null);
   const [positionToRoll, setPositionToRoll] = useState<(CallOption | PutOption) | null>(null);
   const [positionToAssign, setPositionToAssign] = useState<(CallOption | PutOption) | null>(null);
@@ -172,9 +175,6 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   } | null>(null);
   const [sortField, setSortField] = useState<SortField>('expiration');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
-  // Default to grouping by ticker so each stock/LEAPS sits next to the covered
-  // calls it backs (the parent is also shown in the collateral column).
-  const [groupBy, setGroupBy] = useState<GroupBy>('ticker');
   const [tickerSearch, setTickerSearch] = useState('');
   const [filterExpiration, setFilterExpiration] = useState<string>('all');
   const [filterOpportunities, setFilterOpportunities] = useState<boolean>(false);
@@ -186,19 +186,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   const filterButtonRef = useRef<HTMLButtonElement>(null);
   const [filterPopupPosition, setFilterPopupPosition] = useState({ top: 0, left: 0 });
   const [expandedSpreads, setExpandedSpreads] = useState<Set<string>>(new Set());
-  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
-  const [groupFilterPopup, setGroupFilterPopup] = useState<string | null>(null);
-  const [groupFilters, setGroupFilters] = useState<
-    Record<
-      string,
-      {
-        expiration: string;
-        opportunities: boolean;
-        alerts: boolean;
-        ideas: boolean;
-      }
-    >
-  >({});
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
 
   // Helper to get or create ref for tooltip
   const getTooltipRef = (id: string) => {
@@ -221,63 +209,16 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
     });
   };
 
-  const toggleGroup = (groupName: string) => {
-    setCollapsedGroups((prev) => {
+  const toggleSection = (sectionId: string) => {
+    setCollapsedSections((prev) => {
       const next = new Set(prev);
-      if (next.has(groupName)) {
-        next.delete(groupName);
+      if (next.has(sectionId)) {
+        next.delete(sectionId);
       } else {
-        next.add(groupName);
+        next.add(sectionId);
       }
       return next;
     });
-  };
-
-  // Helper to get group filter
-  const getGroupFilter = (groupName: string) => {
-    return (
-      groupFilters[groupName] || {
-        expiration: 'all',
-        opportunities: false,
-        alerts: false,
-        ideas: false,
-      }
-    );
-  };
-
-  // Helper to update group filter
-  const updateGroupFilter = (
-    groupName: string,
-    updates: Partial<{
-      expiration: string;
-      opportunities: boolean;
-      alerts: boolean;
-      ideas: boolean;
-    }>
-  ) => {
-    setGroupFilters((prev) => ({
-      ...prev,
-      [groupName]: {
-        ...getGroupFilter(groupName),
-        ...updates,
-      },
-    }));
-  };
-
-  // Helper to reset group filter
-  const resetGroupFilter = (groupName: string) => {
-    setGroupFilters((prev) => {
-      const next = { ...prev };
-      delete next[groupName];
-      return next;
-    });
-  };
-
-  // Helper to check if group has active filters
-  const hasActiveGroupFilter = (groupName: string) => {
-    const filter = groupFilters[groupName];
-    if (!filter) return false;
-    return filter.expiration !== 'all' || filter.opportunities || filter.alerts || filter.ideas;
   };
 
   // Update filter popup position when it opens
@@ -380,30 +321,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
     // Opportunities filter
     if (filterOpportunities) {
       filtered = filtered.filter((p) => {
-        if (p.type === 'stock' || p.type === 'etf') {
-          // Check for Covered Call opportunity
-          const stock = p as any;
-
-          const tickerLots = positions.filter(
-            (pos): pos is StockPosition =>
-              (pos.type === 'stock' || pos.type === 'etf') &&
-              pos.status === 'open' &&
-              pos.portfolio === stock.portfolio &&
-              pos.ticker === stock.ticker
-          );
-          const tickerSoldCalls = positions.filter(
-            (pos): pos is CallOption =>
-              pos.type === 'call' &&
-              (pos as CallOption).action === 'sell' &&
-              pos.status === 'open' &&
-              pos.portfolio === stock.portfolio &&
-              pos.ticker === stock.ticker
-          );
-          const ccCapacity = computeCoveredCallCapacity(tickerLots, tickerSoldCalls);
-          // Covered-call writing is a level-gated opportunity (covered_calls = medior).
-          return hasOptionsAccess && ccCapacity.canWriteCoveredCall;
-        } else if (p.type === 'call' || p.type === 'put') {
-          // Check for option opportunity - 80% of max profit reached
+        if (p.type === 'call' || p.type === 'put') {
           const option = p as CallOption | PutOption;
           const isBuy = option.action === 'buy';
           const nominalProfit = option.currentValue - option.costBasis;
@@ -411,11 +329,8 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
             option.costBasis !== 0 ? (nominalProfit / Math.abs(option.costBasis)) * 100 : 0;
 
           if (isBuy) {
-            // LONG (bought) option: Check if 80% profit reached
             return nominalProfit >= 0 && profitPercent >= 80;
           } else {
-            // SHORT (sold) option: Check if premium has decreased by 80%
-            // If current value is close to 0, we've captured 80% of max profit
             return nominalProfit >= 0 && profitPercent >= 80;
           }
         }
@@ -429,22 +344,13 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
         if (p.type === 'call' || p.type === 'put') {
           const option = p as CallOption | PutOption;
           const isCall = option.type === 'call';
-
-          // Calculate DTE
           const daysToExpiration = option.expiration ? getDaysToExpiration(option.expiration) : 0;
-
-          // Check if put expires this week
           const expiresThisWeek = daysToExpiration > 0 && daysToExpiration <= 7;
-
-          // For puts: Check if position is in trouble based on P&L
-          // If it's a sold put (short) and we're losing money, the stock price is likely below strike
-          // If it's a bought put (long) and we're making money, the stock price is likely below strike
           const nominalPnL = option.currentValue - option.costBasis;
           const putAlert =
             !isCall &&
-            ((option.action === 'sell' && nominalPnL < 0) || // Short put losing money (stock below strike)
-              (option.action === 'buy' && nominalPnL > 0)); // Long put making money (stock below strike)
-
+            ((option.action === 'sell' && nominalPnL < 0) ||
+              (option.action === 'buy' && nominalPnL > 0));
           return putAlert || (!isCall && expiresThisWeek);
         }
         return false;
@@ -452,12 +358,11 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
     }
 
     return filtered;
-  }, [allPositions, tickerSearch, filterExpiration, filterOpportunities, filterAlerts, positions]);
+  }, [allPositions, tickerSearch, filterExpiration, filterOpportunities, filterAlerts]);
 
   // Pre-process positions to identify spreads
   const { spreads } = useMemo(() => {
     const spreadMap = new Map<string, Position[]>();
-    const standalone: Position[] = [];
 
     filteredPositions.forEach((position) => {
       const spreadId = getSpreadId(position);
@@ -466,147 +371,13 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
           spreadMap.set(spreadId, []);
         }
         spreadMap.get(spreadId)!.push(position);
-      } else {
-        standalone.push(position);
       }
     });
 
     return {
       spreads: Array.from(spreadMap.entries()).map(([id, legs]) => ({ id, legs })),
-      standalonePositions: standalone,
     };
   }, [filteredPositions]);
-
-  // Open stock/ETF lots for this portfolio â€” rendered as a grouped, expandable tree
-  const stockLots = useMemo(
-    () =>
-      positions.filter(
-        (p): p is StockPosition => (p.type === 'stock' || p.type === 'etf') && p.status === 'open'
-      ),
-    [positions]
-  );
-
-  // Group all positions by strategy if needed
-  // This groups both standalone positions and spreads
-  const groupedAllPositions = useMemo(() => {
-    // Stocks/ETFs are rendered separately by GroupedStockList â€” keep them out of the
-    // strategy/expiry/ticker grouping so they don't appear twice.
-    const nonStockPositions = filteredPositions.filter(
-      (p) => p.type !== 'stock' && p.type !== 'etf'
-    );
-
-    if (groupBy === 'none') {
-      return { [t('widgetsB.groupAllPositions')]: nonStockPositions };
-    }
-
-    const groups: Record<string, Position[]> = {};
-    const processedSpreadIds = new Set<string>();
-
-    nonStockPositions.forEach((position) => {
-      // Check if this is part of a spread
-      const spreadId = getSpreadId(position);
-
-      // If it's part of a spread, only process once (when we encounter the first leg)
-      if (spreadId) {
-        if (processedSpreadIds.has(spreadId)) {
-          return; // Skip - already processed this spread
-        }
-        processedSpreadIds.add(spreadId);
-
-        // Find the spread type from the legs
-        const spreadLegs = spreads.find((s) => s.id === spreadId);
-        if (spreadLegs && spreadLegs.legs.length === 2) {
-          const firstLeg = spreadLegs.legs[0] as CallOption | PutOption;
-
-          let groupName = t('widgetsB.groupOther');
-          if (groupBy === 'strategy') {
-            groupName =
-              firstLeg.type === 'call'
-                ? t('widgetsB.groupCallSpreads')
-                : t('widgetsB.groupPutSpreads');
-          } else if (groupBy === 'expiry') {
-            groupName = firstLeg.expiration;
-          } else if (groupBy === 'ticker') {
-            groupName = firstLeg.ticker;
-          } else if (groupBy === 'action') {
-            // For spreads, check the first leg action
-            groupName = firstLeg.action === 'buy' ? t('widgetsB.groupLong') : t('widgetsB.groupShort');
-          }
-
-          if (!groups[groupName]) {
-            groups[groupName] = [];
-          }
-          // Add both legs to the group (they will be rendered as a single spread)
-          groups[groupName].push(...spreadLegs.legs);
-        }
-        return;
-      }
-
-      // For standalone positions
-      let groupName = t('widgetsB.groupOther');
-
-      if (groupBy === 'strategy') {
-        // Stocks and ETFs
-        if (position.type === 'stock' || position.type === 'etf') {
-          groupName = t('widgetsB.groupStocksEtfs');
-        }
-        // Options (standalone, not part of spreads)
-        else if (position.type === 'put' || position.type === 'call') {
-          const option = position as CallOption | PutOption;
-          if (option.type === 'call') {
-            groupName = t('widgetsB.groupCalls');
-          } else {
-            groupName = t('widgetsB.groupPuts');
-          }
-        }
-      } else if (groupBy === 'expiry') {
-        // Group by expiration date
-        if (position.type === 'call' || position.type === 'put') {
-          const option = position as CallOption | PutOption;
-          groupName = option.expiration;
-        } else {
-          groupName = t('widgetsB.groupNoExpiration');
-        }
-      } else if (groupBy === 'ticker') {
-        // Group by ticker
-        groupName = position.ticker;
-      } else if (groupBy === 'action') {
-        // Group by long/short
-        // Stocks and ETFs are always Long
-        if (position.type === 'stock' || position.type === 'etf') {
-          groupName = t('widgetsB.groupLong');
-        }
-        // Options: buy = Long, sell = Short
-        else if (position.type === 'put' || position.type === 'call') {
-          const option = position as CallOption | PutOption;
-          groupName = option.action === 'buy' ? t('widgetsB.groupLong') : t('widgetsB.groupShort');
-        }
-      }
-
-      if (!groups[groupName]) {
-        groups[groupName] = [];
-      }
-      groups[groupName].push(position);
-    });
-
-    // Sort groups by name
-    const sortedGroups: Record<string, Position[]> = {};
-    const sortedKeys = Object.keys(groups).sort((a, b) => {
-      // For expiry grouping, sort by date
-      if (groupBy === 'expiry') {
-        if (a === t('widgetsB.groupNoExpiration')) return 1;
-        if (b === t('widgetsB.groupNoExpiration')) return -1;
-        return new Date(a).getTime() - new Date(b).getTime();
-      }
-      return a.localeCompare(b);
-    });
-
-    sortedKeys.forEach((key) => {
-      sortedGroups[key] = groups[key];
-    });
-
-    return sortedGroups;
-  }, [filteredPositions, groupBy, spreads, t]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -627,7 +398,6 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   }) => {
     if (!positionToClose) return;
 
-    // Use the realizedPnL from the modal
     const realizedPnL = closeData.realizedPnL;
     let isPartialClose = false;
 
@@ -639,7 +409,6 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
     }
 
     if (isPartialClose && 'shares' in positionToClose && closeData.quantity) {
-      // Partial close: update the existing position with remaining shares
       const remainingShares = positionToClose.shares - closeData.quantity;
       const remainingCostBasis =
         (positionToClose.costBasis / positionToClose.shares) * remainingShares;
@@ -650,14 +419,10 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
           ...positionToClose,
           shares: remainingShares,
           costBasis: remainingCostBasis,
-          currentValue: remainingShares * purchasePricePerShare, // Will be updated by price service
+          currentValue: remainingShares * purchasePricePerShare,
         }, new Date().toISOString())
       );
-
-      // Transaction ledger line is derived from PositionClosed / EditPosition events
-      // by the transaction projection — no manual addTransaction needed.
     } else {
-      // Full close: close the position completely
       dispatch(
         closePosition({
           id: positionToClose.id,
@@ -668,10 +433,8 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
           notes: closeData.notes,
         }, new Date().toISOString())
       );
-      // Transaction ledger line derived from PositionClosed event.
     }
 
-    // Close modal
     setPositionToClose(null);
   };
 
@@ -683,7 +446,6 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
       notes?: string;
     }
   ) => {
-    // Close both legs of the spread
     const contractMultiplier = 100;
 
     spreadLegs.forEach((leg) => {
@@ -691,16 +453,13 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
       let realizedPnL = 0;
 
       if (option.action === 'buy') {
-        // Sell the long leg
         const closeValue = closeData.closePremium * option.contracts * contractMultiplier;
         realizedPnL = closeValue - option.costBasis;
       } else {
-        // Buy back the short leg
         const closeCost = closeData.closePremium * option.contracts * contractMultiplier;
         realizedPnL = option.costBasis - closeCost;
       }
 
-      // Close each leg
       dispatch(
         closePosition({
           id: option.id,
@@ -712,9 +471,6 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
       );
     });
 
-    // Transaction ledger lines derived from PositionClosed events by the projection.
-
-    // Close modal
     setPositionToClose(null);
   };
 
@@ -783,7 +539,6 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
     setSpreadToRoll(null);
   };
 
-  // Handle assignment of short option
   const handleAssignment = (assignmentData: {
     assignmentDate: string;
     assignmentPrice: number;
@@ -805,6 +560,362 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
     setPositionToAssign(null);
   };
+
+  /**
+   * Render a standalone option row (CSP, naked call, long option, etc.).
+   * Resolves collateral via the shared callCoverageByCallId map (built from
+   * the same allocator pass that produced sectionIds) — no re-derivation.
+   */
+  const renderOptionRow = (position: Position) => {
+    const option = position as CallOption | PutOption;
+    const isCall = option.type === 'call';
+    const isBuy = option.action === 'buy';
+
+    const daysToExpiration = option.expiration ? getDaysToExpiration(option.expiration) : 0;
+
+    const tickerData = tickers.find(
+      (tk) => tk.symbol.toUpperCase() === option.ticker.toUpperCase()
+    );
+    const stockPrice = tickerData?.currentPrice || 0;
+
+    const isExpired = daysToExpiration < 0;
+
+    const externalAlerts = positionAlerts.get(option.id) || [];
+    const hasExternalAlert = externalAlerts.length > 0;
+    const hasAlert = isExpired || hasExternalAlert;
+    const alertMessage = isExpired
+      ? t('widgetsB.optionExpired')
+      : hasExternalAlert
+        ? externalAlerts.map((a) => a.message).join('\n')
+        : '';
+
+    const externalOpportunities = positionOpportunities.get(option.id) || [];
+    const hasOpportunity = externalOpportunities.length > 0;
+    const opportunityMessage = hasOpportunity
+      ? externalOpportunities.map((o) => o.message).join('\n')
+      : '';
+
+    let collateralType: CollateralType = 'none';
+    let collateralValue = 0;
+    let collateralDescription = '';
+    let leapsInfo: { ticker: string; expiration: string } | undefined;
+
+    const coverage = callCoverageByCallId.get(option.id);
+
+    if (!isBuy) {
+      if (isCall) {
+        if (coverage?.kind === 'stock') {
+          collateralType = 'stock';
+          collateralValue = coverage.costBasis || 0;
+          collateralDescription = t('widgetsB.callCoveredByShares', {
+            shares: coverage.shares,
+            ticker: option.ticker,
+          });
+        } else if (coverage?.kind === 'leaps') {
+          collateralType = 'leaps';
+          collateralValue = coverage.leap.costBasis;
+          collateralDescription = t('widgetsB.callCoveredByLeaps');
+          leapsInfo = {
+            ticker: coverage.leap.ticker,
+            expiration: coverage.leap.expiration,
+          };
+        }
+        // No coverage → naked short call (collateralType stays 'none')
+      } else {
+        // Short put — cash secured
+        collateralType = 'cash';
+        collateralValue = option.strike * option.contracts * 100;
+        collateralDescription = t('widgetsB.putRequiresCash', {
+          amount: formatCurrency(collateralValue, currencySymbol),
+        });
+      }
+    }
+
+    return (
+      <OptionRow
+        key={option.id}
+        option={option}
+        currencySymbol={currencySymbol}
+        tickerData={tickerData}
+        stockPrice={stockPrice}
+        onRoll={(opt) => setPositionToRoll(opt)}
+        onClose={(opt) => setPositionToClose(opt)}
+        onAssign={(opt) => setPositionToAssign(opt)}
+        onClick={(opt) => setPositionToView(opt)}
+        onNavigateToCampaigns={onNavigateToCampaigns}
+        showActions={true}
+        hasAlert={hasAlert}
+        alertMessage={alertMessage}
+        hasOpportunity={hasOpportunity}
+        opportunityMessage={opportunityMessage}
+        collateralType={collateralType}
+        collateralValue={collateralValue}
+        collateralDescription={collateralDescription}
+        leapsInfo={leapsInfo}
+      />
+    );
+  };
+
+  /**
+   * Render a spread entry (SpreadSummaryRow + optional expanded legs).
+   * Used by both the Spreads section and the >2-leg fallback.
+   */
+  const renderSpread = (spread: { id: string; legs: Position[] }) => {
+    const summary = calculateSpreadSummary(spread.legs);
+    if (!summary) {
+      // >2-leg spread (butterfly / iron condor): no summary available yet.
+      // Render individual legs as OptionRows so nothing vanishes.
+      // TODO: implement a multi-leg SpreadSummaryRow for N-leg structures.
+      return (
+        <React.Fragment key={spread.id}>
+          {spread.legs.map((leg) => renderOptionRow(leg))}
+        </React.Fragment>
+      );
+    }
+
+    const isExpanded = expandedSpreads.has(spread.id);
+    const isProfitable = summary.totalPnL >= 0;
+
+    const daysToExpiration = summary.expiration ? getDaysToExpiration(summary.expiration) : 0;
+
+    const spreadTickerData = tickers.find(
+      (tk) => tk.symbol.toUpperCase() === summary.ticker.toUpperCase()
+    );
+    const currentStockPrice = spreadTickerData?.currentPrice || 0;
+    const priceDifference = currentStockPrice - summary.shortStrike;
+
+    const isExpired = daysToExpiration <= 0;
+    const profitPercent =
+      summary.maxProfit !== 0 ? (summary.totalPnL / summary.maxProfit) * 100 : 0;
+    const hasOpportunity = !isExpired && isProfitable && profitPercent >= 80;
+    const opportunityMessage = hasOpportunity
+      ? t('widgetsB.opportunityMaxProfit', { percent: formatNumber(profitPercent, 0) })
+      : '';
+
+    const expiresThisWeek = daysToExpiration > 0 && daysToExpiration <= 7;
+    const expiresWithinTwoWeeks = daysToExpiration > 7 && daysToExpiration <= 14;
+
+    const spreadExternalAlerts = spread.legs.flatMap((leg) => positionAlerts.get(leg.id) || []);
+    const uniqueSpreadAlerts = spreadExternalAlerts.filter(
+      (alert, index, self) => index === self.findIndex((a) => a.id === alert.id)
+    );
+    const hasExternalSpreadAlert = uniqueSpreadAlerts.length > 0;
+    const spreadAlertMessage = hasExternalSpreadAlert
+      ? uniqueSpreadAlerts.map((a) => a.message).join('\n')
+      : '';
+
+    const hasAlert = isExpired || expiresThisWeek || hasExternalSpreadAlert;
+    const alertMessage = hasExternalSpreadAlert
+      ? spreadAlertMessage
+      : isExpired
+        ? t('widgetsB.spreadExpired')
+        : expiresThisWeek
+          ? t('widgetsB.spreadExpiresInDays', { days: daysToExpiration })
+          : '';
+
+    const getSpreadBorderColor = () => {
+      if (isExpired || expiresThisWeek) return 'border-l-red-500';
+      if (hasExternalSpreadAlert || expiresWithinTwoWeeks) return 'border-l-amber-400';
+      return 'border-l-surface-line dark:border-l-trading-dark-600';
+    };
+
+    return (
+      <React.Fragment key={spread.id}>
+        <SpreadSummaryRow
+          spread={spread}
+          summary={summary}
+          isExpanded={isExpanded}
+          currentStockPrice={currentStockPrice}
+          priceDifference={priceDifference}
+          spreadTickerData={spreadTickerData}
+          daysToExpiration={daysToExpiration}
+          expiresWithinTwoWeeks={expiresWithinTwoWeeks}
+          hasAlert={hasAlert}
+          alertMessage={alertMessage}
+          uniqueSpreadAlerts={uniqueSpreadAlerts}
+          hasOpportunity={hasOpportunity}
+          opportunityMessage={opportunityMessage}
+          currencySymbol={currencySymbol}
+          spreadBorderColor={getSpreadBorderColor()}
+          showTooltip={showTooltip}
+          getTooltipRef={getTooltipRef}
+          onSetShowTooltip={setShowTooltip}
+          onToggleSpread={toggleSpread}
+          onViewSpread={(legs, price) => setSpreadToView({ legs, currentStockPrice: price })}
+          onRollSpread={(longLeg, shortLeg) => setSpreadToRoll({ longLeg, shortLeg })}
+          onCloseSpread={(firstLeg) => setPositionToClose(firstLeg)}
+        />
+        {/* Expanded spread legs */}
+        {isExpanded &&
+          spread.legs.map((legPosition) => {
+            const legOption = legPosition as CallOption | PutOption;
+            const isLegCall = legOption.type === 'call';
+            const isBuy = legOption.action === 'buy';
+
+            const legTickerData = tickers.find(
+              (tk) => tk.symbol.toUpperCase() === legOption.ticker.toUpperCase()
+            );
+            const legStockPrice = legTickerData?.currentPrice || 0;
+
+            let legCollateralType: CollateralType = 'none';
+            let legCollateralValue = 0;
+            let legCollateralDescription = '';
+
+            if (!isBuy) {
+              if (isLegCall) {
+                const longCallLeg = spread.legs.find(
+                  (leg) => leg.type === 'call' && 'action' in leg && leg.action === 'buy'
+                ) as CallOption | undefined;
+
+                if (longCallLeg) {
+                  legCollateralType = 'call';
+                  legCollateralValue = longCallLeg.strike;
+                  const spreadWidth = Math.abs(legOption.strike - longCallLeg.strike);
+                  legCollateralDescription = t('widgetsB.protectedByLongCall', {
+                    strike: longCallLeg.strike,
+                    width: spreadWidth,
+                    contracts: legOption.contracts,
+                    total: spreadWidth * 100 * legOption.contracts,
+                  });
+                } else {
+                  // Standalone short call in a spread: check allocator coverage
+                  const legCoverage = callCoverageByCallId.get(legOption.id);
+                  if (legCoverage?.kind === 'stock') {
+                    legCollateralType = 'stock';
+                    legCollateralValue = legCoverage.costBasis || 0;
+                    legCollateralDescription = t('widgetsB.callCoveredByShares', {
+                      shares: legCoverage.shares,
+                      ticker: legOption.ticker,
+                    });
+                  } else if (legCoverage?.kind === 'leaps') {
+                    legCollateralType = 'leaps';
+                    legCollateralValue = legCoverage.leap.costBasis;
+                    legCollateralDescription = t('widgetsB.callCoveredByLeaps');
+                  }
+                }
+              } else {
+                const longPutLeg = spread.legs.find(
+                  (leg) => leg.type === 'put' && 'action' in leg && leg.action === 'buy'
+                ) as PutOption | undefined;
+
+                if (longPutLeg) {
+                  legCollateralType = 'put';
+                  legCollateralValue = longPutLeg.strike;
+                  const spreadWidth = Math.abs(legOption.strike - longPutLeg.strike);
+                  legCollateralDescription = t('widgetsB.protectedByLongPut', {
+                    strike: longPutLeg.strike,
+                    width: spreadWidth,
+                    contracts: legOption.contracts,
+                    total: spreadWidth * 100 * legOption.contracts,
+                  });
+                } else {
+                  legCollateralType = 'cash';
+                  legCollateralValue = legOption.strike * legOption.contracts * 100;
+                  legCollateralDescription = t('widgetsB.putRequiresCash', {
+                    amount: formatCurrency(legCollateralValue, currencySymbol),
+                  });
+                }
+              }
+            }
+
+            let legLeapsInfo: { ticker: string; expiration: string } | undefined;
+            if (legCollateralType === 'leaps') {
+              const legCoverage = callCoverageByCallId.get(legOption.id);
+              if (legCoverage?.kind === 'leaps') {
+                legLeapsInfo = {
+                  ticker: legCoverage.leap.ticker,
+                  expiration: legCoverage.leap.expiration,
+                };
+              } else {
+                // Fallback: find a LEAPS for this ticker
+                const leapsPos = positions.find(
+                  (p) =>
+                    p.type === 'call' &&
+                    'action' in p &&
+                    p.action === 'buy' &&
+                    p.ticker.toUpperCase() === legOption.ticker.toUpperCase() &&
+                    p.status === 'open' &&
+                    isLEAPS(p as CallOption)
+                ) as CallOption | undefined;
+                if (leapsPos) {
+                  legLeapsInfo = { ticker: leapsPos.ticker, expiration: leapsPos.expiration };
+                }
+              }
+            }
+
+            return (
+              <OptionRow
+                key={legOption.id}
+                option={legOption}
+                currencySymbol={currencySymbol}
+                tickerData={legTickerData}
+                stockPrice={legStockPrice}
+                onRoll={(opt) => setPositionToRoll(opt)}
+                onClose={(opt) => setPositionToClose(opt)}
+                onAssign={(opt) => setPositionToAssign(opt)}
+                onClick={(opt) => setPositionToView(opt)}
+                showActions={true}
+                collateralType={legCollateralType}
+                collateralValue={legCollateralValue}
+                collateralDescription={legCollateralDescription}
+                leapsInfo={legLeapsInfo}
+                isSubItem={true}
+              />
+            );
+          })}
+      </React.Fragment>
+    );
+  };
+
+  // ── Section classification ────────────────────────────────────────────────
+  // spreadLegIds: all position IDs that are legs of a detected spread
+  const spreadLegIds = useMemo(() => {
+    const ids = new Set<string>();
+    for (const spread of spreads) {
+      for (const leg of spread.legs) {
+        ids.add(leg.id);
+      }
+    }
+    return ids;
+  }, [spreads]);
+
+  /**
+   * Positions not owned by sectionIds (stocks/LEAPS/stock-covered-calls)
+   * and not spread legs — these are candidates for CSP / Overige.
+   */
+  const remainingPositions = useMemo(() => {
+    return filteredPositions.filter(
+      (p) =>
+        !sectionIds.has(p.id) &&
+        !spreadLegIds.has(p.id) &&
+        p.type !== 'stock' &&
+        p.type !== 'etf'
+    );
+  }, [filteredPositions, sectionIds, spreadLegIds]);
+
+  /** Cash Secured Puts: short puts that are not spread legs. */
+  const cspPositions = useMemo(
+    () =>
+      remainingPositions.filter(
+        (p) => p.type === 'put' && (p as PutOption).action === 'sell'
+      ),
+    [remainingPositions]
+  );
+
+  /** Everything else: long options, naked short calls, KaChing protective puts, etc. */
+  const overigePositions = useMemo(
+    () => remainingPositions.filter((p) => !(p.type === 'put' && (p as PutOption).action === 'sell')),
+    [remainingPositions]
+  );
+
+  // Open stock/ETF lots — passed to GroupedStockList
+  const stockLots = useMemo(
+    () =>
+      positions.filter(
+        (p): p is StockPosition => (p.type === 'stock' || p.type === 'etf') && p.status === 'open'
+      ),
+    [positions]
+  );
 
   if (allPositions.length === 0) {
     return (
@@ -941,7 +1052,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                     className="w-4 h-4 rounded border-ink-200 dark:border-trading-dark-500"
                                   />
                                   <Target className="w-4 h-4 text-positive-600 dark:text-positive-500" />
-                                  <span>Opportunities</span>
+                                  <span>{t('widgetsB.filterOpportunities')}</span>
                                 </label>
                                 <label className="flex items-center gap-2 text-sm text-ink-700 dark:text-ink-300 cursor-pointer p-2 rounded hover:bg-surface dark:hover:bg-trading-dark-700/50">
                                   <input
@@ -951,7 +1062,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                     className="w-4 h-4 rounded border-ink-200 dark:border-trading-dark-500"
                                   />
                                   <AlertCircle className="w-4 h-4 text-negative-600 dark:text-negative-500" />
-                                  <span>Alerts</span>
+                                  <span>{t('widgetsB.filterAlerts')}</span>
                                 </label>
                                 <label className="flex items-center gap-2 text-sm text-ink-700 dark:text-ink-300 cursor-pointer p-2 rounded hover:bg-surface dark:hover:bg-trading-dark-700/50">
                                   <input
@@ -961,7 +1072,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                                     className="w-4 h-4 rounded border-ink-200 dark:border-trading-dark-500"
                                   />
                                   <Lightbulb className="w-4 h-4 text-caution-600 dark:text-caution-500" />
-                                  <span>Ideas</span>
+                                  <span>{t('widgetsB.filterIdeas')}</span>
                                 </label>
                               </div>
                             </div>
@@ -973,777 +1084,208 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
                 </div>
               )}
             </div>
-
-            {/* Group By Dropdown - Right aligned (only for users with options access) */}
-            {hasOptionsAccess && (
-              <select
-                value={groupBy}
-                onChange={(e) => setGroupBy(e.target.value as GroupBy)}
-                className="px-3 py-1 bg-white dark:bg-trading-dark-700 border border-ink-200 dark:border-trading-dark-500 rounded text-sm"
-              >
-                <option value="none">{t('widgetsB.groupNone')}</option>
-                <option value="strategy">{t('widgetsB.groupByType')}</option>
-                <option value="expiry">{t('widgetsB.groupByExpiry')}</option>
-                <option value="ticker">{t('widgetsB.groupByTicker')}</option>
-                <option value="action">{t('widgetsB.groupByLongShort')}</option>
-              </select>
-            )}
           </div>
         </div>
       )}
 
       {/* Position List - Scrollable */}
       <div className="divide-y divide-surface-line dark:divide-trading-dark-600 flex-1 overflow-y-auto">
-        {/* Grouped Stock/ETF Tree */}
+
+        {/* ── Section 1: Aandelen & ETF's ─────────────────────────────── */}
         {stockLots.length > 0 && (
-          <div className="mb-4">
-            <GroupedStockList
-              positions={stockLots}
-              alerts={priceAlerts}
-              allPortfolios={portfolios}
-              onEditPosition={setPositionToView}
-              onWriteCoveredCall={onWriteCoveredCall}
-              onSellPosition={setPositionToClose}
-            />
-          </div>
+          <CollapsibleSection
+            id="stocks"
+            title={t('widgetsB.sectionStocksEtfs')}
+            count={stockLots.length}
+            collapsed={collapsedSections.has('stocks')}
+            onToggle={toggleSection}
+          >
+            <div className="p-4">
+              <GroupedStockList
+                positions={stockLots}
+                alerts={priceAlerts}
+                allPortfolios={portfolios}
+                onEditPosition={setPositionToView}
+                onWriteCoveredCall={onWriteCoveredCall}
+                onSellPosition={setPositionToClose}
+                onBuyPosition={onBuyStock}
+                coveredCallsByTicker={coveredCallsByTicker}
+                tickers={tickers}
+                currencySymbol={currencySymbol}
+                positionHasOpportunity={
+                  new Map(
+                    stockGroups.flatMap(({ lots, assigned }) =>
+                      [...lots, ...assigned].map((p) => [
+                        p.id,
+                        (positionOpportunities.get(p.id) ?? []).length > 0,
+                      ])
+                    )
+                  )
+                }
+                positionOpportunityMessage={
+                  new Map(
+                    stockGroups.flatMap(({ lots, assigned }) =>
+                      [...lots, ...assigned].map((p) => [
+                        p.id,
+                        (positionOpportunities.get(p.id) ?? []).map((o) => o.message).join('\n'),
+                      ])
+                    )
+                  )
+                }
+                positionHasAlert={
+                  new Map(
+                    stockGroups.flatMap(({ lots, assigned }) =>
+                      [...lots, ...assigned].map((p) => [
+                        p.id,
+                        (positionAlerts.get(p.id) ?? []).length > 0,
+                      ])
+                    )
+                  )
+                }
+                positionAlertMessage={
+                  new Map(
+                    stockGroups.flatMap(({ lots, assigned }) =>
+                      [...lots, ...assigned].map((p) => [
+                        p.id,
+                        (positionAlerts.get(p.id) ?? []).map((a) => a.message).join('\n'),
+                      ])
+                    )
+                  )
+                }
+                onRoll={(opt) => setPositionToRoll(opt)}
+                onClose={(opt) => setPositionToClose(opt)}
+                onAssign={(opt) => setPositionToAssign(opt)}
+                onView={(opt) => setPositionToView(opt)}
+              />
+            </div>
+          </CollapsibleSection>
         )}
 
-        {/* All Positions Table */}
-        {allPositions.length > 0 && (
-          <div className="bg-surface dark:bg-trading-dark-800/50 overflow-x-auto">
-            {/* Column Headers */}
-            <div className="px-6 py-2 bg-surface-subtle dark:bg-trading-dark-900/50 border-b border-surface-line dark:border-trading-dark-600 border-l-4 border-l-transparent">
-              <div
-                className={`grid ${POSITION_GRID_COLS} gap-2 text-xs font-semibold text-ink-600 dark:text-ink-400 items-center`}
-              >
-                <div></div> {/* Icon */}
-                <button
-                  onClick={() => handleSort('ticker')}
-                  className="text-left hover:text-ink-900 dark:hover:text-ink-200 flex items-center gap-1"
-                >
-                  {t('widgetsB.colTicker')}{' '}
-                  {sortField === 'ticker' &&
-                    (sortDirection === 'asc' ? (
-                      <ChevronUp className="w-3 h-3" />
-                    ) : (
-                      <ChevronDown className="w-3 h-3" />
-                    ))}
-                </button>
-                <button
-                  onClick={() => handleSort('expiration')}
-                  className="text-left hover:text-ink-900 dark:hover:text-ink-200 flex items-center gap-1"
-                >
-                  {t('widgetsB.colExpiration')}{' '}
-                  {sortField === 'expiration' &&
-                    (sortDirection === 'asc' ? (
-                      <ChevronUp className="w-3 h-3" />
-                    ) : (
-                      <ChevronDown className="w-3 h-3" />
-                    ))}
-                </button>
-                <button
-                  onClick={() => handleSort('strike')}
-                  className="text-left hover:text-ink-900 dark:hover:text-ink-200 flex items-center gap-1"
-                >
-                  {t('widgetsB.colStrike')}{' '}
-                  {sortField === 'strike' &&
-                    (sortDirection === 'asc' ? (
-                      <ChevronUp className="w-3 h-3" />
-                    ) : (
-                      <ChevronDown className="w-3 h-3" />
-                    ))}
-                </button>
-                <div>{t('widgetsB.colStockPrice')}</div>
-                <div>{t('widgetsB.colDifference')}</div>
-                <div>{t('widgetsB.colOpen')}</div>
-                <div>{t('widgetsB.colCurrent')}</div>
-                <button
-                  onClick={() => handleSort('pnl')}
-                  className="text-left hover:text-ink-900 dark:hover:text-ink-200 flex items-center gap-1"
-                >
-                  {t('widgetsB.colProfitLoss')}{' '}
-                  {sortField === 'pnl' &&
-                    (sortDirection === 'asc' ? (
-                      <ChevronUp className="w-3 h-3" />
-                    ) : (
-                      <ChevronDown className="w-3 h-3" />
-                    ))}
-                </button>
-                <div>{t('widgetsB.colCollateral')}</div>
-                <div></div> {/* Spacer */}
-                <div className="text-right">{t('widgetsB.colActions')}</div> {/* Actions */}
-              </div>
+        {/* ── Section 2: LEAPS ─────────────────────────────────────────── */}
+        {leapsGroups.length > 0 && (
+          <CollapsibleSection
+            id="leaps"
+            title={t('widgetsB.sectionLeaps')}
+            count={leapsGroups.length}
+            collapsed={collapsedSections.has('leaps')}
+            onToggle={toggleSection}
+          >
+            <div className="p-4">
+              <GroupedLeapsList
+                groups={leapsGroups}
+                allPortfolios={portfolios}
+                currency={currency}
+                tickers={tickers}
+                positionHasOpportunity={
+                  new Map(
+                    leapsGroups.flatMap(({ leap, assigned }) =>
+                      [leap, ...assigned].map((p) => [
+                        p.id,
+                        (positionOpportunities.get(p.id) ?? []).length > 0,
+                      ])
+                    )
+                  )
+                }
+                positionOpportunityMessage={
+                  new Map(
+                    leapsGroups.flatMap(({ leap, assigned }) =>
+                      [leap, ...assigned].map((p) => [
+                        p.id,
+                        (positionOpportunities.get(p.id) ?? []).map((o) => o.message).join('\n'),
+                      ])
+                    )
+                  )
+                }
+                positionHasAlert={
+                  new Map(
+                    leapsGroups.flatMap(({ leap, assigned }) =>
+                      [leap, ...assigned].map((p) => [
+                        p.id,
+                        (positionAlerts.get(p.id) ?? []).length > 0,
+                      ])
+                    )
+                  )
+                }
+                positionAlertMessage={
+                  new Map(
+                    leapsGroups.flatMap(({ leap, assigned }) =>
+                      [leap, ...assigned].map((p) => [
+                        p.id,
+                        (positionAlerts.get(p.id) ?? []).map((a) => a.message).join('\n'),
+                      ])
+                    )
+                  )
+                }
+                onView={(pos) => setPositionToView(pos)}
+                onRoll={(pos) => setPositionToRoll(pos as CallOption | PutOption)}
+                onClose={(pos) => setPositionToClose(pos)}
+                onAssign={(pos) => setPositionToAssign(pos as CallOption | PutOption)}
+                onWriteCoveredCall={onWriteCoveredCall}
+                onBuy={onBuyLeaps}
+                currencySymbol={currencySymbol}
+              />
             </div>
+          </CollapsibleSection>
+        )}
 
-            {/* Grouped Positions */}
-            {Object.entries(groupedAllPositions).map(([strategyName, strategyPositions]) => {
-              const isCollapsed = collapsedGroups.has(strategyName);
-              const groupFilter = getGroupFilter(strategyName);
-              const hasGroupFilter = hasActiveGroupFilter(strategyName);
+        {/* ── Section 3: Cash Secured Puts ─────────────────────────── */}
+        {cspPositions.length > 0 && (
+          <CollapsibleSection
+            id="csp"
+            title={t('widgetsB.sectionCashSecuredPuts')}
+            count={cspPositions.length}
+            collapsed={collapsedSections.has('csp')}
+            onToggle={toggleSection}
+          >
+            <div className="overflow-x-auto">
+              <PositionColumnHeader
+                sortField={sortField}
+                sortDirection={sortDirection}
+                onSort={handleSort}
+              />
+              {cspPositions.map((p) => renderOptionRow(p))}
+            </div>
+          </CollapsibleSection>
+        )}
 
-              // Apply group-specific filters to positions
-              const filteredGroupPositions = strategyPositions.filter((position) => {
-                // Expiration filter
-                if (groupFilter.expiration !== 'all') {
-                  const weeks = parseInt(groupFilter.expiration);
-                  if (position.type === 'call' || position.type === 'put') {
-                    const option = position as CallOption | PutOption;
-                    const dte = getDaysToExpiration(option.expiration);
-                    if (dte > weeks * 7) return false;
-                  } else {
-                    // Stocks/ETFs don't expire, show them if filtering by expiration
-                    return true;
-                  }
-                }
+        {/* ── Section 4: Spreads ────────────────────────────────────── */}
+        {spreads.length > 0 && (
+          <CollapsibleSection
+            id="spreads"
+            title={t('widgetsB.sectionSpreads')}
+            count={spreads.length}
+            collapsed={collapsedSections.has('spreads')}
+            onToggle={toggleSection}
+          >
+            <div className="overflow-x-auto">
+              <PositionColumnHeader
+                sortField={sortField}
+                sortDirection={sortDirection}
+                onSort={handleSort}
+              />
+              {spreads.map((spread) => renderSpread(spread))}
+            </div>
+          </CollapsibleSection>
+        )}
 
-                // Category filters (opportunities, alerts, ideas)
-                if (groupFilter.opportunities || groupFilter.alerts || groupFilter.ideas) {
-                  let matchesCategory = false;
-
-                  if (position.type === 'call' || position.type === 'put') {
-                    const option = position as CallOption | PutOption;
-
-                    // Check for opportunity (80% profit)
-                    if (groupFilter.opportunities) {
-                      const openValue = option.premium * option.contracts * 100;
-                      const currentValue = (option.currentPremium || 0) * option.contracts * 100;
-                      const pnl =
-                        option.action === 'sell'
-                          ? openValue - currentValue
-                          : currentValue - openValue;
-                      const profitPercent = openValue !== 0 ? (pnl / openValue) * 100 : 0;
-                      if (pnl > 0 && profitPercent >= 80) matchesCategory = true;
-                    }
-
-                    // Check for alert (expiring within 7 days)
-                    if (groupFilter.alerts) {
-                      const dte = getDaysToExpiration(option.expiration);
-                      if (dte <= 7) matchesCategory = true;
-                    }
-
-                    // Check for ideas (e.g., has notes with ideas)
-                    if (groupFilter.ideas) {
-                      if (option.notes && option.notes.toLowerCase().includes('idea'))
-                        matchesCategory = true;
-                    }
-                  }
-
-                  if (!matchesCategory) return false;
-                }
-
-                return true;
-              });
-
-              return (
-                <div key={strategyName}>
-                  {groupBy !== 'none' && (
-                    <div className="relative">
-                      <div
-                        className="px-6 py-2 bg-surface-muted dark:bg-trading-dark-800 border-b border-ink-200 dark:border-trading-dark-500 cursor-pointer hover:bg-surface-muted dark:hover:bg-trading-dark-700 transition-colors flex items-center justify-between"
-                        onClick={() => toggleGroup(strategyName)}
-                      >
-                        <div className="flex items-center gap-2">
-                          {isCollapsed ? (
-                            <ChevronDown className="w-4 h-4 text-ink-600 dark:text-ink-400" />
-                          ) : (
-                            <ChevronUp className="w-4 h-4 text-ink-600 dark:text-ink-400" />
-                          )}
-                          <h4 className="font-semibold text-ink-900 dark:text-white">
-                            {strategyName} ({filteredGroupPositions.length}
-                            {filteredGroupPositions.length !== strategyPositions.length
-                              ? `/${strategyPositions.length}`
-                              : ''}
-                            )
-                          </h4>
-                        </div>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setGroupFilterPopup(
-                              groupFilterPopup === strategyName ? null : strategyName
-                            );
-                          }}
-                          className={`p-1 rounded hover:bg-ink-200 dark:hover:bg-trading-dark-700 ${hasGroupFilter ? 'text-primary-700 dark:text-primary-300' : 'text-ink-500 dark:text-ink-400'}`}
-                          title={t('widgetsB.filterGroup')}
-                        >
-                          <Filter className="w-4 h-4" />
-                        </button>
-                      </div>
-                      {/* Group Filter Popup */}
-                      {groupFilterPopup === strategyName && (
-                        <div className="absolute right-4 top-full mt-1 w-64 bg-white dark:bg-trading-dark-800 border border-surface-line dark:border-trading-dark-600 rounded-lg shadow-xl z-50 p-3">
-                          <div className="space-y-3">
-                            <div className="flex items-center justify-between pb-2 border-b border-surface-line dark:border-trading-dark-600">
-                              <span className="text-sm font-medium text-ink-900 dark:text-white">
-                                {t('widgetsB.filter')}
-                              </span>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  resetGroupFilter(strategyName);
-                                }}
-                                className="text-xs text-primary-700 dark:text-primary-300 hover:underline"
-                              >
-                                Reset
-                              </button>
-                            </div>
-                            {/* Expiration Filter */}
-                            <div>
-                              <label className="block text-xs font-medium text-ink-700 dark:text-ink-300 mb-1">
-                                {t('widgetsB.expiresWithin')}
-                              </label>
-                              <select
-                                value={groupFilter.expiration}
-                                onChange={(e) => {
-                                  e.stopPropagation();
-                                  updateGroupFilter(strategyName, { expiration: e.target.value });
-                                }}
-                                onClick={(e) => e.stopPropagation()}
-                                className="w-full px-2 py-1 bg-white dark:bg-trading-dark-700 border border-ink-200 dark:border-trading-dark-500 rounded text-xs"
-                              >
-                                <option value="all">{t('widgetsB.all')}</option>
-                                <option value="1">{t('widgetsB.week1')}</option>
-                                <option value="2">{t('widgetsB.weeks2')}</option>
-                                <option value="4">{t('widgetsB.weeks4')}</option>
-                                <option value="8">{t('widgetsB.weeks8')}</option>
-                              </select>
-                            </div>
-                            {/* Category Filters */}
-                            <div className="space-y-1">
-                              <label className="flex items-center gap-2 text-xs text-ink-700 dark:text-ink-300 cursor-pointer p-1 rounded hover:bg-surface dark:hover:bg-trading-dark-700/50">
-                                <input
-                                  type="checkbox"
-                                  checked={groupFilter.opportunities}
-                                  onChange={(e) => {
-                                    e.stopPropagation();
-                                    updateGroupFilter(strategyName, {
-                                      opportunities: e.target.checked,
-                                    });
-                                  }}
-                                  onClick={(e) => e.stopPropagation()}
-                                  className="w-3 h-3 rounded border-ink-200 dark:border-trading-dark-500"
-                                />
-                                <Target className="w-3 h-3 text-positive-600 dark:text-positive-500" />
-                                <span>Opportunities</span>
-                              </label>
-                              <label className="flex items-center gap-2 text-xs text-ink-700 dark:text-ink-300 cursor-pointer p-1 rounded hover:bg-surface dark:hover:bg-trading-dark-700/50">
-                                <input
-                                  type="checkbox"
-                                  checked={groupFilter.alerts}
-                                  onChange={(e) => {
-                                    e.stopPropagation();
-                                    updateGroupFilter(strategyName, { alerts: e.target.checked });
-                                  }}
-                                  onClick={(e) => e.stopPropagation()}
-                                  className="w-3 h-3 rounded border-ink-200 dark:border-trading-dark-500"
-                                />
-                                <AlertCircle className="w-3 h-3 text-negative-600 dark:text-negative-500" />
-                                <span>Alerts</span>
-                              </label>
-                              <label className="flex items-center gap-2 text-xs text-ink-700 dark:text-ink-300 cursor-pointer p-1 rounded hover:bg-surface dark:hover:bg-trading-dark-700/50">
-                                <input
-                                  type="checkbox"
-                                  checked={groupFilter.ideas}
-                                  onChange={(e) => {
-                                    e.stopPropagation();
-                                    updateGroupFilter(strategyName, { ideas: e.target.checked });
-                                  }}
-                                  onClick={(e) => e.stopPropagation()}
-                                  className="w-3 h-3 rounded border-ink-200 dark:border-trading-dark-500"
-                                />
-                                <Lightbulb className="w-3 h-3 text-caution-600 dark:text-caution-500" />
-                                <span>Ideas</span>
-                              </label>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Only render positions if group is not collapsed */}
-                  {!isCollapsed && (
-                    <>
-                      {/* Render spreads first, then standalone positions */}
-                      {(() => {
-                        // Separate spreads and standalone positions for this strategy
-                        const strategySpreadIds = new Set<string>();
-                        const strategyStandalonePositions: Position[] = [];
-
-                        filteredGroupPositions.forEach((position) => {
-                          const spreadId = getSpreadId(position);
-                          if (spreadId) {
-                            strategySpreadIds.add(spreadId);
-                          } else {
-                            strategyStandalonePositions.push(position);
-                          }
-                        });
-
-                        // Get spreads that belong to this strategy
-                        const strategySpreads = spreads.filter((spread) =>
-                          strategySpreadIds.has(spread.id)
-                        );
-
-                        return (
-                          <>
-                            {/* Render spreads */}
-                            {strategySpreads.map((spread) => {
-                              const summary = calculateSpreadSummary(spread.legs);
-                              if (!summary) return null;
-
-                              const isExpanded = expandedSpreads.has(spread.id);
-                              const isProfitable = summary.totalPnL >= 0;
-
-                              // Calculate DTE
-                              const daysToExpiration = summary.expiration
-                                ? getDaysToExpiration(summary.expiration)
-                                : 0;
-
-                              // Get stock price from tickers store for live updates
-                              const spreadTickerData = tickers.find(
-                                (t) => t.symbol.toUpperCase() === summary.ticker.toUpperCase()
-                              );
-                              const currentStockPrice = spreadTickerData?.currentPrice || 0;
-                              const priceDifference = currentStockPrice - summary.shortStrike;
-
-                              // Check if spread has reached 80% of max profit
-                              const isExpired = daysToExpiration <= 0;
-                              const profitPercent =
-                                summary.maxProfit !== 0
-                                  ? (summary.totalPnL / summary.maxProfit) * 100
-                                  : 0;
-                              const hasOpportunity =
-                                !isExpired && isProfitable && profitPercent >= 80;
-                              const opportunityMessage = hasOpportunity
-                                ? t('widgetsB.opportunityMaxProfit', {
-                                    percent: formatNumber(profitPercent, 0),
-                                  })
-                                : '';
-
-                              // Check if expires this week (alert)
-                              const expiresThisWeek = daysToExpiration > 0 && daysToExpiration <= 7;
-                              const expiresWithinTwoWeeks =
-                                daysToExpiration > 7 && daysToExpiration <= 14;
-
-                              // Check for external alerts from central evaluator (e.g., put spread alert)
-                              // Get alerts for the spread by checking any leg's spread ID
-                              const spreadExternalAlerts = spread.legs.flatMap((leg) => {
-                                const legAlerts = positionAlerts.get(leg.id) || [];
-                                return legAlerts;
-                              });
-                              // Remove duplicates (same alert might match multiple legs)
-                              const uniqueSpreadAlerts = spreadExternalAlerts.filter(
-                                (alert, index, self) =>
-                                  index === self.findIndex((a) => a.id === alert.id)
-                              );
-                              const hasExternalSpreadAlert = uniqueSpreadAlerts.length > 0;
-                              const spreadAlertMessage = hasExternalSpreadAlert
-                                ? uniqueSpreadAlerts.map((a) => a.message).join('\n')
-                                : '';
-
-                              const hasAlert =
-                                isExpired || expiresThisWeek || hasExternalSpreadAlert;
-                              // Alert message only shows spread-specific alerts (not expiration which is already visible)
-                              const alertMessage = hasExternalSpreadAlert
-                                ? spreadAlertMessage
-                                : isExpired
-                                  ? t('widgetsB.spreadExpired')
-                                  : expiresThisWeek
-                                    ? t('widgetsB.spreadExpiresInDays', { days: daysToExpiration })
-                                    : '';
-
-                              // Determine border color based on expiration or alerts
-                              const getSpreadBorderColor = () => {
-                                if (isExpired || expiresThisWeek) return 'border-l-red-500';
-                                if (hasExternalSpreadAlert || expiresWithinTwoWeeks)
-                                  return 'border-l-amber-400';
-                                return 'border-l-gray-300 dark:border-l-gray-600';
-                              };
-
-                              return (
-                                <React.Fragment key={spread.id}>
-                                  {/* Spread Summary Row */}
-                                  <SpreadSummaryRow
-                                    spread={spread}
-                                    summary={summary}
-                                    isExpanded={isExpanded}
-                                    currentStockPrice={currentStockPrice}
-                                    priceDifference={priceDifference}
-                                    spreadTickerData={spreadTickerData}
-                                    daysToExpiration={daysToExpiration}
-                                    expiresWithinTwoWeeks={expiresWithinTwoWeeks}
-                                    hasAlert={hasAlert}
-                                    alertMessage={alertMessage}
-                                    uniqueSpreadAlerts={uniqueSpreadAlerts}
-                                    hasOpportunity={hasOpportunity}
-                                    opportunityMessage={opportunityMessage}
-                                    currencySymbol={currencySymbol}
-                                    spreadBorderColor={getSpreadBorderColor()}
-                                    showTooltip={showTooltip}
-                                    getTooltipRef={getTooltipRef}
-                                    onSetShowTooltip={setShowTooltip}
-                                    onToggleSpread={toggleSpread}
-                                    onViewSpread={(legs, price) =>
-                                      setSpreadToView({ legs, currentStockPrice: price })
-                                    }
-                                    onRollSpread={(longLeg, shortLeg) =>
-                                      setSpreadToRoll({ longLeg, shortLeg })
-                                    }
-                                    onCloseSpread={(firstLeg) => setPositionToClose(firstLeg)}
-                                  />
-                                  {/* Expanded Legs */}
-                                  {isExpanded &&
-                                    spread.legs.map((legPosition) => {
-                                      const option = legPosition as CallOption | PutOption;
-                                      const isCall = option.type === 'call';
-                                      const isBuy = option.action === 'buy';
-
-                                      // Get ticker data for leg
-                                      const legTickerData = tickers.find(
-                                        (t) =>
-                                          t.symbol.toUpperCase() === option.ticker.toUpperCase()
-                                      );
-                                      const legStockPrice = legTickerData?.currentPrice || 0;
-
-                                      // Calculate collateral info for leg
-                                      let legCollateralType: CollateralType = 'none';
-                                      let legCollateralValue = 0;
-                                      let legCollateralDescription = '';
-
-                                      if (!isBuy) {
-                                        if (isCall) {
-                                          // Short call in a spread - check if this is part of a spread
-                                          const longCallLeg = spread.legs.find(
-                                            (leg) =>
-                                              leg.type === 'call' &&
-                                              'action' in leg &&
-                                              leg.action === 'buy'
-                                          ) as CallOption | undefined;
-
-                                          if (longCallLeg) {
-                                            // This is a call spread - show the long call as the protective collateral
-                                            legCollateralType = 'call';
-                                            legCollateralValue = longCallLeg.strike;
-                                            const spreadWidth = Math.abs(
-                                              option.strike - longCallLeg.strike
-                                            );
-                                            legCollateralDescription = t(
-                                              'widgetsB.protectedByLongCall',
-                                              {
-                                                strike: longCallLeg.strike,
-                                                width: spreadWidth,
-                                                contracts: option.contracts,
-                                                total: spreadWidth * 100 * option.contracts,
-                                              }
-                                            );
-                                          } else {
-                                            // Standalone short call - check for stock or LEAPS as collateral
-                                            const stockPosition = positions.find(
-                                              (p) =>
-                                                (p.type === 'stock' || p.type === 'etf') &&
-                                                p.ticker.toUpperCase() ===
-                                                  option.ticker.toUpperCase() &&
-                                                p.status === 'open'
-                                            );
-
-                                            if (stockPosition && 'shares' in stockPosition) {
-                                              legCollateralType = 'stock';
-                                              legCollateralValue = stockPosition.costBasis || 0;
-                                              legCollateralDescription = t(
-                                                'widgetsB.callCoveredByShares',
-                                                {
-                                                  shares: stockPosition.shares,
-                                                  ticker: option.ticker,
-                                                }
-                                              );
-                                            } else {
-                                              // Check for LEAPS as collateral (PMCC)
-                                              const leapsPosition = positions.find(
-                                                (p) =>
-                                                  p.type === 'call' &&
-                                                  'action' in p &&
-                                                  p.action === 'buy' &&
-                                                  p.ticker.toUpperCase() ===
-                                                    option.ticker.toUpperCase() &&
-                                                  p.status === 'open' &&
-                                                  isLEAPS(p as CallOption)
-                                              ) as CallOption | undefined;
-
-                                              if (leapsPosition) {
-                                                legCollateralType = 'leaps';
-                                                legCollateralValue = leapsPosition.costBasis;
-                                                legCollateralDescription = t(
-                                                  'widgetsB.callCoveredByLeaps'
-                                                );
-                                              }
-                                            }
-                                          }
-                                        } else {
-                                          // Short put in a spread - check if this is part of a spread
-                                          const longPutLeg = spread.legs.find(
-                                            (leg) =>
-                                              leg.type === 'put' &&
-                                              'action' in leg &&
-                                              leg.action === 'buy'
-                                          ) as PutOption | undefined;
-
-                                          if (longPutLeg) {
-                                            // This is a put spread - show the long put as the protective collateral
-                                            legCollateralType = 'put';
-                                            legCollateralValue = longPutLeg.strike;
-                                            const spreadWidth = Math.abs(
-                                              option.strike - longPutLeg.strike
-                                            );
-                                            legCollateralDescription = t(
-                                              'widgetsB.protectedByLongPut',
-                                              {
-                                                strike: longPutLeg.strike,
-                                                width: spreadWidth,
-                                                contracts: option.contracts,
-                                                total: spreadWidth * 100 * option.contracts,
-                                              }
-                                            );
-                                          } else {
-                                            // Standalone short put - cash secured
-                                            legCollateralType = 'cash';
-                                            legCollateralValue =
-                                              option.strike * option.contracts * 100;
-                                            legCollateralDescription = t(
-                                              'widgetsB.putRequiresCash',
-                                              {
-                                                amount: formatCurrency(
-                                                  legCollateralValue,
-                                                  currencySymbol
-                                                ),
-                                              }
-                                            );
-                                          }
-                                        }
-                                      }
-
-                                      // Get LEAPS info if collateral is LEAPS
-                                      let legLeapsInfo:
-                                        | { ticker: string; expiration: string }
-                                        | undefined;
-                                      if (legCollateralType === 'leaps') {
-                                        const leapsPosition = positions.find(
-                                          (p) =>
-                                            p.type === 'call' &&
-                                            'action' in p &&
-                                            p.action === 'buy' &&
-                                            p.ticker.toUpperCase() ===
-                                              option.ticker.toUpperCase() &&
-                                            p.status === 'open' &&
-                                            isLEAPS(p as CallOption)
-                                        ) as CallOption | undefined;
-
-                                        if (leapsPosition) {
-                                          legLeapsInfo = {
-                                            ticker: leapsPosition.ticker,
-                                            expiration: leapsPosition.expiration,
-                                          };
-                                        }
-                                      }
-
-                                      return (
-                                        <OptionRow
-                                          key={option.id}
-                                          option={option}
-                                          currencySymbol={currencySymbol}
-                                          tickerData={legTickerData}
-                                          stockPrice={legStockPrice}
-                                          onRoll={(opt) => setPositionToRoll(opt)}
-                                          onClose={(opt) => setPositionToClose(opt)}
-                                          onAssign={(opt) => setPositionToAssign(opt)}
-                                          onClick={(opt) => setPositionToView(opt)}
-                                          showActions={true}
-                                          collateralType={legCollateralType}
-                                          collateralValue={legCollateralValue}
-                                          collateralDescription={legCollateralDescription}
-                                          leapsInfo={legLeapsInfo}
-                                          isSubItem={true}
-                                        />
-                                      );
-                                    })}
-                                </React.Fragment>
-                              );
-                            })}
-
-                            {/* Render standalone positions */}
-                            {strategyStandalonePositions.map((position) => {
-                              // Check if this is a stock/ETF or option
-                              // NOTE: stocks/ETFs are excluded from groupedAllPositions and rendered
-                              // by GroupedStockList above, so this branch is currently unreachable.
-                              // If you ever re-add stocks to groupedAllPositions, remove this branch
-                              // to avoid double-rendering them.
-                              const isStockOrETF =
-                                position.type === 'stock' || position.type === 'etf';
-
-                              if (isStockOrETF) {
-                                // Render stock/ETF row using StockRow component
-                                const stock = position as StockPosition;
-
-                                // Get ticker data for current price from Redux store
-                                const tickerData = tickers.find((t) => t.symbol === stock.ticker);
-
-                                // Compute aggregate covered-call capacity for this ticker
-                                const stockTickerLots = positions.filter(
-                                  (p): p is StockPosition =>
-                                    (p.type === 'stock' || p.type === 'etf') &&
-                                    p.status === 'open' &&
-                                    p.portfolio === stock.portfolio &&
-                                    p.ticker === stock.ticker
-                                );
-                                const stockTickerSoldCalls = positions.filter(
-                                  (p): p is CallOption =>
-                                    p.type === 'call' &&
-                                    (p as CallOption).action === 'sell' &&
-                                    p.status === 'open' &&
-                                    p.portfolio === stock.portfolio &&
-                                    p.ticker === stock.ticker
-                                );
-                                const stockCcCapacity = computeCoveredCallCapacity(
-                                  stockTickerLots,
-                                  stockTickerSoldCalls
-                                );
-
-                                const coveredCallContracts = stockCcCapacity.coveredContracts;
-
-                                // Check for opportunities from central evaluator
-                                const stockOpportunities =
-                                  positionOpportunities.get(stock.id) || [];
-                                const hasStockOpportunity = stockOpportunities.length > 0;
-                                const stockOpportunityMessage = hasStockOpportunity
-                                  ? stockOpportunities.map((o) => o.message).join('\n')
-                                  : '';
-
-                                return (
-                                  <StockRow
-                                    key={position.id}
-                                    position={stock}
-                                    ticker={tickerData}
-                                    currency={currency}
-                                    onClose={(pos) => setPositionToClose(pos)}
-                                    onView={(pos) => setPositionToView(pos)}
-                                    showActions={true}
-                                    showOpportunityBadge={hasOptionsAccess}
-                                    coveredCallContracts={coveredCallContracts}
-                                    hasOpportunity={hasOptionsAccess && hasStockOpportunity}
-                                    opportunityMessage={stockOpportunityMessage}
-                                    canWriteCoveredCallsOverride={
-                                      hasOptionsAccess && stockCcCapacity.canWriteCoveredCall
-                                    }
-                                  />
-                                );
-                              }
-
-                              // Render option row using OptionRow component
-                              const option = position as CallOption | PutOption;
-                              const isCall = option.type === 'call';
-                              const isBuy = option.action === 'buy';
-
-                              // Calculate DTE
-                              const daysToExpiration = option.expiration
-                                ? getDaysToExpiration(option.expiration)
-                                : 0;
-
-                              // Get stock price from tickers store
-                              const tickerData = tickers.find(
-                                (t) => t.symbol.toUpperCase() === option.ticker.toUpperCase()
-                              );
-                              const stockPrice = tickerData?.currentPrice || 0;
-
-                              // Check if option is expired
-                              const isExpired = daysToExpiration < 0;
-
-                              // Check for external alerts from central evaluator
-                              const externalAlerts = positionAlerts.get(option.id) || [];
-                              const hasExternalAlert = externalAlerts.length > 0;
-
-                              // Determine if there's an alert
-                              const hasAlert = isExpired || hasExternalAlert;
-                              const alertMessage = isExpired
-                                ? t('widgetsB.optionExpired')
-                                : hasExternalAlert
-                                  ? externalAlerts.map((a) => a.message).join('\n')
-                                  : '';
-
-                              // Check for opportunities from central evaluator
-                              const externalOpportunities =
-                                positionOpportunities.get(option.id) || [];
-                              const hasOpportunity = externalOpportunities.length > 0;
-                              const opportunityMessage = hasOpportunity
-                                ? externalOpportunities.map((o) => o.message).join('\n')
-                                : '';
-
-                              // Calculate collateral info
-                              let collateralType: CollateralType = 'none';
-                              let collateralValue = 0;
-                              let collateralDescription = '';
-
-                              // Resolve the actual parent of this short call via the
-                              // shared allocator (stocks before LEAPS, honouring underlyingId).
-                              const coverage = callCoverageByCallId.get(option.id);
-                              let leapsInfo: { ticker: string; expiration: string } | undefined;
-
-                              if (!isBuy) {
-                                if (isCall) {
-                                  if (coverage?.kind === 'stock') {
-                                    collateralType = 'stock';
-                                    collateralValue = coverage.costBasis || 0;
-                                    collateralDescription = `This call is covered by ${coverage.shares} shares of ${option.ticker}. On assignment you deliver the shares, no cash required.`;
-                                  } else if (coverage?.kind === 'leaps') {
-                                    collateralType = 'leaps';
-                                    collateralValue = coverage.leap.costBasis;
-                                    collateralDescription =
-                                      'This call is covered by your LEAPS call. The LEAPS acts as collateral instead of shares (PMCC strategy).';
-                                    leapsInfo = {
-                                      ticker: coverage.leap.ticker,
-                                      expiration: coverage.leap.expiration,
-                                    };
-                                  }
-                                  // No coverage found → naked short call (collateralType stays 'none').
-                                } else {
-                                  // Short put - cash secured
-                                  collateralType = 'cash';
-                                  collateralValue = option.strike * option.contracts * 100;
-                                  collateralDescription = `This put requires ${formatCurrency(collateralValue, currencySymbol)} cash as collateral for a possible assignment.`;
-                                }
-                              }
-
-                              return (
-                                <OptionRow
-                                  key={option.id}
-                                  option={option}
-                                  currencySymbol={currencySymbol}
-                                  tickerData={tickerData}
-                                  stockPrice={stockPrice}
-                                  onRoll={(opt) => setPositionToRoll(opt)}
-                                  onClose={(opt) => setPositionToClose(opt)}
-                                  onAssign={(opt) => setPositionToAssign(opt)}
-                                  onClick={(opt) => setPositionToView(opt)}
-                                  onNavigateToCampaigns={onNavigateToCampaigns}
-                                  showActions={true}
-                                  hasAlert={hasAlert}
-                                  alertMessage={alertMessage}
-                                  hasOpportunity={hasOpportunity}
-                                  opportunityMessage={opportunityMessage}
-                                  collateralType={collateralType}
-                                  collateralValue={collateralValue}
-                                  collateralDescription={collateralDescription}
-                                  leapsInfo={leapsInfo}
-                                />
-                              );
-                            })}
-                          </>
-                        );
-                      })()}
-                    </>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+        {/* ── Section 5: Overige ────────────────────────────────────── */}
+        {overigePositions.length > 0 && (
+          <CollapsibleSection
+            id="overige"
+            title={t('widgetsB.sectionOther')}
+            count={overigePositions.length}
+            collapsed={collapsedSections.has('overige')}
+            onToggle={toggleSection}
+          >
+            <div className="overflow-x-auto">
+              <PositionColumnHeader
+                sortField={sortField}
+                sortDirection={sortDirection}
+                onSort={handleSort}
+              />
+              {overigePositions.map((p) => renderOptionRow(p))}
+            </div>
+          </CollapsibleSection>
         )}
       </div>
 
@@ -1814,7 +1356,6 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
           isOpen={!!spreadToView}
           onClose={() => setSpreadToView(null)}
           onSave={(updatedLegs) => {
-            // Update both legs
             updatedLegs.forEach((leg) => {
               dispatch(editPosition(leg, new Date().toISOString()));
             });

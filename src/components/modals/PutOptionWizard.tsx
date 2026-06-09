@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { parseCountInput } from '../../utils/inputFormat';
 import { TrendingUp, TrendingDown, ArrowRightLeft, BarChart3, RefreshCw } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useSelector } from 'react-redux';
@@ -26,6 +27,10 @@ import {
   calculatePutBreakEven,
   calculatePutValues,
 } from './optionWizardUtils';
+
+// Wizard step order is fixed: action(0) → ticker(1) → details(2). A pre-filled
+// open (ticker + action already chosen via a suggestion) jumps straight to details.
+const DETAILS_STEP_INDEX = 2;
 
 interface PutOptionWizardProps {
   isOpen: boolean;
@@ -296,18 +301,19 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
   };
 
   const resetForm = () => {
-    setAction(initialAction || 'buy');
-    setSelectedTicker(initialTicker || null);
+    // Reset to CLEAN defaults — NOT the initial* props. resetForm runs on close; the
+    // open effect re-applies the current initial* props, so a generic open after a
+    // pre-filled one starts blank (no stale ticker/action leaking in on first open).
+    setAction('buy');
+    setSelectedTicker(null);
     setIsCreatingTicker(false);
     setLongLeg({ strike: 0, expiration: '', premium: 0, contracts: 1 });
     setShortLeg({ strike: 0, expiration: '', premium: 0, contracts: 1 });
     setPurchaseDate(new Date().toISOString().split('T')[0]);
     setNotes('');
-    // Reset wheel linking
     setSelectedWheelId(null);
     setShowWheelLinking(false);
-    // Reset to initial step if provided, otherwise 0
-    setCurrentStepIndex(initialStep || 0);
+    setCurrentStepIndex(0);
   };
 
   // Effect to initialize values when wizard opens with initial values
@@ -319,8 +325,12 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
       if (initialTicker) {
         setSelectedTicker(initialTicker);
       }
+      // Resolve initial step (same logic as resetForm):
+      //   explicit prop wins; both ticker+action → details(2); otherwise no change.
       if (initialStep !== undefined) {
         setCurrentStepIndex(initialStep);
+      } else if (initialTicker && initialAction) {
+        setCurrentStepIndex(DETAILS_STEP_INDEX);
       }
       // Auto-select wheel if initialWheelId is provided
       if (initialWheelId) {
@@ -772,7 +782,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                         min="1"
                         value={longLeg.contracts || ''}
                         onChange={(e) => {
-                          const contracts = parseInt(e.target.value) || 1;
+                          const contracts = parseCountInput(e.target.value);
                           setLongLeg({ ...longLeg, contracts });
                           setShortLeg({ ...shortLeg, contracts });
                         }}
@@ -953,7 +963,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                       min="1"
                       value={longLeg.contracts || ''}
                       onChange={(e) =>
-                        setLongLeg({ ...longLeg, contracts: parseInt(e.target.value) || 1 })
+                        setLongLeg({ ...longLeg, contracts: parseCountInput(e.target.value) })
                       }
                       className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                       placeholder="1"
@@ -1166,7 +1176,9 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
         onClose();
         resetForm();
       }}
-      title={t('putWizard.title')}
+      title={
+        selectedTicker ? `${t('putWizard.title')} · ${selectedTicker.symbol}` : t('putWizard.title')
+      }
       steps={steps}
       onComplete={handleComplete}
       completeButtonLabel={t('putWizard.completeButton')}

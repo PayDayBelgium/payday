@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { parseCountInput } from '../../utils/inputFormat';
 import { X, RefreshCw, Info, ArrowLeft, TrendingUp, Building2, Plus } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
@@ -82,7 +83,7 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({ isOpen, onClose, p
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!selectedTicker || !startOption) return;
+    if (!selectedTicker || !startOption || targetContracts < 1) return;
 
     const wheelId = `wheel-${Date.now()}`;
     const shares = targetContracts * 100;
@@ -564,8 +565,8 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({ isOpen, onClose, p
                     type="number"
                     min="1"
                     max="100"
-                    value={targetContracts}
-                    onChange={(e) => setTargetContracts(Math.max(1, parseInt(e.target.value) || 1))}
+                    value={targetContracts || ''}
+                    onChange={(e) => setTargetContracts(parseCountInput(e.target.value))}
                     className="w-24 bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                   />
                   <span className="text-sm text-ink-500 dark:text-ink-400">
@@ -659,6 +660,7 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({ isOpen, onClose, p
                   disabled={
                     !selectedTicker ||
                     !startOption ||
+                    targetContracts < 1 ||
                     (startOption === 'new-stock' && !stockPurchasePrice) ||
                     ((startOption === 'existing-csp' || startOption === 'existing-stock') &&
                       !selectedPositionId)

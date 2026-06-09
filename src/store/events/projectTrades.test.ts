@@ -220,4 +220,123 @@ describe('applyTradeEvent', () => {
       expect(next[0].realizedPnL).toBe(300);
     });
   });
+
+  // -------------------------------------------------------------------------
+  // NEW PATH: lotCloses present → ONE aggregate stock trade + ONE option trade
+  // -------------------------------------------------------------------------
+
+  describe('OptionAssigned call (new-path: lotCloses)', () => {
+    it('new-path full close → ONE option trade + ONE aggregate stock trade', () => {
+      // Single lot, fully closed. lotCloses present → new path.
+      const evt = makeEvent('OptionAssigned', {
+        kind: 'call',
+        optionId: 'call-1',
+        assignmentDate: '2026-03-20',
+        optionRealizedPnL: 300,
+        stockId: 'stk-1',
+        portfolio: 'Main',
+        totalProceeds: 20000,
+        premiumReceived: 300,
+        stockClose: { fullClose: true, closePrice: 200, stockRealizedPnL: 3000 }, // legacy
+        lotCloses: [
+          { stockId: 'stk-1', fullClose: true, sharesSold: 100, closePrice: 200, lotCostBasisForShares: 17000 },
+        ],
+        sharesSold: 100,
+        stockRealizedPnL: 3000,
+      });
+      const positionsBefore = [sellCall('call-1'), stock('stk-1')];
+      const next = applyTradeEvent([], evt, positionsBefore);
+
+      expect(next).toHaveLength(2);
+      const optTrade = next.find((t) => t.id === 'trade-evt-1-option');
+      const stkTrade = next.find((t) => t.id === 'trade-evt-1-stock');
+      expect(optTrade).toBeDefined();
+      expect(optTrade!.realizedPnL).toBe(300);
+      expect(stkTrade).toBeDefined();
+      expect(stkTrade!.quantity).toBe(100);
+      expect(stkTrade!.realizedPnL).toBe(3000);
+      expect(stkTrade!.exitPrice).toBe(200); // totalProceeds / sharesSold = 20000/100
+    });
+
+    it('new-path multi-lot partial → ONE option trade + ONE aggregate stock trade (quantity = sharesSold)', () => {
+      // Two lots: lot1(99sh) fully consumed + lot2(50sh) partially consumed (1 share).
+      const lot1Pos = { ...stock('lot-1'), shares: 99, costBasis: 9900, openDate: '2026-01-01' } as unknown as Position;
+      const lot2Pos = { ...stock('lot-2'), shares: 50, costBasis: 11000, openDate: '2026-02-01' } as unknown as Position;
+
+      const evt = makeEvent('OptionAssigned', {
+        kind: 'call',
+        optionId: 'call-1',
+        assignmentDate: '2026-03-20',
+        optionRealizedPnL: 300,
+        stockId: 'lot-1',
+        portfolio: 'Main',
+        totalProceeds: 31000,
+        premiumReceived: 300,
+        stockClose: { fullClose: true, closePrice: 310, stockRealizedPnL: 10000 }, // legacy
+        lotCloses: [
+          { stockId: 'lot-1', fullClose: true, sharesSold: 99, closePrice: 310, lotCostBasisForShares: 9900 },
+          {
+            stockId: 'lot-2', fullClose: false, sharesSold: 1, closePrice: 310,
+            lotCostBasisForShares: 220, remainingShares: 49, remainingCostBasis: 10780, remainingCurrentValue: 11270,
+          },
+        ],
+        sharesSold: 100,
+        stockRealizedPnL: 10000,
+      });
+
+      const positionsBefore = [sellCall('call-1'), lot1Pos, lot2Pos];
+      const next = applyTradeEvent([], evt, positionsBefore);
+
+      expect(next).toHaveLength(2);
+      const stkTrade = next.find((t) => t.id === 'trade-evt-1-stock')!;
+      expect(stkTrade).toBeDefined();
+      // Aggregate: sharesSold = 100, realizedPnL = 10000 (from stockRealizedPnL)
+      expect(stkTrade.quantity).toBe(100);
+      expect(stkTrade.realizedPnL).toBe(10000);
+      expect(stkTrade.strategy).toBe('Aandelen'); // lot1 type=stock
+    });
+
+    it('backward-compat: old full-close event (no lotCloses) → option + stock trade (unchanged)', () => {
+      const evt = makeEvent('OptionAssigned', {
+        kind: 'call',
+        optionId: 'call-1',
+        assignmentDate: '2026-03-20',
+        optionRealizedPnL: 300,
+        stockId: 'stk-1',
+        portfolio: 'Main',
+        totalProceeds: 20300,
+        premiumReceived: 300,
+        stockClose: { fullClose: true, closePrice: 200, stockRealizedPnL: 3000 },
+        // No lotCloses — old event
+      });
+      const next = applyTradeEvent([], evt, [sellCall('call-1'), stock('stk-1')]);
+      expect(next).toHaveLength(2);
+      const stkTrade = next.find((t) => t.id === 'trade-evt-1-stock');
+      expect(stkTrade!.realizedPnL).toBe(3000);
+    });
+
+    it('backward-compat: old partial-close event (no lotCloses) → only option trade (unchanged)', () => {
+      const evt = makeEvent('OptionAssigned', {
+        kind: 'call',
+        optionId: 'call-1',
+        assignmentDate: '2026-03-20',
+        optionRealizedPnL: 300,
+        stockId: 'stk-1',
+        portfolio: 'Main',
+        totalProceeds: 10150,
+        premiumReceived: 150,
+        stockClose: {
+          fullClose: false,
+          remainingShares: 50,
+          remainingCostBasis: 8500,
+          remainingCurrentValue: 9250,
+          stockRealizedPnL: 1500,
+        },
+        // No lotCloses — old event
+      });
+      const next = applyTradeEvent([], evt, [sellCall('call-1'), stock('stk-1')]);
+      expect(next).toHaveLength(1);
+      expect(next[0].id).toBe('trade-evt-1-option');
+    });
+  });
 });

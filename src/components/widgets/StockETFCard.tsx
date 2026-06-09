@@ -135,7 +135,7 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
       <div className="grid grid-cols-3 gap-3 mb-4">
         {/* Cost Basis */}
         <div>
-          <p className="text-xs text-ink-600 dark:text-ink-400 mb-1">Cost Basis</p>
+          <p className="text-xs text-ink-600 dark:text-ink-400 mb-1">{t('widgetsB.costBasis')}</p>
           <p className="text-base font-semibold text-ink-900 dark:text-white">
             {formatCurrency(position.costBasis, allPortfolios)}
           </p>
@@ -143,7 +143,7 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
 
         {/* Current Value */}
         <div>
-          <p className="text-xs text-ink-600 dark:text-ink-400 mb-1">Current Value</p>
+          <p className="text-xs text-ink-600 dark:text-ink-400 mb-1">{t('widgetsB.currentValue')}</p>
           <p className="text-base font-semibold text-ink-900 dark:text-white">
             {formatCurrency(position.currentValue, allPortfolios)}
           </p>
@@ -151,7 +151,7 @@ export const StockETFCard: React.FC<StockETFCardProps> = ({
 
         {/* Current Price */}
         <div>
-          <p className="text-xs text-ink-600 dark:text-ink-400 mb-1">Current Price</p>
+          <p className="text-xs text-ink-600 dark:text-ink-400 mb-1">{t('widgetsB.currentPrice')}</p>
           <p className="text-base font-semibold text-ink-900 dark:text-white">
             {formatCurrency(position.currentPrice, allPortfolios)}
           </p>

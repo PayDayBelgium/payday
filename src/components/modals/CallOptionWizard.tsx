@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { parseCountInput } from '../../utils/inputFormat';
 import { TrendingUp, TrendingDown, ArrowRightLeft, BarChart3, RefreshCw } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
@@ -38,6 +39,10 @@ import {
   calculateCallValues,
 } from './optionWizardUtils';
 
+// Wizard step order is fixed: action(0) → ticker(1) → details(2). A pre-filled
+// open (ticker + action already chosen via a suggestion) jumps straight to details.
+const DETAILS_STEP_INDEX = 2;
+
 interface CallOptionWizardProps {
   isOpen: boolean;
   onClose: () => void;
@@ -51,6 +56,18 @@ interface CallOptionWizardProps {
   initialTicker?: Ticker;
   initialStep?: number;
   initialWheelId?: string;
+  /** Pre-fill the strike for the LEAPS buy-more flow; leave undefined for other opens. */
+  initialStrike?: number;
+  /** Pre-fill the expiration (ISO date string) for the LEAPS buy-more flow; leave undefined for other opens. */
+  initialExpiration?: string;
+  /**
+   * When the wizard is opened from a specific LEAPS/stock suggestion badge, this holds the
+   * initiating position's id. For short calls it overrides `pickParentForNewShortCall` so
+   * the new call is explicitly linked to that initiator (LEAPS → PMCC; stock → CC on that lot).
+   * Leave undefined for generic "add call" opens — parent resolution then uses the default
+   * stocks-before-LEAPS allocator.
+   */
+  initialUnderlyingId?: string;
 }
 
 export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
@@ -61,6 +78,9 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
   initialTicker,
   initialStep,
   initialWheelId,
+  initialStrike,
+  initialExpiration,
+  initialUnderlyingId,
 }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
@@ -312,37 +332,44 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
       const normalizedAction: 'buy' | 'sell' = isShortCall ? 'sell' : 'buy';
       const shouldLinkToWheel = isShortCall && !!selectedWheelId;
 
-      // Automatic parent linking (shares before LEAPS) for short calls that
-      // aren't tied to a wheel, so the coverage is explicit and visible.
+      // Automatic parent linking for short calls that aren't tied to a wheel.
+      // If an explicit initiator was provided (opened from a specific LEAPS or stock
+      // suggestion badge), honour it directly — that position becomes the parent.
+      // Otherwise fall back to the stocks-before-LEAPS allocator default.
       let underlyingId: string | undefined;
       if (isShortCall && !shouldLinkToWheel) {
-        const tickerSym = selectedTicker.symbol.toUpperCase();
-        const groupPositions = allPositions.filter(
-          (p) =>
-            p.status === 'open' &&
-            p.portfolio === portfolio.name &&
-            p.ticker.toUpperCase() === tickerSym &&
-            !(p as { wheelId?: string }).wheelId
-        );
-        const groupStocks = groupPositions.filter(
-          (p) => p.type === 'stock' || p.type === 'etf'
-        ) as StockPosition[];
-        const groupShortCalls = groupPositions.filter(
-          (p) => p.type === 'call' && (p as CallOption).action === 'sell'
-        ) as CallOption[];
-        const groupLeaps = groupPositions.filter(
-          (p) => p.type === 'call' && (p as CallOption).action === 'buy' && isLEAPS(p as CallOption)
-        ) as CallOption[];
-        const parent = pickParentForNewShortCall(
-          {
-            stocks: groupStocks,
-            leaps: groupLeaps,
-            shortCalls: groupShortCalls,
-            currentPrice: currentTickerPrice ?? undefined,
-          },
-          { strike: longLeg.strike, contracts: longLeg.contracts }
-        );
-        underlyingId = parent?.parentId;
+        if (initialUnderlyingId) {
+          // Explicit initiator wins — link to the initiating position.
+          underlyingId = initialUnderlyingId;
+        } else {
+          const tickerSym = selectedTicker.symbol.toUpperCase();
+          const groupPositions = allPositions.filter(
+            (p) =>
+              p.status === 'open' &&
+              p.portfolio === portfolio.name &&
+              p.ticker.toUpperCase() === tickerSym &&
+              !(p as { wheelId?: string }).wheelId
+          );
+          const groupStocks = groupPositions.filter(
+            (p) => p.type === 'stock' || p.type === 'etf'
+          ) as StockPosition[];
+          const groupShortCalls = groupPositions.filter(
+            (p) => p.type === 'call' && (p as CallOption).action === 'sell'
+          ) as CallOption[];
+          const groupLeaps = groupPositions.filter(
+            (p) => p.type === 'call' && (p as CallOption).action === 'buy' && isLEAPS(p as CallOption)
+          ) as CallOption[];
+          const parent = pickParentForNewShortCall(
+            {
+              stocks: groupStocks,
+              leaps: groupLeaps,
+              shortCalls: groupShortCalls,
+              currentPrice: currentTickerPrice ?? undefined,
+            },
+            { strike: longLeg.strike, contracts: longLeg.contracts }
+          );
+          underlyingId = parent?.parentId;
+        }
       }
 
       const newPosition: CallOption = {
@@ -396,18 +423,20 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
   };
 
   const resetForm = () => {
-    setAction(initialAction || 'buy');
-    setSelectedTicker(initialTicker || null);
+    // Reset to CLEAN defaults — deliberately NOT the initial* props. resetForm runs
+    // on close; the open effect below re-applies the CURRENT initial* props. This way
+    // a generic open after a pre-filled one starts blank (no stale ticker/action/legs
+    // leaking in on the first open).
+    setAction('buy');
+    setSelectedTicker(null);
     setSelectedUnderlying(null);
     setIsCreatingTicker(false);
     setLongLeg({ strike: 0, expiration: '', premium: 0, contracts: 1 });
     setShortLeg({ strike: 0, expiration: '', premium: 0, contracts: 1 });
     setPurchaseDate(new Date().toISOString().split('T')[0]);
     setNotes('');
-    // Reset wheel linking - use initialWheelId if provided
-    setSelectedWheelId(initialWheelId || null);
-    // Reset to initial step if provided, otherwise 0
-    setCurrentStepIndex(initialStep || 0);
+    setSelectedWheelId(null);
+    setCurrentStepIndex(0);
   };
 
   // Effect to initialize values when wizard opens with initial values
@@ -419,8 +448,21 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
       if (initialTicker) {
         setSelectedTicker(initialTicker);
       }
+      // Pre-fill strike and/or expiration when provided (LEAPS buy-more flow).
+      // Use functional updates so we don't clobber already-set fields.
+      if (initialStrike !== undefined || initialExpiration !== undefined) {
+        setLongLeg((prev) => ({
+          ...prev,
+          strike: initialStrike ?? prev.strike,
+          expiration: initialExpiration ?? prev.expiration,
+        }));
+      }
+      // Resolve initial step (same logic as resetForm):
+      //   explicit prop wins; both ticker+action → details(2); otherwise step 0.
       if (initialStep !== undefined) {
         setCurrentStepIndex(initialStep);
+      } else if (initialTicker && initialAction) {
+        setCurrentStepIndex(DETAILS_STEP_INDEX);
       }
       if (initialWheelId) {
         setSelectedWheelId(initialWheelId);
@@ -430,7 +472,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
         }
       }
     }
-  }, [isOpen, initialAction, initialTicker, initialStep, initialWheelId, initialWheel]);
+  }, [isOpen, initialAction, initialTicker, initialStep, initialWheelId, initialWheel, initialStrike, initialExpiration]);
 
   // Effect to sync contracts when wheel selection changes
   React.useEffect(() => {
@@ -883,7 +925,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                         min="1"
                         value={longLeg.contracts || ''}
                         onChange={(e) => {
-                          const contracts = parseInt(e.target.value) || 1;
+                          const contracts = parseCountInput(e.target.value);
                           setLongLeg({ ...longLeg, contracts });
                           setShortLeg({ ...shortLeg, contracts });
                         }}
@@ -1069,7 +1111,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                       }
                       value={longLeg.contracts || ''}
                       onChange={(e) => {
-                        const requested = parseInt(e.target.value, 10) || 1;
+                        const requested = parseCountInput(e.target.value);
                         const contracts =
                           Number.isFinite(maxCoveredCallContracts) && maxCoveredCallContracts > 0
                             ? Math.min(requested, maxCoveredCallContracts)
@@ -1306,7 +1348,9 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
         onClose();
         resetForm();
       }}
-      title={t('callWizard.title')}
+      title={
+        selectedTicker ? `${t('callWizard.title')} · ${selectedTicker.symbol}` : t('callWizard.title')
+      }
       steps={steps}
       onComplete={handleComplete}
       completeButtonLabel={t('callWizard.completeButton')}

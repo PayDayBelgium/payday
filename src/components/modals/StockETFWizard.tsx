@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { WizardModal, type WizardStep } from './WizardModal';
 import { TickerSelector } from '../widgets/TickerSelector';
@@ -18,11 +18,17 @@ interface StockETFWizardProps {
     currency: CurrencyType;
     currentValue: number;
   };
+  /** When provided, pre-selects this ticker when the wizard opens (buy-more flow). */
+  initialTicker?: Ticker;
 }
 
-export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose, portfolio }) => {
+export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose, portfolio, initialTicker }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+
+  // Controlled step index so the wizard can jump straight to the details step
+  // when initialTicker is provided (buy-more flow). Step order: type(0) → ticker(1) → details(2).
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
   // Step 1: Type selection (stock or ETF) - default to 'stock'
   const [positionType, setPositionType] = useState<'stock' | 'etf' | null>('stock');
@@ -45,6 +51,25 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
     purchaseDate: new Date().toISOString().split('T')[0],
     notes: '',
   });
+
+  // When the wizard opens with an initialTicker, pre-select that ticker,
+  // match the position type, and jump straight to the details step (index 2)
+  // so the user only needs to fill in shares/price/date.
+  // A generic open (no initialTicker) always starts at step 0 (type selection).
+  useEffect(() => {
+    if (isOpen && initialTicker) {
+      setSelectedTicker(initialTicker);
+      if (initialTicker.type === 'stock' || initialTicker.type === 'etf') {
+        setPositionType(initialTicker.type);
+      }
+      // details step is always at index 2: type(0) → ticker(1) → details(2)
+      setCurrentStepIndex(2);
+    } else if (!isOpen) {
+      // Reset to blank state on close so a fresh generic open starts at step 0.
+      setSelectedTicker(null);
+      setCurrentStepIndex(0);
+    }
+  }, [isOpen, initialTicker]);
 
   // Auto-fill purchase price when ticker is selected
   React.useEffect(() => {
@@ -137,6 +162,7 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
     setPositionType('stock'); // Reset to default 'stock' selection
     setSelectedTicker(null);
     setIsCreatingTicker(false);
+    setCurrentStepIndex(0); // Always return to step 0 after a completed or reset form
     setNewTickerData({
       symbol: '',
       name: '',
@@ -517,16 +543,18 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
         handleReset();
         onClose();
       }}
-      title={
+      title={`${
         positionType === 'stock'
           ? t('stockWizard.titleStock')
           : positionType === 'etf'
             ? t('stockWizard.titleETF')
             : t('stockWizard.titlePosition')
-      }
+      }${selectedTicker ? ` · ${selectedTicker.symbol}` : ''}`}
       steps={steps}
       onComplete={handleComplete}
       completeButtonLabel={t('stockWizard.completeButton')}
+      currentStepIndex={currentStepIndex}
+      onStepChange={setCurrentStepIndex}
     />
   );
 };

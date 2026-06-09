@@ -813,3 +813,188 @@ describe('recordAssignment — error cases', () => {
     ).toThrow('no open stock position found');
   });
 });
+
+// ---------------------------------------------------------------------------
+// recordAssignment — single-lot: new-path fields are present
+// ---------------------------------------------------------------------------
+
+describe('recordAssignment — single-lot new-path fields', () => {
+  it('single-lot full close: emits lotCloses with one entry, sharesSold, aggregate stockRealizedPnL', () => {
+    const store = makeStore();
+    const dispatch = store.dispatch as AppDispatch;
+    dispatch(setActor('test'));
+    // 100 shares, costBasis=28000 → avgCost = 280; strike=310 → P&L = 310*100 - 280*100 = 3000
+    seedPositions(store, MSFT_STOCK as unknown as Position, SHORT_CALL_CC as unknown as Position);
+
+    const logBefore = getLog(store.getState()).length;
+    dispatch(recordAssignment({ optionId: 'opt-cc1', assignmentDate: '2026-07-18', assignmentPrice: 312 }, TS));
+
+    const event = getLog(store.getState())[logBefore] as {
+      payload: {
+        lotCloses: Array<{ stockId: string; fullClose: boolean; sharesSold: number; closePrice: number; lotCostBasisForShares: number }>;
+        sharesSold: number;
+        stockRealizedPnL: number;
+      };
+    };
+    const p = event.payload;
+
+    expect(p.lotCloses).toHaveLength(1);
+    expect(p.lotCloses[0].stockId).toBe('stock-msft1');
+    expect(p.lotCloses[0].fullClose).toBe(true);
+    expect(p.lotCloses[0].sharesSold).toBe(100);
+    expect(p.lotCloses[0].closePrice).toBe(310);
+    expect(p.lotCloses[0].lotCostBasisForShares).toBe(28000); // 280 * 100
+    expect(p.sharesSold).toBe(100);
+    // aggregate GAK P&L: 310*100 − 280*100 = 3000
+    expect(p.stockRealizedPnL).toBe(3000);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// recordAssignment — multi-lot FIFO (99 + 50 shares, assign 100)
+// ---------------------------------------------------------------------------
+
+describe('recordAssignment — multi-lot FIFO', () => {
+  /** Lot 1: 99 shares, purchase price $200, costBasis = 99*200 = 19800, currentValue = 99*210 = 20790 */
+  const LOT1: StockPosition = {
+    id: 'lot-1',
+    type: 'stock',
+    ticker: 'MSFT',
+    name: 'Microsoft',
+    portfolio: 'Main',
+    shares: 99,
+    costBasis: 19800,   // 99 * 200
+    purchasePrice: 200,
+    currentPrice: 210,
+    currentValue: 20790, // 99 * 210
+    optionsSupported: true,
+    miniContractsSupported: false,
+    status: 'open',
+    openDate: '2026-01-01', // oldest
+  };
+
+  /** Lot 2: 50 shares, purchase price $220, costBasis = 50*220 = 11000, currentValue = 50*230 = 11500 */
+  const LOT2: StockPosition = {
+    id: 'lot-2',
+    type: 'stock',
+    ticker: 'MSFT',
+    name: 'Microsoft',
+    portfolio: 'Main',
+    shares: 50,
+    costBasis: 11000,    // 50 * 220
+    purchasePrice: 220,
+    currentPrice: 230,
+    currentValue: 11500, // 50 * 230
+    optionsSupported: true,
+    miniContractsSupported: false,
+    status: 'open',
+    openDate: '2026-02-01', // newer
+  };
+
+  /** 1-contract CC at strike=310, costBasis=-200 */
+  const CC_MULTI: CallOption = {
+    ...SHORT_CALL_CC,
+    id: 'opt-cc-multi',
+    ticker: 'MSFT',
+    portfolio: 'Main',
+  };
+
+  it('lotCloses: lot1 full(sharesSold=99), lot2 partial(sharesSold=1, remainingShares=49)', () => {
+    const store = makeStore();
+    const dispatch = store.dispatch as AppDispatch;
+    dispatch(setActor('test'));
+    // Seed LOT2 FIRST to verify FIFO is by openDate (not array order)
+    seedPositions(store, LOT2 as unknown as Position, LOT1 as unknown as Position, CC_MULTI as unknown as Position);
+
+    const logBefore = getLog(store.getState()).length;
+    dispatch(recordAssignment({ optionId: 'opt-cc-multi', assignmentDate: '2026-07-18', assignmentPrice: 312 }, TS));
+
+    const event = getLog(store.getState())[logBefore] as {
+      payload: {
+        lotCloses: Array<{
+          stockId: string; fullClose: boolean; sharesSold: number;
+          remainingShares?: number; remainingCostBasis?: number; remainingCurrentValue?: number;
+          closePrice: number; lotCostBasisForShares: number;
+        }>;
+        sharesSold: number;
+        stockRealizedPnL: number;
+        totalProceeds: number;
+      };
+    };
+    const p = event.payload;
+
+    // FIFO: lot1 (openDate 2026-01-01) is first → fully consumed (99 shares)
+    expect(p.lotCloses).toHaveLength(2);
+
+    const lc1 = p.lotCloses[0];
+    expect(lc1.stockId).toBe('lot-1');
+    expect(lc1.fullClose).toBe(true);
+    expect(lc1.sharesSold).toBe(99);
+    expect(lc1.remainingShares).toBeUndefined();
+
+    // lot2: only 1 share taken, 49 remaining
+    const lc2 = p.lotCloses[1];
+    expect(lc2.stockId).toBe('lot-2');
+    expect(lc2.fullClose).toBe(false);
+    expect(lc2.sharesSold).toBe(1);
+    expect(lc2.remainingShares).toBe(49);
+
+    // Aggregate fields
+    expect(p.sharesSold).toBe(100);
+    expect(p.totalProceeds).toBe(31000); // 310 * 100
+  });
+
+  it('GAK stockRealizedPnL = strike*100 − avgCost*100 (toBeCloseTo)', () => {
+    const store = makeStore();
+    const dispatch = store.dispatch as AppDispatch;
+    dispatch(setActor('test'));
+    seedPositions(store, LOT1 as unknown as Position, LOT2 as unknown as Position, CC_MULTI as unknown as Position);
+
+    const logBefore = getLog(store.getState()).length;
+    dispatch(recordAssignment({ optionId: 'opt-cc-multi', assignmentDate: '2026-07-18', assignmentPrice: 312 }, TS));
+
+    const event = getLog(store.getState())[logBefore] as { payload: { stockRealizedPnL: number } };
+
+    // GAK: totalShares = 99+50 = 149, totalCostBasis = 19800+11000 = 30800
+    // avgCost = 30800 / 149 ≈ 206.711...
+    // stockRealizedPnL = 310*100 − avgCost*100 = 31000 − 20671.14... ≈ 10328.86
+    const totalCostBasis = 19800 + 11000; // 30800
+    const totalShares = 99 + 50;          // 149
+    const avgCost = totalCostBasis / totalShares;
+    const expected = 310 * 100 - avgCost * 100;
+
+    expect(event.payload.stockRealizedPnL).toBeCloseTo(expected, 8);
+  });
+
+  it('guard: throws when totalShares < shares required', () => {
+    const store = makeStore();
+    const dispatch = store.dispatch as AppDispatch;
+    dispatch(setActor('test'));
+    // Only 50 shares available, but need 100
+    const smallLot: StockPosition = { ...LOT2, id: 'lot-small', shares: 50 };
+    seedPositions(store, smallLot as unknown as Position, CC_MULTI as unknown as Position);
+
+    expect(() =>
+      dispatch(recordAssignment({ optionId: 'opt-cc-multi', assignmentDate: '2026-07-18', assignmentPrice: 312 }, TS))
+    ).toThrow('insufficient open shares');
+  });
+
+  it('FIFO order: lots processed oldest-first regardless of array insertion order', () => {
+    const store = makeStore();
+    const dispatch = store.dispatch as AppDispatch;
+    dispatch(setActor('test'));
+    // Insert LOT2 (newer) before LOT1 (older) in the store
+    seedPositions(store, LOT2 as unknown as Position, LOT1 as unknown as Position, CC_MULTI as unknown as Position);
+
+    const logBefore = getLog(store.getState()).length;
+    dispatch(recordAssignment({ optionId: 'opt-cc-multi', assignmentDate: '2026-07-18', assignmentPrice: 312 }, TS));
+
+    const event = getLog(store.getState())[logBefore] as {
+      payload: { lotCloses: Array<{ stockId: string }> };
+    };
+
+    // LOT1 (openDate 2026-01-01) must be first, LOT2 (openDate 2026-02-01) second
+    expect(event.payload.lotCloses[0].stockId).toBe('lot-1');
+    expect(event.payload.lotCloses[1].stockId).toBe('lot-2');
+  });
+});

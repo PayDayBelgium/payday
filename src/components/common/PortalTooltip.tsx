@@ -112,9 +112,17 @@ export const PortalTooltip: React.FC<PortalTooltipProps> = ({
             transform: getTransform(),
           }}
         >
-          <div className="bg-ink-900 text-white text-xs rounded-md px-2.5 py-1.5 shadow-lg max-w-xs">
-            {tooltipBody}
-          </div>
+          {isHoverMode ? (
+            // Hover mode: simple text tooltips get the dark pill styling.
+            <div className="bg-ink-900 text-white text-xs rounded-md px-2.5 py-1.5 shadow-lg max-w-xs">
+              {tooltipBody}
+            </div>
+          ) : (
+            // Controlled mode: the consumer passes its own styled card (white card
+            // with a thin border) — render it bare so it does NOT get wrapped in the
+            // dark pill (which read as an ugly thick border around the card).
+            tooltipBody
+          )}
         </div>,
         document.body
       )

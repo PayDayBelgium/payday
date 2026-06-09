@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { usePageTitle } from '../../contexts/PageTitleContext';
 import { useNavigation } from '../../contexts/NavigationContext';
@@ -49,6 +49,7 @@ import { PutOptionWizard } from '../../components/modals/PutOptionWizard';
 import { getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency, formatNumber } from '../../utils/numberFormat';
 import { getSpreadId } from '../../utils/spreadHelpers';
+import { parseCoveredCallOpportunity } from '../../utils/opportunityActions';
 
 type TabType =
   | 'portfolio'
@@ -95,14 +96,31 @@ const getAlertIcon = (message: string, isAlert: boolean): LucideIcon => {
 
 export const PortfolioDetail: React.FC = () => {
   const { t } = useTranslation();
-  const { portfolioName } = useParams<{ portfolioName: string }>();
+  const { portfolioName: portfolioParam } = useParams<{ portfolioName: string }>();
+  const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useAppDispatch();
   const { setPageTitle, setTitleIcon } = usePageTitle();
   const { canGoBack, pushNavigation } = useNavigation();
   const portfolios = useAppSelector((state) => state.portfolios.portfolios);
   const positions = useAppSelector((state) => state.positions.positions);
   const tickerList = useAppSelector(selectAllTickers);
-  const portfolio = portfolios.find((b) => b.name === portfolioName);
+  // The portfolio name travels through the URL. Decode it and fall back to a
+  // Unicode-normalized (NFC) comparison, so the lookup works whether the link
+  // encoded the name or not, and for accented names (e.g. "Björn"). All downstream
+  // code uses the canonical stored name so positions/transactions stay consistent.
+  const decodedParam = (() => {
+    if (!portfolioParam) return '';
+    try {
+      return decodeURIComponent(portfolioParam);
+    } catch {
+      return portfolioParam;
+    }
+  })();
+  const portfolio = portfolios.find(
+    (b) => b.name === decodedParam || b.name.normalize('NFC') === decodedParam.normalize('NFC')
+  );
+  const portfolioName = portfolio?.name ?? decodedParam;
   const transactions = useAppSelector((state) =>
     selectTransactionsByPortfolio(state, portfolioName || '')
   );
@@ -129,16 +147,63 @@ export const PortfolioDetail: React.FC = () => {
     undefined
   );
   const [callWizardInitialAction, setCallWizardInitialAction] = useState<
-    'covered-call' | undefined
+    'covered-call' | 'buy' | undefined
   >(undefined);
+  // Pre-fill strike and expiration for the LEAPS buy-more flow only.
+  // These must be cleared (set to undefined) on every other call-wizard open path
+  // so covered-call and generic opens are NOT pre-filled.
+  const [callWizardInitialStrike, setCallWizardInitialStrike] = useState<number | undefined>(
+    undefined
+  );
+  const [callWizardInitialExpiration, setCallWizardInitialExpiration] = useState<
+    string | undefined
+  >(undefined);
+  // When the wizard is opened from a specific LEAPS or stock suggestion badge, hold the
+  // initiating position's id here so the wizard can link the new short call to that parent
+  // (LEAPS → PMCC; stock lot → standard CC on that lot).
+  // MUST be cleared to undefined for every non-suggestion open path (handleBuyLeaps,
+  // generic "add call" button) so those uses fall back to default parent resolution.
+  const [callWizardInitialUnderlyingId, setCallWizardInitialUnderlyingId] = useState<
+    string | undefined
+  >(undefined);
+  const [stockWizardInitialTicker, setStockWizardInitialTicker] = useState<Ticker | undefined>(
+    undefined
+  );
   const [isPutOptionWizardOpen, setIsPutOptionWizardOpen] = useState(false);
   const [expandedTickers, setExpandedTickers] = useState<Set<string>>(new Set());
 
   // Open the call wizard pre-filled to write a covered call on a specific ticker.
-  const handleWriteCoveredCall = (tickerSymbol: string) => {
+  // When called from a LEAPS suggestion badge, `underlyingId` is the leap's position id so
+  // the wizard links the new short call to that LEAPS (PMCC). When called from a stock badge
+  // or without an explicit initiator, `underlyingId` is undefined → default parent resolution.
+  // Always clear the LEAPS buy-more strike/expiration pre-fill so this path is not affected.
+  const handleWriteCoveredCall = (tickerSymbol: string, underlyingId?: string) => {
     const ticker = tickerList.find((t) => t.symbol.toUpperCase() === tickerSymbol.toUpperCase());
     setCallWizardInitialTicker(ticker);
     setCallWizardInitialAction('covered-call');
+    setCallWizardInitialStrike(undefined);
+    setCallWizardInitialExpiration(undefined);
+    setCallWizardInitialUnderlyingId(underlyingId);
+    setIsCallOptionWizardOpen(true);
+  };
+
+  // Open the stock wizard pre-filled to buy more shares of a specific ticker.
+  const handleBuyStock = (tickerSymbol: string) => {
+    const ticker = tickerList.find((t) => t.symbol.toUpperCase() === tickerSymbol.toUpperCase());
+    setStockWizardInitialTicker(ticker);
+    setIsStockWizardOpen(true);
+  };
+
+  // Open the call wizard pre-filled to buy more long calls (LEAPS) for a specific position.
+  // Passes strike + expiration so the wizard jumps straight to details with those fields filled.
+  // Clears initialUnderlyingId — buying a LEAPS is not a short-call parent-linking scenario.
+  const handleBuyLeaps = (info: { ticker: string; strike: number; expiration: string }) => {
+    const ticker = tickerList.find((t) => t.symbol.toUpperCase() === info.ticker.toUpperCase());
+    setCallWizardInitialTicker(ticker);
+    setCallWizardInitialAction('buy');
+    setCallWizardInitialStrike(info.strike);
+    setCallWizardInitialExpiration(info.expiration);
+    setCallWizardInitialUnderlyingId(undefined);
     setIsCallOptionWizardOpen(true);
   };
 
@@ -160,6 +225,20 @@ export const PortfolioDetail: React.FC = () => {
       setTitleIcon(null);
     };
   }, [setPageTitle, setTitleIcon, portfolioName, portfolio?.logo, t, canGoBack, pushNavigation]);
+
+  // When navigated here from the Dashboard widget with an openCoveredCallWizard state,
+  // open the wizard immediately and then clear the state so it doesn't re-fire on re-render.
+  // Guard on `portfolio` being loaded so the wizard has access to tickers.
+  useEffect(() => {
+    const wizardState = location.state?.openCoveredCallWizard as
+      | { ticker: string; underlyingId?: string }
+      | undefined;
+    if (!wizardState || !portfolio) return;
+    handleWriteCoveredCall(wizardState.ticker, wizardState.underlyingId);
+    // Clear the state so a back/forward navigation or re-render does not re-fire the wizard.
+    navigate(location.pathname, { replace: true, state: null });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.key, portfolio]);
 
   // Calculate portfolio stats from positions
   const portfolioStats = useMemo(() => {
@@ -446,7 +525,7 @@ export const PortfolioDetail: React.FC = () => {
                   }`}
                 >
                   <Banknote className="w-4 h-4" />
-                  Free cash
+                  {t('pagesB.portfolioDetail.tabFreeCash')}
                 </button>
               )}
               <button
@@ -469,7 +548,7 @@ export const PortfolioDetail: React.FC = () => {
                 }`}
               >
                 <History className="w-4 h-4" />
-                Transaction log
+                {t('pagesB.portfolioDetail.tabTransactionLog')}
               </button>
               {hasOptionsAccess && (
                 <button
@@ -481,7 +560,7 @@ export const PortfolioDetail: React.FC = () => {
                   }`}
                 >
                   <Info className="w-4 h-4" />
-                  Information
+                  {t('pagesB.portfolioDetail.tabInformation')}
                 </button>
               )}
               {hasOptionsAccess && (
@@ -507,7 +586,7 @@ export const PortfolioDetail: React.FC = () => {
                   }`}
                 >
                   <AlertCircle className="w-4 h-4" />
-                  Alerts & Opportunities
+                  {t('pagesB.portfolioDetail.tabAlertsOpportunities')}
                   {(alertsData.alerts.length > 0 || alertsData.opportunities.length > 0) && (
                     <span className="px-1.5 py-0.5 bg-caution-50 dark:bg-caution-600/25 rounded-full text-xs font-semibold text-caution-600 dark:text-caution-500">
                       {alertsData.alerts.length + alertsData.opportunities.length}
@@ -526,7 +605,10 @@ export const PortfolioDetail: React.FC = () => {
               {/* Quick Actions */}
               <div className="flex gap-2 flex-shrink-0 mb-4">
                 <button
-                  onClick={() => setIsStockWizardOpen(true)}
+                  onClick={() => {
+                    setStockWizardInitialTicker(undefined);
+                    setIsStockWizardOpen(true);
+                  }}
                   className="flex items-center gap-2 px-3 py-2 bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-50 dark:hover:bg-primary-900/25 rounded-lg border border-primary-200 dark:border-primary-800 hover:border-primary-400 dark:hover:border-primary-700 transition-all text-left cursor-pointer w-36"
                 >
                   <Plus className="w-4 h-4 text-primary-700 dark:text-primary-300 flex-shrink-0" />
@@ -540,6 +622,9 @@ export const PortfolioDetail: React.FC = () => {
                     onClick={() => {
                       setCallWizardInitialTicker(undefined);
                       setCallWizardInitialAction(undefined);
+                      setCallWizardInitialStrike(undefined);
+                      setCallWizardInitialExpiration(undefined);
+                      setCallWizardInitialUnderlyingId(undefined);
                       setIsCallOptionWizardOpen(true);
                     }}
                     className="flex items-center gap-2 px-3 py-2 bg-positive-50 dark:bg-positive-700/15 hover:bg-positive-50 dark:hover:bg-positive-700/25 rounded-lg border border-positive-500/20 dark:border-positive-700/30 hover:border-positive-500/40 dark:hover:border-positive-600 transition-all text-left cursor-pointer w-36"
@@ -583,6 +668,8 @@ export const PortfolioDetail: React.FC = () => {
                   portfolioCurrentValue={portfolio?.currentValue || 0}
                   onNavigateToCampaigns={() => setActiveTab('campaigns')}
                   onWriteCoveredCall={handleWriteCoveredCall}
+                  onBuyStock={handleBuyStock}
+                  onBuyLeaps={handleBuyLeaps}
                 />
               </div>
             </div>
@@ -1241,6 +1328,39 @@ export const PortfolioDetail: React.FC = () => {
                     ) : (
                       alertsData.opportunities.map((item) => {
                         const OppIcon = getAlertIcon(item.message, false);
+                        const ccTarget = parseCoveredCallOpportunity(item);
+                        if (ccTarget) {
+                          return (
+                            <button
+                              key={item.id}
+                              type="button"
+                              className="w-full text-left p-3 bg-surface dark:bg-trading-dark-700/50 hover:bg-surface-subtle dark:hover:bg-trading-dark-700 rounded-lg cursor-pointer transition-colors"
+                              onClick={() =>
+                                handleWriteCoveredCall(ccTarget.ticker, ccTarget.underlyingId)
+                              }
+                            >
+                              <div className="flex items-start gap-2">
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <div className="p-1 rounded bg-positive-50 dark:bg-positive-700/25">
+                                      <OppIcon className="w-3 h-3 text-positive-600 dark:text-positive-500" />
+                                    </div>
+                                    <p className="text-sm font-semibold text-ink-900 dark:text-white truncate">
+                                      {item.ticker}
+                                    </p>
+                                    <span className="ml-auto flex items-center gap-1 text-xs text-positive-600 dark:text-positive-400 shrink-0">
+                                      <Plus className="w-3 h-3" />
+                                      {t('pagesB.portfolioDetail.placeTradeHint')}
+                                    </span>
+                                  </div>
+                                  <p className="text-xs text-ink-600 dark:text-ink-400 ml-6 whitespace-pre-line">
+                                    {item.message}
+                                  </p>
+                                </div>
+                              </div>
+                            </button>
+                          );
+                        }
                         return (
                           <div
                             key={item.id}
@@ -1296,7 +1416,11 @@ export const PortfolioDetail: React.FC = () => {
 
           <StockETFWizard
             isOpen={isStockWizardOpen}
-            onClose={() => setIsStockWizardOpen(false)}
+            onClose={() => {
+              setIsStockWizardOpen(false);
+              setStockWizardInitialTicker(undefined);
+            }}
+            initialTicker={stockWizardInitialTicker}
             portfolio={{
               name: portfolio.name,
               currency: portfolio.currency,
@@ -1309,6 +1433,9 @@ export const PortfolioDetail: React.FC = () => {
             onClose={() => setIsCallOptionWizardOpen(false)}
             initialTicker={callWizardInitialTicker}
             initialAction={callWizardInitialAction}
+            initialStrike={callWizardInitialStrike}
+            initialExpiration={callWizardInitialExpiration}
+            initialUnderlyingId={callWizardInitialUnderlyingId}
             portfolio={{
               name: portfolio.name,
               currency: portfolio.currency,

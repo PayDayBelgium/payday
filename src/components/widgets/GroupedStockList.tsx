@@ -3,13 +3,13 @@ import {
   ChevronDown,
   ChevronRight,
   AlertCircle,
-  CheckCircle,
   Search,
   X,
   Target,
 } from 'lucide-react';
+import { CoveredCallSuggestionBadge } from './CoveredCallSuggestionBadge';
 import { useTranslation } from 'react-i18next';
-import type { StockPosition, PriceAlert, Portfolio, CallOption } from '../../types';
+import type { StockPosition, PriceAlert, Portfolio, CallOption, Ticker } from '../../types';
 import { formatCurrency } from '../../utils/currencyHelpers';
 import { formatNumber } from '../../utils/numberFormat';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
@@ -18,6 +18,9 @@ import { useFeatureAccess } from '../../hooks/useFeatureAccess';
 import { updatePositionLivePrice, selectPositions } from '../../store/slices/positionsSlice';
 import { updateTickerPrice } from '../../store/slices/tickersSlice';
 import { computeCoveredCallCapacity } from '../../utils/coveredCallEligibility';
+import { OptionRow } from './OptionRow';
+import type { CollateralType } from './OptionRow';
+import { PositionColumnHeader } from './PositionColumnHeader';
 // import { SellStockModal } from '../modals/SellStockModal';
 // import { ConfirmModal } from '../modals/ConfirmModal';
 
@@ -34,10 +37,33 @@ interface GroupedStockListProps {
   allPortfolios: Portfolio[];
   onEditPosition: (position: StockPosition) => void;
   onDismissStrategyAlert?: (alertId: string) => void;
-  /** When provided, the "CC" badge becomes a button that opens the covered-call wizard for the ticker. */
-  onWriteCoveredCall?: (ticker: string) => void;
+  /** When provided, the "CC" badge becomes a button that opens the covered-call wizard for the ticker.
+   *  The optional second argument is the initiating position id (for future per-lot linking);
+   *  stock-initiated covered calls pass no underlyingId — the wizard's default parent resolution applies. */
+  onWriteCoveredCall?: (ticker: string, underlyingId?: string) => void;
   /** When provided, a sell button is shown that delegates selling a lot to the host's close/sell flow. */
   onSellPosition?: (position: StockPosition) => void;
+  /** When provided, a buy button is shown to open the stock wizard pre-filled for this ticker. */
+  onBuyPosition?: (ticker: string) => void;
+  // ── Covered-call nesting (optional, additive) ──────────────────────────────
+  /** Map of ticker (upper-cased) → covered calls assigned to that stock by the allocator. */
+  coveredCallsByTicker?: Map<string, CallOption[]>;
+  /** Ticker store slice for live price lookup on nested option rows. */
+  tickers?: Ticker[];
+  /** Currency symbol for formatting option-row amounts. */
+  currencySymbol?: string;
+  /** Map of position ID → whether it has an opportunity. */
+  positionHasOpportunity?: Map<string, boolean>;
+  /** Map of position ID → opportunity message. */
+  positionOpportunityMessage?: Map<string, string>;
+  /** Map of position ID → whether it has an alert. */
+  positionHasAlert?: Map<string, boolean>;
+  /** Map of position ID → alert message. */
+  positionAlertMessage?: Map<string, string>;
+  onRoll?: (position: CallOption) => void;
+  onClose?: (position: CallOption) => void;
+  onAssign?: (position: CallOption) => void;
+  onView?: (position: CallOption) => void;
 }
 
 // Stable empty default so an omitted strategyAlertsMap prop doesn't create a new
@@ -63,10 +89,22 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
   alerts,
   strategyAlertsMap = EMPTY_STRATEGY_ALERTS,
   allPortfolios,
-  onEditPosition,
-  onDismissStrategyAlert,
+  onEditPosition: _onEditPosition,
+  onDismissStrategyAlert: _onDismissStrategyAlert,
   onWriteCoveredCall,
   onSellPosition,
+  onBuyPosition,
+  coveredCallsByTicker,
+  tickers,
+  currencySymbol = '$',
+  positionHasOpportunity,
+  positionOpportunityMessage,
+  positionHasAlert,
+  positionAlertMessage,
+  onRoll,
+  onClose,
+  onAssign,
+  onView,
 }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
@@ -216,7 +254,8 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
     }
   };
 
-  const handleDismissStrategyAlert = (e: React.MouseEvent, alertId: string, message: string) => {
+  // Kept for future use when per-lot strategy-alert dismissal is re-enabled.
+  const _handleDismissStrategyAlert = (e: React.MouseEvent, alertId: string, message: string) => {
     e.stopPropagation();
     setDismissStrategyConfirm({ isOpen: true, alertId, message });
   };
@@ -252,17 +291,21 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
             const portfolio = allPortfolios.find((b) => b.name === group.positions[0].portfolio);
             const portfolioSupportsOptions = portfolio?.hasOptions ?? false;
 
-            // Sold calls for this ticker+portfolio come from the full store (the
-            // positions prop only carries stock lots), so the badge reflects FREE
-            // (uncovered) contracts — consistent with the wizard and alerts.
-            const groupSoldCalls = allStorePositions.filter(
-              (p): p is CallOption =>
-                p.type === 'call' &&
-                (p as CallOption).action === 'sell' &&
-                p.status === 'open' &&
-                p.portfolio === group.positions[0].portfolio &&
-                p.ticker === group.ticker
-            );
+            // Calls that actually cover THIS stock come from the central allocator
+            // (coveredCallsByTicker), NOT every sold call on the ticker: a covered
+            // call linked to a LEAPS must not count as covering the shares (otherwise
+            // the stock looks "covered" while the CC really sits on the LEAPS). Fall
+            // back to the legacy per-ticker filter only when the allocator map is absent.
+            const groupSoldCalls: CallOption[] = coveredCallsByTicker
+              ? (coveredCallsByTicker.get(group.ticker.toUpperCase()) ?? [])
+              : allStorePositions.filter(
+                  (p): p is CallOption =>
+                    p.type === 'call' &&
+                    (p as CallOption).action === 'sell' &&
+                    p.status === 'open' &&
+                    p.portfolio === group.positions[0].portfolio &&
+                    p.ticker === group.ticker
+                );
             const ccCapacity = computeCoveredCallCapacity(
               group.positions as StockPosition[],
               groupSoldCalls
@@ -335,28 +378,17 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                               {ruleOpportunities.length}
                             </div>
                           )}
-                          {canWriteCoveredCalls &&
-                            (onWriteCoveredCall ? (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  onWriteCoveredCall(group.ticker);
-                                }}
-                                className="flex items-center gap-1 px-2 py-1 bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 rounded-full text-xs font-medium hover:bg-positive-100 dark:hover:bg-positive-700/40 transition-colors"
-                                title={t('widgetsB.writeCoveredCallTitle')}
-                              >
-                                <CheckCircle className="w-3.5 h-3.5" />
-                                CC
-                              </button>
-                            ) : (
-                              <div
-                                className="flex items-center gap-1 px-2 py-1 bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500 rounded-full text-xs font-medium"
-                                title={t('widgetsB.coveredCallsPossibleTitle')}
-                              >
-                                <CheckCircle className="w-3.5 h-3.5" />
-                                CC
-                              </div>
-                            ))}
+                          {canWriteCoveredCalls && (
+                            <CoveredCallSuggestionBadge
+                              message={
+                                positionOpportunityMessage?.get(group.positions[0].id) ||
+                                t('widgetsA.writeCoveredCallsOpportunity', {
+                                  count: ccCapacity.freeContracts,
+                                })
+                              }
+                              onClick={onWriteCoveredCall ? () => onWriteCoveredCall(group.ticker) : undefined}
+                            />
+                          )}
                         </div>
 
                         {/* Data fields in a flex layout */}
@@ -471,251 +503,107 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                       </p>
                     </div>
 
-                    {/* Sell button in gray zone */}
-                    {onSellPosition && (
-                      <div className="flex-shrink-0 bg-surface-subtle dark:bg-trading-dark-700/50 rounded-lg px-3 py-3">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (group.positions.length === 1) {
+                    {/* Buy / Sell buttons in gray zone.
+                        Buy opens the stock wizard pre-filled for this ticker.
+                        Sell delegates to the first lot as a representative for
+                        the ticker group (per-lot selling is in the close flow). */}
+                    {(onBuyPosition || onSellPosition) && (
+                      <div className="flex-shrink-0 bg-surface-subtle dark:bg-trading-dark-700/50 rounded-lg px-3 py-3 flex items-center gap-1">
+                        {onBuyPosition && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onBuyPosition(group.ticker);
+                            }}
+                            className="w-8 h-8 flex items-center justify-center bg-ink-200 dark:bg-trading-dark-600 hover:bg-ink-300 dark:hover:bg-ink-400 text-ink-700 dark:text-ink-200 rounded font-semibold text-sm transition-colors"
+                            title={t('widgetsB.buy')}
+                          >
+                            B
+                          </button>
+                        )}
+                        {onSellPosition && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
                               onSellPosition(group.positions[0]);
-                            } else {
-                              // Multiple lots: expand so the user can sell a specific lot
-                              setExpandedTickers((prev) => new Set(prev).add(group.ticker));
-                            }
-                          }}
-                          className="w-8 h-8 flex items-center justify-center bg-ink-200 dark:bg-trading-dark-600 hover:bg-ink-300 dark:hover:bg-ink-400 text-ink-700 dark:text-ink-200 rounded font-semibold text-sm transition-colors"
-                          title={
-                            group.positions.length === 1
-                              ? t('widgetsB.sell')
-                              : t('widgetsB.sellLotExpand')
-                          }
-                        >
-                          S
-                        </button>
+                            }}
+                            className="w-8 h-8 flex items-center justify-center bg-ink-200 dark:bg-trading-dark-600 hover:bg-ink-300 dark:hover:bg-ink-400 text-ink-700 dark:text-ink-200 rounded font-semibold text-sm transition-colors"
+                            title={t('widgetsB.sell')}
+                          >
+                            S
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>
                 </div>
 
-                {/* Expanded Content - Individual Positions */}
+                {/* Expanded Content — shows covered calls written against this stock.
+                    Share-purchase lot rows are transaction history; they belong in
+                    the transaction log, not here. */}
                 {isExpanded && (
                   <div className="border-t border-surface-line dark:border-trading-dark-600 bg-surface dark:bg-trading-dark-900/50">
-                    <div className="divide-y divide-surface-line dark:divide-trading-dark-600">
-                      {group.positions.map((position) => {
-                        const posProfit = position.currentValue - position.costBasis;
-                        const posProfitPct =
-                          position.costBasis > 0 ? (posProfit / position.costBasis) * 100 : 0;
-                        const isPosProfit = posProfit >= 0;
-
-                        // Get alerts for this specific position
-                        const positionAlerts = alerts.filter(
-                          (a) => a.positionId === position.id && !a.isRead
-                        );
-                        const positionStrategyAlerts = strategyAlertsMap.get(position.id) || [];
-
+                    {/* ── Covered calls nested under this stock ── */}
+                    {(() => {
+                      const calls =
+                        coveredCallsByTicker?.get(group.ticker.toUpperCase()) ?? [];
+                      if (calls.length === 0) {
                         return (
-                          <div key={position.id}>
-                            <div
-                              onClick={() => onEditPosition(position)}
-                              className="p-4 hover:bg-white dark:hover:bg-trading-dark-800 cursor-pointer transition-colors"
-                            >
-                              <div className="flex items-center gap-4">
-                                {/* Left: Chevron spacer + Data fields matching header */}
-                                <div className="flex items-center gap-3 flex-1">
-                                  {/* Spacer for chevron alignment */}
-                                  <div className="w-5 flex-shrink-0">
-                                    {/* Alert/Opportunity indicators */}
-                                    {(positionAlerts.length > 0 ||
-                                      positionStrategyAlerts.length > 0) && (
-                                      <div className="flex flex-col gap-0.5">
-                                        {positionAlerts.some(
-                                          (a) => !a.category || a.category === 'alert'
-                                        ) && (
-                                          <AlertCircle className="w-3.5 h-3.5 text-negative-600 dark:text-negative-500" />
-                                        )}
-                                        {positionStrategyAlerts.some(
-                                          (a: StrategyAlert) => a.category === 'alert'
-                                        ) && (
-                                          <AlertCircle className="w-3.5 h-3.5 text-caution-600 dark:text-caution-500" />
-                                        )}
-                                        {(positionAlerts.some(
-                                          (a: any) => a.category === 'opportunity'
-                                        ) ||
-                                          positionStrategyAlerts.some(
-                                            (a: StrategyAlert) => a.category === 'opportunity'
-                                          )) && (
-                                          <Target className="w-3.5 h-3.5 text-positive-600 dark:text-positive-500" />
-                                        )}
-                                      </div>
-                                    )}
-                                  </div>
-
-                                  {/* Data fields matching header layout */}
-                                  <div className="flex items-center gap-6 text-sm">
-                                    <div className="w-24 flex-shrink-0">
-                                      <p className="text-sm font-medium text-ink-900 dark:text-white">
-                                        {new Date(position.openDate).toLocaleDateString('nl-NL')}
-                                      </p>
-                                    </div>
-                                    <div className="w-16 flex-shrink-0">
-                                      <p className="text-sm font-medium text-ink-900 dark:text-white">
-                                        {position.shares}
-                                      </p>
-                                    </div>
-                                    <div className="w-20 flex-shrink-0">
-                                      <p className="text-sm font-medium text-ink-900 dark:text-white">
-                                        {formatCurrency(position.purchasePrice, allPortfolios)}
-                                      </p>
-                                    </div>
-                                    <div className="w-28 flex-shrink-0">
-                                      <p className="text-sm font-medium text-ink-900 dark:text-white">
-                                        {formatCurrency(position.costBasis, allPortfolios)}
-                                      </p>
-                                    </div>
-                                    <div className="w-24 flex-shrink-0">
-                                      <p className="text-sm font-medium text-ink-900 dark:text-white">
-                                        {formatCurrency(position.currentPrice, allPortfolios)}
-                                      </p>
-                                    </div>
-                                    <div className="w-28 flex-shrink-0">
-                                      <p className="text-sm font-medium text-ink-900 dark:text-white">
-                                        {formatCurrency(position.currentValue, allPortfolios)}
-                                      </p>
-                                    </div>
-                                  </div>
-                                </div>
-
-                                {/* P&L - right-aligned */}
-                                <div
-                                  className="flex-shrink-0 text-right"
-                                  style={{ width: '180px' }}
-                                >
-                                  <p
-                                    className={`text-lg font-bold ${
-                                      isPosProfit
-                                        ? 'text-positive-600 dark:text-positive-500'
-                                        : 'text-negative-600 dark:text-negative-500'
-                                    }`}
-                                  >
-                                    {isPosProfit ? '+' : ''}
-                                    {formatCurrency(Math.abs(posProfit), allPortfolios)}
-                                  </p>
-                                  <p
-                                    className={`text-xs font-medium ${
-                                      isPosProfit
-                                        ? 'text-positive-600 dark:text-positive-500'
-                                        : 'text-negative-600 dark:text-negative-500'
-                                    }`}
-                                  >
-                                    {isPosProfit ? '+' : ''}
-                                    {formatNumber(posProfitPct, 2)}%
-                                  </p>
-                                </div>
-
-                                {onSellPosition && (
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      onSellPosition(position);
-                                    }}
-                                    className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-surface-muted dark:bg-trading-dark-600 hover:bg-ink-200 dark:hover:bg-ink-400 text-ink-700 dark:text-ink-200 rounded font-semibold text-sm transition-colors"
-                                    title={t('widgetsB.sellThisLot')}
-                                  >
-                                    S
-                                  </button>
-                                )}
-                              </div>
-                            </div>
-
-                            {/* Position-specific alerts */}
-                            {(positionAlerts.length > 0 || positionStrategyAlerts.length > 0) && (
-                              <div className="px-4 pb-3 space-y-2">
-                                {/* Price Alerts */}
-                                {positionAlerts.map((alert) => {
-                                  const isOpportunity = alert.category === 'opportunity';
-                                  const bgColor = isOpportunity
-                                    ? 'bg-positive-50 dark:bg-positive-700/15 border-positive-500/20 dark:border-positive-700/30'
-                                    : 'bg-negative-50 dark:bg-negative-700/15 border-negative-500/20 dark:border-negative-700/30';
-                                  const iconColor = isOpportunity
-                                    ? 'text-positive-600 dark:text-positive-500'
-                                    : 'text-negative-600 dark:text-negative-500';
-                                  const textColor = isOpportunity
-                                    ? 'text-positive-700 dark:text-positive-500'
-                                    : 'text-negative-700 dark:text-negative-500';
-
-                                  return (
-                                    <div
-                                      key={alert.id}
-                                      className={`flex items-start gap-2 p-2 ml-8 ${bgColor} border rounded text-xs`}
-                                    >
-                                      {isOpportunity ? (
-                                        <Target
-                                          className={`w-3.5 h-3.5 ${iconColor} mt-0.5 flex-shrink-0`}
-                                        />
-                                      ) : (
-                                        <AlertCircle
-                                          className={`w-3.5 h-3.5 ${iconColor} mt-0.5 flex-shrink-0`}
-                                        />
-                                      )}
-                                      <p className={`${textColor} flex-1`}>{alert.message}</p>
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          setDismissConfirm({ isOpen: true, alert });
-                                        }}
-                                        className={`p-0.5 hover:bg-surface-muted dark:hover:bg-trading-dark-700 rounded transition-colors flex-shrink-0`}
-                                        title={t('widgetsB.closeAlert')}
-                                      >
-                                        <X className="w-3.5 h-3.5" />
-                                      </button>
-                                    </div>
-                                  );
-                                })}
-
-                                {/* Strategy Alerts */}
-                                {positionStrategyAlerts.map((alert: StrategyAlert) => {
-                                  const isAlert = alert.category === 'alert';
-                                  const Icon = isAlert ? AlertCircle : Target;
-                                  const bgColor = isAlert
-                                    ? 'bg-caution-50 dark:bg-caution-600/15 border-caution-500/30 dark:border-caution-600/40'
-                                    : 'bg-positive-50 dark:bg-positive-700/15 border-positive-500/20 dark:border-positive-700/30';
-                                  const iconColor = isAlert
-                                    ? 'text-caution-600 dark:text-caution-500'
-                                    : 'text-positive-600 dark:text-positive-500';
-                                  const textColor = isAlert
-                                    ? 'text-caution-600 dark:text-amber-200'
-                                    : 'text-positive-700 dark:text-positive-500';
-
-                                  return (
-                                    <div
-                                      key={alert.id}
-                                      className={`flex items-start gap-2 p-2 ml-8 ${bgColor} border rounded text-xs`}
-                                    >
-                                      <Icon
-                                        className={`w-3.5 h-3.5 ${iconColor} mt-0.5 flex-shrink-0`}
-                                      />
-                                      <p className={`${textColor} flex-1`}>{alert.message}</p>
-                                      {onDismissStrategyAlert && (
-                                        <button
-                                          onClick={(e) =>
-                                            handleDismissStrategyAlert(e, alert.id, alert.message)
-                                          }
-                                          className={`p-0.5 hover:bg-surface-muted dark:hover:bg-trading-dark-700 rounded transition-colors flex-shrink-0`}
-                                          title={t('widgetsB.closeAlert')}
-                                        >
-                                          <X className="w-3.5 h-3.5" />
-                                        </button>
-                                      )}
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            )}
+                          <div className="px-8 py-4">
+                            <p className="text-sm text-ink-500 dark:text-ink-400">
+                              {t('widgetsB.stockNoCoveredCallsYet')}
+                            </p>
                           </div>
                         );
-                      })}
-                    </div>
+                      }
+                      return (
+                        <>
+                          {/* Labels-only column header above nested call rows */}
+                          <PositionColumnHeader isSubItem />
+                          <div className="divide-y divide-surface-line dark:divide-trading-dark-600">
+                            {calls.map((call) => {
+                              const tickerEntry = tickers?.find(
+                                (tk) => tk.symbol.toUpperCase() === call.ticker.toUpperCase()
+                              );
+                              const stockPrice = tickerEntry?.currentPrice ?? 0;
+                              const totalShares = group.totalShares;
+                              const totalCostBasis = group.totalCostBasis;
+                              const collateralType: CollateralType = 'stock';
+                              const collateralDescription = t('widgetsB.callCoveredByShares', {
+                                shares: totalShares,
+                                ticker: call.ticker,
+                              });
+                              const hasOpp = positionHasOpportunity?.get(call.id) ?? false;
+                              const oppMsg = positionOpportunityMessage?.get(call.id) ?? '';
+                              const hasAlertFlag = positionHasAlert?.get(call.id) ?? false;
+                              const alertMsg = positionAlertMessage?.get(call.id) ?? '';
+                              return (
+                                <OptionRow
+                                  key={call.id}
+                                  option={call}
+                                  currencySymbol={currencySymbol}
+                                  tickerData={tickerEntry}
+                                  stockPrice={stockPrice}
+                                  onRoll={onRoll ? (opt) => onRoll(opt as CallOption) : undefined}
+                                  onClose={onClose ? (opt) => onClose(opt as CallOption) : undefined}
+                                  onAssign={onAssign ? (opt) => onAssign(opt as CallOption) : undefined}
+                                  onClick={onView ? (opt) => onView(opt as CallOption) : undefined}
+                                  showActions={true}
+                                  collateralType={collateralType}
+                                  collateralValue={totalCostBasis}
+                                  collateralDescription={collateralDescription}
+                                  hasOpportunity={hasOpp}
+                                  opportunityMessage={oppMsg}
+                                  hasAlert={hasAlertFlag}
+                                  alertMessage={alertMsg}
+                                  isSubItem={true}
+                                />
+                              );
+                            })}
+                          </div>
+                        </>
+                      );
+                    })()}
                   </div>
                 )}
 

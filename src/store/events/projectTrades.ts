@@ -151,7 +151,55 @@ export function applyTradeEvent(
         if (trade) newTrades.push(trade);
       }
 
-      if (payload.stockClose.fullClose === true) {
+      if (payload.lotCloses) {
+        // -----------------------------------------------------------------------
+        // NEW PATH — multi-lot FIFO: emit exactly ONE aggregate stock trade.
+        // Build it directly from the payload (do NOT look up a single lot).
+        // -----------------------------------------------------------------------
+        const sharesSold = payload.sharesSold ?? payload.lotCloses.reduce((s, lc) => s + lc.sharesSold, 0);
+        const strike = payload.lotCloses[0].closePrice; // all lot closes use the same strike
+        const exitPrice = sharesSold > 0 ? payload.totalProceeds / sharesSold : strike;
+        const aggregateRealizedPnL = payload.stockRealizedPnL ?? 0;
+
+        // Determine strategy from the first matching lot in positionsBefore.
+        const firstLotId = payload.lotCloses[0].stockId;
+        const firstLotPos = byId(firstLotId);
+        const stockStrategy: Trade['strategy'] = firstLotPos?.type === 'etf' ? 'ETF' : 'Aandelen';
+
+        // Use the earliest lot's openDate for the aggregate trade openDate.
+        let earliestOpenDate: string | undefined;
+        for (const lc of payload.lotCloses) {
+          const lotPos = byId(lc.stockId);
+          if (lotPos?.openDate) {
+            if (!earliestOpenDate || lotPos.openDate < earliestOpenDate) {
+              earliestOpenDate = lotPos.openDate;
+            }
+          }
+        }
+
+        const aggregateTrade: Trade = {
+          id: `trade-${event.id}-stock`,
+          ticker: optionPosition?.ticker ?? payload.portfolio,
+          portfolio: payload.portfolio,
+          strategy: stockStrategy,
+          openDate: earliestOpenDate ?? payload.assignmentDate,
+          closeDate: payload.assignmentDate,
+          // Derive the entry price from the GAK realized P&L so the trade record is
+          // internally consistent: (exitPrice - entryPrice) * quantity === realizedPnL.
+          // This equals the weighted-average cost (GAK) over the whole holding.
+          entryPrice: sharesSold > 0 ? exitPrice - aggregateRealizedPnL / sharesSold : 0,
+          exitPrice,
+          quantity: sharesSold,
+          commission: 0,
+          fees: 0,
+          realizedPnL: aggregateRealizedPnL,
+        };
+        newTrades.push(aggregateTrade);
+      } else if (payload.stockClose.fullClose === true) {
+        // -----------------------------------------------------------------------
+        // OLD PATH — backward-compat: single-lot full close only.
+        // UNCHANGED from original — must stay verbatim for old event replay.
+        // -----------------------------------------------------------------------
         const stockPosition = byId(payload.stockId);
         if (stockPosition) {
           const trade = buildTrade(

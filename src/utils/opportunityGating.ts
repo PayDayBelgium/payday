@@ -18,7 +18,9 @@ import type { AlertItem } from './alertEvaluator';
 export const getOpportunityRequiredFeature = (opportunityId: string): FeatureId | null => {
   // Order: most specific prefix first (spread-profit- before profit-).
   if (opportunityId.startsWith('stock-cc-opportunity-')) return 'covered_calls';
-  if (opportunityId.startsWith('leaps-cc-opportunity-')) return 'pmcc';
+  // Writing a call against a LEAPS is treated as part of covered calls (medior),
+  // so the indicator appears once covered_calls is unlocked (not only at PMCC/senior).
+  if (opportunityId.startsWith('leaps-cc-opportunity-')) return 'covered_calls';
   if (opportunityId.startsWith('kaching-opportunity-')) return 'kaching';
   if (opportunityId.startsWith('expiring-short-put-opportunity-')) return 'cash_secured_puts';
   if (opportunityId.startsWith('spread-profit-opportunity-')) return 'spreads';

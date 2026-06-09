@@ -265,7 +265,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onToggleSidebar}
             className="absolute bottom-1 right-1 p-0.5 rounded-full bg-white border border-[var(--line)] text-ink-500 hover:text-ink-900 hover:border-primary-300 transition-colors"
-            title={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            title={isSidebarCollapsed ? t('header.expandSidebar') : t('header.collapseSidebar')}
           >
             {isSidebarCollapsed ? (
               <Menu className="w-3 h-3" />
@@ -310,7 +310,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <button
                   onClick={onInfoClick}
                   className="p-1.5 hover:bg-primary-50 rounded-md transition-colors flex-shrink-0"
-                  title={isInfoActive ? 'Verberg uitleg' : 'Toon uitleg'}
+                  title={isInfoActive ? t('header.hideExplanation') : t('header.showExplanation')}
                 >
                   <Info
                     className={`w-4 h-4 ${isInfoActive ? 'text-primary-700' : 'text-ink-400'}`}
@@ -322,7 +322,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <button
                   onClick={onWarningClick}
                   className="p-1.5 hover:bg-caution-50 rounded-md transition-colors flex-shrink-0"
-                  title={isWarningActive ? 'Verberg waarschuwing' : 'Toon waarschuwing'}
+                  title={isWarningActive ? t('header.hideWarning') : t('header.showWarning')}
                 >
                   <AlertCircle
                     className={`w-4 h-4 ${isWarningActive ? 'text-caution-600' : 'text-ink-400'}`}
@@ -343,7 +343,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={() => navigate('/help')}
             className="w-9 h-9 hover:bg-surface-subtle rounded-md flex items-center justify-center transition-colors text-ink-500 hover:text-ink-900"
-            title="Help Portal"
+            title={t('header.helpPortal')}
           >
             <HelpCircle className="w-[18px] h-[18px]" strokeWidth={1.75} />
           </button>
@@ -383,7 +383,7 @@ export const Header: React.FC<HeaderProps> = ({
                           {username || 'Trader'}
                         </h3>
                         <div className="flex items-center gap-2">
-                          <p className="text-xs text-ink-500 dark:text-ink-400">Options Trader</p>
+                          <p className="text-xs text-ink-500 dark:text-ink-400">{t('header.optionsTrader')}</p>
                           {/* Credits Badge */}
                           <div className="flex items-center gap-1 px-1.5 py-0.5 bg-caution-50 dark:bg-caution-600/25 rounded-full">
                             <Star className="w-2.5 h-2.5 text-caution-600 dark:text-caution-500" />
@@ -481,7 +481,7 @@ export const Header: React.FC<HeaderProps> = ({
                         <Settings className="w-3.5 h-3.5 text-ink-600 dark:text-ink-300" />
                       </div>
                       <span className="text-xs font-medium text-ink-700 dark:text-ink-200">
-                        Instellingen
+                        {t('header.settings')}
                       </span>
                     </button>
 
@@ -495,7 +495,7 @@ export const Header: React.FC<HeaderProps> = ({
                       </div>
                       <div className="flex-1 flex items-center justify-between">
                         <span className="text-xs font-medium text-ink-700 dark:text-ink-200">
-                          Help
+                          {t('header.help')}
                         </span>
                         <div
                           className={`w-7 h-3.5 rounded-full transition-colors ${showExtraInfo ? 'bg-primary-500' : 'bg-ink-200 dark:bg-trading-dark-600'} relative`}
@@ -515,7 +515,7 @@ export const Header: React.FC<HeaderProps> = ({
                 {/* Preferences Section */}
                 <div className="p-3 space-y-2">
                   <p className="text-[10px] font-semibold text-ink-400 dark:text-ink-500 uppercase tracking-wider px-1">
-                    Voorkeuren
+                    {t('header.preferences')}
                   </p>
 
                   {/* Language */}
@@ -569,7 +569,7 @@ export const Header: React.FC<HeaderProps> = ({
                 {/* Data Section */}
                 <div className="p-3 space-y-1.5">
                   <p className="text-[10px] font-semibold text-ink-400 dark:text-ink-500 uppercase tracking-wider px-1">
-                    Data
+                    {t('header.data')}
                   </p>
 
                   <div className="flex gap-2">
@@ -579,7 +579,7 @@ export const Header: React.FC<HeaderProps> = ({
                     >
                       <Download className="w-3.5 h-3.5 text-ink-500 dark:text-ink-400 group-hover:text-ink-700 dark:group-hover:text-ink-200" />
                       <span className="text-xs font-medium text-ink-600 dark:text-ink-300 group-hover:text-ink-800 dark:group-hover:text-white">
-                        Backup
+                        {t('header.backup')}
                       </span>
                     </button>
                     <button
@@ -588,7 +588,7 @@ export const Header: React.FC<HeaderProps> = ({
                     >
                       <Upload className="w-3.5 h-3.5 text-ink-500 dark:text-ink-400 group-hover:text-ink-700 dark:group-hover:text-ink-200" />
                       <span className="text-xs font-medium text-ink-600 dark:text-ink-300 group-hover:text-ink-800 dark:group-hover:text-white">
-                        Restore
+                        {t('header.restore')}
                       </span>
                     </button>
                   </div>

@@ -816,11 +816,18 @@ describe('Scenario 6: call assignment partial (200 shares, 1-contract call)', ()
     expect(wheel?.totalRealizedPnL).toBe(700);
   });
 
-  it('only the option trade is created (stock not fully closed → no stock trade)', () => {
+  it('two trades created: option trade + aggregate stock trade (new multi-lot path)', () => {
     const trades = sel.trades(store);
-    // Only the option leg should produce a trade; stock is merely edited, not closed
-    expect(trades).toHaveLength(1);
-    expect(trades[0].ticker).toBe('AAPL');
+    // New FIFO multi-lot path always emits an aggregate stock trade (even on partial close),
+    // representing the 100 shares called away as ONE sale at the strike.
+    expect(trades).toHaveLength(2);
+    const optTrade = trades.find((t) => t.id.endsWith('-option'));
+    const stkTrade = trades.find((t) => t.id.endsWith('-stock'));
+    expect(optTrade).toBeDefined();
+    expect(stkTrade).toBeDefined();
+    expect(stkTrade!.quantity).toBe(100);             // 1 contract × 100 shares
+    expect(stkTrade!.realizedPnL).toBe(700);          // strike(55)×100 − avgCost(48)×100
+    expect(stkTrade!.ticker).toBe('AAPL');
   });
 
   it('portfolio currentValue: cash + remaining stock value', () => {

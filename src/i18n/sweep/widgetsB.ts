@@ -99,6 +99,7 @@ export const widgetsB = {
       purchaseValue: 'Purchase value',
       currentPrice: 'Current Price',
       currentValue: 'Current Value',
+      buy: 'Buy',
       sell: 'Sell',
       sellLotExpand: 'Sell a lot (expand)',
       sellThisLot: 'Sell this lot',
@@ -234,10 +235,29 @@ export const widgetsB = {
       copyToClipboard: 'Copy to clipboard (Excel)',
       valueTooltip: 'Value',
       portfolioValueSeries: 'Portfolio value',
+      // GroupedLeapsList
+      sectionStocksEtfs: "Stocks & ETFs",
+      sectionLeaps: "LEAPS",
+      sectionCashSecuredPuts: 'Cash Secured Puts',
+      sectionSpreads: 'Spreads',
+      sectionOther: 'Other',
+      leapsWriteShortCallTitle: 'Write a short call against this LEAPS (PMCC)',
+      leapsNoShortCallsYet: 'No short calls written against this LEAPS yet.',
+      stockNoCoveredCallsYet: 'No covered calls written on these shares yet.',
       // CommunityWidget
       conversations: 'Conversations',
       community: 'Community',
       toTheCommunity: 'To the community',
+      // StockETFCard
+      costBasis: 'Cost Basis',
+      // PortfolioView filter labels
+      filterOpportunities: 'Opportunities',
+      filterAlerts: 'Alerts',
+      filterIdeas: 'Ideas',
+      // UpcomingEvents
+      upcomingEventsTitle: 'Upcoming Events',
+      today: 'Today',
+      tomorrow: 'Tomorrow',
     },
   },
   nl: {
@@ -339,6 +359,7 @@ export const widgetsB = {
       purchaseValue: 'Aankoopwaarde',
       currentPrice: 'Huidige Prijs',
       currentValue: 'Huidige Waarde',
+      buy: 'Koop',
       sell: 'Verkoop',
       sellLotExpand: 'Verkoop een lot (klap uit)',
       sellThisLot: 'Verkoop dit lot',
@@ -474,10 +495,29 @@ export const widgetsB = {
       copyToClipboard: 'Kopieer naar clipboard (Excel)',
       valueTooltip: 'Waarde',
       portfolioValueSeries: 'Portfolio waarde',
+      // GroupedLeapsList
+      sectionStocksEtfs: "Aandelen & ETF's",
+      sectionLeaps: "LEAPS",
+      sectionCashSecuredPuts: 'Cash Secured Puts',
+      sectionSpreads: 'Spreads',
+      sectionOther: 'Overige',
+      leapsWriteShortCallTitle: 'Schrijf een short call tegen deze LEAPS (PMCC)',
+      leapsNoShortCallsYet: 'Nog geen short calls geschreven tegen deze LEAPS.',
+      stockNoCoveredCallsYet: 'Nog geen covered calls geschreven op deze aandelen.',
       // CommunityWidget
       conversations: 'Gesprekken',
       community: 'Community',
       toTheCommunity: 'Naar de community',
+      // StockETFCard
+      costBasis: 'Kostbasis',
+      // PortfolioView filter labels
+      filterOpportunities: 'Kansen',
+      filterAlerts: 'Alerts',
+      filterIdeas: 'Ideeën',
+      // UpcomingEvents
+      upcomingEventsTitle: 'Aankomende gebeurtenissen',
+      today: 'Vandaag',
+      tomorrow: 'Morgen',
     },
   },
   fr: {
@@ -579,6 +619,7 @@ export const widgetsB = {
       purchaseValue: 'Valeur d’achat',
       currentPrice: 'Prix actuel',
       currentValue: 'Valeur actuelle',
+      buy: 'Acheter',
       sell: 'Vendre',
       sellLotExpand: 'Vendre un lot (déplier)',
       sellThisLot: 'Vendre ce lot',
@@ -715,10 +756,29 @@ export const widgetsB = {
       copyToClipboard: 'Copier dans le presse-papiers (Excel)',
       valueTooltip: 'Valeur',
       portfolioValueSeries: 'Valeur du portefeuille',
+      // GroupedLeapsList
+      sectionStocksEtfs: "Actions & ETF",
+      sectionLeaps: "LEAPS",
+      sectionCashSecuredPuts: 'Cash Secured Puts',
+      sectionSpreads: 'Spreads',
+      sectionOther: 'Autres',
+      leapsWriteShortCallTitle: 'Écrire un short call contre ce LEAPS (PMCC)',
+      leapsNoShortCallsYet: "Aucun short call écrit contre ce LEAPS pour l'instant.",
+      stockNoCoveredCallsYet: "Aucun covered call encore écrit sur ces actions.",
       // CommunityWidget
       conversations: 'Conversations',
       community: 'Communauté',
       toTheCommunity: 'Vers la communauté',
+      // StockETFCard
+      costBasis: 'Prix de revient',
+      // PortfolioView filter labels
+      filterOpportunities: 'Opportunités',
+      filterAlerts: 'Alertes',
+      filterIdeas: 'Idées',
+      // UpcomingEvents
+      upcomingEventsTitle: 'Événements à venir',
+      today: "Aujourd'hui",
+      tomorrow: 'Demain',
     },
   },
 };

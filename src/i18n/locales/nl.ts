@@ -78,6 +78,20 @@ const nlBase = {
     language: 'Taal',
     logout: 'Uitloggen',
     loggingOut: 'Uitloggen en sessie wissen...',
+    helpPortal: 'Helpportal',
+    optionsTrader: 'Optiehandelaar',
+    settings: 'Instellingen',
+    help: 'Help',
+    preferences: 'Voorkeuren',
+    data: 'Data',
+    backup: 'Back-up',
+    restore: 'Herstellen',
+    hideExplanation: 'Verberg uitleg',
+    showExplanation: 'Toon uitleg',
+    hideWarning: 'Verberg waarschuwing',
+    showWarning: 'Toon waarschuwing',
+    expandSidebar: 'Zijbalk uitklappen',
+    collapseSidebar: 'Zijbalk inklappen',
   },
 
   // Sidebar
@@ -105,6 +119,8 @@ const nlBase = {
     quantTrading: 'Quant trading',
     mentorship: 'Mentorship',
     optionCheck: 'Optie-Check',
+    coveredCallSimulator: 'Covered Call Simulator',
+    pnlSimulator: 'P&L Simulator',
   },
 
   // Strategies
