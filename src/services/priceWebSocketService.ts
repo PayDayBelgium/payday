@@ -8,6 +8,7 @@ import {
   setOptionsSubscribed,
 } from '../store/slices/connectivitySlice';
 import type { ConnectionStatus, DataMode } from '../types';
+import { isAllowedWebSocketUrl, isValidPriceMessage } from './websocketValidation';
 
 // Re-export types for backwards compatibility
 export type { ConnectionStatus, DataMode } from '../types';
@@ -125,18 +126,28 @@ class PriceWebSocketService {
   private logHandlers: Set<LogHandler> = new Set();
   private subscribedTickers: Set<string> = new Set();
   private subscribedOptions: Map<string, OptionIdentifier> = new Map();
+  // Warn only once per malformed message type to avoid console storms.
+  private warnedInvalidTypes: Set<string> = new Set();
 
   getConfig(): WebSocketConfig {
     return { ...this.config };
   }
 
   updateConfig(newConfig: Partial<WebSocketConfig>): void {
+    // Reject unsafe endpoint URLs (only wss://, or ws:// against localhost).
+    if (newConfig.url !== undefined && !isAllowedWebSocketUrl(newConfig.url)) {
+      console.warn(
+        `[WebSocket] Rejected unsafe WebSocket URL "${newConfig.url}" — keeping "${this.config.url}"`
+      );
+      newConfig = { ...newConfig, url: this.config.url };
+    }
     this.config = { ...this.config, ...newConfig };
     // Save to localStorage
     localStorage.setItem('priceWebSocketConfig', JSON.stringify(this.config));
   }
 
   loadConfig(): void {
+    const defaultUrl = this.config.url;
     const saved = localStorage.getItem('priceWebSocketConfig');
     if (saved) {
       try {
@@ -145,6 +156,14 @@ class PriceWebSocketService {
       } catch {
         // Ignore parse errors
       }
+    }
+    // A persisted config is attacker-influenceable (localStorage): never
+    // accept an unsafe endpoint URL from it — fall back to the default.
+    if (!isAllowedWebSocketUrl(this.config.url)) {
+      console.warn(
+        `[WebSocket] Ignoring unsafe persisted WebSocket URL "${this.config.url}" — using default "${defaultUrl}"`
+      );
+      this.config.url = defaultUrl;
     }
   }
 
@@ -277,8 +296,23 @@ class PriceWebSocketService {
 
         this.ws.onmessage = (event) => {
           try {
-            const message: IncomingMessage = JSON.parse(event.data);
-            this.handleMessage(message, event.data);
+            const parsed: unknown = JSON.parse(event.data);
+            // Drop messages that don't match the expected shapes before they
+            // can reach the Redux store (the server is not trusted input).
+            if (!isValidPriceMessage(parsed)) {
+              const type =
+                typeof parsed === 'object' && parsed !== null
+                  ? String((parsed as Record<string, unknown>).type)
+                  : 'non-object';
+              if (!this.warnedInvalidTypes.has(type)) {
+                this.warnedInvalidTypes.add(type);
+                console.warn(
+                  `[WebSocket] Dropping invalid message of type "${type}" (further occurrences will not be logged)`
+                );
+              }
+              return;
+            }
+            this.handleMessage(parsed, event.data);
           } catch {
             this.addLog('incoming', 'parse_error', `Failed to parse message: ${event.data}`);
           }

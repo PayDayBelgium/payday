@@ -6,6 +6,7 @@ import {
   incrementReconnectAttempts,
   resetReconnectAttempts,
 } from '../store/slices/ibConnectionSlice';
+import { isLocalHostname, isValidIBMessage, isValidPort } from './websocketValidation';
 
 // Store reference - injected from main.tsx (same pattern as priceWebSocketService).
 // Avoids importing a module-level singleton store that wouldn't hold user data.
@@ -75,13 +76,33 @@ class IBWebSocketService {
     { resolve: (value: any) => void; reject: (reason: any) => void }
   > = new Map();
   private requestId = 0;
+  // Warn only once for malformed incoming messages to avoid console storms.
+  private warnedInvalidMessage = false;
 
   constructor(config?: Partial<IBConfig>) {
-    this.config = {
+    this.config = this.sanitizeConfig({
       host: config?.host || '127.0.0.1',
       port: config?.port || 7496, // TWS live trading port by default
       clientId: config?.clientId || 9,
-    };
+    });
+  }
+
+  /**
+   * The IB TWS bridge is localhost-only by design: enforce a loopback host
+   * and a valid port so a tampered config cannot point this service (and the
+   * insecure ws:// URL it builds) at an arbitrary remote endpoint.
+   */
+  private sanitizeConfig(config: IBConfig): IBConfig {
+    const sanitized = { ...config };
+    if (!isLocalHostname(sanitized.host)) {
+      console.warn(`[IB WebSocket] Rejected non-local host "${sanitized.host}" — using 127.0.0.1`);
+      sanitized.host = '127.0.0.1';
+    }
+    if (!isValidPort(sanitized.port)) {
+      console.warn(`[IB WebSocket] Rejected invalid port "${sanitized.port}" — using 7496`);
+      sanitized.port = 7496;
+    }
+    return sanitized;
   }
 
   /**
@@ -292,7 +313,7 @@ class IBWebSocketService {
    * Update connection configuration
    */
   public updateConfig(config: Partial<IBConfig>): void {
-    this.config = { ...this.config, ...config };
+    this.config = this.sanitizeConfig({ ...this.config, ...config });
   }
 
   /**
@@ -314,10 +335,23 @@ class IBWebSocketService {
     try {
       const message = JSON.parse(data);
 
+      // Drop messages that don't match the expected shape (the server is not
+      // trusted input). Warn only once to avoid console storms.
+      if (!isValidIBMessage(message)) {
+        if (!this.warnedInvalidMessage) {
+          this.warnedInvalidMessage = true;
+          console.warn(
+            '[IB WebSocket] Dropping invalid message (further occurrences will not be logged)'
+          );
+        }
+        return;
+      }
+
       // Handle responses to pending requests
-      if (message.requestId !== undefined && this.pendingRequests.has(message.requestId)) {
-        const { resolve } = this.pendingRequests.get(message.requestId)!;
-        this.pendingRequests.delete(message.requestId);
+      const requestId = message.requestId;
+      if (typeof requestId === 'number' && this.pendingRequests.has(requestId)) {
+        const { resolve } = this.pendingRequests.get(requestId)!;
+        this.pendingRequests.delete(requestId);
         resolve(message.data);
         return;
       }
