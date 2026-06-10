@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { buildLeapsSection, buildPortfolioSections } from './positionHelpers';
+import {
+  buildLeapsSection,
+  buildPortfolioSections,
+  allocateSpreadClosePremium,
+} from './positionHelpers';
+import { calculateOptionRealizedPnL } from './pnlCalculations';
 import type { Position, StockPosition, CallOption, PutOption, Ticker } from '../types';
 
 // ── Factory helpers ──────────────────────────────────────────────────────────
@@ -345,5 +350,155 @@ describe('buildPortfolioSections', () => {
     for (const id of sectionIds) {
       expect(knownIds.has(id)).toBe(true);
     }
+  });
+});
+
+// ── allocateSpreadClosePremium ───────────────────────────────────────────────
+
+describe('allocateSpreadClosePremium', () => {
+  /** Build a spread leg with an explicit premium and costBasis. */
+  const leg = (
+    action: 'buy' | 'sell',
+    premium: number,
+    costBasis: number,
+    contracts = 1
+  ): CallOption => ({
+    id: `leg-${action}`,
+    type: 'call',
+    ticker: 'AAPL',
+    portfolio: 'Test',
+    openDate: '2026-01-01',
+    status: 'open',
+    action,
+    strike: action === 'buy' ? 100 : 110,
+    expiration: '2026-06-19',
+    contracts,
+    premium,
+    costBasis,
+    currentValue: costBasis,
+  });
+
+  it('debit spread: the long leg gets the full net close premium, short leg closes at 0', () => {
+    // Worked example A: longCB 500 (premium 5), shortCB -200 (premium 2) → net debit 300.
+    const longLeg = leg('buy', 5, 500);
+    const shortLeg = leg('sell', 2, -200);
+
+    const alloc = allocateSpreadClosePremium(longLeg, shortLeg, 4);
+    expect(alloc.longClosePremium).toBe(4);
+    expect(alloc.shortClosePremium).toBe(0);
+  });
+
+  it('credit spread: the short leg gets the full net close premium, long leg closes at 0', () => {
+    // Worked example B: longCB +50 (premium 0.5), shortCB -150 (premium 1.5) → net credit 100.
+    const longLeg = leg('buy', 0.5, 50);
+    const shortLeg = leg('sell', 1.5, -150);
+
+    const alloc = allocateSpreadClosePremium(longLeg, shortLeg, 0.4);
+    expect(alloc.longClosePremium).toBe(0);
+    expect(alloc.shortClosePremium).toBe(0.4);
+  });
+
+  it('invariant (debit, example A): total P&L = +X·c·100 − (longCB + shortCB) and net cash = +X·c·100', () => {
+    // Debit spread closed (sold) at net 4.00, 1 contract → cash +400, total P&L +100.
+    const longLeg = leg('buy', 5, 500);
+    const shortLeg = leg('sell', 2, -200);
+    const X = 4;
+
+    const alloc = allocateSpreadClosePremium(longLeg, shortLeg, X);
+    const longPnL = calculateOptionRealizedPnL({
+      action: 'buy',
+      costBasis: longLeg.costBasis,
+      closePremium: alloc.longClosePremium,
+      contracts: longLeg.contracts,
+    });
+    const shortPnL = calculateOptionRealizedPnL({
+      action: 'sell',
+      costBasis: shortLeg.costBasis,
+      closePremium: alloc.shortClosePremium,
+      contracts: shortLeg.contracts,
+    });
+    // Total P&L = +400 − (500 − 200) = +100
+    expect(longPnL + shortPnL).toBe(100);
+
+    // Net ledger cash: long leg sold (+) at its close premium, short leg bought back (−).
+    const netCash =
+      alloc.longClosePremium * longLeg.contracts * 100 -
+      alloc.shortClosePremium * shortLeg.contracts * 100;
+    expect(netCash).toBe(400);
+  });
+
+  it('invariant (credit, example B): total P&L = −X·c·100 − (longCB + shortCB) and net cash = −X·c·100', () => {
+    // Credit spread (net credit 100) bought back at 0.40 → cash −40, total P&L +60.
+    const longLeg = leg('buy', 0.5, 50);
+    const shortLeg = leg('sell', 1.5, -150);
+    const X = 0.4;
+
+    const alloc = allocateSpreadClosePremium(longLeg, shortLeg, X);
+    const longPnL = calculateOptionRealizedPnL({
+      action: 'buy',
+      costBasis: longLeg.costBasis,
+      closePremium: alloc.longClosePremium,
+      contracts: longLeg.contracts,
+    });
+    const shortPnL = calculateOptionRealizedPnL({
+      action: 'sell',
+      costBasis: shortLeg.costBasis,
+      closePremium: alloc.shortClosePremium,
+      contracts: shortLeg.contracts,
+    });
+    // Total P&L = −40 − (50 − 150) = +60
+    expect(longPnL + shortPnL).toBe(60);
+
+    const netCash =
+      alloc.longClosePremium * longLeg.contracts * 100 -
+      alloc.shortClosePremium * shortLeg.contracts * 100;
+    expect(netCash).toBe(-40);
+  });
+
+  it('zero close (expire worthless): both legs close at 0; total P&L = −(longCB + shortCB)', () => {
+    const longLeg = leg('buy', 5, 500);
+    const shortLeg = leg('sell', 2, -200);
+
+    const alloc = allocateSpreadClosePremium(longLeg, shortLeg, 0);
+    expect(alloc.longClosePremium).toBe(0);
+    expect(alloc.shortClosePremium).toBe(0);
+
+    const longPnL = calculateOptionRealizedPnL({
+      action: 'buy',
+      costBasis: longLeg.costBasis,
+      closePremium: 0,
+      contracts: longLeg.contracts,
+    });
+    const shortPnL = calculateOptionRealizedPnL({
+      action: 'sell',
+      costBasis: shortLeg.costBasis,
+      closePremium: 0,
+      contracts: shortLeg.contracts,
+    });
+    // Net debit 300 lost entirely
+    expect(longPnL + shortPnL).toBe(-300);
+  });
+
+  it('multi-contract spread scales with contracts', () => {
+    // 3-contract debit spread: longCB 1500, shortCB −600 (net debit 900), closed at 4.00.
+    const longLeg = leg('buy', 5, 1500, 3);
+    const shortLeg = leg('sell', 2, -600, 3);
+    const X = 4;
+
+    const alloc = allocateSpreadClosePremium(longLeg, shortLeg, X);
+    const longPnL = calculateOptionRealizedPnL({
+      action: 'buy',
+      costBasis: longLeg.costBasis,
+      closePremium: alloc.longClosePremium,
+      contracts: longLeg.contracts,
+    });
+    const shortPnL = calculateOptionRealizedPnL({
+      action: 'sell',
+      costBasis: shortLeg.costBasis,
+      closePremium: alloc.shortClosePremium,
+      contracts: shortLeg.contracts,
+    });
+    // Total = +1200 − 900 = +300
+    expect(longPnL + shortPnL).toBe(300);
   });
 });
