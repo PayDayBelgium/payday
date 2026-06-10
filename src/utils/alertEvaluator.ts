@@ -3,6 +3,7 @@ import { getCurrencySymbol } from './currency';
 import { formatNumber } from './numberFormat';
 import { isKaChingEligible, isLEAPS } from './campaignDetector';
 import { isSpreadLeg, getSpreadId } from './spreadHelpers';
+import { calculateOptionUnrealizedPnL } from './pnlCalculations';
 import { allocateCallCoverage, suggestCoveredCallStrike } from './coverageAllocation';
 import type {
   Position,
@@ -1123,16 +1124,13 @@ export const evaluateProfitOpportunities = (
     const costBasis = option.costBasis;
     const currentValue = option.currentValue ?? 0;
 
-    // Calculate effective current value (negative for short positions)
-    const effectiveCurrentValue = isBuy ? currentValue : -currentValue;
-    const effectiveCostBasis = isBuy ? costBasis : -costBasis;
-
-    // Calculate P&L
-    const pnl = effectiveCurrentValue - effectiveCostBasis;
+    // costBasis/currentValue are stored signed (negative for shorts);
+    // the shared helper handles both conventions correctly.
+    const pnl = calculateOptionUnrealizedPnL({ action: option.action, costBasis, currentValue });
     const isProfitable = pnl > 0;
 
-    // Calculate profit percentage based on cost basis
-    const profitPercent = effectiveCostBasis !== 0 ? (pnl / Math.abs(effectiveCostBasis)) * 100 : 0;
+    // Profit percentage relative to premium paid (long) or received (short)
+    const profitPercent = costBasis !== 0 ? (pnl / Math.abs(costBasis)) * 100 : 0;
 
     // Check if >= 80% profit
     if (isProfitable && profitPercent >= 80) {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calculatePortfolioFreeCash } from './alertEvaluator';
+import { calculatePortfolioFreeCash, evaluateProfitOpportunities } from './alertEvaluator';
 import type { Portfolio, Position } from '../types';
 
 const portfolio = (over: Partial<Portfolio> = {}): Portfolio =>
@@ -48,6 +48,67 @@ const shortPut = (over: Record<string, unknown> = {}): Position =>
     cashReserved: 2000,
     ...over,
   }) as unknown as Position;
+
+const longCall = (over: Record<string, unknown> = {}): Position =>
+  ({
+    id: 'c1',
+    ticker: 'XYZ',
+    portfolio: 'Test',
+    openDate: '2026-01-01',
+    status: 'open',
+    type: 'call',
+    action: 'buy',
+    strike: 100,
+    expiration: '2026-12-31',
+    contracts: 1,
+    premium: 1,
+    costBasis: 100,
+    currentValue: 100,
+    ...over,
+  }) as unknown as Position;
+
+describe('evaluateProfitOpportunities', () => {
+  describe('single options', () => {
+    it('fires for a short put with 80% profit (liability shrank)', () => {
+      // Short put: received $300 credit (costBasis -300), buyback now costs $60
+      // (currentValue -60) -> P&L +240 = 80% of premium received.
+      const result = evaluateProfitOpportunities(
+        [shortPut({ costBasis: -300, currentValue: -60 })],
+        new Set()
+      );
+      expect(result).toHaveLength(1);
+      expect(result[0].id).toBe('profit-opportunity-p1');
+      expect(result[0].message).toContain('80% winst');
+    });
+
+    it('does not fire for a short put at a loss (liability grew)', () => {
+      // Short put: received $300 credit, buyback now costs $600 -> P&L -300.
+      const result = evaluateProfitOpportunities(
+        [shortPut({ costBasis: -300, currentValue: -600 })],
+        new Set()
+      );
+      expect(result).toHaveLength(0);
+    });
+
+    it('fires for a long call with 90% profit', () => {
+      const result = evaluateProfitOpportunities(
+        [longCall({ costBasis: 100, currentValue: 190 })],
+        new Set()
+      );
+      expect(result).toHaveLength(1);
+      expect(result[0].id).toBe('profit-opportunity-c1');
+      expect(result[0].message).toContain('90% winst');
+    });
+
+    it('does not fire for a long call at a loss', () => {
+      const result = evaluateProfitOpportunities(
+        [longCall({ costBasis: 100, currentValue: 40 })],
+        new Set()
+      );
+      expect(result).toHaveLength(0);
+    });
+  });
+});
 
 describe('calculatePortfolioFreeCash', () => {
   it('with no positions, all portfolio value is free cash', () => {
