@@ -197,8 +197,6 @@ export const modalsA = {
     optionsAvailable: 'Options Available',
     yes: 'Yes',
     no: 'No',
-    miniContracts: 'Mini Contracts',
-    yesTenShares: 'Yes (10 shares)',
     notesComment: 'Notes / Comments',
     positionNotesPlaceholder:
       'Add notes about this position, strategy, goals, etc...',
@@ -404,8 +402,6 @@ export const modalsA = {
     optionsAvailable: 'Opties Beschikbaar',
     yes: 'Ja',
     no: 'Nee',
-    miniContracts: 'Mini Contracts',
-    yesTenShares: 'Ja (10 shares)',
     notesComment: 'Notities / Commentaar',
     positionNotesPlaceholder:
       'Voeg notities toe over deze positie, strategie, doelen, etc...',
@@ -613,8 +609,6 @@ export const modalsA = {
     optionsAvailable: 'Options Disponibles',
     yes: 'Oui',
     no: 'Non',
-    miniContracts: 'Mini Contrats',
-    yesTenShares: 'Oui (10 actions)',
     notesComment: 'Notes / Commentaires',
     positionNotesPlaceholder:
       'Ajoutez des notes sur cette position, stratégie, objectifs, etc...',
