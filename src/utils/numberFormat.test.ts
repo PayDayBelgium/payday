@@ -1,11 +1,17 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { parseLocalizedNumber } from './numberFormat';
+import { parseLocalizedNumber, invalidateLocaleCache } from './numberFormat';
 
-// getCurrentLocale() reads the i18n language from localStorage('payday-language').
-const setLanguage = (lang: 'en' | 'nl' | 'fr') => localStorage.setItem('payday-language', lang);
+// getCurrentLocale() reads the i18n language from localStorage('payday-language')
+// and caches it (the app invalidates via i18next's languageChanged event); since
+// these tests write localStorage directly, they invalidate the cache explicitly.
+const setLanguage = (lang: 'en' | 'nl' | 'fr') => {
+  localStorage.setItem('payday-language', lang);
+  invalidateLocaleCache();
+};
 
 afterEach(() => {
   localStorage.removeItem('payday-language');
+  invalidateLocaleCache();
 });
 
 describe('parseLocalizedNumber', () => {
