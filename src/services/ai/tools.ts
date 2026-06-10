@@ -332,7 +332,6 @@ const ensureTickerInStore = (
     name: name || symbol,
     type,
     optionsAvailable: true,
-    miniContractsAvailable: false,
     lastUsed: ts,
     createdAt: ts,
   };
@@ -412,7 +411,6 @@ const applyStock = (
     currentPrice: price,
     currentValue: c.shares * price,
     optionsSupported: true,
-    miniContractsSupported: false,
   };
   dispatch(openPosition(position, new Date().toISOString()));
   // Transaction ledger line (position_buy) derived from PositionOpened event by the transaction projection.

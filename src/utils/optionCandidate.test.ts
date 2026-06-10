@@ -41,7 +41,6 @@ const ticker = (over: Partial<Ticker> = {}): Ticker => ({
   name: 'Apple',
   type: 'stock',
   optionsAvailable: true,
-  miniContractsAvailable: false,
   ...over,
 });
 

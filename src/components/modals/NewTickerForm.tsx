@@ -1,5 +1,4 @@
 import React from 'react';
-import { Info } from 'lucide-react';
 import type { NewTickerData } from './optionWizardUtils';
 
 interface NewTickerFormLabels {
@@ -12,8 +11,6 @@ interface NewTickerFormLabels {
   stock: string;
   etf: string;
   optionsAvailableCheck: string;
-  miniContractsCheck: string;
-  miniContractsTooltip: string;
   addTicker: string;
   cancel: string;
 }
@@ -104,29 +101,6 @@ export const NewTickerForm: React.FC<NewTickerFormProps> = ({
           />
           <span className="text-sm text-ink-700 dark:text-ink-300">
             {labels.optionsAvailableCheck}
-          </span>
-        </label>
-
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={data.miniContractsAvailable}
-            onChange={(e) =>
-              onChange({
-                ...data,
-                miniContractsAvailable: e.target.checked,
-              })
-            }
-            className="w-4 h-4 text-primary-700 bg-surface-subtle border-ink-200 rounded focus:ring-primary-500"
-          />
-          <span className="text-sm text-ink-700 dark:text-ink-300 flex items-center gap-2">
-            {labels.miniContractsCheck}
-            <div className="group relative">
-              <Info className="w-4 h-4 text-ink-400 hover:text-ink-600 dark:hover:text-ink-300 cursor-help" />
-              <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-white dark:bg-trading-dark-800 text-ink-700 dark:text-ink-300 text-xs rounded-lg shadow-lg border border-surface-line dark:border-trading-dark-500 z-50">
-                {labels.miniContractsTooltip}
-              </div>
-            </div>
           </span>
         </label>
       </div>

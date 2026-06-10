@@ -302,7 +302,6 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
       name: campaign.ticker,
       type: 'stock',
       optionsAvailable: true,
-      miniContractsAvailable: false,
     });
     // Set wheel ID if this is a wheel campaign
     if (campaign.type === 'wheel') {

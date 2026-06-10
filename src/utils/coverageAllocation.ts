@@ -2,6 +2,13 @@ import type { StockPosition, CallOption } from '../types';
 import { isSpreadLeg } from './spreadHelpers';
 
 /**
+ * An option contract always covers 100 shares of the underlying.
+ * Mini contracts (10 shares/contract) were deliberately removed from the
+ * platform; all capacity/collateral/assignment math assumes 100.
+ */
+export const SHARES_PER_CONTRACT = 100;
+
+/**
  * Deterministic coverage allocation for covered calls / PMCC.
  *
  * Assigns each open short call to exactly one "parent": the share group or
@@ -117,9 +124,7 @@ export function allocateCallCoverage(input: CallCoverageInput): CallCoverageAllo
 
   // --- Build parents ---
   const totalShares = stocks.reduce((s, lot) => s + lot.shares, 0);
-  const miniSupported = stocks[0]?.miniContractsSupported ?? false;
-  const sharesPerContract = miniSupported ? 10 : 100;
-  const stockCapacity = Math.floor(totalShares / sharesPerContract);
+  const stockCapacity = Math.floor(totalShares / SHARES_PER_CONTRACT);
   const representativeLot = [...stocks].sort(
     (a, b) => new Date(a.openDate).getTime() - new Date(b.openDate).getTime()
   )[0];

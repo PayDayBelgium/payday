@@ -11,7 +11,6 @@ function makeTicker(symbol: string, overrides: Partial<Ticker> = {}): Ticker {
     name: `${symbol} Corp`,
     type: 'stock',
     optionsAvailable: true,
-    miniContractsAvailable: false,
     hasDividend: false,
     isWatchlist: false,
     createdAt: '2026-01-01T00:00:00.000Z',

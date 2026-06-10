@@ -55,7 +55,6 @@ const tickers: Ticker[] = [
     name: 'XYZ Corp',
     type: 'stock',
     optionsAvailable: true,
-    miniContractsAvailable: false,
     currentPrice: 110,
   },
 ];

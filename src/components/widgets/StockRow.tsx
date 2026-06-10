@@ -5,6 +5,7 @@ import { TrendingUp, Building2, Target } from 'lucide-react';
 import { formatCurrency, formatNumber } from '../../utils/numberFormat';
 import type { StockPosition, CurrencyType, Ticker } from '../../types';
 import { getCurrencySymbol } from '../../utils/currency';
+import { SHARES_PER_CONTRACT } from '../../utils/coverageAllocation';
 import { PositionActionButtons } from './PositionActionButtons';
 import { POSITION_GRID_COLS } from './positionGrid';
 import { useFeatureAccess } from '../../hooks/useFeatureAccess';
@@ -60,12 +61,9 @@ export const StockRow: React.FC<StockRowProps> = ({
   // Gate on the covered_calls feature: writing a CC is a level-gated opportunity (medior),
   // so the locally-derived badge must not show on lower (e.g. beginner/green) levels.
   const { hasAccess: canUseCoveredCalls } = useFeatureAccess('covered_calls');
-  const minShares = position.miniContractsSupported ? 10 : 100;
   const canWriteCoveredCalls =
-    (canWriteCoveredCallsOverride ?? position.shares >= minShares) && canUseCoveredCalls;
-  const contractsNeeded = Math.floor(
-    position.shares / (position.miniContractsSupported ? 10 : 100)
-  );
+    (canWriteCoveredCallsOverride ?? position.shares >= SHARES_PER_CONTRACT) && canUseCoveredCalls;
+  const contractsNeeded = Math.floor(position.shares / SHARES_PER_CONTRACT);
   const hasUncoveredShares = canWriteCoveredCalls && coveredCallContracts < contractsNeeded;
 
   // Use external opportunity from central evaluator if available

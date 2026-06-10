@@ -128,9 +128,6 @@ export const toolsPages = {
       tickerSymbolRequired: 'Ticker Symbol *',
       type: 'Type',
       companyNameRequired: 'Company name *',
-      miniContractsAvailable: 'Mini contracts available',
-      miniContractsTooltip:
-        'Some stocks have mini contracts of 10 shares per contract instead of the standard 100.',
       addTicker: 'Add Ticker',
       tooltipInitialInvestment:
         'Initial Investment = LEAP Premium × 100\n\nThis is the amount you pay for the LEAP call option. It is your maximum risk in this strategy.',
@@ -342,9 +339,6 @@ export const toolsPages = {
       tickerSymbolRequired: 'Ticker Symbool *',
       type: 'Type',
       companyNameRequired: 'Bedrijfsnaam *',
-      miniContractsAvailable: 'Mini contracts beschikbaar',
-      miniContractsTooltip:
-        'Sommige aandelen hebben mini-contracten van 10 aandelen per contract in plaats van de standaard 100.',
       addTicker: 'Ticker Toevoegen',
       tooltipInitialInvestment:
         'Initiële Investering = LEAP Premium × 100\n\nDit is het bedrag dat je betaalt voor de LEAP call optie. Het is je maximale risico in deze strategie.',
@@ -558,9 +552,6 @@ export const toolsPages = {
       tickerSymbolRequired: 'Symbole du ticker *',
       type: 'Type',
       companyNameRequired: "Nom de l'entreprise *",
-      miniContractsAvailable: 'Mini contrats disponibles',
-      miniContractsTooltip:
-        'Certaines actions ont des mini-contrats de 10 actions par contrat au lieu des 100 standard.',
       addTicker: 'Ajouter le ticker',
       tooltipInitialInvestment:
         "Investissement initial = Prime LEAP × 100\n\nC'est le montant que vous payez pour l'option call LEAP. C'est votre risque maximum dans cette stratégie.",

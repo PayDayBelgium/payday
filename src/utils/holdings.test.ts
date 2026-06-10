@@ -17,7 +17,6 @@ const lot = (shares: number, over: Partial<StockPosition> = {}): StockPosition =
     currentPrice: 12,
     currentValue: shares * 12,
     optionsSupported: true,
-    miniContractsSupported: false,
     name: 'Tesla',
     ...rest,
   };

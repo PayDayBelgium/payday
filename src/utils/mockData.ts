@@ -137,7 +137,6 @@ export const mockStocks: StockPosition[] = [
     purchasePrice: 140,
     currentPrice: 160,
     optionsSupported: true,
-    miniContractsSupported: false,
     openDate: '2024-08-15',
     status: 'open',
   },

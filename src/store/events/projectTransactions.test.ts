@@ -44,7 +44,6 @@ function stockPos(overrides: Partial<StockPosition> = {}): StockPosition {
     currentPrice: 155,
     currentValue: 15500,
     optionsSupported: true,
-    miniContractsSupported: false,
     ...overrides,
   } as StockPosition;
 }

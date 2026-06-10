@@ -89,7 +89,6 @@ export const PMCCCalculator: React.FC = () => {
     name: '',
     type: 'stock' as 'stock' | 'etf',
     optionsAvailable: true,
-    miniContractsAvailable: false,
   });
 
   // Set page title
@@ -131,7 +130,6 @@ export const PMCCCalculator: React.FC = () => {
       name: '',
       type: 'stock',
       optionsAvailable: true,
-      miniContractsAvailable: false,
     });
   };
 
@@ -306,7 +304,6 @@ export const PMCCCalculator: React.FC = () => {
                           name: '',
                           type: 'stock',
                           optionsAvailable: true,
-                          miniContractsAvailable: false,
                         });
                       }}
                       className="p-1 hover:bg-primary-200 dark:hover:bg-primary-800 rounded transition-colors"
@@ -389,29 +386,6 @@ export const PMCCCalculator: React.FC = () => {
                           {t('toolsPages.optionsAvailable')}
                         </span>
                       </label>
-
-                      <label className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={newTickerData.miniContractsAvailable}
-                          onChange={(e) =>
-                            setNewTickerData({
-                              ...newTickerData,
-                              miniContractsAvailable: e.target.checked,
-                            })
-                          }
-                          className="w-4 h-4 text-primary-700 bg-surface-subtle border-ink-200 rounded focus:ring-primary-500"
-                        />
-                        <span className="text-sm text-ink-700 dark:text-ink-300 flex items-center gap-2">
-                          {t('toolsPages.pmcc.miniContractsAvailable')}
-                          <div className="group relative">
-                            <Info className="w-4 h-4 text-ink-400 hover:text-ink-600 dark:hover:text-ink-300 cursor-help" />
-                            <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-white dark:bg-trading-dark-800 text-ink-700 dark:text-ink-300 text-xs rounded-lg shadow-lg border border-surface-line dark:border-trading-dark-500 z-50">
-                              {t('toolsPages.pmcc.miniContractsTooltip')}
-                            </div>
-                          </div>
-                        </span>
-                      </label>
                     </div>
 
                     <div className="flex gap-3 pt-2">
@@ -430,7 +404,6 @@ export const PMCCCalculator: React.FC = () => {
                             name: '',
                             type: 'stock',
                             optionsAvailable: true,
-                            miniContractsAvailable: false,
                           });
                         }}
                         className="px-4 py-2 bg-surface-muted dark:bg-trading-dark-700 hover:bg-ink-200 dark:hover:bg-trading-dark-600 text-ink-700 dark:text-ink-200 rounded-lg font-medium transition-colors text-sm"

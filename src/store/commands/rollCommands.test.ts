@@ -122,7 +122,6 @@ const MSFT_STOCK: StockPosition = {
   currentPrice: 300,
   currentValue: 30000,
   optionsSupported: true,
-  miniContractsSupported: false,
   status: 'open',
   openDate: '2026-01-15',
 };
@@ -1019,7 +1018,6 @@ describe('recordAssignment — multi-lot FIFO', () => {
     currentPrice: 210,
     currentValue: 20790, // 99 * 210
     optionsSupported: true,
-    miniContractsSupported: false,
     status: 'open',
     openDate: '2026-01-01', // oldest
   };
@@ -1037,7 +1035,6 @@ describe('recordAssignment — multi-lot FIFO', () => {
     currentPrice: 230,
     currentValue: 11500, // 50 * 230
     optionsSupported: true,
-    miniContractsSupported: false,
     status: 'open',
     openDate: '2026-02-01', // newer
   };

@@ -122,7 +122,6 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
     name: '',
     type: 'stock',
     optionsAvailable: true,
-    miniContractsAvailable: false,
     hasDividend: false,
   });
 
@@ -209,7 +208,6 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
       name: '',
       type: 'stock',
       optionsAvailable: true,
-      miniContractsAvailable: false,
       hasDividend: false,
     });
   };
@@ -316,7 +314,6 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
             name: selectedTicker.name,
             type: 'stock',
             optionsAvailable: selectedTicker.optionsAvailable,
-            miniContractsAvailable: selectedTicker.miniContractsAvailable,
           },
           spreadTs
         )
@@ -407,7 +404,6 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
             name: selectedTicker.name,
             type: 'stock',
             optionsAvailable: selectedTicker.optionsAvailable,
-            miniContractsAvailable: selectedTicker.miniContractsAvailable,
           },
           callTs
         )
@@ -681,8 +677,6 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                         {selectedTicker.optionsAvailable && (
                           <p className="text-xs text-positive-600 dark:text-positive-500">
                             {t('callWizard.tickerStep.optionsAvailable')}
-                            {selectedTicker.miniContractsAvailable &&
-                              ` • ${t('callWizard.tickerStep.miniContracts')}`}
                           </p>
                         )}
                       </div>
@@ -702,7 +696,6 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                     name: '',
                     type: 'stock',
                     optionsAvailable: true,
-                    miniContractsAvailable: false,
                     hasDividend: false,
                   });
                 }}
@@ -715,8 +708,6 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                   stock: t('callWizard.tickerStep.stock'),
                   etf: t('callWizard.tickerStep.etf'),
                   optionsAvailableCheck: t('callWizard.tickerStep.optionsAvailableCheck'),
-                  miniContractsCheck: t('callWizard.tickerStep.miniContractsCheck'),
-                  miniContractsTooltip: t('callWizard.tickerStep.miniContractsTooltip'),
                   addTicker: t('callWizard.tickerStep.addTicker'),
                   cancel: t('callWizard.tickerStep.cancel'),
                 }}

@@ -115,7 +115,6 @@ export interface StockPosition extends BasePosition {
   currentPrice: number; // Current price per share
   currentValue: number; // Current total value
   optionsSupported: boolean; // Whether options are available for this ticker
-  miniContractsSupported: boolean; // Whether mini contracts (10 shares) are available
   wheelId?: string; // Optional: link to Wheel campaign
 }
 
@@ -476,7 +475,6 @@ export interface Ticker {
   name: string; // Name of stock/ETF
   type: 'stock' | 'etf';
   optionsAvailable: boolean; // Are options available?
-  miniContractsAvailable: boolean; // Are mini contracts available?
   hasDividend?: boolean; // Does this stock/ETF pay a dividend?
   lastUsed?: string; // Last used (for autocomplete sorting)
   currentPrice?: number; // Current price (fetched later via service)

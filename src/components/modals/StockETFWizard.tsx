@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { WizardModal, type WizardStep } from './WizardModal';
 import { TickerSelector } from '../widgets/TickerSelector';
-import { TrendingUp, Building2, Calendar, DollarSign, Hash, Info } from 'lucide-react';
+import { TrendingUp, Building2, Calendar, DollarSign, Hash } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { openPosition } from '../../store/commands/positionCommands';
 import { ensureTicker } from '../../store/commands/tickerCommands';
@@ -40,7 +40,6 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
     symbol: '',
     name: '',
     optionsAvailable: true,
-    miniContractsAvailable: false,
     hasDividend: false,
   });
 
@@ -87,7 +86,6 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
       symbol: symbol.toUpperCase(),
       name: '',
       optionsAvailable: true,
-      miniContractsAvailable: false,
       hasDividend: false,
     });
   };
@@ -100,7 +98,6 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
       name: newTickerData.name,
       type: positionType,
       optionsAvailable: newTickerData.optionsAvailable,
-      miniContractsAvailable: newTickerData.miniContractsAvailable,
       hasDividend: newTickerData.hasDividend,
       lastUsed: new Date().toISOString(),
       currentPrice: 10, // Default price for new tickers
@@ -130,7 +127,6 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
       currentPrice: purchaseDetails.purchasePrice, // Initial current price = purchase price
       currentValue: costBasis,
       optionsSupported: selectedTicker.optionsAvailable,
-      miniContractsSupported: selectedTicker.miniContractsAvailable,
       notes: purchaseDetails.notes || undefined,
     };
 
@@ -143,7 +139,6 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
           name: selectedTicker.name,
           type: positionType,
           optionsAvailable: selectedTicker.optionsAvailable,
-          miniContractsAvailable: selectedTicker.miniContractsAvailable,
         },
         stockTs
       )
@@ -167,7 +162,6 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
       symbol: '',
       name: '',
       optionsAvailable: false,
-      miniContractsAvailable: false,
       hasDividend: false,
     });
     setPurchaseDetails({
@@ -300,26 +294,6 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
                   {t('stockWizard.tickerStep.optionsAvailable')}
                 </span>
               </label>
-
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={newTickerData.miniContractsAvailable}
-                  onChange={(e) =>
-                    setNewTickerData({ ...newTickerData, miniContractsAvailable: e.target.checked })
-                  }
-                  className="w-4 h-4 text-primary-700 bg-surface-subtle border-ink-200 rounded focus:ring-primary-500"
-                />
-                <span className="text-sm font-medium text-ink-900 dark:text-white flex items-center gap-2">
-                  {t('stockWizard.tickerStep.miniContracts')}
-                  <div className="group relative">
-                    <Info className="w-4 h-4 text-ink-400 hover:text-ink-600 dark:hover:text-ink-300 cursor-help" />
-                    <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-white dark:bg-trading-dark-800 text-ink-700 dark:text-ink-300 text-xs rounded-lg shadow-lg border border-surface-line dark:border-trading-dark-500 z-50">
-                      {t('stockWizard.tickerStep.miniContractsTooltip')}
-                    </div>
-                  </div>
-                </span>
-              </label>
             </div>
 
             <div className="flex gap-3 pt-4">
@@ -330,7 +304,6 @@ export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose,
                     symbol: '',
                     name: '',
                     optionsAvailable: false,
-                    miniContractsAvailable: false,
                     hasDividend: false,
                   });
                 }}
