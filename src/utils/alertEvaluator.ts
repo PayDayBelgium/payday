@@ -1042,25 +1042,31 @@ export const evaluateProfitOpportunities = (
 
     if (!shortLeg || !longLeg) return;
 
-    // Calculate spread metrics
+    // Calculate spread metrics. Classify credit/debit by net premium (like
+    // calculateSpreadSummary): strike order is inverted for call credit
+    // spreads, where the LOWER strike call is sold.
     const spreadWidth = Math.abs(shortLeg.strike - longLeg.strike);
-    const isCredit = shortLeg.strike > longLeg.strike; // Credit spread: sold higher strike
+    const isCredit = shortLeg.premium > longLeg.premium;
+    const netPremium = Math.abs(shortLeg.premium - longLeg.premium) * shortLeg.contracts * 100;
 
-    // Calculate total cost basis (premium received/paid)
-    const totalCostBasis = legs.reduce((sum, leg) => {
-      return sum + (leg.action === 'sell' ? leg.costBasis : -leg.costBasis);
-    }, 0);
+    // Net value to close the spread (legs are stored signed: shorts negative)
+    const totalCurrentValue = legs.reduce((sum, leg) => sum + (leg.currentValue ?? 0), 0);
 
-    // Calculate current value
-    const totalCurrentValue = legs.reduce((sum, leg) => {
-      return sum + (leg.action === 'sell' ? (leg.currentValue ?? 0) : -(leg.currentValue ?? 0));
-    }, 0);
+    // Sum per-leg P&L via the shared helper, which handles signed storage
+    const totalPnL = legs.reduce(
+      (sum, leg) =>
+        sum +
+        calculateOptionUnrealizedPnL({
+          action: leg.action,
+          costBasis: leg.costBasis,
+          currentValue: leg.currentValue ?? 0,
+        }),
+      0
+    );
 
-    // Calculate P&L and max profit
-    const totalPnL = totalCostBasis - totalCurrentValue;
     const maxProfit = isCredit
-      ? totalCostBasis // Credit spread: max profit is premium received
-      : spreadWidth * shortLeg.contracts * 100 - Math.abs(totalCostBasis); // Debit spread
+      ? netPremium // Credit spread: max profit is the net premium received
+      : spreadWidth * shortLeg.contracts * 100 - netPremium; // Debit spread
 
     // Calculate profit percentage
     const profitPercent = maxProfit !== 0 ? (totalPnL / maxProfit) * 100 : 0;

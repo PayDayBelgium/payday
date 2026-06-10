@@ -108,6 +108,93 @@ describe('evaluateProfitOpportunities', () => {
       expect(result).toHaveLength(0);
     });
   });
+
+  describe('spreads', () => {
+    const spreadNotes = 'Spread ID: spread-1';
+
+    it('fires for a profitable put credit spread with positive total P&L', () => {
+      // Short put: $150 credit, now a $30 liability -> +120.
+      // Long put: $50 paid, now worth $10 -> -40. Total P&L +80.
+      // Net premium = (1.50 - 0.50) * 1 * 100 = $100 -> 80% of max profit.
+      const legs = [
+        shortPut({
+          id: 'sp-short',
+          strike: 100,
+          premium: 1.5,
+          costBasis: -150,
+          currentValue: -30,
+          notes: spreadNotes,
+        }),
+        shortPut({
+          id: 'sp-long',
+          action: 'buy',
+          strike: 95,
+          premium: 0.5,
+          costBasis: 50,
+          currentValue: 10,
+          notes: spreadNotes,
+        }),
+      ];
+      const result = evaluateProfitOpportunities(legs, new Set());
+      expect(result).toHaveLength(1);
+      expect(result[0].id).toBe('spread-profit-opportunity-spread-1');
+      expect(result[0].message).toContain('80% van max winst');
+      expect(result[0].message).toContain('Put credit spread');
+    });
+
+    it('does not fire for a put credit spread at a loss', () => {
+      // Short put liability grew from $150 to $300 -> total P&L is negative.
+      const legs = [
+        shortPut({
+          id: 'sp-short',
+          strike: 100,
+          premium: 1.5,
+          costBasis: -150,
+          currentValue: -300,
+          notes: spreadNotes,
+        }),
+        shortPut({
+          id: 'sp-long',
+          action: 'buy',
+          strike: 95,
+          premium: 0.5,
+          costBasis: 50,
+          currentValue: 80,
+          notes: spreadNotes,
+        }),
+      ];
+      expect(evaluateProfitOpportunities(legs, new Set())).toHaveLength(0);
+    });
+
+    it('classifies a call credit spread (short LOWER strike) as credit', () => {
+      // Call credit spread: sell the LOWER strike call for more premium.
+      // Net premium = (2.00 - 0.80) * 1 * 100 = $120 (max profit).
+      // P&L = (200 - 10) + (5 - 80) = +115 -> 96% of max profit.
+      const legs = [
+        longCall({
+          id: 'cs-short',
+          action: 'sell',
+          strike: 100,
+          premium: 2,
+          costBasis: -200,
+          currentValue: -10,
+          notes: spreadNotes,
+        }),
+        longCall({
+          id: 'cs-long',
+          strike: 105,
+          premium: 0.8,
+          costBasis: 80,
+          currentValue: 5,
+          notes: spreadNotes,
+        }),
+      ];
+      const result = evaluateProfitOpportunities(legs, new Set());
+      expect(result).toHaveLength(1);
+      expect(result[0].id).toBe('spread-profit-opportunity-spread-1');
+      expect(result[0].message).toContain('Call credit spread');
+    });
+  });
 });
 
 describe('calculatePortfolioFreeCash', () => {
