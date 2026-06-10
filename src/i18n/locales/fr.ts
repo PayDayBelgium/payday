@@ -387,6 +387,12 @@ const frBase = {
     sellValue: 'Valeur de vente',
     buybackValue: 'Valeur de rachat',
     daysToExpiration: '{{days}}j jusqu\'à l\'expiration',
+    // Event-log durability (system alerts)
+    eventLog: {
+      writeFailed:
+        "Votre dernière modification n'a pas pu être enregistrée de façon permanente et risque d'être perdue après un rechargement.",
+      writeFailedAction: 'Exportez une sauvegarde maintenant et réessayez la modification',
+    },
   },
 
   // Options

@@ -387,6 +387,12 @@ const nlBase = {
     sellValue: 'Verkoopwaarde',
     buybackValue: 'Terugkoopwaarde',
     daysToExpiration: 'Nog {{days}}d tot expiratie',
+    // Event-log durability (system alerts)
+    eventLog: {
+      writeFailed:
+        'Je laatste wijziging kon niet permanent worden opgeslagen en kan na herladen verloren gaan.',
+      writeFailedAction: 'Exporteer nu een backup en probeer de wijziging opnieuw',
+    },
   },
 
   // Options

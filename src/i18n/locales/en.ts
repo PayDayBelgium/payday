@@ -387,6 +387,12 @@ const enBase = {
     sellValue: 'Sell value',
     buybackValue: 'Buyback value',
     daysToExpiration: '{{days}}d until expiration',
+    // Event-log durability (system alerts)
+    eventLog: {
+      writeFailed:
+        'Your last change could not be saved to permanent storage and may be lost after a reload.',
+      writeFailedAction: 'Export a backup now and retry the change',
+    },
   },
 
   // Options

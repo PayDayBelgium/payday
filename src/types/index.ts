@@ -305,7 +305,8 @@ export interface PositionAlert {
     | 'profit-target'
     | 'loss-limit'
     | 'roll-opportunity'
-    | 'price-change'; // Added for stock/ETF price alerts
+    | 'price-change' // Added for stock/ETF price alerts
+    | 'persistence-failure'; // System alert: the event log could not be written durably
   message: string;
   actionable: boolean;
   suggestedAction?: string;
