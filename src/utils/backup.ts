@@ -1,5 +1,6 @@
+import i18n from '../i18n/config';
 import type { RootState } from '../store';
-import type { DomainEvent } from '../store/events/types';
+import { DOMAIN_EVENT_TYPES, type DomainEvent } from '../store/events/types';
 
 export interface BackupData {
   version: string; // '2.0.0'
@@ -32,6 +33,33 @@ export const downloadBackup = (backup: BackupData, filename?: string) => {
   URL.revokeObjectURL(url);
 };
 
+const KNOWN_EVENT_TYPES = new Set<string>(DOMAIN_EVENT_TYPES);
+
+/**
+ * Validates one backup entry against the persisted DomainEvent envelope.
+ * A backup file is untrusted input: anything restored here is replayed into
+ * the event store and feeds every projection, so each event must have a
+ * known type, an object payload and the full envelope the store stamps.
+ */
+export const isValidBackupEvent = (e: unknown): e is DomainEvent => {
+  if (typeof e !== 'object' || e === null || Array.isArray(e)) return false;
+  const ev = e as Record<string, unknown>;
+  return (
+    typeof ev.id === 'string' &&
+    typeof ev.seq === 'number' &&
+    Number.isInteger(ev.seq) &&
+    ev.seq >= 0 &&
+    typeof ev.type === 'string' &&
+    KNOWN_EVENT_TYPES.has(ev.type) &&
+    typeof ev.payload === 'object' &&
+    ev.payload !== null &&
+    !Array.isArray(ev.payload) &&
+    typeof ev.timestamp === 'string' &&
+    typeof ev.actor === 'string' &&
+    typeof ev.schemaVersion === 'number'
+  );
+};
+
 export const parseBackupFile = async (file: File): Promise<BackupData> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -44,6 +72,13 @@ export const parseBackupFile = async (file: File): Promise<BackupData> => {
           reject(
             new Error('This backup was created by an older version and can no longer be restored.')
           );
+          return;
+        }
+
+        // Validate every event; one malformed event rejects the whole file
+        // (restore is all-or-nothing, so we never replay a partial log).
+        if (!backup.events.every(isValidBackupEvent)) {
+          reject(new Error(i18n.t('header.backupInvalidEvents')));
           return;
         }
 

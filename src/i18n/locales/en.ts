@@ -86,6 +86,8 @@ const enBase = {
     data: 'Data',
     backup: 'Backup',
     restore: 'Restore',
+    backupInvalidEvents:
+      'The backup file contains invalid or unrecognized events and was not restored.',
     hideExplanation: 'Hide explanation',
     showExplanation: 'Show explanation',
     hideWarning: 'Hide warning',

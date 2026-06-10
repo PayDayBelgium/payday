@@ -5,72 +5,79 @@ import { uuid } from '../../utils/uuid';
 /** Current event schema version. Bump + add an upcaster when payloads change. */
 export const EVENT_SCHEMA_VERSION = 1;
 
-/** All domain-event type names handled in Phase 1 + Phase 2. */
-export type DomainEventType =
-  | 'PositionOpened'
-  | 'PositionClosed'
-  | 'PositionEdited'
-  | 'PositionsPortfolioRenamed'
-  | 'PriceAlertRuleCreated'
-  | 'PriceAlertRuleUpdated'
-  | 'PriceAlertRuleDeleted'
-  | 'PriceAlertRuleToggled'
-  | 'TodoAdded'
-  | 'TodoEdited'
-  | 'TodoCompleted'
-  | 'TodoReopened'
-  | 'TodoDeleted'
-  | 'TradingRuleCreated'
-  | 'TradingRuleUpdated'
-  | 'TradingRuleDeleted'
-  | 'TradingRuleToggled'
-  | 'JournalEntryWritten'
-  | 'JournalEntryEdited'
-  | 'JournalEntryDeleted'
-  | 'GoalCreated'
-  | 'GoalEdited'
-  | 'GoalDeleted'
-  | 'GoalCompleted'
+/**
+ * All domain-event type names handled in Phase 1 + Phase 2.
+ * Kept as a runtime const array (the type is derived from it) so untrusted
+ * input — e.g. a restored backup file — can be checked against the known set.
+ */
+export const DOMAIN_EVENT_TYPES = [
+  'PositionOpened',
+  'PositionClosed',
+  'PositionEdited',
+  'PositionsPortfolioRenamed',
+  'PriceAlertRuleCreated',
+  'PriceAlertRuleUpdated',
+  'PriceAlertRuleDeleted',
+  'PriceAlertRuleToggled',
+  'TodoAdded',
+  'TodoEdited',
+  'TodoCompleted',
+  'TodoReopened',
+  'TodoDeleted',
+  'TradingRuleCreated',
+  'TradingRuleUpdated',
+  'TradingRuleDeleted',
+  'TradingRuleToggled',
+  'JournalEntryWritten',
+  'JournalEntryEdited',
+  'JournalEntryDeleted',
+  'GoalCreated',
+  'GoalEdited',
+  'GoalDeleted',
+  'GoalCompleted',
   // --- Phase 2: strategies aggregate ---
-  | 'TradingStrategyCreated'
-  | 'TradingStrategyUpdated'
-  | 'TradingStrategyDeleted'
-  | 'PositionLinkedToStrategy'
-  | 'PositionUnlinkedFromStrategy'
-  | 'StrategyPositionsSet'
-  | 'PortfolioStrategiesCleared'
-  | 'StrategyRuleCreated'
-  | 'StrategyRuleUpdated'
-  | 'StrategyRuleDeleted'
-  | 'StrategyRuleToggled'
+  'TradingStrategyCreated',
+  'TradingStrategyUpdated',
+  'TradingStrategyDeleted',
+  'PositionLinkedToStrategy',
+  'PositionUnlinkedFromStrategy',
+  'StrategyPositionsSet',
+  'PortfolioStrategiesCleared',
+  'StrategyRuleCreated',
+  'StrategyRuleUpdated',
+  'StrategyRuleDeleted',
+  'StrategyRuleToggled',
   // --- Phase 2: tickers aggregate ---
-  | 'TickerAdded'
-  | 'TickerUpdated'
-  | 'TickerRenamed'
-  | 'TickerRemoved'
-  | 'AddedToWatchlist'
-  | 'RemovedFromWatchlist'
+  'TickerAdded',
+  'TickerUpdated',
+  'TickerRenamed',
+  'TickerRemoved',
+  'AddedToWatchlist',
+  'RemovedFromWatchlist',
   // --- Coupled cluster: portfolio entities ---
-  | 'PortfolioCreated'
-  | 'PortfolioEdited'
-  | 'PortfolioRenamed'
-  | 'PortfolioDeleted'
-  | 'PortfoliosReordered'
+  'PortfolioCreated',
+  'PortfolioEdited',
+  'PortfolioRenamed',
+  'PortfolioDeleted',
+  'PortfoliosReordered',
   // --- Coupled cluster: cash intents ---
-  | 'CashDeposited'
-  | 'CashWithdrawn'
-  | 'FeeCharged'
-  | 'DividendReceived'
-  | 'ValueAdjusted'
+  'CashDeposited',
+  'CashWithdrawn',
+  'FeeCharged',
+  'DividendReceived',
+  'ValueAdjusted',
   // --- Coupled cluster: wheels ---
-  | 'WheelCampaignStarted'
-  | 'WheelEdited'
-  | 'WheelClosed'
-  | 'WheelDeleted'
+  'WheelCampaignStarted',
+  'WheelEdited',
+  'WheelClosed',
+  'WheelDeleted',
   // --- Coupled cluster: roll / assignment composites ---
-  | 'OptionRolled'
-  | 'SpreadRolled'
-  | 'OptionAssigned';
+  'OptionRolled',
+  'SpreadRolled',
+  'OptionAssigned',
+] as const;
+
+export type DomainEventType = (typeof DOMAIN_EVENT_TYPES)[number];
 
 // --- Phase 1 payloads ---
 export interface PositionOpenedPayload {

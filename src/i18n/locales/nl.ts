@@ -86,6 +86,8 @@ const nlBase = {
     data: 'Data',
     backup: 'Back-up',
     restore: 'Herstellen',
+    backupInvalidEvents:
+      'Het back-upbestand bevat ongeldige of onbekende events en werd niet hersteld.',
     hideExplanation: 'Verberg uitleg',
     showExplanation: 'Toon uitleg',
     hideWarning: 'Verberg waarschuwing',

@@ -86,6 +86,8 @@ const frBase = {
     data: 'Données',
     backup: 'Sauvegarde',
     restore: 'Restaurer',
+    backupInvalidEvents:
+      "Le fichier de sauvegarde contient des événements invalides ou inconnus et n'a pas été restauré.",
     hideExplanation: "Masquer l'explication",
     showExplanation: "Afficher l'explication",
     hideWarning: "Masquer l'avertissement",
