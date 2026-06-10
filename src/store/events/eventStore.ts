@@ -84,6 +84,13 @@ export function createEventStore(username?: string): EventStore {
    * Serialize writers across tabs via the Web Locks API so concurrent commits
    * queue up instead of racing into seq conflicts. The conflict recovery in
    * appendMany still covers browsers without the API (and pre-lock races).
+   *
+   * ORDERING INVARIANT: appendMany must reach this lock request synchronously
+   * (no awaits between the middleware's call and navigator.locks.request).
+   * Web Locks grants same-mode requests FIFO, so same-tab batches enter the
+   * queue in dispatch order — that is what keeps the durable log an ordered
+   * prefix of what the user did. Adding an await before the lock request
+   * would silently break that ordering.
    */
   const withWriteLock = <T>(fn: () => Promise<T>): Promise<T> => {
     if (typeof navigator !== 'undefined' && navigator.locks) {

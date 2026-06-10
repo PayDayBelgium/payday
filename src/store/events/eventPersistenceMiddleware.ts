@@ -3,7 +3,7 @@ import { appendEvents, seqSynced } from './eventsSlice';
 import { addAlert } from '../slices/alertsSlice';
 import i18n from '../../i18n/config';
 import type { DomainEvent } from './types';
-import type { EventStore } from './eventStore';
+import type { AppendOutcome, EventStore } from './eventStore';
 
 /** One extra attempt before alerting the user — transient IndexedDB errors happen. */
 const TRANSIENT_RETRIES = 1;
@@ -41,29 +41,13 @@ async function persistEvents(
   events: DomainEvent[],
   dispatch: Dispatch
 ): Promise<void> {
-  for (let attempt = 0; ; attempt++) {
+  // The retry try/catch wraps ONLY the write: if outcome handling below ever
+  // threw, a catch around it would re-run appendMany for an already-persisted
+  // batch and (after a conflict re-stamp) duplicate events in the durable log.
+  let outcome: AppendOutcome | undefined;
+  for (let attempt = 0; outcome === undefined; attempt++) {
     try {
-      const outcome = await eventStore.appendMany(events);
-      if (outcome.conflictRecovered && outcome.events.length > 0) {
-        const maxSeq = outcome.events[outcome.events.length - 1].seq;
-        // Keep the next commit from re-using seqs another tab already claimed.
-        dispatch(seqSynced(maxSeq));
-        // Durable non-loss is guaranteed, but the in-memory projections of the
-        // two tabs may have diverged — ask the user to reload this tab.
-        dispatch(
-          addAlert({
-            id: SEQ_CONFLICT_ALERT_ID,
-            positionId: '',
-            ticker: 'PayDay',
-            severity: 'warning',
-            type: 'sync-conflict',
-            message: i18n.t('alerts.eventLog.tabConflict'),
-            actionable: true,
-            suggestedAction: i18n.t('alerts.eventLog.tabConflictAction'),
-          })
-        );
-      }
-      return;
+      outcome = await eventStore.appendMany(events);
     } catch (error) {
       if (attempt < TRANSIENT_RETRIES) continue; // single retry for transient IDB hiccups
       // The events now exist in redux memory but NOT in the durable log —
@@ -83,5 +67,25 @@ async function persistEvents(
       );
       return;
     }
+  }
+
+  if (outcome.conflictRecovered && outcome.events.length > 0) {
+    const maxSeq = outcome.events[outcome.events.length - 1].seq;
+    // Keep the next commit from re-using seqs another tab already claimed.
+    dispatch(seqSynced(maxSeq));
+    // Durable non-loss is guaranteed, but the in-memory projections of the
+    // two tabs may have diverged — ask the user to reload this tab.
+    dispatch(
+      addAlert({
+        id: SEQ_CONFLICT_ALERT_ID,
+        positionId: '',
+        ticker: 'PayDay',
+        severity: 'warning',
+        type: 'sync-conflict',
+        message: i18n.t('alerts.eventLog.tabConflict'),
+        actionable: true,
+        suggestedAction: i18n.t('alerts.eventLog.tabConflictAction'),
+      })
+    );
   }
 }
