@@ -8,6 +8,7 @@ import alertsReducer from '../slices/alertsSlice';
 import { createEventPersistenceMiddleware } from './eventPersistenceMiddleware';
 import { createEventStore, type EventStore } from './eventStore';
 import { openPosition } from '../commands/positionCommands';
+import type { DomainEvent } from './types';
 import type { Position } from '../../types';
 import type { AppDispatch } from '../index';
 
@@ -29,11 +30,12 @@ const makeStore = (eventStore: EventStore) =>
 const flakyEventStore = (failures: number): EventStore & { calls: number } => {
   const stub = {
     calls: 0,
-    async appendMany() {
+    async appendMany(events: DomainEvent[]) {
       stub.calls += 1;
       if (stub.calls <= failures) {
         throw new DOMException('quota exceeded', 'QuotaExceededError');
       }
+      return { events, conflictRecovered: false };
     },
     async loadAll() {
       return [];
@@ -42,6 +44,20 @@ const flakyEventStore = (failures: number): EventStore & { calls: number } => {
   };
   return stub;
 };
+
+/** EventStore stub that reports a recovered seq conflict, re-stamped from `fromSeq`. */
+const conflictEventStore = (fromSeq: number): EventStore => ({
+  async appendMany(events: DomainEvent[]) {
+    return {
+      events: events.map((e, i) => ({ ...e, seq: fromSeq + i })),
+      conflictRecovered: true,
+    };
+  },
+  async loadAll() {
+    return [];
+  },
+  async clear() {},
+});
 
 describe('eventPersistenceMiddleware', () => {
   beforeEach(async () => {
@@ -102,6 +118,37 @@ describe('eventPersistenceMiddleware', () => {
     );
     // initial attempt + exactly one retry — the reducer path is never blocked
     expect(eventStore.calls).toBe(2);
+  });
+
+  it('fast-forwards nextSeq and warns the user after a recovered multi-tab conflict', async () => {
+    const store = makeStore(conflictEventStore(40));
+    const dispatch = store.dispatch as AppDispatch;
+    dispatch(openPosition(stock('p1'), '2026-06-07T10:00:00.000Z'));
+
+    await vi.waitFor(() => {
+      expect(store.getState().alerts.alerts).toHaveLength(1);
+    });
+
+    const alert = store.getState().alerts.alerts[0];
+    expect(alert.id).toBe('event-log-seq-conflict');
+    expect(alert.type).toBe('sync-conflict');
+    expect(alert.severity).toBe('warning');
+    expect(alert.message).toBeTruthy();
+    expect(alert.suggestedAction).toBeTruthy();
+    // openPosition commits one event, re-stamped to seq 40 → next commit uses 41.
+    expect(store.getState().events.nextSeq).toBe(41);
+  });
+
+  it('does not dispatch conflict bookkeeping on a clean write', async () => {
+    const store = makeStore(flakyEventStore(0));
+    const dispatch = store.dispatch as AppDispatch;
+    dispatch(openPosition(stock('p1'), '2026-06-07T10:00:00.000Z'));
+    const nextSeqAfterCommit = store.getState().events.nextSeq;
+
+    await new Promise((r) => setTimeout(r, 0));
+
+    expect(store.getState().alerts.alerts).toEqual([]);
+    expect(store.getState().events.nextSeq).toBe(nextSeqAfterCommit);
   });
 
   it('does not stack duplicate failure alerts on repeated failures', async () => {

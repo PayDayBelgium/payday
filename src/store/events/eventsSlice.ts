@@ -47,10 +47,24 @@ const eventsSlice = createSlice({
     setActor: (state, action: PayloadAction<string>) => {
       state.actor = action.payload;
     },
+    /**
+     * Fast-forward `nextSeq` after the persistence layer re-stamped a batch
+     * because another tab had already claimed our seq numbers. Payload is the
+     * highest seq that is now durably written; the next commit starts after it.
+     *
+     * Known divergence (intentional): the in-memory `log` keeps the seqs the
+     * events were committed with — projections have already folded them and
+     * the IndexedDB log (with the re-stamped seqs) is what replays on the next
+     * boot. The accompanying sync-conflict alert tells the user to reload this
+     * tab for a consistent view.
+     */
+    seqSynced: (state, action: PayloadAction<number>) => {
+      state.nextSeq = Math.max(state.nextSeq, action.payload + 1);
+    },
   },
 });
 
-export const { appendEvents, replayEvents, setActor } = eventsSlice.actions;
+export const { appendEvents, replayEvents, setActor, seqSynced } = eventsSlice.actions;
 
 /**
  * Stamp `seq` + `actor` onto unsequenced events and dispatch them as one

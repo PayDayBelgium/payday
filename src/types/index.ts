@@ -306,7 +306,8 @@ export interface PositionAlert {
     | 'loss-limit'
     | 'roll-opportunity'
     | 'price-change' // Added for stock/ETF price alerts
-    | 'persistence-failure'; // System alert: the event log could not be written durably
+    | 'persistence-failure' // System alert: the event log could not be written durably
+    | 'sync-conflict'; // System alert: another tab changed the data; this tab recovered but should reload
   message: string;
   actionable: boolean;
   suggestedAction?: string;

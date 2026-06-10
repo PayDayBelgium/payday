@@ -185,8 +185,13 @@ export const Dashboard: React.FC = () => {
     };
   }, [summaries, portfolios, positions, dailyData]);
 
-  // Critical alerts
-  const criticalAlerts = alerts.filter((a) => a.severity === 'critical');
+  // Critical alerts. System durability alerts (event-log write failure /
+  // multi-tab conflict) always surface here regardless of severity — this
+  // panel is the only place alertsSlice alerts are rendered.
+  const criticalAlerts = alerts.filter(
+    (a) =>
+      a.severity === 'critical' || a.type === 'persistence-failure' || a.type === 'sync-conflict'
+  );
 
   // Check if we have any portfolios
   const hasPortfolios = summaries.length > 0 || portfolios.length > 0;

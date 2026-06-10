@@ -392,6 +392,9 @@ const nlBase = {
       writeFailed:
         'Je laatste wijziging kon niet permanent worden opgeslagen en kan na herladen verloren gaan.',
       writeFailedAction: 'Exporteer nu een backup en probeer de wijziging opnieuw',
+      tabConflict:
+        'Je gegevens zijn in een ander browsertabblad gewijzigd. Je wijziging is opgeslagen, maar dit beeld kan verouderd zijn.',
+      tabConflictAction: 'Herlaad dit tabblad voor een consistent beeld',
     },
   },
 

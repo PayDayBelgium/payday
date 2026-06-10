@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import reducer, { appendEvents, replayEvents, setActor } from './eventsSlice';
+import reducer, { appendEvents, replayEvents, setActor, seqSynced } from './eventsSlice';
 import type { DomainEvent } from './types';
 
 function ev(seq: number): DomainEvent<'PriceAlertRuleDeleted'> {
@@ -26,6 +26,21 @@ describe('eventsSlice', () => {
     let s = reducer(undefined, { type: '@@init' });
     s = reducer(s, replayEvents([ev(0), ev(1), ev(2)]));
     expect(s.log).toHaveLength(3);
+    expect(s.nextSeq).toBe(3);
+  });
+
+  it('seqSynced fast-forwards nextSeq past the durably written max seq', () => {
+    let s = reducer(undefined, { type: '@@init' });
+    s = reducer(s, appendEvents({ events: [ev(0), ev(1)], positionsBefore: [] }));
+    // The persistence layer re-stamped the batch to seqs 5-6 after a conflict.
+    s = reducer(s, seqSynced(6));
+    expect(s.nextSeq).toBe(7);
+  });
+
+  it('seqSynced never moves nextSeq backwards', () => {
+    let s = reducer(undefined, { type: '@@init' });
+    s = reducer(s, appendEvents({ events: [ev(0), ev(1), ev(2)], positionsBefore: [] }));
+    s = reducer(s, seqSynced(0));
     expect(s.nextSeq).toBe(3);
   });
 

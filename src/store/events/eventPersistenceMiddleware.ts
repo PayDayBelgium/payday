@@ -1,5 +1,5 @@
 import type { Dispatch, Middleware } from '@reduxjs/toolkit';
-import { appendEvents } from './eventsSlice';
+import { appendEvents, seqSynced } from './eventsSlice';
 import { addAlert } from '../slices/alertsSlice';
 import i18n from '../../i18n/config';
 import type { DomainEvent } from './types';
@@ -8,8 +8,9 @@ import type { EventStore } from './eventStore';
 /** One extra attempt before alerting the user — transient IndexedDB errors happen. */
 const TRANSIENT_RETRIES = 1;
 
-/** Stable alert id so repeated failures update/dedupe instead of stacking. */
+/** Stable alert ids so repeated occurrences dedupe instead of stacking. */
 const WRITE_FAILURE_ALERT_ID = 'event-log-write-failure';
+const SEQ_CONFLICT_ALERT_ID = 'event-log-seq-conflict';
 
 /**
  * Persists every committed event to the IndexedDB event store.
@@ -42,7 +43,26 @@ async function persistEvents(
 ): Promise<void> {
   for (let attempt = 0; ; attempt++) {
     try {
-      await eventStore.appendMany(events);
+      const outcome = await eventStore.appendMany(events);
+      if (outcome.conflictRecovered && outcome.events.length > 0) {
+        const maxSeq = outcome.events[outcome.events.length - 1].seq;
+        // Keep the next commit from re-using seqs another tab already claimed.
+        dispatch(seqSynced(maxSeq));
+        // Durable non-loss is guaranteed, but the in-memory projections of the
+        // two tabs may have diverged — ask the user to reload this tab.
+        dispatch(
+          addAlert({
+            id: SEQ_CONFLICT_ALERT_ID,
+            positionId: '',
+            ticker: 'PayDay',
+            severity: 'warning',
+            type: 'sync-conflict',
+            message: i18n.t('alerts.eventLog.tabConflict'),
+            actionable: true,
+            suggestedAction: i18n.t('alerts.eventLog.tabConflictAction'),
+          })
+        );
+      }
       return;
     } catch (error) {
       if (attempt < TRANSIENT_RETRIES) continue; // single retry for transient IDB hiccups

@@ -392,6 +392,9 @@ const enBase = {
       writeFailed:
         'Your last change could not be saved to permanent storage and may be lost after a reload.',
       writeFailedAction: 'Export a backup now and retry the change',
+      tabConflict:
+        'Your data was changed in another browser tab. Your change was saved, but this view may be out of date.',
+      tabConflictAction: 'Reload this tab to see a consistent view',
     },
   },
 
