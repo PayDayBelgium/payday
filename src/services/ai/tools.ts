@@ -193,7 +193,22 @@ const asString = (v: unknown, fallback = ''): string =>
 const asOptionalString = (v: unknown): string | undefined =>
   typeof v === 'string' && v.trim() !== '' ? v : undefined;
 
-// Translates a propose tool call into a ProposedChange (or null for a read tool/unknown).
+// ---------------------------------------------------------------------------
+// Numeric sanity bounds. Confirmed proposals flow straight into the store,
+// so values outside plausible trading ranges (negative shares, absurd
+// quantities, non-positive prices) are rejected here — the proposal is
+// dropped (parseProposedChange returns null) before it can reach the
+// user's confirmation card.
+// ---------------------------------------------------------------------------
+/** Sane cap for share/contract counts in a single proposal. */
+export const MAX_PROPOSAL_QUANTITY = 1_000_000;
+
+const isValidQuantity = (n: number): boolean =>
+  Number.isInteger(n) && n > 0 && n <= MAX_PROPOSAL_QUANTITY;
+const isPositivePrice = (n: number): boolean => Number.isFinite(n) && n > 0;
+
+// Translates a propose tool call into a ProposedChange (or null for a read
+// tool, an unknown tool, or a proposal that fails the numeric sanity bounds).
 export const parseProposedChange = (
   name: string,
   input: unknown,
@@ -201,15 +216,24 @@ export const parseProposedChange = (
 ): ProposedChange | null => {
   const o = (input ?? {}) as Record<string, unknown>;
   switch (name) {
-    case 'propose_create_portfolio':
+    case 'propose_create_portfolio': {
+      // Initial capital: non-negative finite (asNumber already maps NaN/±Inf to 0).
+      const availableCash = asNumber(o.availableCash);
+      if (availableCash < 0) return null;
       return {
         kind: 'portfolio',
         toolUseId,
         name: asString(o.name),
         currency: o.currency === 'EUR' ? 'EUR' : 'USD',
-        availableCash: asNumber(o.availableCash),
+        availableCash,
       };
-    case 'propose_create_stock':
+    }
+    case 'propose_create_stock': {
+      const shares = asNumber(o.shares);
+      const purchasePrice = asNumber(o.purchasePrice);
+      const currentPrice = asOptionalNumber(o.currentPrice);
+      if (!isValidQuantity(shares) || !isPositivePrice(purchasePrice)) return null;
+      if (currentPrice !== undefined && !isPositivePrice(currentPrice)) return null;
       return {
         kind: 'stock',
         toolUseId,
@@ -217,12 +241,22 @@ export const parseProposedChange = (
         ticker: asString(o.ticker).toUpperCase(),
         name: asString(o.name),
         assetType: o.assetType === 'etf' ? 'etf' : 'stock',
-        shares: asNumber(o.shares),
-        purchasePrice: asNumber(o.purchasePrice),
-        currentPrice: asOptionalNumber(o.currentPrice),
+        shares,
+        purchasePrice,
+        currentPrice,
         openDate: asString(o.openDate, today()),
       };
-    case 'propose_create_option':
+    }
+    case 'propose_create_option': {
+      const strike = asNumber(o.strike);
+      const contracts = asNumber(o.contracts, 1);
+      const premium = asNumber(o.premium);
+      const currentPremium = asOptionalNumber(o.currentPremium);
+      if (!isPositivePrice(strike) || !isValidQuantity(contracts) || !isPositivePrice(premium)) {
+        return null;
+      }
+      // An existing option may have decayed to (almost) zero: allow >= 0 here.
+      if (currentPremium !== undefined && currentPremium < 0) return null;
       return {
         kind: 'option',
         toolUseId,
@@ -231,13 +265,14 @@ export const parseProposedChange = (
         tickerName: asOptionalString(o.tickerName),
         optionType: o.optionType === 'put' ? 'put' : 'call',
         action: o.action === 'sell' ? 'sell' : 'buy',
-        strike: asNumber(o.strike),
+        strike,
         expiration: asString(o.expiration),
-        contracts: asNumber(o.contracts, 1),
-        premium: asNumber(o.premium),
-        currentPremium: asOptionalNumber(o.currentPremium),
+        contracts,
+        premium,
+        currentPremium,
         openDate: asString(o.openDate, today()),
       };
+    }
     default:
       return null;
   }
@@ -448,6 +483,11 @@ export const applyChanges = (
   const unlockedLevels = selectUnlockedLevels(getState());
 
   // Filter out option proposals that go beyond the user's knowledge level.
+  // Portfolio and stock/ETF proposals are intentionally NOT level-gated: this
+  // mirrors the wizards — portfolio creation (PortfolioManagement) and the
+  // StockETFWizard are available without a feature check, since stocks/ETFs
+  // and portfolio tracking are beginner-level base features (see LEVEL_CONFIGS
+  // in userProgressSlice). Only option strategies unlock per level.
   const skipped: ProposedChange[] = [];
   const applied = changes.filter((c) => {
     if (c.kind === 'option' && !isOptionChangeAllowed(c, unlockedLevels)) {
