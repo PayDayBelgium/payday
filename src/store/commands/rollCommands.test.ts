@@ -11,7 +11,8 @@ import eventsReducer, { setActor } from '../events/eventsSlice';
 import positionsReducer from '../slices/positionsSlice';
 import { openPosition } from './positionCommands';
 import { rollOption, rollSpread, recordAssignment } from './rollCommands';
-import type { CallOption, PutOption, StockPosition, Position } from '../../types';
+import { calculatePortfolioFreeCash } from '../../utils/alertEvaluator';
+import type { CallOption, PutOption, StockPosition, Position, Portfolio } from '../../types';
 import type { AppDispatch } from '../index';
 
 // ---------------------------------------------------------------------------
@@ -346,6 +347,156 @@ describe('rollOption — buy (long) roll', () => {
     expect(p.newPosition.costBasis).toBe(200);
     expect(p.newPosition.currentValue).toBe(200);
     expect(p.newPosition.contracts).toBe(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// rollOption — cash-secured put collateral
+// ---------------------------------------------------------------------------
+
+describe('rollOption — CSP collateral preservation', () => {
+  /** CSP with collateral reserved: strike 300 × 1 contract × 100 = 30000 */
+  const CSP_WITH_COLLATERAL: PutOption = {
+    ...SHORT_PUT_CSP,
+    id: 'opt-csp-coll',
+    cashReserved: 30000, // 300 * 1 * 100
+    breakEven: 298.5,    // 300 - 1.5
+  };
+
+  it('rolled short put carries cashReserved = newStrike × newContracts × 100 and a recomputed breakEven', () => {
+    const store = makeStore();
+    const dispatch = store.dispatch as AppDispatch;
+    dispatch(setActor('test'));
+    seedPositions(store, CSP_WITH_COLLATERAL as unknown as Position);
+
+    const logBefore = getLog(store.getState()).length;
+
+    // Roll down-and-out: strike 295, 1 contract, new premium 2.0
+    dispatch(
+      rollOption(
+        {
+          positionId: 'opt-csp-coll',
+          closePremium: 0.5,
+          closeDate: '2026-07-01',
+          newContracts: 1,
+          newStrike: 295,
+          newExpiration: '2026-08-15',
+          newPremium: 2.0,
+        },
+        TS
+      )
+    );
+
+    const log = getLog(store.getState());
+    const newPos = (log[logBefore] as { payload: { newPosition: PutOption } }).payload.newPosition;
+
+    expect(newPos.action).toBe('sell');
+    expect(newPos.type).toBe('put');
+    // Collateral for the NEW strike: 295 * 1 * 100
+    expect(newPos.cashReserved).toBe(29500);
+    // Break-even recomputed for the new strike/premium: 295 - 2.0
+    expect(newPos.breakEven).toBe(293);
+  });
+
+  it('free cash is unchanged after a same-strike, same-premium roll', () => {
+    const store = makeStore();
+    const dispatch = store.dispatch as AppDispatch;
+    dispatch(setActor('test'));
+    seedPositions(store, CSP_WITH_COLLATERAL as unknown as Position);
+
+    const portfolio: Portfolio = {
+      id: 'pf-1',
+      name: 'Main',
+      logo: '',
+      pricePerContract: 0,
+      strategy: '',
+      hasOptions: true,
+      strategies: [],
+      currency: 'USD',
+      initialCapital: 50000,
+      currentValue: 50000,
+    };
+
+    const positionsBefore = (store.getState() as { positions: { positions: Position[] } })
+      .positions.positions;
+    const before = calculatePortfolioFreeCash(portfolio, positionsBefore);
+
+    // Same strike (300), same premium (1.5), same contracts (1) — pure calendar roll
+    dispatch(
+      rollOption(
+        {
+          positionId: 'opt-csp-coll',
+          closePremium: 1.5,
+          closeDate: '2026-07-01',
+          newContracts: 1,
+          newStrike: 300,
+          newExpiration: '2026-08-15',
+          newPremium: 1.5,
+        },
+        TS
+      )
+    );
+
+    const positionsAfter = (store.getState() as { positions: { positions: Position[] } })
+      .positions.positions;
+    const after = calculatePortfolioFreeCash(portfolio, positionsAfter);
+
+    expect(after.allocatedCash).toBe(before.allocatedCash);
+    expect(after.freeCash).toBe(before.freeCash);
+  });
+
+  it('does NOT set cashReserved when rolling a short call (covered calls are out of scope)', () => {
+    const store = makeStore();
+    const dispatch = store.dispatch as AppDispatch;
+    dispatch(setActor('test'));
+    seedPositions(store, SHORT_CALL as unknown as Position);
+
+    const logBefore = getLog(store.getState()).length;
+    dispatch(
+      rollOption(
+        {
+          positionId: 'opt-sc1',
+          closePremium: 1.0,
+          closeDate: '2026-06-10',
+          newContracts: 2,
+          newStrike: 205,
+          newExpiration: '2026-08-15',
+          newPremium: 2.5,
+        },
+        TS
+      )
+    );
+
+    const log = getLog(store.getState());
+    const newPos = (log[logBefore] as { payload: { newPosition: CallOption } }).payload.newPosition;
+    expect(newPos.cashReserved).toBeUndefined();
+  });
+
+  it('does NOT set cashReserved when rolling a long put', () => {
+    const store = makeStore();
+    const dispatch = store.dispatch as AppDispatch;
+    dispatch(setActor('test'));
+    seedPositions(store, LONG_PUT as unknown as Position);
+
+    const logBefore = getLog(store.getState()).length;
+    dispatch(
+      rollOption(
+        {
+          positionId: 'opt-lp1',
+          closePremium: 1.5,
+          closeDate: '2026-06-12',
+          newContracts: 1,
+          newStrike: 145,
+          newExpiration: '2026-09-19',
+          newPremium: 2.0,
+        },
+        TS
+      )
+    );
+
+    const log = getLog(store.getState());
+    const newPos = (log[logBefore] as { payload: { newPosition: PutOption } }).payload.newPosition;
+    expect(newPos.cashReserved).toBeUndefined();
   });
 });
 
