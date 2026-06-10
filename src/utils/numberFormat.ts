@@ -118,35 +118,37 @@ export const getThousandSeparator = (): string => {
 };
 
 /**
- * Parse a localized number string to a number
- * Accepts both comma and period as decimal separators
+ * Parse a localized number string to a number, using the current locale's
+ * separators (same algorithm as `inputFormat.parseNumberInput`, which
+ * delegates here so there is exactly one parsing behavior).
+ *
+ * The locale's thousand separator is stripped FIRST, then the locale's
+ * decimal separator is swapped for '.'. A locale-agnostic "guess the decimal
+ * separator" heuristic is deliberately NOT used: it parsed grouped input such
+ * as "1,000" (en) or "1.000" (nl) as 1, a silent 1000x error, while
+ * `validateNumberInput` explicitly allows typing the thousand separator.
+ *
  * @param str - The string to parse
- * @returns The parsed number
+ * @returns The parsed number; 0 for empty or unparseable input
  */
 export const parseLocalizedNumber = (str: string): number => {
   if (!str) return 0;
 
-  // Remove all whitespace
+  // Remove all whitespace. This also covers locales whose thousand separator
+  // is a (narrow no-break) space, e.g. fr-FR — users type a regular space.
   let normalized = str.trim().replace(/\s/g, '');
 
-  // Detect if comma or period is used as decimal separator
-  const lastComma = normalized.lastIndexOf(',');
-  const lastPeriod = normalized.lastIndexOf('.');
+  const decimalSeparator = getDecimalSeparator();
+  const thousandSeparator = getThousandSeparator();
 
-  // If both exist, the one that appears last is the decimal separator
-  if (lastComma > -1 && lastPeriod > -1) {
-    if (lastComma > lastPeriod) {
-      // Comma is decimal separator, period is thousand separator
-      normalized = normalized.replace(/\./g, '').replace(',', '.');
-    } else {
-      // Period is decimal separator, comma is thousand separator
-      normalized = normalized.replace(/,/g, '');
-    }
-  } else if (lastComma > -1) {
-    // Only comma exists - assume it's decimal separator
-    normalized = normalized.replace(',', '.');
+  // Strip the locale thousand separator, then swap the locale decimal
+  // separator for '.' so parseFloat understands it.
+  if (thousandSeparator && thousandSeparator !== decimalSeparator) {
+    normalized = normalized.split(thousandSeparator).join('');
   }
-  // If only period exists or neither, leave as is
+  if (decimalSeparator !== '.') {
+    normalized = normalized.replace(decimalSeparator, '.');
+  }
 
   const parsed = parseFloat(normalized);
   return isNaN(parsed) ? 0 : parsed;

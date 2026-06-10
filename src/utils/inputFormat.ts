@@ -1,4 +1,4 @@
-import { getCurrentLocale, getDecimalSeparator, getThousandSeparator } from './numberFormat';
+import { getCurrentLocale, parseLocalizedNumber } from './numberFormat';
 
 /**
  * Utility functions for consistent locale-aware number input formatting
@@ -26,25 +26,16 @@ export function formatNumberInput(value: number | string, decimals: number = 2):
 /**
  * Parse a locale-formatted number string to a number
  * Automatically detects the format based on current locale
+ *
+ * Delegates to `parseLocalizedNumber` so the whole app shares ONE parsing
+ * behavior (thousand separator stripped first, then the decimal separator
+ * swapped for '.').
+ *
  * @param value - The formatted string (e.g., "1.234,56" for nl-NL or "1,234.56" for en-US)
- * @returns The parsed number
+ * @returns The parsed number; 0 for empty or unparseable input
  */
 export function parseNumberInput(value: string): number {
-  if (!value) return 0;
-
-  const decimalSep = getDecimalSeparator();
-  const thousandSep = getThousandSeparator();
-
-  // Remove thousand separators and replace decimal separator with .
-  let normalized = value;
-  if (thousandSep) {
-    normalized = normalized.split(thousandSep).join('');
-  }
-  if (decimalSep !== '.') {
-    normalized = normalized.replace(decimalSep, '.');
-  }
-
-  return parseFloat(normalized) || 0;
+  return parseLocalizedNumber(value);
 }
 
 /**
