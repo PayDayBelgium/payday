@@ -2,8 +2,10 @@ import { useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 // Route-level code splitting: each page is a separate chunk loaded on navigation,
 // so the heavy ones (recharts tools, the 105KB education curriculum) stay out of the
-// initial bundle. Shells (Layout/AdminLayout) and the login page are eager.
-import { LoginPage } from './pages';
+// initial bundle. Shells (Layout/AdminLayout) and the login page are eager — but
+// they must be imported by direct path: going through the pages/components barrels
+// would make every page statically reachable from the entry and defeat the split.
+import LoginPage from './pages/auth/LoginPage';
 const Dashboard = lazy(() =>
   import('./pages/dashboard/Dashboard').then((m) => ({ default: m.Dashboard }))
 );
@@ -98,7 +100,7 @@ const UserDetail = lazy(() =>
   import('./pages/admin/UserDetail').then((m) => ({ default: m.UserDetail }))
 );
 const AddUser = lazy(() => import('./pages/admin/AddUser').then((m) => ({ default: m.AddUser })));
-import { Layout } from './components';
+import { Layout } from './components/layout/Layout';
 import { LoadingOverlay } from './components/common/LoadingOverlay';
 import { FeatureGate } from './components/features/FeatureGate';
 import { useIBConnection } from './hooks/useIBConnection';
