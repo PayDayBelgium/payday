@@ -57,7 +57,6 @@ const ticker = (symbol: string, currentPrice: number): Ticker => ({
   name: symbol,
   type: 'stock',
   optionsAvailable: true,
-  miniContractsAvailable: false,
   currentPrice,
 });
 
@@ -75,7 +74,6 @@ const stockPosition = (id: string, portfolioName: string, shares: number): Posit
     currentPrice: 100,
     currentValue: shares * 100,
     optionsSupported: true,
-    miniContractsSupported: false,
   }) as unknown as Position;
 
 const shortCall = (id: string, portfolioName: string, strike: number): Position =>

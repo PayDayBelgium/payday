@@ -86,7 +86,6 @@ export const CoveredCallSimulator: React.FC = () => {
     name: '',
     type: 'stock' as 'stock' | 'etf',
     optionsAvailable: true,
-    miniContractsAvailable: false,
   });
 
   useEffect(() => {
@@ -122,7 +121,6 @@ export const CoveredCallSimulator: React.FC = () => {
       name: '',
       type: 'stock',
       optionsAvailable: true,
-      miniContractsAvailable: false,
     });
   };
 

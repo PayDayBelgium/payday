@@ -149,7 +149,6 @@ describe('Scenario 1: open + close a stock', () => {
       currentPrice: 50,
       currentValue: 5000,
       optionsSupported: true,
-      miniContractsSupported: false,
       status: 'open',
       openDate: '2026-06-02',
     };
@@ -601,7 +600,6 @@ describe('Scenario 5: call assignment full (wheel)', () => {
       currentPrice: 54,
       currentValue: 5400,
       optionsSupported: true,
-      miniContractsSupported: false,
       status: 'open',
       openDate: '2026-05-01',
       wheelId: WHEEL_ID,
@@ -749,7 +747,6 @@ describe('Scenario 6: call assignment partial (200 shares, 1-contract call)', ()
       currentPrice: 54,
       currentValue: 10800,       // 200 * 54
       optionsSupported: true,
-      miniContractsSupported: false,
       status: 'open',
       openDate: '2026-05-01',
       wheelId: WHEEL_ID,

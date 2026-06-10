@@ -6,16 +6,16 @@ const seedFlagKey = (username: string) => `payday-tickers-seeded-${username}`;
 
 /**
  * Default tickers seeded into a brand-new (empty) account. All optionable
- * stocks; the metadata (options/mini/dividend) can be edited per ticker in the
+ * stocks; the metadata (options/dividend) can be edited per ticker in the
  * UI afterwards.
  */
 const DEFAULT_SEED_TICKERS: Omit<Ticker, 'createdAt'>[] = [
-  { symbol: 'TSLA', name: 'Tesla', type: 'stock', optionsAvailable: true, miniContractsAvailable: false, hasDividend: false },
-  { symbol: 'HIMS', name: 'Hims & Hers', type: 'stock', optionsAvailable: true, miniContractsAvailable: false, hasDividend: false },
-  { symbol: 'SOFI', name: 'SoFi', type: 'stock', optionsAvailable: true, miniContractsAvailable: false, hasDividend: false },
-  { symbol: 'NBIS', name: 'Nebius', type: 'stock', optionsAvailable: true, miniContractsAvailable: false, hasDividend: false },
-  { symbol: 'PLTR', name: 'Palantir', type: 'stock', optionsAvailable: true, miniContractsAvailable: false, hasDividend: false },
-  { symbol: 'NVDA', name: 'Nvidia', type: 'stock', optionsAvailable: true, miniContractsAvailable: false, hasDividend: false },
+  { symbol: 'TSLA', name: 'Tesla', type: 'stock', optionsAvailable: true, hasDividend: false },
+  { symbol: 'HIMS', name: 'Hims & Hers', type: 'stock', optionsAvailable: true, hasDividend: false },
+  { symbol: 'SOFI', name: 'SoFi', type: 'stock', optionsAvailable: true, hasDividend: false },
+  { symbol: 'NBIS', name: 'Nebius', type: 'stock', optionsAvailable: true, hasDividend: false },
+  { symbol: 'PLTR', name: 'Palantir', type: 'stock', optionsAvailable: true, hasDividend: false },
+  { symbol: 'NVDA', name: 'Nvidia', type: 'stock', optionsAvailable: true, hasDividend: false },
 ];
 
 /**

@@ -15,7 +15,6 @@ const lot = (shares: number, over: Partial<StockPosition> = {}): StockPosition =
   currentPrice: 10,
   currentValue: shares * 10,
   optionsSupported: true,
-  miniContractsSupported: false,
   ...over,
 });
 
@@ -70,13 +69,6 @@ describe('computeCoveredCallCapacity', () => {
     const cap = computeCoveredCallCapacity([lot(100)], [spreadShort]);
     expect(cap.coveredContracts).toBe(0);
     expect(cap.freeContracts).toBe(1);
-    expect(cap.canWriteCoveredCall).toBe(true);
-  });
-
-  it('mini contracts: 20 shares → 2 contracts', () => {
-    const cap = computeCoveredCallCapacity([lot(20, { miniContractsSupported: true })], []);
-    expect(cap.sharesPerContract).toBe(10);
-    expect(cap.maxContracts).toBe(2);
     expect(cap.canWriteCoveredCall).toBe(true);
   });
 

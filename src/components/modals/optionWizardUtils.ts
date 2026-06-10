@@ -34,7 +34,6 @@ export interface NewTickerData {
   name: string;
   type: 'stock' | 'etf';
   optionsAvailable: boolean;
-  miniContractsAvailable: boolean;
   hasDividend?: boolean;
 }
 
@@ -43,7 +42,6 @@ export const DEFAULT_NEW_TICKER_DATA: NewTickerData = {
   name: '',
   type: 'stock',
   optionsAvailable: true,
-  miniContractsAvailable: false,
   hasDividend: false,
 };
 

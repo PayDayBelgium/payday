@@ -25,7 +25,6 @@ const stock = (
   currentPrice: 100,
   currentValue: shares * 100,
   optionsSupported: true,
-  miniContractsSupported: false,
 });
 
 const shortCall = (

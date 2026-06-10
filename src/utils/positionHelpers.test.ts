@@ -22,7 +22,6 @@ const stock = (id: string, shares = 100): StockPosition => ({
   currentPrice: 100,
   currentValue: shares * 100,
   optionsSupported: true,
-  miniContractsSupported: false,
 });
 
 /**
@@ -102,7 +101,6 @@ const ticker = (symbol: string, price: number): Ticker => ({
   name: symbol,
   type: 'stock',
   optionsAvailable: true,
-  miniContractsAvailable: false,
   currentPrice: price,
 });
 

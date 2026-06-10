@@ -17,7 +17,6 @@ export function useTradeIdeaWizard() {
       name: idea.ticker,
       type: 'stock',
       optionsAvailable: true,
-      miniContractsAvailable: false,
     });
     setKind(idea.strategy === 'covered_calls' ? 'call' : 'put');
   }, []);

@@ -29,7 +29,6 @@ const stock = (): StockPosition =>
     currentValue: 16000,
     openDate: '2026-01-01',
     optionsSupported: true,
-    miniContractsSupported: false,
   }) as unknown as StockPosition;
 
 const portfolio = (): Portfolio =>

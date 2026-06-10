@@ -530,14 +530,6 @@ export const PositionDetailModal: React.FC<PositionDetailModalProps> = ({
                             {stock.optionsSupported ? t('modalsA.yes') : t('modalsA.no')}
                           </p>
                         </div>
-                        <div className="bg-surface dark:bg-trading-dark-700/50 rounded-lg p-3">
-                          <p className="text-ink-600 dark:text-ink-400 mb-1">
-                            {t('modalsA.miniContracts')}
-                          </p>
-                          <p className="font-semibold text-ink-900 dark:text-white">
-                            {stock.miniContractsSupported ? t('modalsA.yesTenShares') : t('modalsA.no')}
-                          </p>
-                        </div>
                       </div>
                     </>
                   );

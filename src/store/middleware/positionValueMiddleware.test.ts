@@ -218,7 +218,6 @@ describe('positionValueMiddleware', () => {
       currentPrice: 50,
       currentValue: 1500,
       optionsSupported: true,
-      miniContractsSupported: false,
     } as unknown as Position;
 
     const assertCacheParity = () => {

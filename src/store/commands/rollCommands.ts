@@ -387,7 +387,6 @@ export const recordAssignment =
         currentPrice: assignmentPrice,
         currentValue: shares * assignmentPrice,
         optionsSupported: true,
-        miniContractsSupported: false,
         openDate: assignmentDate,
         notes: notes ?? undefined,
         wheelId,

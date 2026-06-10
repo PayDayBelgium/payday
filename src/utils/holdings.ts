@@ -14,7 +14,6 @@ export interface Holding {
   profitLoss: number;
   profitLossPercentage: number;
   optionsSupported: boolean;
-  miniContractsSupported: boolean;
   // Covered-call capacity (from computeCoveredCallCapacity):
   coveredContracts: number;
   maxContracts: number;
@@ -80,7 +79,6 @@ export function groupHoldings(positions: Position[], portfolio: PortfolioName): 
       profitLoss,
       profitLossPercentage: totalCostBasis > 0 ? (profitLoss / totalCostBasis) * 100 : 0,
       optionsSupported: capacity.optionsSupported,
-      miniContractsSupported: sorted[0]?.miniContractsSupported ?? false,
       coveredContracts: capacity.coveredContracts,
       maxContracts: capacity.maxContracts,
       freeContracts: capacity.freeContracts,

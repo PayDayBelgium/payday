@@ -81,7 +81,6 @@ export const OptionCheck: React.FC = () => {
       name: newTicker.name,
       type: newTicker.type,
       optionsAvailable: newTicker.optionsAvailable,
-      miniContractsAvailable: false,
       lastUsed: new Date().toISOString(),
     };
     dispatch(addTicker(ticker, new Date().toISOString()));

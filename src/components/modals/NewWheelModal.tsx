@@ -53,7 +53,6 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({ isOpen, onClose, p
     name: '',
     type: 'stock' as 'stock' | 'etf',
     optionsAvailable: true,
-    miniContractsAvailable: false,
     hasDividend: false,
   });
 
@@ -137,7 +136,6 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({ isOpen, onClose, p
         currentPrice: purchasePrice,
         currentValue: costBasis,
         optionsSupported: true,
-        miniContractsSupported: false,
         openDate: stockPurchaseDate,
         notes: t('modalsB.newWheel.linkedNote'),
         wheelId,
@@ -186,7 +184,6 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({ isOpen, onClose, p
       name: '',
       type: 'stock',
       optionsAvailable: true,
-      miniContractsAvailable: false,
       hasDividend: false,
     });
     onClose();
@@ -198,7 +195,6 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({ isOpen, onClose, p
       name: '',
       type: 'stock',
       optionsAvailable: true,
-      miniContractsAvailable: false,
       hasDividend: false,
     });
     setIsCreatingTicker(true);
@@ -210,7 +206,6 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({ isOpen, onClose, p
       name: newTickerData.name || newTickerData.symbol.toUpperCase(),
       type: newTickerData.type,
       optionsAvailable: newTickerData.optionsAvailable,
-      miniContractsAvailable: newTickerData.miniContractsAvailable,
       hasDividend: newTickerData.hasDividend,
       lastUsed: new Date().toISOString(),
     };
@@ -223,7 +218,6 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({ isOpen, onClose, p
       name: '',
       type: 'stock',
       optionsAvailable: true,
-      miniContractsAvailable: false,
       hasDividend: false,
     });
   };
@@ -235,7 +229,6 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({ isOpen, onClose, p
       name: '',
       type: 'stock',
       optionsAvailable: true,
-      miniContractsAvailable: false,
       hasDividend: false,
     });
   };
@@ -358,22 +351,6 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({ isOpen, onClose, p
                     />
                     <span className="text-sm text-ink-700 dark:text-ink-300">
                       {t('modalsB.newWheel.optionsAvailable')}
-                    </span>
-                  </label>
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={newTickerData.miniContractsAvailable}
-                      onChange={(e) =>
-                        setNewTickerData({
-                          ...newTickerData,
-                          miniContractsAvailable: e.target.checked,
-                        })
-                      }
-                      className="w-4 h-4 text-teal-600 bg-surface-subtle border-ink-200 rounded focus:ring-teal-500 dark:bg-trading-dark-700 dark:border-trading-dark-500"
-                    />
-                    <span className="text-sm text-ink-700 dark:text-ink-300">
-                      {t('modalsB.newWheel.miniContracts')}
                     </span>
                   </label>
                 </div>

@@ -4,7 +4,6 @@ import { allocateCallCoverage } from './coverageAllocation';
 export interface CoveredCallCapacity {
   /** Shares backing covered-call capacity (wheel-linked lots excluded). */
   totalShares: number;
-  sharesPerContract: number; // 10 for mini, otherwise 100
   maxContracts: number;
   coveredContracts: number;
   freeContracts: number;
@@ -43,9 +42,7 @@ export function computeCoveredCallCapacity(
   const totalShares = ccLots.reduce((sum, lot) => sum + lot.shares, 0);
 
   // Derived from the ticker; lots of the same ticker are consistent.
-  const miniSupported = ccLots[0]?.miniContractsSupported ?? false;
   const optionsSupported = ccLots.length > 0 && ccLots.every((lot) => lot.optionsSupported);
-  const sharesPerContract = miniSupported ? 10 : 100;
 
   const allocation = allocateCallCoverage({
     stocks: ccLots,
@@ -60,7 +57,6 @@ export function computeCoveredCallCapacity(
 
   return {
     totalShares,
-    sharesPerContract,
     maxContracts,
     coveredContracts,
     freeContracts,

@@ -15,7 +15,6 @@ const stock = (id: string, shares: number): StockPosition => ({
   currentPrice: 100,
   currentValue: shares * 100,
   optionsSupported: true,
-  miniContractsSupported: false,
 });
 
 const leaps = (id: string, strike: number, contracts = 1): CallOption => ({

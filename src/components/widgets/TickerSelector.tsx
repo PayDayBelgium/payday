@@ -218,7 +218,6 @@ export const TickerSelector: React.FC<TickerSelectorProps> = ({
                       {ticker.optionsAvailable && (
                         <p className="text-xs text-ink-500 dark:text-ink-500 mt-0.5">
                           {t('compCommon.optionsAvailable')}
-                          {ticker.miniContractsAvailable && t('compCommon.miniContracts')}
                         </p>
                       )}
                     </div>

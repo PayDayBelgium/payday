@@ -91,7 +91,6 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
     name: '',
     type: 'stock',
     optionsAvailable: true,
-    miniContractsAvailable: false,
     hasDividend: false,
   });
 
@@ -148,7 +147,6 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
       name: '',
       type: 'stock',
       optionsAvailable: true,
-      miniContractsAvailable: false,
       hasDividend: false,
     });
   };
@@ -239,7 +237,6 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
             name: selectedTicker.name,
             type: 'stock',
             optionsAvailable: selectedTicker.optionsAvailable,
-            miniContractsAvailable: selectedTicker.miniContractsAvailable,
           },
           spreadTs
         )
@@ -285,7 +282,6 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
             name: selectedTicker.name,
             type: 'stock',
             optionsAvailable: selectedTicker.optionsAvailable,
-            miniContractsAvailable: selectedTicker.miniContractsAvailable,
           },
           putTs
         )
@@ -539,8 +535,6 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                         {selectedTicker.optionsAvailable && (
                           <p className="text-xs text-positive-600 dark:text-positive-500">
                             {t('putWizard.tickerStep.optionsAvailable')}
-                            {selectedTicker.miniContractsAvailable &&
-                              ` • ${t('putWizard.tickerStep.miniContracts')}`}
                           </p>
                         )}
                       </div>
@@ -560,7 +554,6 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                     name: '',
                     type: 'stock',
                     optionsAvailable: true,
-                    miniContractsAvailable: false,
                     hasDividend: false,
                   });
                 }}
@@ -573,8 +566,6 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
                   stock: t('modalsB.putWizard.stock'),
                   etf: t('modalsB.putWizard.etf'),
                   optionsAvailableCheck: t('modalsB.putWizard.optionsAvailableCheck'),
-                  miniContractsCheck: t('modalsB.putWizard.miniContractsCheck'),
-                  miniContractsTooltip: t('modalsB.putWizard.miniContractsTooltip'),
                   addTicker: t('modalsB.putWizard.addTicker'),
                   cancel: t('modalsB.putWizard.cancel'),
                 }}
