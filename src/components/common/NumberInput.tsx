@@ -15,8 +15,9 @@ interface NumberInputProps {
 }
 
 /**
- * NumberInput component that uses the browser's locale for decimal separator
- * Supports both comma (,) and period (.) as decimal separators
+ * NumberInput component that uses the app locale for decimal separator.
+ * Input is parsed locale-aware (via parseLocalizedNumber): the locale's
+ * thousand separator is stripped and its decimal separator becomes '.'.
  */
 export const NumberInput: React.FC<NumberInputProps> = ({
   value,

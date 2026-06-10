@@ -46,13 +46,24 @@ const positionsSlice = createSlice({
         Array<{
           id: string;
           currentValue: number;
+          /**
+           * Optional live price per share. Provided by tickerPriceMiddleware when it
+           * batches a price tick across stock/ETF positions, so a single batched
+           * dispatch carries everything updatePositionLivePrice used to set.
+           */
+          currentPrice?: number;
         }>
       >
     ) => {
-      action.payload.forEach(({ id, currentValue }) => {
+      action.payload.forEach(({ id, currentValue, currentPrice }) => {
         const position = state.positions.find((p) => p.id === id);
         if (position) {
-          (position as any).currentValue = currentValue;
+          // Structural cast: not every Position variant declares these live fields.
+          const target = position as { currentValue?: number; currentPrice?: number };
+          target.currentValue = currentValue;
+          if (currentPrice !== undefined) {
+            target.currentPrice = currentPrice;
+          }
         }
       });
     },

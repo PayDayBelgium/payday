@@ -360,7 +360,10 @@ describe('SpreadRolled', () => {
 // ---------------------------------------------------------------------------
 
 describe('OptionAssigned kind=put', () => {
-  it('produces position_buy with amount = -effectiveCost', () => {
+  it('produces position_buy with amount = -(strike × shares), NOT -effectiveCost', () => {
+    // The premium was already credited at open via premium_collected, so the
+    // assignment ledger line must book the GROSS cash outflow (strike × shares).
+    // Gross = effectiveCost + optionRealizedPnL (optionRealizedPnL = |costBasis| = premium kept).
     const newStock = stockPos({ id: 'stock-assigned', shares: 200, purchasePrice: 145 });
     const ev = event('OptionAssigned', {
       kind: 'put',
@@ -369,17 +372,44 @@ describe('OptionAssigned kind=put', () => {
       assignmentPrice: 145,
       optionRealizedPnL: 500,
       newStock,
-      effectiveCost: 28500, // strike*shares - premiums
+      effectiveCost: 28500, // strike*shares - premium = 29000 - 500
       portfolio: 'Main',
     });
     const result = applyTransactionEvent(EMPTY, ev, []);
     expect(result).toHaveLength(1);
     const [txn] = result;
     expect(txn.type).toBe('position_buy');
-    expect(txn.amount).toBe(-28500); // -effectiveCost
+    expect(txn.amount).toBe(-29000); // -(strike × shares) = -(145 × 200)
     expect(txn.relatedPositionId).toBe('stock-assigned');
     expect(txn.portfolio).toBe('Main');
     expect(txn.date).toBe('2026-03-21');
+  });
+
+  it('invariant: sum of ledger lines over open+assign = premium − strike×shares', () => {
+    // Open a short put: 2 contracts, strike 145, premium 2.50 → collect 500.
+    const shortPut = putOption({ action: 'sell', contracts: 2, strike: 145, costBasis: -500 });
+    let txns = applyTransactionEvent(EMPTY, event('PositionOpened', { position: shortPut }, 'e-open'), []);
+
+    // Assign: buy 200 shares @ 145 → gross outflow 29000.
+    const newStock = stockPos({ id: 'stock-assigned', shares: 200 });
+    txns = applyTransactionEvent(
+      txns,
+      event('OptionAssigned', {
+        kind: 'put',
+        optionId: shortPut.id,
+        assignmentDate: '2026-03-21',
+        assignmentPrice: 145,
+        optionRealizedPnL: 500,
+        newStock,
+        effectiveCost: 28500,
+        portfolio: 'Main',
+      }, 'e-assign'),
+      [shortPut]
+    );
+
+    const sum = txns.reduce((s, t) => s + t.amount, 0);
+    // premium − strike×shares = 500 − 29000
+    expect(sum).toBe(-28500);
   });
 });
 
@@ -388,7 +418,7 @@ describe('OptionAssigned kind=put', () => {
 // ---------------------------------------------------------------------------
 
 describe('OptionAssigned kind=call', () => {
-  it('produces position_sell with amount = totalProceeds + premiumReceived', () => {
+  it('produces position_sell with amount = totalProceeds only (premium was credited at open)', () => {
     const ev = event('OptionAssigned', {
       kind: 'call',
       optionId: 'pos-call-1',
@@ -397,17 +427,44 @@ describe('OptionAssigned kind=call', () => {
       stockId: 'pos-stock-1',
       portfolio: 'Main',
       totalProceeds: 16000, // strike * shares
-      premiumReceived: 300,  // |costBasis| of the call
+      premiumReceived: 300,  // |costBasis| of the call — already booked at open
       stockClose: { fullClose: true, closePrice: 160, stockRealizedPnL: 1000 },
     });
     const result = applyTransactionEvent(EMPTY, ev, []);
     expect(result).toHaveLength(1);
     const [txn] = result;
     expect(txn.type).toBe('position_sell');
-    expect(txn.amount).toBe(16300); // 16000 + 300
+    expect(txn.amount).toBe(16000); // totalProceeds only
     expect(txn.relatedPositionId).toBe('pos-call-1');
     expect(txn.portfolio).toBe('Main');
     expect(txn.date).toBe('2026-03-21');
+  });
+
+  it('invariant: sum of ledger lines over open+assign = premium + strike×shares', () => {
+    // Open a short call: 1 contract, strike 160, premium 3 → collect 300.
+    const shortCall = callOption({ action: 'sell', contracts: 1, strike: 160, costBasis: -300 });
+    let txns = applyTransactionEvent(EMPTY, event('PositionOpened', { position: shortCall }, 'e-open'), []);
+
+    // Assign: stock called away at strike → proceeds 16000.
+    txns = applyTransactionEvent(
+      txns,
+      event('OptionAssigned', {
+        kind: 'call',
+        optionId: shortCall.id,
+        assignmentDate: '2026-03-21',
+        optionRealizedPnL: 300,
+        stockId: 'pos-stock-1',
+        portfolio: 'Main',
+        totalProceeds: 16000,
+        premiumReceived: 300,
+        stockClose: { fullClose: true, closePrice: 160, stockRealizedPnL: 1000 },
+      }, 'e-assign'),
+      [shortCall]
+    );
+
+    const sum = txns.reduce((s, t) => s + t.amount, 0);
+    // premium + strike×shares = 300 + 16000
+    expect(sum).toBe(16300);
   });
 });
 
@@ -441,8 +498,8 @@ describe('OptionAssigned kind=call new-path (lotCloses)', () => {
     expect(result).toHaveLength(1);
     const [txn] = result;
     expect(txn.type).toBe('position_sell');
-    // amount = totalProceeds + premiumReceived = 31000 + 300 = 31300
-    expect(txn.amount).toBe(31_300);
+    // amount = totalProceeds only (premium was already credited at open)
+    expect(txn.amount).toBe(31_000);
     expect(txn.portfolio).toBe('Main');
     expect(txn.date).toBe('2026-03-21');
   });

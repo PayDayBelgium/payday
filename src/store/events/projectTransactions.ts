@@ -320,7 +320,12 @@ export function applyTransactionEvent(
       const payload = event.payload as OptionAssignedPayload;
 
       if (payload.kind === 'put') {
-        // Put assigned: stock is bought at the effective cost
+        // Put assigned: stock is bought at the GROSS cost (strike × shares).
+        // The premium was already credited at open via premium_collected, so
+        // booking effectiveCost (= strike × shares − premium) here would count
+        // the premium twice. Gross = effectiveCost + optionRealizedPnL, where
+        // optionRealizedPnL = |costBasis| = the premium kept.
+        const grossCost = payload.effectiveCost + payload.optionRealizedPnL;
         return [
           ...transactions,
           makeTxn({
@@ -328,7 +333,7 @@ export function applyTransactionEvent(
             portfolio: payload.portfolio,
             date: payload.assignmentDate,
             type: 'position_buy',
-            amount: -payload.effectiveCost,
+            amount: -grossCost,
             description: `Put assignment — ${payload.newStock.ticker} @ ${payload.assignmentPrice}`,
             relatedPositionId: payload.newStock.id,
             createdAt,
@@ -336,7 +341,10 @@ export function applyTransactionEvent(
         ];
       }
 
-      // kind === 'call': stock called away
+      // kind === 'call': stock called away. Cash received is the gross stock
+      // proceeds (strike × shares) only — the premium was already credited at
+      // open via premium_collected, so adding premiumReceived here would
+      // double-count it.
       const calledOption = positionsBefore.find((p) => p.id === payload.optionId);
       const calledTicker = calledOption?.ticker ?? payload.portfolio;
       return [
@@ -346,7 +354,7 @@ export function applyTransactionEvent(
           portfolio: payload.portfolio,
           date: payload.assignmentDate,
           type: 'position_sell',
-          amount: payload.totalProceeds + payload.premiumReceived,
+          amount: payload.totalProceeds,
           description: `Call assignment — ${calledTicker} stock sold`,
           relatedPositionId: payload.optionId,
           createdAt,

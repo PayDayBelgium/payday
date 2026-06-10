@@ -86,6 +86,8 @@ const nlBase = {
     data: 'Data',
     backup: 'Back-up',
     restore: 'Herstellen',
+    backupInvalidEvents:
+      'Het back-upbestand bevat ongeldige of onbekende events en werd niet hersteld.',
     hideExplanation: 'Verberg uitleg',
     showExplanation: 'Toon uitleg',
     hideWarning: 'Verberg waarschuwing',
@@ -387,6 +389,15 @@ const nlBase = {
     sellValue: 'Verkoopwaarde',
     buybackValue: 'Terugkoopwaarde',
     daysToExpiration: 'Nog {{days}}d tot expiratie',
+    // Event-log durability (system alerts)
+    eventLog: {
+      writeFailed:
+        'Je laatste wijziging kon niet permanent worden opgeslagen en kan na herladen verloren gaan.',
+      writeFailedAction: 'Exporteer nu een backup en probeer de wijziging opnieuw',
+      tabConflict:
+        'Je gegevens zijn in een ander browsertabblad gewijzigd. Je wijziging is opgeslagen, maar dit beeld kan verouderd zijn.',
+      tabConflictAction: 'Herlaad dit tabblad voor een consistent beeld',
+    },
   },
 
   // Options

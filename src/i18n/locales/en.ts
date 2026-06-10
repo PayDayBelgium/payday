@@ -86,6 +86,8 @@ const enBase = {
     data: 'Data',
     backup: 'Backup',
     restore: 'Restore',
+    backupInvalidEvents:
+      'The backup file contains invalid or unrecognized events and was not restored.',
     hideExplanation: 'Hide explanation',
     showExplanation: 'Show explanation',
     hideWarning: 'Hide warning',
@@ -387,6 +389,15 @@ const enBase = {
     sellValue: 'Sell value',
     buybackValue: 'Buyback value',
     daysToExpiration: '{{days}}d until expiration',
+    // Event-log durability (system alerts)
+    eventLog: {
+      writeFailed:
+        'Your last change could not be saved to permanent storage and may be lost after a reload.',
+      writeFailedAction: 'Export a backup now and retry the change',
+      tabConflict:
+        'Your data was changed in another browser tab. Your change was saved, but this view may be out of date.',
+      tabConflictAction: 'Reload this tab to see a consistent view',
+    },
   },
 
   // Options

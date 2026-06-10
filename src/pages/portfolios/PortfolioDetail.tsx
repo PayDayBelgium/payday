@@ -50,6 +50,7 @@ import { getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency, formatNumber } from '../../utils/numberFormat';
 import { getSpreadId } from '../../utils/spreadHelpers';
 import { parseCoveredCallOpportunity } from '../../utils/opportunityActions';
+import { isSafeHttpUrl } from '../../utils/urlSafety';
 
 type TabType =
   | 'portfolio'
@@ -1000,7 +1001,8 @@ export const PortfolioDetail: React.FC = () => {
                 </ul>
               </div>
 
-              {portfolio?.url && (
+              {/* Only http(s) URLs may be rendered as links (javascript:/data: would be self-XSS). */}
+              {portfolio && isSafeHttpUrl(portfolio.url) && (
                 <div className="mt-6 pt-6 border-t border-surface-line dark:border-trading-dark-600">
                   <h4 className="text-base font-medium text-ink-900 dark:text-white mb-3">
                     Portfolio Portal

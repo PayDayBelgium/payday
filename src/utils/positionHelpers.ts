@@ -325,3 +325,43 @@ export const calculateSpreadSummary = (legs: Position[]) => {
     collateral: isCredit ? spreadWidth * shortLeg.contracts * 100 : 0,
   };
 };
+
+/** Per-leg close premiums for closing a two-leg spread at ONE net premium. */
+export interface SpreadCloseAllocation {
+  /** Close premium per share for the long (buy) leg. */
+  longClosePremium: number;
+  /** Close premium per share for the short (sell) leg. */
+  shortClosePremium: number;
+}
+
+/**
+ * Allocate the single entered net close premium of a two-leg spread to its legs.
+ *
+ * The user enters ONE net premium (per share) for the whole spread. Applying it
+ * to both legs cancels it out of the combined P&L and nets the ledger cash to
+ * zero. Instead, the net premium is attributed to exactly ONE leg and the other
+ * leg closes at 0:
+ *
+ * - debit spread (long premium > short premium): the spread is SOLD for a
+ *   credit → the long leg receives the net premium, the short leg closes at 0.
+ * - credit spread (short premium > long premium): the spread is BOUGHT BACK
+ *   for a debit → the short leg pays the net premium, the long leg closes at 0.
+ *
+ * Classification uses the same rule as `calculateSpreadSummary`:
+ * `isCredit = shortLeg.premium > longLeg.premium`.
+ *
+ * Resulting invariants (with `calculateOptionRealizedPnL` per leg):
+ * - total realized P&L = ±X·contracts·100 − (longCB + shortCB)
+ *   (+ when a debit spread is sold, − when a credit spread is bought back)
+ * - net ledger cash at close = +X·contracts·100 (debit) / −X·contracts·100 (credit)
+ */
+export const allocateSpreadClosePremium = (
+  longLeg: CallOption | PutOption,
+  shortLeg: CallOption | PutOption,
+  netClosePremium: number
+): SpreadCloseAllocation => {
+  const isCredit = shortLeg.premium > longLeg.premium;
+  return isCredit
+    ? { longClosePremium: 0, shortClosePremium: netClosePremium }
+    : { longClosePremium: netClosePremium, shortClosePremium: 0 };
+};

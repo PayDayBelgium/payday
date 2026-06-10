@@ -1,6 +1,6 @@
 import type { Middleware } from '@reduxjs/toolkit';
 import type { RootState } from '../index';
-import { updatePositionLivePrice, addPriceAlert } from '../slices/positionsSlice';
+import { updateMultiplePositionValues, addPriceAlert } from '../slices/positionsSlice';
 import { addAlert } from '../slices/alertsSlice';
 import type {
   Position,
@@ -86,6 +86,15 @@ export const tickerPriceMiddleware: Middleware = (store) => (next) => (action) =
     return result;
   }
 
+  // Collect live-price updates for stock/ETF positions and dispatch them as ONE
+  // batched action after the loop. Previously each position got its own
+  // updatePositionLivePrice dispatch, and every dispatch made
+  // positionValueMiddleware recompute the whole portfolio value — O(S) full
+  // recomputations per tick. One batch = one downstream recomputation per
+  // affected portfolio.
+  const batchedValueUpdates: Array<{ id: string; currentValue: number; currentPrice: number }> =
+    [];
+
   // Process each position
   positions.forEach((position: Position) => {
     // 1. Update stock/ETF positions with new value
@@ -93,14 +102,18 @@ export const tickerPriceMiddleware: Middleware = (store) => (next) => (action) =
       const stockPosition = position as StockPosition;
       const newCurrentValue = stockPosition.shares * newPrice;
 
-      // Update position with new current value and price
-      store.dispatch(
-        updatePositionLivePrice({
+      // Queue the position update; skip no-ops (price tick equal to what the
+      // position already carries) so an unchanged price dispatches nothing.
+      if (
+        stockPosition.currentPrice !== newPrice ||
+        stockPosition.currentValue !== newCurrentValue
+      ) {
+        batchedValueUpdates.push({
           id: stockPosition.id,
           currentPrice: newPrice,
           currentValue: newCurrentValue,
-        })
-      );
+        });
+      }
 
       // Check for 10% price change from purchase price
       const purchasePrice = stockPosition.purchasePrice;
@@ -187,8 +200,12 @@ export const tickerPriceMiddleware: Middleware = (store) => (next) => (action) =
     }
   });
 
+  // One batched dispatch for all stock/ETF positions of this ticker.
   // Note: Portfolio value updates are handled by positionValueMiddleware
-  // when updatePositionLivePrice is dispatched above
+  // when updateMultiplePositionValues is dispatched here.
+  if (batchedValueUpdates.length > 0) {
+    store.dispatch(updateMultiplePositionValues(batchedValueUpdates));
+  }
 
   return result;
 };

@@ -38,7 +38,13 @@ import { OptionRow } from './OptionRow';
 import type { CollateralType } from './OptionRow';
 import { SpreadSummaryRow } from './SpreadSummaryRow';
 import { CollapsibleSection } from './CollapsibleSection';
-import { isLEAPS, calculateSpreadSummary, buildPortfolioSections } from '../../utils/positionHelpers';
+import {
+  isLEAPS,
+  calculateSpreadSummary,
+  buildPortfolioSections,
+  allocateSpreadClosePremium,
+} from '../../utils/positionHelpers';
+import { calculateOptionRealizedPnL } from '../../utils/pnlCalculations';
 
 type SortField = 'expiration' | 'ticker' | 'strike' | 'premium' | 'dte' | 'pnl';
 type SortDirection = 'asc' | 'desc';
@@ -446,25 +452,33 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
       notes?: string;
     }
   ) => {
-    const contractMultiplier = 100;
+    const options = spreadLegs as (CallOption | PutOption)[];
+    const longLeg = options.find((o) => o.action === 'buy');
+    const shortLeg = options.find((o) => o.action === 'sell');
+    if (!longLeg || !shortLeg) return;
 
-    spreadLegs.forEach((leg) => {
-      const option = leg as CallOption | PutOption;
-      let realizedPnL = 0;
+    // The user enters ONE net close premium for the spread. Attribute it to a
+    // single leg (the other closes at 0) so the entered premium flows into
+    // both the realized P&L and the ledger instead of cancelling out.
+    const alloc = allocateSpreadClosePremium(longLeg, shortLeg, closeData.closePremium);
+    const legCloses = [
+      { leg: longLeg, closePremium: alloc.longClosePremium },
+      { leg: shortLeg, closePremium: alloc.shortClosePremium },
+    ];
 
-      if (option.action === 'buy') {
-        const closeValue = closeData.closePremium * option.contracts * contractMultiplier;
-        realizedPnL = closeValue - option.costBasis;
-      } else {
-        const closeCost = closeData.closePremium * option.contracts * contractMultiplier;
-        realizedPnL = option.costBasis - closeCost;
-      }
+    legCloses.forEach(({ leg, closePremium }) => {
+      const realizedPnL = calculateOptionRealizedPnL({
+        action: leg.action,
+        costBasis: leg.costBasis,
+        closePremium,
+        contracts: leg.contracts,
+      });
 
       dispatch(
         closePosition({
-          id: option.id,
+          id: leg.id,
           closeDate: closeData.closeDate,
-          closePremium: closeData.closePremium,
+          closePremium,
           realizedPnL,
           notes: closeData.notes,
         }, new Date().toISOString())

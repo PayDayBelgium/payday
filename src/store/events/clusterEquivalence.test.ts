@@ -436,16 +436,19 @@ describe('Scenario 3: roll a short option', () => {
 //   newStock.currentPrice = 48 (assignmentPrice)
 //   newStock.currentValue = 100 * 48 = 4800
 //
-// Ledger: one position_buy -4800 (from OptionAssigned, not a standalone PositionOpened)
+// Ledger: one position_buy -5000 = -(strike × shares), GROSS — the premium was
+// already credited at open via premium_collected (from OptionAssigned, not a
+// standalone PositionOpened).
 // Wheel: phase → 'stock'; totalPremiumCollected = 200
 //
 // Portfolio value:
 //   initialCapital = 10000
 //   + premium_collected +200 (from opening the short put)
-//   + position_buy -4800 (from assignment)
-//   cash = 10000 + 200 - 4800 = 5400
+//   + position_buy -5000 (from assignment, gross strike × shares)
+//   cash = 10000 + 200 - 5000 = 5200
 //   positionValue = stock currentValue = 4800
-//   total = 5400 + 4800 = 10200
+//   total = 5200 + 4800 = 10000
+//   (sanity: +200 premium kept, -200 unrealized on the stock → net 0 vs initial)
 // ---------------------------------------------------------------------------
 
 describe('Scenario 4: put assignment → stock (wheel)', () => {
@@ -508,12 +511,13 @@ describe('Scenario 4: put assignment → stock (wheel)', () => {
     expect(stock.wheelId).toBe(WHEEL_ID);
   });
 
-  it('ledger: one position_buy -4800 from assignment (no double-counting)', () => {
+  it('ledger: one position_buy -5000 (gross strike × shares) from assignment', () => {
     const txns = sel.transactions(store);
     const buyTxns = txns.filter((t) => t.type === 'position_buy');
     // Only one position_buy — from the OptionAssigned event, not a standalone PositionOpened.
+    // Amount is GROSS (-strike × shares): the premium was already credited at open.
     expect(buyTxns).toHaveLength(1);
-    expect(buyTxns[0].amount).toBe(-4800);
+    expect(buyTxns[0].amount).toBe(-5000);
     expect(buyTxns[0].portfolio).toBe('TestPF');
   });
 
@@ -526,12 +530,12 @@ describe('Scenario 4: put assignment → stock (wheel)', () => {
     expect(wheel.cycles).toBe(0);
   });
 
-  it('portfolio currentValue = 10200', () => {
-    // cash = 10000 + 200(premium_collected) - 4800(position_buy) = 5400
+  it('portfolio currentValue = 10000', () => {
+    // cash = 10000 + 200(premium_collected) - 5000(position_buy, gross) = 5200
     // stock currentValue = 4800
-    // total = 5400 + 4800 = 10200
+    // total = 5200 + 4800 = 10000
     const pf = sel.portfolio(store, 'TestPF');
-    expect(pf?.currentValue).toBe(10200);
+    expect(pf?.currentValue).toBe(10000);
   });
 });
 
@@ -550,25 +554,20 @@ describe('Scenario 4: put assignment → stock (wheel)', () => {
 //   stockCostBasisForShares = 4800 / 100 * 100 = 4800
 //   stockRealizedPnL = 5500 - 4800 = 700
 //
-// Ledger: one position_sell = totalProceeds + premiumReceived = 5500 + 100 = 5600
+// Ledger: one position_sell = totalProceeds = 5500 — the premium was already
+// credited at open via premium_collected, so the assignment books only the
+// gross stock proceeds (strike × shares).
 // Wheel: cycles = 1, phase = 'csp', totalRealizedPnL += 700
 // Trades: option trade + stock trade = 2 total
 //
 // Portfolio value after:
-//   initialCapital = 10000
-//   + premium_collected +100 (from opening the short call)
-//   + position_sell +5600 (from OptionAssigned)
-//   cash = 10000 + 100 + 5600 = 15700
-//   positions: both closed → 0
-//   total = 15700
-//
-// BUT wait: we need to account for the stock and call originally opening:
 //   Stock was seeded via openPosition → position_buy -4800
 //   Short call via openPosition → premium_collected +100
-//   Then assignment → position_sell +5600
-//   cash = 10000 - 4800 + 100 + 5600 = 10900
+//   Then assignment → position_sell +5500
+//   cash = 10000 - 4800 + 100 + 5500 = 10800
 //   positions: 0
-//   total = 10900
+//   total = 10800
+//   (sanity: +100 premium kept, +700 realized stock gain → 10000 + 800)
 // ---------------------------------------------------------------------------
 
 describe('Scenario 5: call assignment full (wheel)', () => {
@@ -652,12 +651,12 @@ describe('Scenario 5: call assignment full (wheel)', () => {
     expect(stock?.closePrice).toBe(55);
   });
 
-  it('ledger: position_sell = 5600 (totalProceeds 5500 + premiumReceived 100)', () => {
+  it('ledger: position_sell = 5500 (totalProceeds only; premium credited at open)', () => {
     const txns = sel.transactions(store);
     const sellTxns = txns.filter((t) => t.type === 'position_sell');
     // Only ONE position_sell from OptionAssigned (no double-count from stock close)
     expect(sellTxns).toHaveLength(1);
-    expect(sellTxns[0].amount).toBe(5600);
+    expect(sellTxns[0].amount).toBe(5500);
   });
 
   it('wheel: cycles = 1, phase = csp, totalRealizedPnL includes stockRealizedPnL = 700', () => {
@@ -680,17 +679,17 @@ describe('Scenario 5: call assignment full (wheel)', () => {
     expect(trades).toHaveLength(2);
   });
 
-  it('portfolio currentValue = 10900', () => {
+  it('portfolio currentValue = 10800', () => {
     // Cash contributions:
     //   initialCapital = 10000
     //   position_buy (stock open) = -4800
     //   premium_collected (call open) = +100
-    //   position_sell (assignment) = +5600
-    //   cash = 10000 - 4800 + 100 + 5600 = 10900
+    //   position_sell (assignment, gross) = +5500
+    //   cash = 10000 - 4800 + 100 + 5500 = 10800
     // positionValue = 0 (all positions closed)
-    // total = 10900
+    // total = 10800
     const pf = sel.portfolio(store, 'TestPF');
-    expect(pf?.currentValue).toBe(10900);
+    expect(pf?.currentValue).toBe(10800);
   });
 });
 
@@ -715,7 +714,7 @@ describe('Scenario 5: call assignment full (wheel)', () => {
 // After:
 //   Stock edited to 100 remaining shares, NOT closed.
 //   Option closed (realizedPnL=100).
-//   Ledger: ONE position_sell = 5500 + 100 = 5600
+//   Ledger: ONE position_sell = totalProceeds = 5500 (premium credited at open)
 //   Wheel: cycles += 1, phase = 'csp', totalRealizedPnL += 700
 //   Trades: only option trade (stock NOT closed → no stock trade)
 // ---------------------------------------------------------------------------
@@ -801,11 +800,11 @@ describe('Scenario 6: call assignment partial (200 shares, 1-contract call)', ()
     expect(call?.realizedPnL).toBe(100);
   });
 
-  it('ledger: ONE position_sell = 5600 (totalProceeds 5500 + premiumReceived 100)', () => {
+  it('ledger: ONE position_sell = 5500 (totalProceeds only; premium credited at open)', () => {
     const txns = sel.transactions(store);
     const sellTxns = txns.filter((t) => t.type === 'position_sell');
     expect(sellTxns).toHaveLength(1);
-    expect(sellTxns[0].amount).toBe(5600);
+    expect(sellTxns[0].amount).toBe(5500);
   });
 
   it('wheel: cycles = 1, phase = csp, totalRealizedPnL = 700', () => {
@@ -835,12 +834,12 @@ describe('Scenario 6: call assignment partial (200 shares, 1-contract call)', ()
     //   initialCapital = 10000
     //   position_buy (stock 200sh open) = -9600
     //   premium_collected (call open) = +100
-    //   position_sell (assignment) = +5600
-    //   cash = 10000 - 9600 + 100 + 5600 = 6100
+    //   position_sell (assignment, gross) = +5500
+    //   cash = 10000 - 9600 + 100 + 5500 = 6000
     // positionValue = remaining stock currentValue = 5400
-    // total = 6100 + 5400 = 11500
+    // total = 6000 + 5400 = 11400
     const pf = sel.portfolio(store, 'TestPF');
-    expect(pf?.currentValue).toBe(11500);
+    expect(pf?.currentValue).toBe(11400);
   });
 });
 
@@ -1025,9 +1024,9 @@ describe('Scenario 8: put assignment — no double-counted ledger entries', () =
 
     const txns = sel.transactions(store);
     const buyTxns = txns.filter((t) => t.type === 'position_buy');
-    // EXACTLY one position_buy — from OptionAssigned
+    // EXACTLY one position_buy — from OptionAssigned, booked GROSS
     expect(buyTxns).toHaveLength(1);
-    expect(buyTxns[0].amount).toBe(-4800); // -(50*100 - 200) = -4800
+    expect(buyTxns[0].amount).toBe(-5000); // -(strike × shares) = -(50*100)
 
     // Also: only one premium_collected (the original put open)
     const premiumTxns = txns.filter((t) => t.type === 'premium_collected');

@@ -3,6 +3,7 @@ import { getCurrencySymbol } from './currency';
 import { formatNumber } from './numberFormat';
 import { isKaChingEligible, isLEAPS } from './campaignDetector';
 import { isSpreadLeg, getSpreadId } from './spreadHelpers';
+import { calculateOptionUnrealizedPnL } from './pnlCalculations';
 import { allocateCallCoverage, suggestCoveredCallStrike } from './coverageAllocation';
 import type {
   Position,
@@ -43,26 +44,57 @@ export const defaultSystemAlertConfig: SystemAlertConfig = {
   enabled: true,
 };
 
+// ---------------------------------------------------------------------------
+// Config caches.
+//
+// Both configs live in localStorage and used to be re-read and JSON-parsed on
+// EVERY alert evaluation — which runs on every price tick. They only change
+// when a settings screen writes them, so the parsed results are cached at
+// module level and every writer calls invalidateAlertConfigCache(). The shared
+// evaluation memo includes getAlertConfigVersion() in its input set so a
+// config change forces a re-evaluation.
+// ---------------------------------------------------------------------------
+let cachedSystemAlertConfig: SystemAlertConfig | null = null;
+let cachedStrategyRules: StrategyRule[] | null = null;
+let alertConfigVersion = 0;
+
+/** Monotonic version bumped on every config invalidation (memo cache key input). */
+export const getAlertConfigVersion = (): number => alertConfigVersion;
+
+/** Drop the cached configs. Call this after writing any alert/strategy-rule config. */
+export const invalidateAlertConfigCache = (): void => {
+  cachedSystemAlertConfig = null;
+  cachedStrategyRules = null;
+  alertConfigVersion++;
+};
+
 // Get system alert configuration from localStorage or use defaults
 export const getSystemAlertConfig = (): SystemAlertConfig => {
+  if (cachedSystemAlertConfig) return cachedSystemAlertConfig;
+
+  let config = defaultSystemAlertConfig;
   const saved = localStorage.getItem('system-alert-config');
   if (saved) {
     try {
-      return { ...defaultSystemAlertConfig, ...JSON.parse(saved) };
+      config = { ...defaultSystemAlertConfig, ...JSON.parse(saved) };
     } catch {
-      return defaultSystemAlertConfig;
+      config = defaultSystemAlertConfig;
     }
   }
-  return defaultSystemAlertConfig;
+  cachedSystemAlertConfig = config;
+  return config;
 };
 
 // Save system alert configuration
 export const saveSystemAlertConfig = (config: SystemAlertConfig): void => {
   localStorage.setItem('system-alert-config', JSON.stringify(config));
+  invalidateAlertConfigCache();
 };
 
 // Get strategy rules from localStorage. Rules are global (not per-portfolio).
 export const getPortfolioStrategyRules = (): StrategyRule[] => {
+  if (cachedStrategyRules) return cachedStrategyRules;
+
   const allRules: StrategyRule[] = [];
 
   // Load from global strategy type keys (not per-portfolio)
@@ -79,12 +111,38 @@ export const getPortfolioStrategyRules = (): StrategyRule[] => {
     }
   });
 
+  cachedStrategyRules = allRules;
   return allRules;
 };
 
 // Get all strategy rules (global rules, not per-portfolio)
 export const getAllStrategyRules = (): StrategyRule[] => {
   return getPortfolioStrategyRules();
+};
+
+// ---------------------------------------------------------------------------
+// Ticker lookup.
+//
+// The evaluators used to call `tickers.find(...)` inside per-position loops —
+// O(positions × tickers) per evaluation. This helper builds a symbol→Ticker
+// map ONCE per tickers array (cached by array identity; redux produces a new
+// array whenever tickers change) and serves O(1) lookups. Like Array.find, the
+// FIRST ticker wins when symbols collide, so results are identical.
+// ---------------------------------------------------------------------------
+const tickerMapCache = new WeakMap<Ticker[], Map<string, Ticker>>();
+
+const findTicker = (tickers: Ticker[] | undefined, symbol: string): Ticker | undefined => {
+  if (!tickers) return undefined;
+  let map = tickerMapCache.get(tickers);
+  if (!map) {
+    map = new Map();
+    for (const t of tickers) {
+      const key = t.symbol.toUpperCase();
+      if (!map.has(key)) map.set(key, t);
+    }
+    tickerMapCache.set(tickers, map);
+  }
+  return map.get(symbol.toUpperCase());
 };
 
 // Calculate portfolio free cash
@@ -297,9 +355,7 @@ export const evaluateExpiringOptionsAlerts = (
                   : 'deze week';
 
           // Get current ticker price if available
-          const tickerData = tickers?.find(
-            (t) => t.symbol.toUpperCase() === option.ticker.toUpperCase()
-          );
+          const tickerData = findTicker(tickers, option.ticker);
           const currentPrice = tickerData?.currentPrice;
           const priceInfo = currentPrice ? `\nKoers: $${formatNumber(currentPrice, 2)}` : '';
 
@@ -382,7 +438,7 @@ const buildCallCoverageGroups = (
 };
 
 const priceFor = (tickers: Ticker[] | undefined, ticker: string): number | undefined =>
-  tickers?.find((t) => t.symbol.toUpperCase() === ticker.toUpperCase())?.currentPrice;
+  findTicker(tickers, ticker)?.currentPrice;
 
 // Evaluate stock covered call opportunities (via the shared coverage allocator)
 export const evaluateStockCoveredCallOpportunities = (
@@ -607,7 +663,7 @@ export const evaluateExpiringShortPutOpportunities = (
     // Check if expiring within the configured days
     if (daysToExpire <= config.expiringOptionDays && daysToExpire >= 0) {
       // Get current ticker price
-      const tickerData = tickers?.find((t) => t.symbol.toUpperCase() === put.ticker.toUpperCase());
+      const tickerData = findTicker(tickers, put.ticker);
       const currentPrice = tickerData?.currentPrice;
 
       // Only show opportunity if put is OTM (stock price above strike)
@@ -684,9 +740,7 @@ export const evaluatePutPositionAlerts = (
       const alertId = `put-position-alert-${put.id}`;
       if (!dismissedAlerts.has(alertId)) {
         // Get current ticker price
-        const tickerData = tickers?.find(
-          (t) => t.symbol.toUpperCase() === put.ticker.toUpperCase()
-        );
+        const tickerData = findTicker(tickers, put.ticker);
         const currentPrice = tickerData?.currentPrice;
 
         // Check if put is ITM (stock price below strike)
@@ -780,9 +834,7 @@ export const evaluateExpiringSpreadAlerts = (
                 : 'deze week';
 
         // Get current ticker price if available
-        const tickerData = tickers?.find(
-          (t) => t.symbol.toUpperCase() === firstLeg.ticker.toUpperCase()
-        );
+        const tickerData = findTicker(tickers, firstLeg.ticker);
         const currentPrice = tickerData?.currentPrice;
         const priceInfo = currentPrice ? `\nKoers: $${formatNumber(currentPrice, 2)}` : '';
 
@@ -861,9 +913,7 @@ export const evaluatePutSpreadAlerts = (
     if (!shortLeg || !longLeg) return;
 
     // Get current stock price
-    const tickerData = tickers?.find(
-      (t) => t.symbol.toUpperCase() === shortLeg.ticker.toUpperCase()
-    );
+    const tickerData = findTicker(tickers, shortLeg.ticker);
     const currentPrice = tickerData?.currentPrice;
 
     if (!currentPrice) return;
@@ -945,9 +995,7 @@ export const evaluateCallSpreadAlerts = (
     if (!shortLeg || !longLeg) return;
 
     // Get current stock price
-    const tickerData = tickers?.find(
-      (t) => t.symbol.toUpperCase() === shortLeg.ticker.toUpperCase()
-    );
+    const tickerData = findTicker(tickers, shortLeg.ticker);
     const currentPrice = tickerData?.currentPrice;
 
     if (!currentPrice) return;
@@ -1041,25 +1089,31 @@ export const evaluateProfitOpportunities = (
 
     if (!shortLeg || !longLeg) return;
 
-    // Calculate spread metrics
+    // Calculate spread metrics. Classify credit/debit by net premium (like
+    // calculateSpreadSummary): strike order is inverted for call credit
+    // spreads, where the LOWER strike call is sold.
     const spreadWidth = Math.abs(shortLeg.strike - longLeg.strike);
-    const isCredit = shortLeg.strike > longLeg.strike; // Credit spread: sold higher strike
+    const isCredit = shortLeg.premium > longLeg.premium;
+    const netPremium = Math.abs(shortLeg.premium - longLeg.premium) * shortLeg.contracts * 100;
 
-    // Calculate total cost basis (premium received/paid)
-    const totalCostBasis = legs.reduce((sum, leg) => {
-      return sum + (leg.action === 'sell' ? leg.costBasis : -leg.costBasis);
-    }, 0);
+    // Net value to close the spread (legs are stored signed: shorts negative)
+    const totalCurrentValue = legs.reduce((sum, leg) => sum + (leg.currentValue ?? 0), 0);
 
-    // Calculate current value
-    const totalCurrentValue = legs.reduce((sum, leg) => {
-      return sum + (leg.action === 'sell' ? (leg.currentValue ?? 0) : -(leg.currentValue ?? 0));
-    }, 0);
+    // Sum per-leg P&L via the shared helper, which handles signed storage
+    const totalPnL = legs.reduce(
+      (sum, leg) =>
+        sum +
+        calculateOptionUnrealizedPnL({
+          action: leg.action,
+          costBasis: leg.costBasis,
+          currentValue: leg.currentValue ?? 0,
+        }),
+      0
+    );
 
-    // Calculate P&L and max profit
-    const totalPnL = totalCostBasis - totalCurrentValue;
     const maxProfit = isCredit
-      ? totalCostBasis // Credit spread: max profit is premium received
-      : spreadWidth * shortLeg.contracts * 100 - Math.abs(totalCostBasis); // Debit spread
+      ? netPremium // Credit spread: max profit is the net premium received
+      : spreadWidth * shortLeg.contracts * 100 - netPremium; // Debit spread
 
     // Calculate profit percentage
     const profitPercent = maxProfit !== 0 ? (totalPnL / maxProfit) * 100 : 0;
@@ -1123,16 +1177,13 @@ export const evaluateProfitOpportunities = (
     const costBasis = option.costBasis;
     const currentValue = option.currentValue ?? 0;
 
-    // Calculate effective current value (negative for short positions)
-    const effectiveCurrentValue = isBuy ? currentValue : -currentValue;
-    const effectiveCostBasis = isBuy ? costBasis : -costBasis;
-
-    // Calculate P&L
-    const pnl = effectiveCurrentValue - effectiveCostBasis;
+    // costBasis/currentValue are stored signed (negative for shorts);
+    // the shared helper handles both conventions correctly.
+    const pnl = calculateOptionUnrealizedPnL({ action: option.action, costBasis, currentValue });
     const isProfitable = pnl > 0;
 
-    // Calculate profit percentage based on cost basis
-    const profitPercent = effectiveCostBasis !== 0 ? (pnl / Math.abs(effectiveCostBasis)) * 100 : 0;
+    // Profit percentage relative to premium paid (long) or received (short)
+    const profitPercent = costBasis !== 0 ? (pnl / Math.abs(costBasis)) * 100 : 0;
 
     // Check if >= 80% profit
     if (isProfitable && profitPercent >= 80) {

@@ -86,6 +86,8 @@ const frBase = {
     data: 'Données',
     backup: 'Sauvegarde',
     restore: 'Restaurer',
+    backupInvalidEvents:
+      "Le fichier de sauvegarde contient des événements invalides ou inconnus et n'a pas été restauré.",
     hideExplanation: "Masquer l'explication",
     showExplanation: "Afficher l'explication",
     hideWarning: "Masquer l'avertissement",
@@ -387,6 +389,15 @@ const frBase = {
     sellValue: 'Valeur de vente',
     buybackValue: 'Valeur de rachat',
     daysToExpiration: '{{days}}j jusqu\'à l\'expiration',
+    // Event-log durability (system alerts)
+    eventLog: {
+      writeFailed:
+        "Votre dernière modification n'a pas pu être enregistrée de façon permanente et risque d'être perdue après un rechargement.",
+      writeFailedAction: 'Exportez une sauvegarde maintenant et réessayez la modification',
+      tabConflict:
+        'Vos données ont été modifiées dans un autre onglet du navigateur. Votre modification a été enregistrée, mais cette vue peut être obsolète.',
+      tabConflictAction: 'Rechargez cet onglet pour une vue cohérente',
+    },
   },
 
   // Options

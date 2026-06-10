@@ -4,6 +4,7 @@ import { X, TrendingUp, TrendingDown } from 'lucide-react';
 import { getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency, formatNumber } from '../../utils/numberFormat';
 import { calculateOptionRealizedPnL, calculateStockRealizedPnL } from '../../utils/pnlCalculations';
+import { allocateSpreadClosePremium } from '../../utils/positionHelpers';
 import { getSpreadId } from '../../utils/spreadHelpers';
 import type { Position, CurrencyType, CallOption, PutOption, StockPosition } from '../../types';
 
@@ -118,27 +119,29 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
     const closePremiumNum = parseFloat(closePremium) || 0;
 
     if (isSpread && spreadLegs.length === 2) {
-      // For spreads, calculate combined P&L
-      const contractMultiplier = 100;
-      const totalCostBasis = spreadLegs.reduce(
-        (sum, leg) => sum + (leg as CallOption | PutOption).costBasis,
-        0
+      // For spreads the user enters ONE net close premium. Attribute it to a
+      // single leg (the other closes at 0) — same allocation the close handler
+      // uses — so the preview matches what is actually stored.
+      const options = spreadLegs as (CallOption | PutOption)[];
+      const longLeg = options.find((o) => o.action === 'buy');
+      const shortLeg = options.find((o) => o.action === 'sell');
+      if (!longLeg || !shortLeg) return 0;
+
+      const alloc = allocateSpreadClosePremium(longLeg, shortLeg, closePremiumNum);
+      return (
+        calculateOptionRealizedPnL({
+          action: 'buy',
+          costBasis: longLeg.costBasis,
+          closePremium: alloc.longClosePremium,
+          contracts: longLeg.contracts,
+        }) +
+        calculateOptionRealizedPnL({
+          action: 'sell',
+          costBasis: shortLeg.costBasis,
+          closePremium: alloc.shortClosePremium,
+          contracts: shortLeg.contracts,
+        })
       );
-
-      // Both legs close at the same premium (spread closes to zero width)
-      let totalCloseValue = 0;
-      spreadLegs.forEach((leg) => {
-        const option = leg as CallOption | PutOption;
-        if (option.action === 'buy') {
-          // Sell the long leg
-          totalCloseValue += closePremiumNum * option.contracts * contractMultiplier;
-        } else {
-          // Buy back the short leg
-          totalCloseValue -= closePremiumNum * option.contracts * contractMultiplier;
-        }
-      });
-
-      return totalCloseValue - totalCostBasis;
     } else if (
       isStockOrETF &&
       'shares' in position &&

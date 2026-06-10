@@ -128,6 +128,12 @@ export const rollOption =
 
     const netCashFlow = closeValue + openValue;
 
+    // Cash-secured put: the rolled position must keep reserving collateral for
+    // the NEW strike, otherwise calculatePortfolioFreeCash releases the full
+    // collateral after every roll. Break-even follows the wizard formula for a
+    // short put (strike - premium). Covered calls are deliberately untouched.
+    const isShortPut = option.type === 'put' && action === 'sell';
+
     // --- Build new position (copy identity fields from old, update option fields) ---
     const newPosition: CallOption | PutOption = {
       id: `pos-${uuid()}`,
@@ -142,6 +148,8 @@ export const rollOption =
       premium: newPremium,
       costBasis: newCostBasis,
       currentValue: newCostBasis,
+      cashReserved: isShortPut ? newStrike * newContracts * 100 : undefined,
+      breakEven: isShortPut ? newStrike - newPremium : undefined,
       status: 'open',
       openDate: closeDate,
       notes: notes ?? undefined,

@@ -1,5 +1,14 @@
-import { describe, it, expect } from 'vitest';
-import { parseCountInput } from './inputFormat';
+import { describe, it, expect, afterEach } from 'vitest';
+import { parseCountInput, parseNumberInput } from './inputFormat';
+import { invalidateLocaleCache } from './numberFormat';
+
+// parseNumberInput resolves the locale from localStorage('payday-language'),
+// which is cached; these tests write localStorage directly (instead of going
+// through i18n.changeLanguage), so they invalidate the cache explicitly.
+const setLanguage = (lang: 'en' | 'nl' | 'fr') => {
+  localStorage.setItem('payday-language', lang);
+  invalidateLocaleCache();
+};
 
 describe('parseCountInput', () => {
   it('returns 0 for an empty field (so it can be cleared and retyped)', () => {
@@ -21,5 +30,30 @@ describe('parseCountInput', () => {
   it('returns 0 for invalid / negative input', () => {
     expect(parseCountInput('abc')).toBe(0);
     expect(parseCountInput('-3')).toBe(0);
+  });
+});
+
+describe('parseNumberInput', () => {
+  afterEach(() => {
+    localStorage.removeItem('payday-language');
+    invalidateLocaleCache();
+  });
+
+  it('strips the en thousand separator before parsing', () => {
+    setLanguage('en');
+    expect(parseNumberInput('1,000')).toBe(1000);
+    expect(parseNumberInput('1,234.56')).toBe(1234.56);
+  });
+
+  it('strips the nl thousand separator and swaps the decimal comma', () => {
+    setLanguage('nl');
+    expect(parseNumberInput('1.000')).toBe(1000);
+    expect(parseNumberInput('1.234,56')).toBe(1234.56);
+  });
+
+  it('returns 0 for empty or unparseable input', () => {
+    setLanguage('en');
+    expect(parseNumberInput('')).toBe(0);
+    expect(parseNumberInput('abc')).toBe(0);
   });
 });

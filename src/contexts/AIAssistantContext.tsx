@@ -210,7 +210,7 @@ export const AIAssistantProvider: React.FC<{ children: React.ReactNode }> = ({ c
                 resultBlocks.push({
                   kind: 'tool_result',
                   toolUseId: tu.id,
-                  content: 'Onbekende tool.',
+                  content: 'Onbekende tool of ongeldig voorstel (waarden buiten de grenzen).',
                   isError: true,
                 });
               }

@@ -33,6 +33,7 @@ import { ImageCropModal } from '../../components/modals/ImageCropModal';
 import { DEFAULT_PORTFOLIOS } from '../../constants/defaultPortfolios';
 import { NumberInput } from '../../components/common/NumberInput';
 import { formatNumber } from '../../utils/numberFormat';
+import { isSafeHttpUrl } from '../../utils/urlSafety';
 
 export const PortfolioManagement: React.FC = () => {
   const { t } = useTranslation();
@@ -719,7 +720,8 @@ export const PortfolioManagement: React.FC = () => {
                   >
                     <Briefcase className="w-3.5 h-3.5" />
                   </button>
-                  {portfolio.url && (
+                  {/* Only http(s) URLs may be rendered as links (javascript:/data: would be self-XSS). */}
+                  {isSafeHttpUrl(portfolio.url) && (
                     <a
                       href={portfolio.url}
                       target="_blank"

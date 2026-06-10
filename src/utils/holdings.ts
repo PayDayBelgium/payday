@@ -1,12 +1,13 @@
 import type { Position, StockPosition, CallOption, PortfolioName } from '../types';
 import { computeCoveredCallCapacity } from './coveredCallEligibility';
+import { isLEAPS } from './campaignDetector';
 
 export interface Holding {
   ticker: string;
   name?: string;
   type: 'stock' | 'etf';
   lots: StockPosition[]; // individual buy transactions, oldest first
-  totalShares: number;
+  totalShares: number; // display total: includes wheel-linked lots
   totalCostBasis: number;
   averageCost: number;
   totalValue: number;
@@ -37,6 +38,13 @@ export function groupHoldings(positions: Position[], portfolio: PortfolioName): 
     (p): p is CallOption => p.type === 'call' && (p as CallOption).action === 'sell'
   );
 
+  // LEAPS participate in coverage allocation so PMCC calls assigned to a
+  // LEAPS don't consume share capacity (same inputs as alertEvaluator).
+  const leapsCalls = openInPortfolio.filter(
+    (p): p is CallOption =>
+      p.type === 'call' && (p as CallOption).action === 'buy' && isLEAPS(p as CallOption)
+  );
+
   const byTicker = new Map<string, StockPosition[]>();
   for (const lot of stockLots) {
     const list = byTicker.get(lot.ticker) ?? [];
@@ -50,8 +58,12 @@ export function groupHoldings(positions: Position[], portfolio: PortfolioName): 
       (a, b) => new Date(a.openDate).getTime() - new Date(b.openDate).getTime()
     );
     const tickerSoldCalls = soldCalls.filter((c) => c.ticker === ticker);
-    const capacity = computeCoveredCallCapacity(sorted, tickerSoldCalls);
+    const tickerLeaps = leapsCalls.filter((c) => c.ticker === ticker);
+    const capacity = computeCoveredCallCapacity(sorted, tickerSoldCalls, tickerLeaps);
 
+    // Display totals cover ALL lots (incl. wheel-linked ones); the capacity
+    // fields above deliberately exclude wheel-linked positions.
+    const displayShares = sorted.reduce((sum, l) => sum + l.shares, 0);
     const totalCostBasis = sorted.reduce((sum, l) => sum + l.costBasis, 0);
     const totalValue = sorted.reduce((sum, l) => sum + l.currentValue, 0);
     const profitLoss = totalValue - totalCostBasis;
@@ -61,9 +73,9 @@ export function groupHoldings(positions: Position[], portfolio: PortfolioName): 
       name: sorted[0]?.name,
       type: sorted[0]?.type ?? 'stock',
       lots: sorted,
-      totalShares: capacity.totalShares,
+      totalShares: displayShares,
       totalCostBasis,
-      averageCost: capacity.totalShares > 0 ? totalCostBasis / capacity.totalShares : 0,
+      averageCost: displayShares > 0 ? totalCostBasis / displayShares : 0,
       totalValue,
       profitLoss,
       profitLossPercentage: totalCostBasis > 0 ? (profitLoss / totalCostBasis) * 100 : 0,

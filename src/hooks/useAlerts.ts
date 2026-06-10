@@ -2,7 +2,8 @@ import { useMemo, useCallback, useState, useEffect } from 'react';
 import { useAppSelector } from './useAppSelector';
 import { selectAllTickers } from '../store/slices/tickersSlice';
 import { selectUnlockedLevels } from '../store/slices/userProgressSlice';
-import { evaluateAllAlerts, type AlertItem } from '../utils/alertEvaluator';
+import { type AlertItem } from '../utils/alertEvaluator';
+import { evaluateAllAlertsShared } from '../utils/sharedAlertEvaluation';
 import { filterOpportunitiesByAccess } from '../utils/opportunityGating';
 
 // Single storage key for all dismissed alerts
@@ -56,6 +57,38 @@ const migrateOldKeys = (): void => {
 // Run migration on module load
 migrateOldKeys();
 
+// -----------------------------------------------------------------------
+// Shared dismissed-alerts set.
+//
+// Every hook instance used to parse localStorage into its OWN Set, which
+// meant two instances never shared a Set reference — defeating the shared
+// evaluation memo (it compares inputs by reference). This module-level
+// cache re-parses only when the raw localStorage string actually changed,
+// so all instances receive the SAME Set instance for the same stored value.
+// The Set is treated as immutable: dismissAlert writes localStorage and
+// fires 'alerts-updated', after which this returns a fresh Set.
+// -----------------------------------------------------------------------
+let dismissedAlertsRaw: string | null = null;
+let dismissedAlertsSet: Set<string> = new Set();
+
+const getSharedDismissedAlerts = (): Set<string> => {
+  const saved = localStorage.getItem(DISMISSED_ALERTS_KEY);
+  if (saved === dismissedAlertsRaw) {
+    return dismissedAlertsSet;
+  }
+  dismissedAlertsRaw = saved;
+  if (saved) {
+    try {
+      dismissedAlertsSet = new Set<string>(JSON.parse(saved));
+    } catch {
+      dismissedAlertsSet = new Set<string>();
+    }
+  } else {
+    dismissedAlertsSet = new Set<string>();
+  }
+  return dismissedAlertsSet;
+};
+
 /**
  * Central hook for managing alerts and opportunities across the app.
  * This is the single source of truth for all alert/opportunity data.
@@ -80,23 +113,19 @@ export const useAlerts = (portfolioFilter?: string) => {
     };
   }, []);
 
-  // Get dismissed alerts from localStorage
+  // Get dismissed alerts from localStorage (shared Set instance across hook
+  // instances so the shared evaluation memo can compare it by reference).
   const dismissedAlerts = useMemo(() => {
-    const saved = localStorage.getItem(DISMISSED_ALERTS_KEY);
-    if (saved) {
-      try {
-        return new Set<string>(JSON.parse(saved));
-      } catch {
-        return new Set<string>();
-      }
-    }
-    return new Set<string>();
+    return getSharedDismissedAlerts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateTrigger]);
 
-  // Evaluate all alerts and opportunities using the central evaluator
+  // Evaluate all alerts and opportunities using the central evaluator. The
+  // shared wrapper memoizes on the (reference-compared) inputs, so multiple
+  // mounted useAlerts instances run the expensive evaluation only once per
+  // store change.
   const { alerts, opportunities } = useMemo(() => {
-    const result = evaluateAllAlerts(
+    const result = evaluateAllAlertsShared(
       portfolios,
       positions,
       dismissedAlerts,
