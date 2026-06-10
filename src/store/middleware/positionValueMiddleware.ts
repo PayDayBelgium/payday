@@ -1,7 +1,13 @@
 import type { Middleware } from '@reduxjs/toolkit';
 import type { RootState } from '../index';
 import { updatePortfolioValue } from '../slices/portfoliosSlice';
-import type { Position, StockPosition, CallOption, PutOption } from '../../types';
+import type {
+  Position,
+  StockPosition,
+  CallOption,
+  PutOption,
+  PortfolioTransaction,
+} from '../../types';
 
 // Helper to check if action is a position mutation
 const isPositionMutation = (action: any): boolean => {
@@ -26,11 +32,9 @@ const isPositionMutation = (action: any): boolean => {
 // through `events/appendEvents` (the ledger projection folds CashDeposited, OptionRolled, etc.).
 // `isPositionMutation` already covers `events/appendEvents`, so no separate transaction check is needed.
 
-// Calculate portfolio value from positions
-const calculatePortfolioValue = (state: RootState, portfolioName: string): number => {
-  const portfolio = state.portfolios.portfolios.find((p) => p.name === portfolioName);
-  if (!portfolio) return 0;
-
+// Compute the current value of all open positions in a portfolio (per call — this
+// part changes on every price tick).
+const computePositionsValue = (state: RootState, portfolioName: string): number => {
   // Get all open positions for this portfolio
   const portfolioPositions = state.positions.positions.filter(
     (p) => p.portfolio === portfolioName && p.status === 'open'
@@ -62,11 +66,18 @@ const calculatePortfolioValue = (state: RootState, portfolioName: string): numbe
     }
   });
 
-  // Calculate cash from initial capital + all cash-affecting transactions
-  // This uses position_buy and position_sell to track cash flow
-  let cashBalance = portfolio.initialCapital;
+  return totalCurrentValue;
+};
 
-  const transactions = state.portfolios.transactions || [];
+// Compute cash from initial capital + all cash-affecting transactions (pure fold
+// over the ledger). This uses position_buy and position_sell to track cash flow.
+const computeCashBalance = (
+  initialCapital: number,
+  transactions: PortfolioTransaction[],
+  portfolioName: string
+): number => {
+  let cashBalance = initialCapital;
+
   const portfolioTransactions = transactions.filter((t) => t.portfolio === portfolioName);
 
   portfolioTransactions.forEach((transaction) => {
@@ -102,8 +113,96 @@ const calculatePortfolioValue = (state: RootState, portfolioName: string): numbe
     }
   });
 
-  // Total portfolio value = cash + current value of positions
-  return cashBalance + totalCurrentValue;
+  return cashBalance;
+};
+
+// ---------------------------------------------------------------------------
+// Cash-balance cache.
+//
+// On a live price tick only position values change — the transaction ledger does
+// NOT — yet the old code re-folded the ENTIRE (ever-growing) ledger on every tick.
+//
+// The cache is keyed on the IDENTITY of `state.portfolios.transactions`. Every
+// reducer that can change the ledger replaces that array reference (the
+// events/appendEvents and events/replayEvents folds via immer, and redux-persist
+// REHYDRATE which swaps in a whole new state tree), so a changed ledger always
+// misses the cache and is recomputed — there is no explicit invalidation list to
+// drift out of sync. Using a WeakMap also means dropped state trees (e.g. a
+// previous per-user store) don't leak.
+//
+// Cash additionally depends on `portfolio.initialCapital`, which can change via
+// portfolio events WITHOUT touching the transactions array, so each cached entry
+// records the initialCapital it was computed with and is bypassed on mismatch.
+// ---------------------------------------------------------------------------
+interface CashCacheEntry {
+  initialCapital: number;
+  cash: number;
+}
+
+const cashBalanceCache = new WeakMap<PortfolioTransaction[], Map<string, CashCacheEntry>>();
+
+const getCashBalance = (
+  initialCapital: number,
+  transactions: PortfolioTransaction[] | undefined,
+  portfolioName: string
+): number => {
+  // No ledger array to key on (legacy/partial state) — compute directly.
+  if (!transactions) {
+    return computeCashBalance(initialCapital, [], portfolioName);
+  }
+
+  let perPortfolio = cashBalanceCache.get(transactions);
+  if (!perPortfolio) {
+    perPortfolio = new Map();
+    cashBalanceCache.set(transactions, perPortfolio);
+  }
+
+  const cached = perPortfolio.get(portfolioName);
+  if (cached && cached.initialCapital === initialCapital) {
+    return cached.cash;
+  }
+
+  const cash = computeCashBalance(initialCapital, transactions, portfolioName);
+  perPortfolio.set(portfolioName, { initialCapital, cash });
+  return cash;
+};
+
+/**
+ * Calculate the total portfolio value (cash + current value of open positions).
+ * The cash component is cached per ledger snapshot (see cashBalanceCache above);
+ * the positions component is recomputed on every call.
+ */
+export const calculatePortfolioValue = (state: RootState, portfolioName: string): number => {
+  const portfolio = state.portfolios.portfolios.find((p) => p.name === portfolioName);
+  if (!portfolio) return 0;
+
+  const cashBalance = getCashBalance(
+    portfolio.initialCapital,
+    state.portfolios.transactions,
+    portfolioName
+  );
+
+  return cashBalance + computePositionsValue(state, portfolioName);
+};
+
+/**
+ * Uncached reference implementation — recomputes the cash fold from scratch.
+ * Exported ONLY for regression tests that assert the cached path is bit-identical.
+ */
+export const calculatePortfolioValueUncached = (
+  state: RootState,
+  portfolioName: string
+): number => {
+  const portfolio = state.portfolios.portfolios.find((p) => p.name === portfolioName);
+  if (!portfolio) return 0;
+
+  const cashBalance = computeCashBalance(
+    portfolio.initialCapital,
+    state.portfolios.transactions || [],
+    portfolioName
+  );
+
+  return cashBalance + computePositionsValue(state, portfolioName);
 };
 
 // Get affected portfolios from the action. Some actions (a batched value update or

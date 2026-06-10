@@ -10,9 +10,14 @@ import positionsReducer, {
 import portfoliosReducer from '../slices/portfoliosSlice';
 import tickersReducer from '../slices/tickersSlice';
 import eventsReducer, { appendEvents } from '../events/eventsSlice';
-import { positionValueMiddleware } from './positionValueMiddleware';
+import {
+  positionValueMiddleware,
+  calculatePortfolioValue,
+  calculatePortfolioValueUncached,
+} from './positionValueMiddleware';
 import type { Portfolio, Position } from '../../types';
 import type { DomainEvent } from '../events/types';
+import type { RootState } from '../index';
 
 const rootReducer = combineReducers({
   positions: positionsReducer,
@@ -194,6 +199,97 @@ describe('positionValueMiddleware', () => {
     } as unknown as DomainEvent['payload']);
     store.dispatch(appendEvents({ events: [dividendEvent], positionsBefore: [] }));
     expect(portfolioValue()).toBe(10250);
+  });
+
+  // Regression guard for the cash-balance cache: across a realistic action
+  // sequence, the cached path used by the middleware must be BIT-IDENTICAL to a
+  // fresh, uncached full recomputation of cash + positions.
+  it('cached portfolio value stays bit-identical to an uncached recomputation across a realistic sequence', () => {
+    const stockPos = {
+      id: 'stock1',
+      ticker: 'ABC',
+      portfolio: 'Test',
+      openDate: '2026-01-02',
+      status: 'open',
+      type: 'stock',
+      shares: 30,
+      purchasePrice: 50,
+      costBasis: 1500,
+      currentPrice: 50,
+      currentValue: 1500,
+      optionsSupported: true,
+      miniContractsSupported: false,
+    } as unknown as Position;
+
+    const assertCacheParity = () => {
+      // The test store carries only the slices the middleware reads.
+      const state = store.getState() as unknown as RootState;
+      const cached = calculatePortfolioValue(state, 'Test');
+      const uncached = calculatePortfolioValueUncached(state, 'Test');
+      // Bit-identical, not just approximately equal.
+      expect(cached).toBe(uncached);
+      // And the value the middleware actually stored matches the fresh recomputation.
+      expect(portfolioValue()).toBe(Math.round(uncached * 100) / 100);
+    };
+
+    // 1. Open a short put and a stock position (premium_collected + position_buy txns).
+    store.dispatch(openPosition(shortPut()));
+    assertCacheParity();
+    store.dispatch(
+      appendEvents({ events: [makeEvent('e-stock', 2, 'PositionOpened', { position: stockPos })], positionsBefore: [] })
+    );
+    assertCacheParity();
+
+    // 2. Price ticks (cash unchanged -> served from cache; positions part recomputed).
+    store.dispatch(
+      updateMultiplePositionValues([
+        { id: 'stock1', currentValue: 30 * 52.37, currentPrice: 52.37 },
+        { id: 'pos1', currentValue: -215.55 },
+      ])
+    );
+    assertCacheParity();
+    store.dispatch(
+      updateOptionPremium({
+        symbol: 'XYZ',
+        strike: 100,
+        expiration: '2026-12-31',
+        optionType: 'put',
+        premium: 2.45,
+      })
+    );
+    assertCacheParity();
+
+    // 3. Append cash events (ledger changes -> cache must be invalidated).
+    store.dispatch(
+      appendEvents({
+        events: [
+          makeEvent('e-div2', 3, 'DividendReceived', {
+            id: 'div2',
+            portfolio: 'Test',
+            date: '2026-01-03',
+            amount: 123.45,
+            description: 'Dividend',
+          } as unknown as DomainEvent['payload']),
+          makeEvent('e-fee2', 4, 'FeeCharged', {
+            id: 'fee2',
+            portfolio: 'Test',
+            date: '2026-01-03',
+            amount: -7.5,
+            description: 'Fee',
+          } as unknown as DomainEvent['payload']),
+        ],
+        positionsBefore: store.getState().positions.positions,
+      })
+    );
+    assertCacheParity();
+
+    // 4. More ticks after the ledger change.
+    store.dispatch(
+      updateMultiplePositionValues([{ id: 'stock1', currentValue: 30 * 49.99, currentPrice: 49.99 }])
+    );
+    assertCacheParity();
+    store.dispatch(updatePositionValue({ id: 'pos1', currentValue: -180.25 }));
+    assertCacheParity();
   });
 
   it('includes fee amount (negative) in portfolio cash balance', () => {
