@@ -2,6 +2,11 @@ import { describe, it, expect } from 'vitest';
 import { calculatePortfolioFreeCash, evaluateProfitOpportunities } from './alertEvaluator';
 import type { Portfolio, Position } from '../types';
 
+// Clock-relative expiration (~6 months out) so the suite never expires:
+// evaluateProfitOpportunities computes daysToExpiration from new Date() and
+// skips anything <= 0, which would silently make these tests vacuous.
+const farExpiration = new Date(Date.now() + 180 * 86_400_000).toISOString().slice(0, 10);
+
 const portfolio = (over: Partial<Portfolio> = {}): Portfolio =>
   ({
     id: 'pf1',
@@ -41,7 +46,7 @@ const shortPut = (over: Record<string, unknown> = {}): Position =>
     type: 'put',
     action: 'sell',
     strike: 100,
-    expiration: '2026-12-31',
+    expiration: farExpiration,
     contracts: 1,
     costBasis: -200,
     currentValue: -200,
@@ -59,7 +64,7 @@ const longCall = (over: Record<string, unknown> = {}): Position =>
     type: 'call',
     action: 'buy',
     strike: 100,
-    expiration: '2026-12-31',
+    expiration: farExpiration,
     contracts: 1,
     premium: 1,
     costBasis: 100,
@@ -193,6 +198,37 @@ describe('evaluateProfitOpportunities', () => {
       expect(result).toHaveLength(1);
       expect(result[0].id).toBe('spread-profit-opportunity-spread-1');
       expect(result[0].message).toContain('Call credit spread');
+    });
+
+    it('fires for a call debit spread at 80% of max profit', () => {
+      // Call debit spread: buy the LOWER strike call for more premium.
+      // Net premium paid = (2.00 - 0.80) * 1 * 100 = $120 (debit).
+      // Max profit = width $5 * 100 - $120 = $380.
+      // P&L = long (434 - 200) + short (80 - 10) = +304 -> exactly 80%.
+      const legs = [
+        longCall({
+          id: 'ds-long',
+          strike: 100,
+          premium: 2,
+          costBasis: 200,
+          currentValue: 434,
+          notes: spreadNotes,
+        }),
+        longCall({
+          id: 'ds-short',
+          action: 'sell',
+          strike: 105,
+          premium: 0.8,
+          costBasis: -80,
+          currentValue: -10,
+          notes: spreadNotes,
+        }),
+      ];
+      const result = evaluateProfitOpportunities(legs, new Set());
+      expect(result).toHaveLength(1);
+      expect(result[0].id).toBe('spread-profit-opportunity-spread-1');
+      expect(result[0].message).toContain('80% van max winst');
+      expect(result[0].message).toContain('Call debit spread');
     });
   });
 });
