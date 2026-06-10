@@ -11,6 +11,7 @@ import {
   Settings,
 } from 'lucide-react';
 import { ConfirmModal } from '../../components/modals/ConfirmModal';
+import { invalidateAlertConfigCache } from '../../utils/alertEvaluator';
 import type {
   StrategyRule,
   StrategyType,
@@ -159,6 +160,9 @@ export const RulesManagement: React.FC = () => {
       const storageKey = `strategy-rules-${strategyType}`;
       localStorage.setItem(storageKey, JSON.stringify(strategyRules));
     });
+
+    // The alert evaluator caches parsed strategy rules — tell it to re-read.
+    invalidateAlertConfigCache();
   };
 
   const handleStartWizard = () => {

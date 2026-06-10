@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StrategyRule, StrategyType } from '../types';
 import { getDefaultRulesForStrategy } from '../utils/defaultStrategyRules';
+import { invalidateAlertConfigCache } from '../utils/alertEvaluator';
 
 const loadRules = (
   storageKey: string,
@@ -71,6 +72,9 @@ export const useStrategyRules = (
   useEffect(() => {
     if (rulesState.key !== storageKey) return;
     localStorage.setItem(storageKey, JSON.stringify(rulesState.rules));
+    // The alert evaluator caches parsed strategy-rule config from localStorage;
+    // invalidate so the next evaluation re-reads fresh rules.
+    invalidateAlertConfigCache();
   }, [storageKey, rulesState]);
 
   const strategyRules = rulesState.rules;
