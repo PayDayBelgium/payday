@@ -18,6 +18,7 @@ import { useFeatureAccess } from '../../hooks/useFeatureAccess';
 import { updatePositionLivePrice, selectPositions } from '../../store/slices/positionsSlice';
 import { updateTickerPrice } from '../../store/slices/tickersSlice';
 import { computeCoveredCallCapacity } from '../../utils/coveredCallEligibility';
+import { isLEAPS } from '../../utils/campaignDetector';
 import { OptionRow } from './OptionRow';
 import type { CollateralType } from './OptionRow';
 import { PositionColumnHeader } from './PositionColumnHeader';
@@ -306,9 +307,24 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                     p.portfolio === group.positions[0].portfolio &&
                     p.ticker === group.ticker
                 );
+            // In the fallback path the capacity computation needs the ticker's
+            // LEAPS too, so PMCC calls allocated to a LEAPS don't count against
+            // the shares. The allocator map already accounts for them.
+            const groupLeaps: CallOption[] = coveredCallsByTicker
+              ? []
+              : allStorePositions.filter(
+                  (p): p is CallOption =>
+                    p.type === 'call' &&
+                    (p as CallOption).action === 'buy' &&
+                    p.status === 'open' &&
+                    p.portfolio === group.positions[0].portfolio &&
+                    p.ticker === group.ticker &&
+                    isLEAPS(p as CallOption)
+                );
             const ccCapacity = computeCoveredCallCapacity(
               group.positions as StockPosition[],
-              groupSoldCalls
+              groupSoldCalls,
+              groupLeaps
             );
             const canWriteCoveredCalls =
               portfolioSupportsOptions && ccCapacity.canWriteCoveredCall && canUseCoveredCalls;
