@@ -24,6 +24,7 @@ import {
   selectHoldingsByPortfolio,
 } from '../../store/slices/positionsSlice';
 import { selectPortfolios } from '../../store/slices/portfoliosSlice';
+import { selectAllTickers } from '../../store/slices/tickersSlice';
 import { formatCurrency } from '../../utils/currencyHelpers';
 import { useStrategyRules } from '../../hooks/useStrategyRules';
 import { useFeatureAccess } from '../../hooks/useFeatureAccess';
@@ -104,6 +105,7 @@ export const StocksETFsStrategy: React.FC = () => {
 
   // Get all price alerts once at component level (avoids Hooks violation in map)
   const allPriceAlerts = useAppSelector(selectAllPriceAlerts);
+  const allTickers = useAppSelector(selectAllTickers);
 
   // Holdings: per-ticker aggregated lots with covered-call capacity
   const holdingsSelector = useMemo(() => selectHoldingsByPortfolio(portfolio || ''), [portfolio]);
@@ -304,6 +306,7 @@ export const StocksETFsStrategy: React.FC = () => {
               <GroupedStockList
                 positions={allPositions}
                 alerts={allPriceAlerts}
+                tickers={allTickers}
                 strategyAlertsMap={positionStrategyAlerts}
                 allPortfolios={allPortfolios}
                 onEditPosition={handleEditPosition}
