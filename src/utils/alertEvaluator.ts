@@ -1,3 +1,4 @@
+import i18n from '../i18n/config';
 import { getDaysToExpiration } from './dateHelpers';
 import { getCurrencySymbol } from './currency';
 import { formatNumber } from './numberFormat';
@@ -439,6 +440,69 @@ const buildCallCoverageGroups = (
 
 const priceFor = (tickers: Ticker[] | undefined, ticker: string): number | undefined =>
   findTicker(tickers, ticker)?.currentPrice;
+
+// Evaluate naked short call alerts (uncovered short calls per the shared
+// coverage allocator). This is an ALERT, not an opportunity: it flags
+// unlimited risk on an EXISTING position, so it is always shown and must
+// never be filtered by opportunityGating. Wheel-linked short calls are
+// excluded by buildCallCoverageGroups, consistent with the CC evaluators
+// (they belong to their wheel campaign).
+export const evaluateNakedCallAlerts = (
+  positions: Position[],
+  dismissedAlerts: Set<string>,
+  portfolioFilter?: string,
+  tickers?: Ticker[]
+): AlertItem[] => {
+  const alerts: AlertItem[] = [];
+
+  for (const g of buildCallCoverageGroups(positions, portfolioFilter)) {
+    if (g.shortCalls.length === 0) continue;
+
+    const price = priceFor(tickers, g.ticker);
+    const alloc = allocateCallCoverage({
+      stocks: g.stocks,
+      leaps: g.leaps,
+      shortCalls: g.shortCalls,
+      currentPrice: price,
+    });
+
+    for (const call of alloc.uncovered) {
+      const alertId = `naked-call-alert-${call.id}`;
+      if (dismissedAlerts.has(alertId)) continue;
+
+      alerts.push({
+        id: alertId,
+        ticker: g.ticker,
+        portfolio: g.portfolio,
+        message: i18n.t('safetyRails.nakedCallAlert', {
+          ticker: g.ticker,
+          strike: call.strike,
+          contracts: call.contracts,
+        }),
+        type: 'alert',
+        rule: {
+          id: 'naked-call-alert',
+          strategyType: 'options',
+          portfolio: g.portfolio,
+          name: 'Naked Call Alert',
+          description: 'Alert for short calls not covered by shares or a LEAPS',
+          category: 'alert',
+          trigger: 'time_based',
+          enabled: true,
+          parameters: {},
+          actions: {
+            showOnDashboard: true,
+            showOnPortfolioOverview: true,
+            showInList: true,
+          },
+          createdAt: new Date().toISOString(),
+        },
+      });
+    }
+  }
+
+  return alerts;
+};
 
 // Evaluate stock covered call opportunities (via the shared coverage allocator)
 export const evaluateStockCoveredCallOpportunities = (
@@ -1274,6 +1338,12 @@ export const evaluateAllAlerts = (
     portfolioFilter,
     tickers
   );
+  const nakedCallAlerts = evaluateNakedCallAlerts(
+    positions,
+    dismissedAlerts,
+    portfolioFilter,
+    tickers
+  );
 
   // Evaluate LEAPS opportunities
   const leapsOpportunities = evaluateLeapsOpportunities(
@@ -1323,6 +1393,7 @@ export const evaluateAllAlerts = (
       ...putPositionAlerts,
       ...putSpreadAlerts,
       ...callSpreadAlerts,
+      ...nakedCallAlerts,
     ],
     opportunities: [
       ...priceResults.opportunities,
