@@ -1074,11 +1074,9 @@ export const evaluateProfitOpportunities = (
     const firstLeg = legs[0];
     if (!firstLeg.expiration) return;
 
-    const expDate = new Date(firstLeg.expiration);
-    const now = new Date();
-    const daysToExpiration = Math.floor(
-      (expDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
-    );
+    // Timezone-safe DTE (local start-of-day); new Date('YYYY-MM-DD') parses as
+    // UTC midnight and skipped tomorrow-expiring spreads for most of the day.
+    const daysToExpiration = getDaysToExpiration(firstLeg.expiration);
 
     // Skip expired spreads
     if (daysToExpiration <= 0) return;
@@ -1164,11 +1162,8 @@ export const evaluateProfitOpportunities = (
   ) as (CallOption | PutOption)[];
 
   optionPositions.forEach((option) => {
-    const expDate = new Date(option.expiration);
-    const now = new Date();
-    const daysToExpiration = Math.floor(
-      (expDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
-    );
+    // Timezone-safe DTE (local start-of-day); see the spread loop above.
+    const daysToExpiration = getDaysToExpiration(option.expiration);
 
     // Skip expired options
     if (daysToExpiration <= 0) return;

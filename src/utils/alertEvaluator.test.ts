@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import { calculatePortfolioFreeCash, evaluateProfitOpportunities } from './alertEvaluator';
 import type { Portfolio, Position } from '../types';
 
@@ -229,6 +229,67 @@ describe('evaluateProfitOpportunities', () => {
       expect(result[0].id).toBe('spread-profit-opportunity-spread-1');
       expect(result[0].message).toContain('80% van max winst');
       expect(result[0].message).toContain('Call debit spread');
+    });
+  });
+
+  describe('DTE timezone safety', () => {
+    // Regression: DTE used to be computed via new Date('YYYY-MM-DD') (parsed as
+    // UTC midnight) and a floor over milliseconds, so a position expiring
+    // TOMORROW was skipped as "expired" (<= 0) for most of the local day.
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('still fires for a profitable option expiring tomorrow, late in the local evening', () => {
+      vi.useFakeTimers();
+      // new Date(y, m, d, h, min) is constructed in LOCAL time — deterministic in any TZ.
+      vi.setSystemTime(new Date(2026, 5, 11, 23, 30)); // 2026-06-11 23:30 local
+      const result = evaluateProfitOpportunities(
+        [longCall({ costBasis: 100, currentValue: 190, expiration: '2026-06-12' })],
+        new Set()
+      );
+      expect(result).toHaveLength(1);
+      expect(result[0].message).toContain('Nog 1d tot expiratie');
+    });
+
+    it('still fires for a profitable spread expiring tomorrow, late in the local evening', () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date(2026, 5, 11, 23, 30));
+      const spreadNotes = 'Spread ID: spread-99'; // must match the spread-\d+ pattern
+      const legs = [
+        shortPut({
+          id: 'tz-short',
+          strike: 100,
+          premium: 1.5,
+          costBasis: -150,
+          currentValue: -30,
+          expiration: '2026-06-12',
+          notes: spreadNotes,
+        }),
+        shortPut({
+          id: 'tz-long',
+          action: 'buy',
+          strike: 95,
+          premium: 0.5,
+          costBasis: 50,
+          currentValue: 10,
+          expiration: '2026-06-12',
+          notes: spreadNotes,
+        }),
+      ];
+      const result = evaluateProfitOpportunities(legs, new Set());
+      expect(result).toHaveLength(1);
+      expect(result[0].id).toBe('spread-profit-opportunity-spread-99');
+    });
+
+    it('skips an option that expired yesterday', () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date(2026, 5, 11, 12, 0));
+      const result = evaluateProfitOpportunities(
+        [longCall({ costBasis: 100, currentValue: 190, expiration: '2026-06-10' })],
+        new Set()
+      );
+      expect(result).toHaveLength(0);
     });
   });
 });

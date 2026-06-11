@@ -4,6 +4,7 @@
  */
 
 import type { Ticker, PortfolioName, CurrencyType } from '../../types';
+import { getDaysToExpiration } from '../../utils/dateHelpers';
 import { getDecimalSeparator, getThousandSeparator } from '../../utils/numberFormat';
 
 // ============ TYPES ============
@@ -75,15 +76,14 @@ export const validateNumberInput = (value: string): boolean => {
 // ============ CALCULATION HELPERS ============
 
 /**
- * Calculate days to expiration
+ * Calculate days to expiration (clamped to 0).
+ * Delegates to the timezone-safe shared helper — `new Date(dateString)`
+ * parses 'YYYY-MM-DD' as UTC midnight and is off by one for most of the
+ * local day in non-UTC timezones.
  */
 export const calculateDTE = (expirationDate: string): number => {
   if (!expirationDate) return 0;
-  const today = new Date();
-  const expiry = new Date(expirationDate);
-  const diffTime = expiry.getTime() - today.getTime();
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return Math.max(0, diffDays);
+  return Math.max(0, getDaysToExpiration(expirationDate));
 };
 
 /**
