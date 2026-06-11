@@ -42,7 +42,9 @@ export const AlertsOpportunitiesWidget: React.FC<AlertsOpportunitiesWidgetProps>
       if (ccTarget) {
         pushNavigation(`/portfolio/${encodeURIComponent(portfolio)}`, portfolio);
         navigate(`/portfolio/${encodeURIComponent(portfolio)}`, {
-          state: { openCoveredCallWizard: { ticker: ccTarget.ticker, underlyingId: ccTarget.underlyingId } },
+          state: {
+            openCoveredCallWizard: { ticker: ccTarget.ticker, underlyingId: ccTarget.underlyingId },
+          },
         });
         return;
       }

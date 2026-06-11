@@ -93,7 +93,12 @@ export function applyPositionEvent(positions: Position[], event: DomainEvent): P
     case 'OptionRolled': {
       const { oldPositionId, closeDate, closePremium, realizedPnL, newPosition } =
         event.payload as OptionRolledPayload;
-      const closed = closeOne(positions, { id: oldPositionId, closeDate, closePremium, realizedPnL });
+      const closed = closeOne(positions, {
+        id: oldPositionId,
+        closeDate,
+        closePremium,
+        realizedPnL,
+      });
       return [...closed, newPosition];
     }
 

@@ -43,11 +43,9 @@ export const compCommon = {
       noCollateralPositions: 'No positions with collateral requirements',
       howToUseTitle: 'How to use this analysis?',
       howToUseFreeCashLabel: 'Free cash',
-      howToUseFreeCashText:
-        ': This is the amount you can use for new Cash Secured Puts or spreads',
+      howToUseFreeCashText: ': This is the amount you can use for new Cash Secured Puts or spreads',
       howToUseDteLabel: 'DTE (Days To Expiration)',
-      howToUseDteText:
-        ': Orange (<7 days) = expiring soon, consider closing early if profitable',
+      howToUseDteText: ': Orange (<7 days) = expiring soon, consider closing early if profitable',
       howToUseDeltaLabel: 'Delta',
       howToUseDeltaText:
         ': How close to the strike price. Green (<0.3) = safe, Orange (0.3-0.5) = caution, Red (>0.5) = ITM risk',

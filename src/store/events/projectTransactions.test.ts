@@ -339,7 +339,12 @@ describe('SpreadRolled', () => {
       rollDate: '2026-02-25',
       legs: [
         { oldPositionId: 'leg-long-old', closePremium: 3, realizedPnL: -100, newPosition: longNew },
-        { oldPositionId: 'leg-short-old', closePremium: 2, realizedPnL: 200, newPosition: shortNew },
+        {
+          oldPositionId: 'leg-short-old',
+          closePremium: 2,
+          realizedPnL: 200,
+          newPosition: shortNew,
+        },
       ],
       netCashFlow: 200,
     });
@@ -387,22 +392,30 @@ describe('OptionAssigned kind=put', () => {
   it('invariant: sum of ledger lines over open+assign = premium − strike×shares', () => {
     // Open a short put: 2 contracts, strike 145, premium 2.50 → collect 500.
     const shortPut = putOption({ action: 'sell', contracts: 2, strike: 145, costBasis: -500 });
-    let txns = applyTransactionEvent(EMPTY, event('PositionOpened', { position: shortPut }, 'e-open'), []);
+    let txns = applyTransactionEvent(
+      EMPTY,
+      event('PositionOpened', { position: shortPut }, 'e-open'),
+      []
+    );
 
     // Assign: buy 200 shares @ 145 → gross outflow 29000.
     const newStock = stockPos({ id: 'stock-assigned', shares: 200 });
     txns = applyTransactionEvent(
       txns,
-      event('OptionAssigned', {
-        kind: 'put',
-        optionId: shortPut.id,
-        assignmentDate: '2026-03-21',
-        assignmentPrice: 145,
-        optionRealizedPnL: 500,
-        newStock,
-        effectiveCost: 28500,
-        portfolio: 'Main',
-      }, 'e-assign'),
+      event(
+        'OptionAssigned',
+        {
+          kind: 'put',
+          optionId: shortPut.id,
+          assignmentDate: '2026-03-21',
+          assignmentPrice: 145,
+          optionRealizedPnL: 500,
+          newStock,
+          effectiveCost: 28500,
+          portfolio: 'Main',
+        },
+        'e-assign'
+      ),
       [shortPut]
     );
 
@@ -426,7 +439,7 @@ describe('OptionAssigned kind=call', () => {
       stockId: 'pos-stock-1',
       portfolio: 'Main',
       totalProceeds: 16000, // strike * shares
-      premiumReceived: 300,  // |costBasis| of the call — already booked at open
+      premiumReceived: 300, // |costBasis| of the call — already booked at open
       stockClose: { fullClose: true, closePrice: 160, stockRealizedPnL: 1000 },
     });
     const result = applyTransactionEvent(EMPTY, ev, []);
@@ -442,22 +455,30 @@ describe('OptionAssigned kind=call', () => {
   it('invariant: sum of ledger lines over open+assign = premium + strike×shares', () => {
     // Open a short call: 1 contract, strike 160, premium 3 → collect 300.
     const shortCall = callOption({ action: 'sell', contracts: 1, strike: 160, costBasis: -300 });
-    let txns = applyTransactionEvent(EMPTY, event('PositionOpened', { position: shortCall }, 'e-open'), []);
+    let txns = applyTransactionEvent(
+      EMPTY,
+      event('PositionOpened', { position: shortCall }, 'e-open'),
+      []
+    );
 
     // Assign: stock called away at strike → proceeds 16000.
     txns = applyTransactionEvent(
       txns,
-      event('OptionAssigned', {
-        kind: 'call',
-        optionId: shortCall.id,
-        assignmentDate: '2026-03-21',
-        optionRealizedPnL: 300,
-        stockId: 'pos-stock-1',
-        portfolio: 'Main',
-        totalProceeds: 16000,
-        premiumReceived: 300,
-        stockClose: { fullClose: true, closePrice: 160, stockRealizedPnL: 1000 },
-      }, 'e-assign'),
+      event(
+        'OptionAssigned',
+        {
+          kind: 'call',
+          optionId: shortCall.id,
+          assignmentDate: '2026-03-21',
+          optionRealizedPnL: 300,
+          stockId: 'pos-stock-1',
+          portfolio: 'Main',
+          totalProceeds: 16000,
+          premiumReceived: 300,
+          stockClose: { fullClose: true, closePrice: 160, stockRealizedPnL: 1000 },
+        },
+        'e-assign'
+      ),
       [shortCall]
     );
 
@@ -484,10 +505,22 @@ describe('OptionAssigned kind=call new-path (lotCloses)', () => {
       premiumReceived: 300,
       stockClose: { fullClose: true, closePrice: 310, stockRealizedPnL: 999 }, // legacy
       lotCloses: [
-        { stockId: 'lot-1', fullClose: true, sharesSold: 99, closePrice: 310, lotCostBasisForShares: 9_900 },
         {
-          stockId: 'lot-2', fullClose: false, sharesSold: 1, closePrice: 310,
-          lotCostBasisForShares: 220, remainingShares: 49, remainingCostBasis: 10_780, remainingCurrentValue: 11_270,
+          stockId: 'lot-1',
+          fullClose: true,
+          sharesSold: 99,
+          closePrice: 310,
+          lotCostBasisForShares: 9_900,
+        },
+        {
+          stockId: 'lot-2',
+          fullClose: false,
+          sharesSold: 1,
+          closePrice: 310,
+          lotCostBasisForShares: 220,
+          remainingShares: 49,
+          remainingCostBasis: 10_780,
+          remainingCurrentValue: 11_270,
         },
       ],
       sharesSold: 100,
@@ -541,9 +574,20 @@ describe('accumulation across multiple events', () => {
   it('folds deposit → position_buy → premium_collected in order', () => {
     let txns: PortfolioTransaction[] = EMPTY;
 
-    txns = applyTransactionEvent(txns, event('CashDeposited', {
-      id: 'c1', portfolio: 'Main', amount: 20000, date: '2026-01-01',
-    }, 'e1'), []);
+    txns = applyTransactionEvent(
+      txns,
+      event(
+        'CashDeposited',
+        {
+          id: 'c1',
+          portfolio: 'Main',
+          amount: 20000,
+          date: '2026-01-01',
+        },
+        'e1'
+      ),
+      []
+    );
 
     const pos = stockPos();
     txns = applyTransactionEvent(txns, event('PositionOpened', { position: pos }, 'e2'), []);

@@ -28,11 +28,7 @@ const initialState: PortfoliosState = {
 };
 
 /** Shared fold helper — mirrors tradesSlice's pattern exactly. */
-function fold(
-  state: PortfoliosState,
-  events: DomainEvent[],
-  positionsSeed: Position[]
-): void {
+function fold(state: PortfoliosState, events: DomainEvent[], positionsSeed: Position[]): void {
   let positions = positionsSeed;
   for (const event of events) {
     state.portfolios = applyPortfolioEvent(state.portfolios, event);

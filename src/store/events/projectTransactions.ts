@@ -1,4 +1,10 @@
-import type { PortfolioTransaction, Position, StockPosition, CallOption, PutOption } from '../../types';
+import type {
+  PortfolioTransaction,
+  Position,
+  StockPosition,
+  CallOption,
+  PutOption,
+} from '../../types';
 import type {
   DomainEvent,
   CashEventPayload,

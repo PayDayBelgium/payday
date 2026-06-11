@@ -22,7 +22,12 @@ interface StockETFWizardProps {
   initialTicker?: Ticker;
 }
 
-export const StockETFWizard: React.FC<StockETFWizardProps> = ({ isOpen, onClose, portfolio, initialTicker }) => {
+export const StockETFWizard: React.FC<StockETFWizardProps> = ({
+  isOpen,
+  onClose,
+  portfolio,
+  initialTicker,
+}) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 

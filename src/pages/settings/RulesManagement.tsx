@@ -518,7 +518,9 @@ export const RulesManagement: React.FC = () => {
                   </div>
                   <div>
                     <h3 className="text-xl font-semibold text-ink-900 dark:text-white">
-                      {t('pagesA.rules.newRuleFor', { assetType: getAssetTypeName(selectedAssetType) })}
+                      {t('pagesA.rules.newRuleFor', {
+                        assetType: getAssetTypeName(selectedAssetType),
+                      })}
                     </h3>
                     <p className="text-sm text-ink-600 dark:text-ink-400">
                       {t('pagesA.rules.configureRuleSettings')}
@@ -593,8 +595,12 @@ export const RulesManagement: React.FC = () => {
                           }
                           className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                         >
-                          <option value="price_increase">{t('pagesA.rules.triggerPriceIncrease')}</option>
-                          <option value="price_decrease">{t('pagesA.rules.triggerPriceDecrease')}</option>
+                          <option value="price_increase">
+                            {t('pagesA.rules.triggerPriceIncrease')}
+                          </option>
+                          <option value="price_decrease">
+                            {t('pagesA.rules.triggerPriceDecrease')}
+                          </option>
                         </select>
                       </div>
 
@@ -637,11 +643,15 @@ export const RulesManagement: React.FC = () => {
                           }
                           className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                         >
-                          <option value="time_based">{t('pagesA.rules.triggerTimeToExpiry')}</option>
+                          <option value="time_based">
+                            {t('pagesA.rules.triggerTimeToExpiry')}
+                          </option>
                           <option value="price_decrease">
                             {t('pagesA.rules.triggerValueDecrease')}
                           </option>
-                          <option value="price_increase">{t('pagesA.rules.triggerValueIncrease')}</option>
+                          <option value="price_increase">
+                            {t('pagesA.rules.triggerValueIncrease')}
+                          </option>
                         </select>
                       </div>
 
@@ -854,7 +864,9 @@ export const RulesManagement: React.FC = () => {
                               : 'bg-surface-subtle dark:bg-trading-dark-700 text-ink-700 dark:text-ink-300 hover:bg-surface-muted dark:hover:bg-trading-dark-600'
                           }`}
                         >
-                          {rule.enabled ? t('pagesA.rules.statusActive') : t('pagesA.rules.statusInactive')}
+                          {rule.enabled
+                            ? t('pagesA.rules.statusActive')
+                            : t('pagesA.rules.statusInactive')}
                         </button>
                         <button
                           onClick={() =>

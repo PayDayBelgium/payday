@@ -5,9 +5,8 @@ import type { PositionClosedPayload } from '../events/types';
 import type { Position } from '../../types';
 
 /** Open a new position. Emits PositionOpened. */
-export const openPosition =
-  (position: Position, timestamp: string) => (dispatch: AppDispatch) =>
-    dispatch(commit([createEvent('PositionOpened', { position }, timestamp)]));
+export const openPosition = (position: Position, timestamp: string) => (dispatch: AppDispatch) =>
+  dispatch(commit([createEvent('PositionOpened', { position }, timestamp)]));
 
 /** Close an existing position. Emits PositionClosed (trades project from it). */
 export const closePosition =
@@ -15,9 +14,8 @@ export const closePosition =
     dispatch(commit([createEvent('PositionClosed', payload, timestamp)]));
 
 /** Edit an existing position (full replacement). Emits PositionEdited. */
-export const editPosition =
-  (position: Position, timestamp: string) => (dispatch: AppDispatch) =>
-    dispatch(commit([createEvent('PositionEdited', { position }, timestamp)]));
+export const editPosition = (position: Position, timestamp: string) => (dispatch: AppDispatch) =>
+  dispatch(commit([createEvent('PositionEdited', { position }, timestamp)]));
 
 /** Rename a portfolio key across all positions. Emits PositionsPortfolioRenamed. */
 export const renamePortfolioPositions =

@@ -10,7 +10,10 @@ import { usePageTitle } from '../../contexts/PageTitleContext';
 type TabType = 'account' | 'connectivity' | 'rules' | 'ai';
 
 const TAB_TITLE_KEYS: Record<TabType, { title: string; description: string }> = {
-  account: { title: 'pagesA.settings.tabAccountTitle', description: 'pagesA.settings.tabAccountDesc' },
+  account: {
+    title: 'pagesA.settings.tabAccountTitle',
+    description: 'pagesA.settings.tabAccountDesc',
+  },
   connectivity: {
     title: 'pagesA.settings.tabConnectivityTitle',
     description: 'pagesA.settings.tabConnectivityDesc',

@@ -9,9 +9,8 @@ export const startWheelCampaign =
     dispatch(commit([createEvent('WheelCampaignStarted', { wheel }, timestamp)]));
 
 /** Edit an existing wheel campaign (full replacement). Emits WheelEdited. */
-export const editWheel =
-  (wheel: WheelCampaign, timestamp: string) => (dispatch: AppDispatch) =>
-    dispatch(commit([createEvent('WheelEdited', { wheel }, timestamp)]));
+export const editWheel = (wheel: WheelCampaign, timestamp: string) => (dispatch: AppDispatch) =>
+  dispatch(commit([createEvent('WheelEdited', { wheel }, timestamp)]));
 
 /** Close a wheel campaign. Emits WheelClosed. */
 export const closeWheel =
@@ -19,6 +18,5 @@ export const closeWheel =
     dispatch(commit([createEvent('WheelClosed', { id, endDate }, timestamp)]));
 
 /** Delete a wheel campaign. Emits WheelDeleted. */
-export const deleteWheel =
-  (id: string, timestamp: string) => (dispatch: AppDispatch) =>
-    dispatch(commit([createEvent('WheelDeleted', { id }, timestamp)]));
+export const deleteWheel = (id: string, timestamp: string) => (dispatch: AppDispatch) =>
+  dispatch(commit([createEvent('WheelDeleted', { id }, timestamp)]));

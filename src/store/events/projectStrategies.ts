@@ -29,10 +29,7 @@ export interface StrategiesState {
  * runtime state that resets on reload (acceptable). It remains as a runtime
  * reducer in strategiesSlice.
  */
-export function applyStrategiesEvent(
-  state: StrategiesState,
-  event: DomainEvent
-): StrategiesState {
+export function applyStrategiesEvent(state: StrategiesState, event: DomainEvent): StrategiesState {
   switch (event.type) {
     case 'TradingStrategyCreated': {
       const { strategy } = event.payload as TradingStrategyCreatedPayload;

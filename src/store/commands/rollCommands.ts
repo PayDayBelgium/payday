@@ -86,7 +86,16 @@ export interface RecordAssignmentInput {
 export const rollOption =
   (input: RollOptionInput, ts: string) =>
   (dispatch: AppDispatch, getState: () => RootState): void => {
-    const { positionId, closePremium, closeDate, newContracts, newStrike, newExpiration, newPremium, notes } = input;
+    const {
+      positionId,
+      closePremium,
+      closeDate,
+      newContracts,
+      newStrike,
+      newExpiration,
+      newPremium,
+      notes,
+    } = input;
     const state = getState();
     const positions = state.positions.positions;
     const position = positions.find((p) => p.id === positionId);
@@ -207,7 +216,14 @@ export const rollOption =
 export const rollSpread =
   (input: RollSpreadInput, ts: string) =>
   (dispatch: AppDispatch, getState: () => RootState): void => {
-    const { rollDate, longLegId, shortLegId, longLeg: longInput, shortLeg: shortInput, notes } = input;
+    const {
+      rollDate,
+      longLegId,
+      shortLegId,
+      longLeg: longInput,
+      shortLeg: shortInput,
+      notes,
+    } = input;
     const state = getState();
     const positions = state.positions.positions;
 
@@ -503,18 +519,18 @@ export const recordAssignment =
       //    by the projections for new events, but it must be type-valid.
       const firstLc = lotCloses[0];
       const legacyStockClose = firstLc.fullClose
-        ? ({
+        ? {
             fullClose: true as const,
             closePrice: strike,
             stockRealizedPnL: aggregateStockRealizedPnL,
-          })
-        : ({
+          }
+        : {
             fullClose: false as const,
             remainingShares: firstLc.remainingShares!,
             remainingCostBasis: firstLc.remainingCostBasis!,
             remainingCurrentValue: firstLc.remainingCurrentValue!,
             stockRealizedPnL: aggregateStockRealizedPnL,
-          });
+          };
 
       dispatch(
         commit([

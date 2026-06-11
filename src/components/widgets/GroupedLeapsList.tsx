@@ -84,8 +84,7 @@ export const GroupedLeapsList: React.FC<GroupedLeapsListProps> = ({
           (tk) => tk.symbol.toUpperCase() === leap.ticker.toUpperCase()
         );
         const stockPrice = tickerData?.currentPrice ?? currentPrice;
-        const dteMs =
-          leap.expiration ? new Date(leap.expiration).getTime() - Date.now() : 0;
+        const dteMs = leap.expiration ? new Date(leap.expiration).getTime() - Date.now() : 0;
         const dteDays = Math.ceil(dteMs / (1000 * 60 * 60 * 24));
 
         const hasOpportunity = positionHasOpportunity?.get(leap.id) ?? false;
@@ -141,7 +140,11 @@ export const GroupedLeapsList: React.FC<GroupedLeapsListProps> = ({
                       {hasOpportunity && (
                         <CoveredCallSuggestionBadge
                           message={opportunityMessage || t('widgetsB.leapsWriteShortCallTitle')}
-                          onClick={onWriteCoveredCall ? () => onWriteCoveredCall(leap.ticker, leap.id) : undefined}
+                          onClick={
+                            onWriteCoveredCall
+                              ? () => onWriteCoveredCall(leap.ticker, leap.id)
+                              : undefined
+                          }
                         />
                       )}
                     </div>
@@ -164,9 +167,7 @@ export const GroupedLeapsList: React.FC<GroupedLeapsListProps> = ({
                         <p className="text-ink-500 dark:text-ink-400 text-xs mb-1">
                           {t('widgetsB.contracts')}
                         </p>
-                        <p className="text-ink-900 dark:text-white font-medium">
-                          {leap.contracts}
-                        </p>
+                        <p className="text-ink-900 dark:text-white font-medium">{leap.contracts}</p>
                       </div>
                       <div className="w-20 flex-shrink-0">
                         <p className="text-ink-500 dark:text-ink-400 text-xs mb-1">
@@ -216,8 +217,7 @@ export const GroupedLeapsList: React.FC<GroupedLeapsListProps> = ({
                   {(() => {
                     const pnl = leap.currentValue - leap.costBasis;
                     const isProfit = pnl >= 0;
-                    const pct =
-                      leap.costBasis !== 0 ? (pnl / Math.abs(leap.costBasis)) * 100 : 0;
+                    const pct = leap.costBasis !== 0 ? (pnl / Math.abs(leap.costBasis)) * 100 : 0;
                     return (
                       <>
                         <p
@@ -254,7 +254,11 @@ export const GroupedLeapsList: React.FC<GroupedLeapsListProps> = ({
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          onBuy({ ticker: leap.ticker, strike: leap.strike, expiration: leap.expiration });
+                          onBuy({
+                            ticker: leap.ticker,
+                            strike: leap.strike,
+                            expiration: leap.expiration,
+                          });
                         }}
                         className="w-8 h-8 flex items-center justify-center bg-ink-200 dark:bg-trading-dark-600 hover:bg-ink-300 dark:hover:bg-ink-400 text-ink-700 dark:text-ink-200 rounded font-semibold text-sm transition-colors"
                         title={t('widgetsB.buy')}

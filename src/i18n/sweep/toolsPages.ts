@@ -32,8 +32,7 @@ export const toolsPages = {
       calcTitle: 'Calculate your tax',
       inputLabel: 'Total realized capital gain (€)',
       inputPlaceholder: 'For example: 25000',
-      inputHelp:
-        'The total profit you realized by selling shares in a calendar year',
+      inputHelp: 'The total profit you realized by selling shares in a calendar year',
       realizedGain: 'Realized capital gain',
       exemption: 'Exemption',
       taxableAmount: 'Taxable amount',
@@ -50,12 +49,10 @@ export const toolsPages = {
       scenario3Body:
         'Taxable amount: €40,000 (€50,000 - €10,000)<br />Tax: <strong>€4,000</strong> (10% of €40,000)<br />Net capital gain: €46,000<br />Effective rate: 8%',
       importantNotes: 'Important notes',
-      note1:
-        '• This tax only applies to <strong>realized</strong> capital gains (sold positions)',
+      note1: '• This tax only applies to <strong>realized</strong> capital gains (sold positions)',
       note2: '• Unrealized gains (shares you still hold) are not taxed',
       note3: '• The €10,000 exemption applies per calendar year',
-      note4:
-        '• This calculator is informational - consult a tax advisor for personal advice',
+      note4: '• This calculator is informational - consult a tax advisor for personal advice',
       note5: '• Losses may be offset - check the current legislation',
     },
 
@@ -89,8 +86,7 @@ export const toolsPages = {
       contractsCount: '{{count}} contract(s)',
       minSharesHint: 'At least 100 shares for 1 contract',
       costBasisPerShare: 'Cost Basis per Share ($)',
-      costBasisTooltip:
-        'The price you paid for the shares. Empty = current price.',
+      costBasisTooltip: 'The price you paid for the shares. Empty = current price.',
       optional: 'Optional',
       strikePrice: 'Strike Price ($)',
       aboveCurrent: '{{percent}}% above current price (OTM)',
@@ -235,8 +231,7 @@ export const toolsPages = {
       maxBenefitLabel: 'Maximum voordeel:',
       maxBenefitValue: ' Tot €1.000 belastingbesparing door de vrijstelling',
       realizedGainLabel: 'Gerealiseerde meerwaarde:',
-      realizedGainValue:
-        ' Alleen winst bij verkoop telt, niet onverkochte posities',
+      realizedGainValue: ' Alleen winst bij verkoop telt, niet onverkochte posities',
       calcTitle: 'Bereken je belasting',
       inputLabel: 'Totale gerealiseerde meerwaarde (€)',
       inputPlaceholder: 'Bijvoorbeeld: 25000',
@@ -250,8 +245,7 @@ export const toolsPages = {
       netGain: 'Netto meerwaarde na belasting',
       examples: 'Voorbeelden',
       scenario1Title: 'Scenario 1: €5.000 meerwaarde',
-      scenario1Body:
-        'Belasting: <strong>€0</strong> (onder de vrijstelling van €10.000)',
+      scenario1Body: 'Belasting: <strong>€0</strong> (onder de vrijstelling van €10.000)',
       scenario2Title: 'Scenario 2: €15.000 meerwaarde',
       scenario2Body:
         'Belastbaar bedrag: €5.000 (€15.000 - €10.000)<br />Belasting: <strong>€500</strong> (10% van €5.000)<br />Netto meerwaarde: €14.500',
@@ -261,13 +255,11 @@ export const toolsPages = {
       importantNotes: 'Belangrijke opmerkingen',
       note1:
         '• Deze belasting is alleen van toepassing op <strong>gerealiseerde</strong> meerwaarden (verkochte posities)',
-      note2:
-        '• Niet-gerealiseerde winsten (aandelen die je nog bezit) worden niet belast',
+      note2: '• Niet-gerealiseerde winsten (aandelen die je nog bezit) worden niet belast',
       note3: '• De vrijstelling van €10.000 geldt per kalenderjaar',
       note4:
         '• Deze calculator is informatief - raadpleeg een belastingadviseur voor persoonlijk advies',
-      note5:
-        '• Verliezen kunnen mogelijk verrekend worden - check de actuele wetgeving',
+      note5: '• Verliezen kunnen mogelijk verrekend worden - check de actuele wetgeving',
     },
 
     // CoveredCallSimulator
@@ -300,8 +292,7 @@ export const toolsPages = {
       contractsCount: '{{count}} contract(en)',
       minSharesHint: 'Minimaal 100 aandelen voor 1 contract',
       costBasisPerShare: 'Kostprijs per Aandeel ($)',
-      costBasisTooltip:
-        'De prijs die je betaald hebt voor de aandelen. Leeg = huidige prijs.',
+      costBasisTooltip: 'De prijs die je betaald hebt voor de aandelen. Leeg = huidige prijs.',
       optional: 'Optioneel',
       strikePrice: 'Strike Prijs ($)',
       aboveCurrent: '{{percent}}% boven huidige prijs (OTM)',
@@ -442,14 +433,11 @@ export const toolsPages = {
       rateLabel: 'Taux :',
       rateValue: ' 10 % sur la plus-value réalisée',
       exemptionLabel: 'Exonération :',
-      exemptionValue:
-        ' Les premiers 10 000 € de plus-value par an sont exonérés',
+      exemptionValue: ' Les premiers 10 000 € de plus-value par an sont exonérés',
       maxBenefitLabel: 'Avantage maximum :',
-      maxBenefitValue:
-        " Jusqu'à 1 000 € d'économie d'impôt grâce à l'exonération",
+      maxBenefitValue: " Jusqu'à 1 000 € d'économie d'impôt grâce à l'exonération",
       realizedGainLabel: 'Plus-value réalisée :',
-      realizedGainValue:
-        ' Seul le bénéfice à la vente compte, pas les positions non vendues',
+      realizedGainValue: ' Seul le bénéfice à la vente compte, pas les positions non vendues',
       calcTitle: 'Calculez votre taxe',
       inputLabel: 'Plus-value totale réalisée (€)',
       inputPlaceholder: 'Par exemple : 25000',
@@ -463,8 +451,7 @@ export const toolsPages = {
       netGain: 'Plus-value nette après taxe',
       examples: 'Exemples',
       scenario1Title: 'Scénario 1 : 5 000 € de plus-value',
-      scenario1Body:
-        "Taxe : <strong>0 €</strong> (sous l'exonération de 10 000 €)",
+      scenario1Body: "Taxe : <strong>0 €</strong> (sous l'exonération de 10 000 €)",
       scenario2Title: 'Scénario 2 : 15 000 € de plus-value',
       scenario2Body:
         'Montant imposable : 5 000 € (15 000 € - 10 000 €)<br />Taxe : <strong>500 €</strong> (10 % de 5 000 €)<br />Plus-value nette : 14 500 €',
@@ -474,8 +461,7 @@ export const toolsPages = {
       importantNotes: 'Remarques importantes',
       note1:
         '• Cette taxe ne s’applique qu’aux plus-values <strong>réalisées</strong> (positions vendues)',
-      note2:
-        '• Les plus-values non réalisées (actions que vous détenez encore) ne sont pas taxées',
+      note2: '• Les plus-values non réalisées (actions que vous détenez encore) ne sont pas taxées',
       note3: "• L'exonération de 10 000 € s'applique par année civile",
       note4:
         '• Ce calculateur est informatif - consultez un conseiller fiscal pour un avis personnel',
@@ -513,8 +499,7 @@ export const toolsPages = {
       contractsCount: '{{count}} contrat(s)',
       minSharesHint: 'Au moins 100 actions pour 1 contrat',
       costBasisPerShare: 'Prix de revient par action ($)',
-      costBasisTooltip:
-        'Le prix que vous avez payé pour les actions. Vide = cours actuel.',
+      costBasisTooltip: 'Le prix que vous avez payé pour les actions. Vide = cours actuel.',
       optional: 'Facultatif',
       strikePrice: 'Prix dʼexercice ($)',
       aboveCurrent: '{{percent}} % au-dessus du cours actuel (OTM)',
@@ -600,8 +585,7 @@ export const toolsPages = {
       bidAskSpread: 'Spread bid-ask',
       premiumAnnualized: 'Prime (ann.)',
       earningsIn: 'Résultats dans',
-      chooseTicker:
-        'Choisissez ou ajoutez un ticker pour lancer la vérification.',
+      chooseTicker: 'Choisissez ou ajoutez un ticker pour lancer la vérification.',
     },
 
     // PnLSimulator
@@ -623,8 +607,7 @@ export const toolsPages = {
       breakEven: 'Seuil de rentabilité',
       pnlAtExpiration: "P&L à l'expiration",
       noPositions: 'Aucune position',
-      addOptionsToSeeChart:
-        'Ajoutez des options pour voir le graphique P&L',
+      addOptionsToSeeChart: 'Ajoutez des options pour voir le graphique P&L',
       popularStrategies: 'Stratégies populaires',
       tooltipPrice: 'Prix : ${{price}}',
       chartProfit: 'Profit',

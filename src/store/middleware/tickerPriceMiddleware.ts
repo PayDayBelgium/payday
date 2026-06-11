@@ -92,8 +92,7 @@ export const tickerPriceMiddleware: Middleware = (store) => (next) => (action) =
   // positionValueMiddleware recompute the whole portfolio value — O(S) full
   // recomputations per tick. One batch = one downstream recomputation per
   // affected portfolio.
-  const batchedValueUpdates: Array<{ id: string; currentValue: number; currentPrice: number }> =
-    [];
+  const batchedValueUpdates: Array<{ id: string; currentValue: number; currentPrice: number }> = [];
 
   // Process each position
   positions.forEach((position: Position) => {

@@ -150,8 +150,7 @@ export const stratPages = {
     kaComponent1Title: 'Buy Protective Puts',
     kaComponent1Desc: 'Long-term puts (3-12 months) for downside protection',
     kaComponent2Title: 'Sell Weekly Options',
-    kaComponent2Desc:
-      'Use CSPs (Cash Secured Puts) and/or Covered Calls to collect premium weekly',
+    kaComponent2Desc: 'Use CSPs (Cash Secured Puts) and/or Covered Calls to collect premium weekly',
     kaComponent3Title: 'Repeat Weekly',
     kaComponent3Desc: 'Continuous process - the weekly premiums ideally pay for your protection',
     kaBuildOnTitle: 'Build on existing strategies',
@@ -275,10 +274,8 @@ export const stratPages = {
     stocksLinkLeapsDesc: 'Gain exposure with leverage - also suitable for Covered Calls',
 
     // StocksETFs strategy-alert messages (interpolated)
-    stocksAlertDecreased:
-      '{{ticker}} has dropped {{percent}}% (threshold: -{{threshold}}%)',
-    stocksAlertIncreased:
-      '{{ticker}} has risen {{percent}}% (threshold: +{{threshold}}%)',
+    stocksAlertDecreased: '{{ticker}} has dropped {{percent}}% (threshold: -{{threshold}}%)',
+    stocksAlertIncreased: '{{ticker}} has risen {{percent}}% (threshold: +{{threshold}}%)',
   },
   nl: {
     tabPositions: 'Posities',
@@ -346,7 +343,8 @@ export const stratPages = {
     cspAvoid3: 'Je bearish bent op het aandeel',
     cspAvoid4: 'De premie is te laag voor het risico',
     cspCompleteCycle: 'De Complete Cyclus',
-    cspCompleteCycleDesc: 'CSPs en Covered Calls kunnen samen een krachtige income strategie vormen:',
+    cspCompleteCycleDesc:
+      'CSPs en Covered Calls kunnen samen een krachtige income strategie vormen:',
     cspCycle1: 'Schrijf CSP → Ontvang premie',
     cspCycle2: 'Wordt assigned → Krijg 100 aandelen aan strike price',
     cspCycle3: 'Schrijf Covered Calls op die aandelen → Ontvang meer premie',
@@ -383,13 +381,15 @@ export const stratPages = {
     ccOnStocksLabel: 'Op Aandelen/ETFs:',
     ccOnStocks: ' Schrijf calls op je bestaande posities voor extra inkomen',
     ccOnLeapsLabel: 'Op LEAPS:',
-    ccOnLeaps: ' Schrijf calls op je synthetische aandelen (ook wel "Poor Man\'s Covered Call" genoemd)',
+    ccOnLeaps:
+      ' Schrijf calls op je synthetische aandelen (ook wel "Poor Man\'s Covered Call" genoemd)',
     ccAdvantageLabel: 'Voordeel:',
     ccAdvantage: ' Regelmatig premie-inkomen, typisch maandelijks of wekelijks',
     ccDisadvantageLabel: 'Nadeel:',
     ccDisadvantage: ' Je winst is gelimiteerd tot de strike price (+ premie)',
     ccOnStocksCardTitle: 'Covered Calls op Aandelen/ETFs',
-    ccOnStocksCardDesc: 'De traditionele methode: je bezit 100 aandelen en schrijft 1 call contract.',
+    ccOnStocksCardDesc:
+      'De traditionele methode: je bezit 100 aandelen en schrijft 1 call contract.',
     ccOnStocksBullet1: '✓ Geen leverage risico',
     ccOnStocksBullet2: '✓ Dividend inkomsten blijven',
     ccOnStocksBullet3: '✓ Volle ownership rechten',
@@ -491,7 +491,8 @@ export const stratPages = {
     spreadsIronCondor:
       ' Combinatie van beide - Bull Put Spread + Bear Call Spread = dubbele premie bij neutraal verwachting',
     spreadsAdvantageLabel: 'Voordeel:',
-    spreadsAdvantage: ' Gedefinieerd risico - je weet vooraf exact hoeveel je maximaal kunt verliezen',
+    spreadsAdvantage:
+      ' Gedefinieerd risico - je weet vooraf exact hoeveel je maximaal kunt verliezen',
     spreadsBullPutCardTitle: 'Bull Put Spread',
     spreadsBullPutCardDesc: 'Wanneer je verwacht dat de prijs stabiel blijft of stijgt',
     spreadsBullPutBullet1: '✓ Neutraal tot bullish',
@@ -528,7 +529,8 @@ export const stratPages = {
     stocksAvailableForCC: 'Beschikbaar voor Covered Calls',
     stocksNotCovered: 'Niet gedekt met calls',
     stocksNoPositionsTitle: 'Geen aandelen of ETFs',
-    stocksNoPositionsDesc: 'Begin met het toevoegen van je eerste aandelen of ETFs aan je portfolio',
+    stocksNoPositionsDesc:
+      'Begin met het toevoegen van je eerste aandelen of ETFs aan je portfolio',
     stocksAddFirst: 'Voeg je eerste positie toe',
     stocksWhyTitle: 'Waarom beginnen met Aandelen & ETFs?',
     stocksWhyDesc:
@@ -573,7 +575,7 @@ export const stratPages = {
     cspHowTitle: 'Comment fonctionne un Cash Secured Put ?',
     cspHowIntro1: 'Un Cash Secured Put est une stratégie où vous ',
     cspHowIntroWrite: 'écrivez (vendez)',
-    cspHowIntro2: " une option put sur une action ou un ETF que vous ",
+    cspHowIntro2: ' une option put sur une action ou un ETF que vous ',
     cspHowIntroWant: 'voulez acheter',
     cspHowIntro3: ', mais à un ',
     cspHowIntroLower: 'prix inférieur',
@@ -584,10 +586,10 @@ export const stratPages = {
     cspHowIntro6: '.',
     cspScenario1Label: 'Scénario 1 :',
     cspScenario1:
-      " Le prix reste au-dessus du strike → Le put expire sans valeur → Vous gardez la prime",
+      ' Le prix reste au-dessus du strike → Le put expire sans valeur → Vous gardez la prime',
     cspScenario2Label: 'Scénario 2 :',
     cspScenario2:
-      " Le prix tombe sous le strike → Vous êtes \"assigné\" → Vous achetez 100 actions au prix du strike",
+      ' Le prix tombe sous le strike → Vous êtes "assigné" → Vous achetez 100 actions au prix du strike',
     cspAdvantageLabel: 'Avantage :',
     cspAdvantage: ' Vous êtes payé (prime) pour attendre que les actions deviennent moins chères',
     cspRequirementLabel: 'Exigence :',
@@ -605,15 +607,15 @@ export const stratPages = {
     cspExample5: 'Coût de revient effectif : 150 $ - 2 $ (prime) = ',
     cspExample5Bold: '148 $ par action',
     cspWhenUse: 'Quand utiliser un CSP ?',
-    cspGoodUseCases: '✓ Bons cas d\'usage',
+    cspGoodUseCases: "✓ Bons cas d'usage",
     cspGood1: 'Vous voulez acheter une action/un ETF, mais le trouvez trop cher actuellement',
     cspGood2: 'Vous avez du cash et voulez un rendement supplémentaire en attendant',
     cspGood3: 'Vous êtes haussier sur une action à plus long terme',
     cspGood4: "Vous voulez réduire votre prix d'achat moyen",
     cspAvoidWhen: '✗ Évitez le CSP quand',
-    cspAvoid1: 'Vous ne voulez pas posséder l\'action',
+    cspAvoid1: "Vous ne voulez pas posséder l'action",
     cspAvoid2: 'Vous avez insuffisamment de cash en garantie',
-    cspAvoid3: 'Vous êtes baissier sur l\'action',
+    cspAvoid3: "Vous êtes baissier sur l'action",
     cspAvoid4: 'La prime est trop faible pour le risque',
     cspCompleteCycle: 'Le cycle complet',
     cspCompleteCycleDesc:
@@ -637,7 +639,7 @@ export const stratPages = {
     ccBannerDesc1: 'Avec un covered call, vous concluez un contrat dans lequel vous êtes ',
     ccBannerWilling: 'prêt à vendre vos actions',
     ccBannerDesc2:
-      " à un certain prix (strike) avant une certaine date (expiration). En échange, vous recevez immédiatement une ",
+      ' à un certain prix (strike) avant une certaine date (expiration). En échange, vous recevez immédiatement une ',
     ccBannerPremium: 'prime',
     ccBannerDesc3: '.',
     ccBannerBenefit1: "Profitez de la hausse du prix jusqu'au strike",
@@ -655,7 +657,8 @@ export const stratPages = {
     ccOnStocksLabel: 'Sur Actions/ETF :',
     ccOnStocks: ' Écrivez des calls sur vos positions existantes pour un revenu supplémentaire',
     ccOnLeapsLabel: 'Sur LEAPS :',
-    ccOnLeaps: ' Écrivez des calls sur vos actions synthétiques (aussi appelé "Poor Man\'s Covered Call")',
+    ccOnLeaps:
+      ' Écrivez des calls sur vos actions synthétiques (aussi appelé "Poor Man\'s Covered Call")',
     ccAdvantageLabel: 'Avantage :',
     ccAdvantage: ' Revenu de prime régulier, généralement mensuel ou hebdomadaire',
     ccDisadvantageLabel: 'Inconvénient :',
@@ -737,10 +740,11 @@ export const stratPages = {
     leapsLeverageLabel: 'Levier :',
     leapsLeverage: ' Gains en pourcentage plus importants lors des hausses de prix',
     leapsCcLabel: 'Covered Calls :',
-    leapsCc: ' Écrivez des calls sur vos LEAPS pour gagner des primes supplémentaires (comme avec les actions)',
+    leapsCc:
+      ' Écrivez des calls sur vos LEAPS pour gagner des primes supplémentaires (comme avec les actions)',
     leapsWarningTitle: 'Attention : le levier fonctionne dans les deux sens',
     leapsWarningDesc:
-      'Les LEAPS ont une décroissance theta (perte de valeur temps) et peuvent expirer sans valeur. Utilisez uniquement des LEAPS deep-in-the-money (delta élevé ~0,80-0,90) pour un effet d\'action synthétique.',
+      "Les LEAPS ont une décroissance theta (perte de valeur temps) et peuvent expirer sans valeur. Utilisez uniquement des LEAPS deep-in-the-money (delta élevé ~0,80-0,90) pour un effet d'action synthétique.",
     leapsLinkCcTitle: 'Covered Calls sur LEAPS',
     leapsLinkCcDesc: 'Écrivez des calls sur vos LEAPS pour un revenu de prime supplémentaire',
     leapsLinkStocksTitle: 'Retour aux Actions & ETF',
@@ -758,15 +762,17 @@ export const stratPages = {
     spreadsHowDesc:
       "Les credit spreads sont des stratégies d'options à risque défini où vous vendez une option et achetez une autre option plus loin out-of-the-money pour la protection. Vous recevez immédiatement un crédit (prime). Le système reconnaît automatiquement quel type de spread vous créez.",
     spreadsBullPutLabel: 'Bull Put Spread :',
-    spreadsBullPut: ' Haussier - vendre un put + acheter un put (strike inférieur) pour la protection',
+    spreadsBullPut:
+      ' Haussier - vendre un put + acheter un put (strike inférieur) pour la protection',
     spreadsBearCallLabel: 'Bear Call Spread :',
-    spreadsBearCall: ' Baissier - vendre un call + acheter un call (strike supérieur) pour la protection',
+    spreadsBearCall:
+      ' Baissier - vendre un call + acheter un call (strike supérieur) pour la protection',
     spreadsIronCondorLabel: 'Iron Condor :',
     spreadsIronCondor:
       ' Combinaison des deux - Bull Put Spread + Bear Call Spread = double prime avec une anticipation neutre',
     spreadsAdvantageLabel: 'Avantage :',
     spreadsAdvantage:
-      ' Risque défini - vous savez à l\'avance exactement combien vous pouvez perdre au maximum',
+      " Risque défini - vous savez à l'avance exactement combien vous pouvez perdre au maximum",
     spreadsBullPutCardTitle: 'Bull Put Spread',
     spreadsBullPutCardDesc: 'Quand vous anticipez que le prix reste stable ou monte',
     spreadsBullPutBullet1: '✓ Neutre à haussier',
@@ -812,8 +818,7 @@ export const stratPages = {
     stocksStep1Label: 'Étape 1 :',
     stocksStep1: ' Commencez par des actions ou des ETF solides et fiables',
     stocksStep2Label: 'Étape suivante :',
-    stocksStep2:
-      ' Gagnez un revenu supplémentaire en écrivant des Covered Calls sur ces actions',
+    stocksStep2: ' Gagnez un revenu supplémentaire en écrivant des Covered Calls sur ces actions',
     stocksNoOptionsLabel: 'Attention :',
     stocksNoOptions:
       ' Ce portefeuille ne prend pas en charge les options. Vous ne pouvez gagner que via les hausses de prix et les éventuels dividendes.',

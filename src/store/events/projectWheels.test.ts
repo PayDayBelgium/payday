@@ -33,7 +33,15 @@ function projection(
 }
 
 function event<T extends DomainEvent['type']>(type: T, payload: unknown): DomainEvent {
-  return { id: 'e', seq: 0, type, payload, timestamp: 't', actor: 'a', schemaVersion: 1 } as DomainEvent;
+  return {
+    id: 'e',
+    seq: 0,
+    type,
+    payload,
+    timestamp: 't',
+    actor: 'a',
+    schemaVersion: 1,
+  } as DomainEvent;
 }
 
 /** Fold a single event over a wheels-only projection and return the wheels. */
@@ -116,7 +124,10 @@ describe('applyWheelEvent — full lifecycle', () => {
     expect(state.wheels[0].phase).toBe('csp');
 
     // 2. Sold CSP opened (premium received = |−150| = 150)
-    state = applyWheelEvent(state, event('PositionOpened', { position: soldPut('opt1', 'w1', -150) }));
+    state = applyWheelEvent(
+      state,
+      event('PositionOpened', { position: soldPut('opt1', 'w1', -150) })
+    );
     expect(state.wheels[0].totalPremiumCollected).toBe(150);
 
     // 3. Put assigned → wheel moves to 'stock' phase
@@ -138,7 +149,10 @@ describe('applyWheelEvent — full lifecycle', () => {
     expect(state.wheels[0].cycles).toBe(0); // put assignment does not increment cycles
 
     // 4. Sold covered call opened (premium received = |−200| = 200)
-    state = applyWheelEvent(state, event('PositionOpened', { position: soldCall('opt2', 'w1', -200) }));
+    state = applyWheelEvent(
+      state,
+      event('PositionOpened', { position: soldCall('opt2', 'w1', -200) })
+    );
     expect(state.wheels[0].totalPremiumCollected).toBe(350); // 150 + 200
 
     // 5. Call assigned (full close) → cycles+1, phase='csp', stockRealizedPnL added
@@ -162,7 +176,10 @@ describe('applyWheelEvent — full lifecycle', () => {
     expect(state.wheels[0].totalRealizedPnL).toBe(500);
 
     // 6. New CSP sold for the next cycle (premium = 180)
-    state = applyWheelEvent(state, event('PositionOpened', { position: soldPut('opt3', 'w1', -180) }));
+    state = applyWheelEvent(
+      state,
+      event('PositionOpened', { position: soldPut('opt3', 'w1', -180) })
+    );
     expect(state.wheels[0].totalPremiumCollected).toBe(530); // 350 + 180
 
     // 7. CSP rolled: old leg closed at a profit of 80, new leg collects 120
@@ -183,7 +200,12 @@ describe('applyWheelEvent — full lifecycle', () => {
     // 8. Rolled CSP bought back at a loss of −40 → realized P&L only
     state = applyWheelEvent(
       state,
-      event('PositionClosed', { id: 'opt4', closeDate: '2026-05-01', closePremium: 1.6, realizedPnL: -40 })
+      event('PositionClosed', {
+        id: 'opt4',
+        closeDate: '2026-05-01',
+        closePremium: 1.6,
+        realizedPnL: -40,
+      })
     );
     expect(state.wheels[0].totalPremiumCollected).toBe(650); // unchanged on buyback
     expect(state.wheels[0].totalRealizedPnL).toBe(540); // 580 − 40
@@ -197,7 +219,10 @@ describe('applyWheelEvent — full lifecycle', () => {
 describe('applyWheelEvent', () => {
   // --- WheelCampaignStarted ---
   it('WheelCampaignStarted appends the wheel', () => {
-    const next = applyWheelEvent(emptyWheelsProjection(), event('WheelCampaignStarted', { wheel: wheel('w1') }));
+    const next = applyWheelEvent(
+      emptyWheelsProjection(),
+      event('WheelCampaignStarted', { wheel: wheel('w1') })
+    );
     expect(next.wheels).toHaveLength(1);
     expect(next.wheels[0].id).toBe('w1');
   });
@@ -269,7 +294,10 @@ describe('applyWheelEvent', () => {
 
   it('PositionOpened (sold option) registers the option in openSoldOptions', () => {
     const w1 = wheel('w1');
-    const next = applyWheelEvent(projection([w1]), event('PositionOpened', { position: soldPut('opt1', 'w1') }));
+    const next = applyWheelEvent(
+      projection([w1]),
+      event('PositionOpened', { position: soldPut('opt1', 'w1') })
+    );
     expect(next.openSoldOptions).toEqual({ opt1: 'w1' });
   });
 
@@ -283,7 +311,10 @@ describe('applyWheelEvent', () => {
   it('PositionOpened (stock, wheel-linked) does NOT accrue premium', () => {
     const w1 = wheel('w1');
     const initial = projection([w1]);
-    const next = applyWheelEvent(initial, event('PositionOpened', { position: stockPosition('stk1', 'w1') }));
+    const next = applyWheelEvent(
+      initial,
+      event('PositionOpened', { position: stockPosition('stk1', 'w1') })
+    );
     expect(next).toBe(initial);
   });
 
@@ -315,7 +346,10 @@ describe('applyWheelEvent', () => {
 
   it('PositionEdited unlinking a sold option removes it from the index', () => {
     const w1 = wheel('w1');
-    let state = applyWheelEvent(projection([w1]), event('PositionOpened', { position: soldPut('opt1', 'w1') }));
+    let state = applyWheelEvent(
+      projection([w1]),
+      event('PositionOpened', { position: soldPut('opt1', 'w1') })
+    );
     state = applyWheelEvent(
       state,
       event('PositionEdited', { position: { ...soldPut('opt1', 'w1'), wheelId: undefined } })
@@ -325,8 +359,14 @@ describe('applyWheelEvent', () => {
 
   it('PositionEdited with an unchanged wheel link is a no-op (same reference)', () => {
     const w1 = wheel('w1');
-    const state = applyWheelEvent(projection([w1]), event('PositionOpened', { position: soldPut('opt1', 'w1') }));
-    const next = applyWheelEvent(state, event('PositionEdited', { position: soldPut('opt1', 'w1', -999) }));
+    const state = applyWheelEvent(
+      projection([w1]),
+      event('PositionOpened', { position: soldPut('opt1', 'w1') })
+    );
+    const next = applyWheelEvent(
+      state,
+      event('PositionEdited', { position: soldPut('opt1', 'w1', -999) })
+    );
     expect(next).toBe(state);
   });
 
@@ -335,7 +375,12 @@ describe('applyWheelEvent', () => {
     const w1 = wheel('w1', { totalPremiumCollected: 150, totalRealizedPnL: 100 });
     const next = applyWheelEvent(
       projection([w1], { opt1: 'w1' }),
-      event('PositionClosed', { id: 'opt1', closeDate: '2026-03-01', closePremium: 0.5, realizedPnL: 95 })
+      event('PositionClosed', {
+        id: 'opt1',
+        closeDate: '2026-03-01',
+        closePremium: 0.5,
+        realizedPnL: 95,
+      })
     );
     expect(next.wheels[0].totalRealizedPnL).toBe(195); // 100 + 95
     // Premium was already booked at open ("premium collected when sold");
@@ -366,7 +411,10 @@ describe('applyWheelEvent', () => {
   it('PositionClosed for an unknown position is a no-op (same reference)', () => {
     const w1 = wheel('w1');
     const initial = projection([w1]);
-    const next = applyWheelEvent(initial, event('PositionClosed', { id: 'p1', closeDate: '2026-06-01' }));
+    const next = applyWheelEvent(
+      initial,
+      event('PositionClosed', { id: 'p1', closeDate: '2026-06-01' })
+    );
     expect(next).toBe(initial);
   });
 
@@ -643,9 +691,23 @@ describe('applyWheelEvent', () => {
         wheelId: 'w1',
         stockClose: { fullClose: true, closePrice: 310, stockRealizedPnL: 999 }, // legacy — must be IGNORED
         lotCloses: [
-          { stockId: 'lot-1', fullClose: true, sharesSold: 99, closePrice: 310, lotCostBasisForShares: 9_900 },
-          { stockId: 'lot-2', fullClose: false, sharesSold: 1, closePrice: 310, lotCostBasisForShares: 220,
-            remainingShares: 49, remainingCostBasis: 10_780, remainingCurrentValue: 11_270 },
+          {
+            stockId: 'lot-1',
+            fullClose: true,
+            sharesSold: 99,
+            closePrice: 310,
+            lotCostBasisForShares: 9_900,
+          },
+          {
+            stockId: 'lot-2',
+            fullClose: false,
+            sharesSold: 1,
+            closePrice: 310,
+            lotCostBasisForShares: 220,
+            remainingShares: 49,
+            remainingCostBasis: 10_780,
+            remainingCurrentValue: 11_270,
+          },
         ],
         sharesSold: 100,
         stockRealizedPnL: 1_200, // aggregate GAK P&L — must be used, not 999 from stockClose
@@ -673,7 +735,13 @@ describe('applyWheelEvent', () => {
         wheelId: 'w1',
         stockClose: { fullClose: true, closePrice: 100, stockRealizedPnL: 999 }, // legacy
         lotCloses: [
-          { stockId: 'lot-1', fullClose: true, sharesSold: 100, closePrice: 100, lotCostBasisForShares: 10_000 },
+          {
+            stockId: 'lot-1',
+            fullClose: true,
+            sharesSold: 100,
+            closePrice: 100,
+            lotCostBasisForShares: 10_000,
+          },
         ],
         sharesSold: 100,
         // stockRealizedPnL deliberately absent → defaults to 0
@@ -724,7 +792,10 @@ describe('applyWheelEvent', () => {
   it('PortfolioRenamed is a no-op (same ref) when no wheel matches oldName', () => {
     const w1 = wheel('w1', { portfolio: 'Main' });
     const initial = projection([w1]);
-    const next = applyWheelEvent(initial, event('PortfolioRenamed', { oldName: 'DoesNotExist', newName: 'New' }));
+    const next = applyWheelEvent(
+      initial,
+      event('PortfolioRenamed', { oldName: 'DoesNotExist', newName: 'New' })
+    );
     expect(next).toBe(initial);
   });
 });

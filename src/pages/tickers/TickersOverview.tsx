@@ -5,11 +5,7 @@ import { usePageTitle } from '../../contexts/PageTitleContext';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { selectAllTickers } from '../../store/slices/tickersSlice';
-import {
-  addToWatchlist,
-  removeTicker,
-  updateTicker,
-} from '../../store/commands/tickerCommands';
+import { addToWatchlist, removeTicker, updateTicker } from '../../store/commands/tickerCommands';
 import { updateTickerPrice } from '../../store/slices/tickersSlice';
 import { ConfirmModal } from '../../components/modals/ConfirmModal';
 import type { PortfolioName, Ticker, Position } from '../../types';

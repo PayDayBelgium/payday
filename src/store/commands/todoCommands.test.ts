@@ -114,9 +114,9 @@ describe('todo commands', () => {
 
     const t1 = makeTodo('t1', 'Sweep the floor');
     dispatch(addTodo(t1, TS));
-    dispatch(toggleTodo('t1', TS2));   // complete
-    dispatch(reopenTodo('t1', TS2));   // reopen
-    dispatch(deleteTodo('t1', TS2));   // delete
+    dispatch(toggleTodo('t1', TS2)); // complete
+    dispatch(reopenTodo('t1', TS2)); // reopen
+    dispatch(deleteTodo('t1', TS2)); // delete
 
     const todos = selectAllTodos(store.getState() as any);
     expect(todos).toHaveLength(0);

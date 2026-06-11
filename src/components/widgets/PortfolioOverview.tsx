@@ -3,22 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useNavigation } from '../../contexts/NavigationContext';
-import {
-  selectPortfolioSummaries,
-  selectEquitySeries,
-} from '../../store/slices/portfoliosSlice';
+import { selectPortfolioSummaries, selectEquitySeries } from '../../store/slices/portfoliosSlice';
 import { useAlerts } from '../../hooks/useAlerts';
 import { formatCurrency, formatNumber } from '../../utils/numberFormat';
 import { getCurrencySymbol } from '../../utils/currency';
 import { AlertTooltipContent } from '../common/AlertTooltipContent';
-import {
-  TrendingUp,
-  TrendingDown,
-  RotateCcw,
-  AlertCircle,
-  Target,
-  Settings,
-} from 'lucide-react';
+import { TrendingUp, TrendingDown, RotateCcw, AlertCircle, Target, Settings } from 'lucide-react';
 
 type TimePeriod = '1W' | '1M' | '3M' | 'YTD' | '1Y' | 'ALL';
 
@@ -90,9 +80,7 @@ export const PortfolioOverview: React.FC = memo(() => {
           </h3>
           <p className="text-sm text-ink-600 dark:text-ink-400 mt-1">
             {summaries.length}{' '}
-            {summaries.length === 1
-              ? t('widgetsB.onePortfolio')
-              : t('widgetsB.multiplePortfolios')}
+            {summaries.length === 1 ? t('widgetsB.onePortfolio') : t('widgetsB.multiplePortfolios')}
           </p>
         </div>
         <button

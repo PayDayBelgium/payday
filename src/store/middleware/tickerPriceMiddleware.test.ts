@@ -92,7 +92,12 @@ const shortCall = (id: string, portfolioName: string, strike: number): Position 
     currentValue: -200,
   }) as unknown as Position;
 
-const makeEvent = (id: string, seq: number, type: DomainEvent['type'], payload: unknown): DomainEvent =>
+const makeEvent = (
+  id: string,
+  seq: number,
+  type: DomainEvent['type'],
+  payload: unknown
+): DomainEvent =>
   ({
     id,
     seq,
@@ -106,8 +111,12 @@ const makeEvent = (id: string, seq: number, type: DomainEvent['type'], payload: 
 const seedEvents = (portfolios: Portfolio[], positions: Position[]): DomainEvent[] => {
   let seq = 0;
   return [
-    ...portfolios.map((pf) => makeEvent(`e-pf-${pf.name}`, seq++, 'PortfolioCreated', { portfolio: pf })),
-    ...positions.map((pos) => makeEvent(`e-pos-${pos.id}`, seq++, 'PositionOpened', { position: pos })),
+    ...portfolios.map((pf) =>
+      makeEvent(`e-pf-${pf.name}`, seq++, 'PortfolioCreated', { portfolio: pf })
+    ),
+    ...positions.map((pos) =>
+      makeEvent(`e-pos-${pos.id}`, seq++, 'PositionOpened', { position: pos })
+    ),
   ];
 };
 
@@ -130,7 +139,11 @@ describe('tickerPriceMiddleware', () => {
       appendEvents({
         events: seedEvents(
           [portfolio('A'), portfolio('B')],
-          [stockPosition('s1', 'A', 100), stockPosition('s2', 'A', 50), stockPosition('s3', 'B', 10)]
+          [
+            stockPosition('s1', 'A', 100),
+            stockPosition('s2', 'A', 50),
+            stockPosition('s3', 'B', 10),
+          ]
         ),
         positionsBefore: [],
       })

@@ -131,8 +131,7 @@ export const SpreadRollModal: React.FC<SpreadRollModalProps> = ({
   if (!isOpen) return null;
 
   const optionType = longLeg.type === 'call' ? 'Call' : 'Put';
-  const spreadType =
-    shortLeg.premium > longLeg.premium ? t('modalsA.credit') : t('modalsA.debit');
+  const spreadType = shortLeg.premium > longLeg.premium ? t('modalsA.credit') : t('modalsA.debit');
 
   return (
     <RollModalShell

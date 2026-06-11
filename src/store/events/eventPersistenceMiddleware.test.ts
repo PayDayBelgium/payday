@@ -13,7 +13,16 @@ import type { Position } from '../../types';
 import type { AppDispatch } from '../index';
 
 const stock = (id: string): Position =>
-  ({ id, type: 'stock', ticker: 'AAPL', portfolio: 'Main', status: 'open', openDate: '2026-01-01', shares: 10, purchasePrice: 100 }) as unknown as Position;
+  ({
+    id,
+    type: 'stock',
+    ticker: 'AAPL',
+    portfolio: 'Main',
+    status: 'open',
+    openDate: '2026-01-01',
+    shares: 10,
+    purchasePrice: 100,
+  }) as unknown as Position;
 
 const makeStore = (eventStore: EventStore) =>
   configureStore({

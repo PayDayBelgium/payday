@@ -55,13 +55,7 @@ export const createAppStore = (username?: string) => {
   const persistConfig = {
     key: username ? `payday-${username}` : 'payday-root',
     storage,
-    whitelist: [
-      'auth',
-      'adminAuth',
-      'userProgress',
-      'community',
-      'mentorship',
-    ], // Persist auth and adminAuth to remember sessions
+    whitelist: ['auth', 'adminAuth', 'userProgress', 'community', 'mentorship'], // Persist auth and adminAuth to remember sessions
     // v7 (event-sourcing coupled-cluster): `portfolios` and `wheels` removed — rebuilt from IndexedDB event log on boot.
     // v6 (event-sourcing phase 2): `tickers` removed — rebuilt from IndexedDB event log on boot.
     // v5 (event-sourcing phase 2): `strategies` removed — rebuilt from IndexedDB event log on boot.

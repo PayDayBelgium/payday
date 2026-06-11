@@ -18,10 +18,7 @@ const TodoListWidget: React.FC = () => {
     if (newTodoText.trim()) {
       const now = new Date().toISOString();
       dispatch(
-        addTodo(
-          { id: uuid(), text: newTodoText.trim(), completed: false, createdAt: now },
-          now
-        )
+        addTodo({ id: uuid(), text: newTodoText.trim(), completed: false, createdAt: now }, now)
       );
       setNewTodoText('');
     }

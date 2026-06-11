@@ -140,7 +140,9 @@ export const StrategyRules: React.FC<StrategyRulesProps> = ({
                         ? 'bg-primary-700 dark:bg-primary-500'
                         : 'bg-surface-muted dark:bg-trading-dark-700'
                     }`}
-                    title={rule.enabled ? t('learnFeat.rulesDeactivate') : t('learnFeat.rulesActivate')}
+                    title={
+                      rule.enabled ? t('learnFeat.rulesDeactivate') : t('learnFeat.rulesActivate')
+                    }
                   >
                     <span
                       className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${

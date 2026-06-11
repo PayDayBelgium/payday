@@ -137,10 +137,7 @@ describe('computeCoveredCallCapacity – allocator consistency', () => {
     // Tight capacity: 200 shares = 2 contracts, break-even 10.
     // Candidates: a 1-contract strike-12 call and a 2-contract strike-30 call.
     const lots = [lot(200)];
-    const calls = [
-      soldCall(1, { id: 'near', strike: 12 }),
-      soldCall(2, { id: 'otm', strike: 30 }),
-    ];
+    const calls = [soldCall(1, { id: 'near', strike: 12 }), soldCall(2, { id: 'otm', strike: 30 })];
 
     // Without a price the allocator orders by distance to break-even: the
     // strike-12 call is assigned first and the 2-contract call no longer fits.

@@ -106,13 +106,7 @@ describe('evaluateAllAlertsShared', () => {
     expect(first.alerts.length).toBeGreaterThan(0);
 
     const dismissedAll = new Set<string>(first.alerts.map((a) => a.id));
-    const second = evaluateAllAlertsShared(
-      portfolios,
-      positions,
-      dismissedAll,
-      undefined,
-      tickers
-    );
+    const second = evaluateAllAlertsShared(portfolios, positions, dismissedAll, undefined, tickers);
     expect(second.alerts).toHaveLength(0);
   });
 

@@ -238,9 +238,7 @@ export const ClosePositionModal: React.FC<ClosePositionModalProps> = ({
         {/* Header */}
         <div className="sticky top-0 bg-white dark:bg-trading-dark-800 border-b border-surface-line dark:border-trading-dark-600 px-6 py-4 flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-ink-900 dark:text-white">
-              {t('modalsA.title')}
-            </h2>
+            <h2 className="text-xl font-bold text-ink-900 dark:text-white">{t('modalsA.title')}</h2>
             <p className="text-sm text-ink-600 dark:text-ink-400 mt-1">{getPositionTitle()}</p>
           </div>
           <button

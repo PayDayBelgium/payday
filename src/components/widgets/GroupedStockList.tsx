@@ -1,12 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import {
-  ChevronDown,
-  ChevronRight,
-  AlertCircle,
-  Search,
-  X,
-  Target,
-} from 'lucide-react';
+import { ChevronDown, ChevronRight, AlertCircle, Search, X, Target } from 'lucide-react';
 import { CoveredCallSuggestionBadge } from './CoveredCallSuggestionBadge';
 import { useTranslation } from 'react-i18next';
 import type { StockPosition, PriceAlert, Portfolio, CallOption, Ticker } from '../../types';
@@ -235,11 +228,13 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
     const group = groupedPositions[ticker];
     if (group) {
       group.positions.forEach((position) => {
-        dispatch(updatePositionLivePrice({
-          id: position.id,
-          currentPrice: newPrice,
-          currentValue: newPrice * position.shares,
-        }));
+        dispatch(
+          updatePositionLivePrice({
+            id: position.id,
+            currentPrice: newPrice,
+            currentValue: newPrice * position.shares,
+          })
+        );
       });
     }
 
@@ -408,7 +403,11 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                                   count: ccCapacity.freeContracts,
                                 })
                               }
-                              onClick={onWriteCoveredCall ? () => onWriteCoveredCall(group.ticker) : undefined}
+                              onClick={
+                                onWriteCoveredCall
+                                  ? () => onWriteCoveredCall(group.ticker)
+                                  : undefined
+                              }
                             />
                           )}
                         </div>
@@ -567,8 +566,7 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                   <div className="border-t border-surface-line dark:border-trading-dark-600 bg-surface dark:bg-trading-dark-900/50">
                     {/* ── Covered calls nested under this stock ── */}
                     {(() => {
-                      const calls =
-                        coveredCallsByTicker?.get(group.ticker.toUpperCase()) ?? [];
+                      const calls = coveredCallsByTicker?.get(group.ticker.toUpperCase()) ?? [];
                       if (calls.length === 0) {
                         return (
                           <div className="px-8 py-4">
@@ -607,8 +605,12 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                                   tickerData={tickerEntry}
                                   stockPrice={stockPrice}
                                   onRoll={onRoll ? (opt) => onRoll(opt as CallOption) : undefined}
-                                  onClose={onClose ? (opt) => onClose(opt as CallOption) : undefined}
-                                  onAssign={onAssign ? (opt) => onAssign(opt as CallOption) : undefined}
+                                  onClose={
+                                    onClose ? (opt) => onClose(opt as CallOption) : undefined
+                                  }
+                                  onAssign={
+                                    onAssign ? (opt) => onAssign(opt as CallOption) : undefined
+                                  }
                                   onClick={onView ? (opt) => onView(opt as CallOption) : undefined}
                                   showActions={true}
                                   collateralType={collateralType}

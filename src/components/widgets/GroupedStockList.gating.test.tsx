@@ -10,8 +10,7 @@ import type { StockPosition, Portfolio } from '../../types';
 
 // The CC opportunity is now shown as a CoveredCallSuggestionBadge (a Target icon pill).
 // We detect it via the translated opportunity message rendered in the tooltip.
-const ccOpportunityText = () =>
-  i18n.t('widgetsA.writeCoveredCallsOpportunity', { count: 1 });
+const ccOpportunityText = () => i18n.t('widgetsA.writeCoveredCallsOpportunity', { count: 1 });
 
 // A coverable lot: 100 shares, no sold calls → computeCoveredCallCapacity allows a CC.
 const stock = (): StockPosition =>
@@ -32,7 +31,7 @@ const stock = (): StockPosition =>
   }) as unknown as StockPosition;
 
 const portfolio = (): Portfolio =>
-  ({ id: 'p1', name: 'Main', hasOptions: true } as unknown as Portfolio);
+  ({ id: 'p1', name: 'Main', hasOptions: true }) as unknown as Portfolio;
 
 function makeStore(unlockMedior: boolean) {
   const store = configureStore({

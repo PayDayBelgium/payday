@@ -14,8 +14,7 @@ export const PMCCStrategy: React.FC = () => {
   const { setPageTitle } = usePageTitle();
   const { pushNavigation } = useNavigation();
   const portfolios = useAppSelector(selectPortfolios);
-  const currency: CurrencyType =
-    portfolios.find((p) => p.name === portfolio)?.currency ?? 'USD';
+  const currency: CurrencyType = portfolios.find((p) => p.name === portfolio)?.currency ?? 'USD';
   const [showInfoCard, setShowInfoCard] = useState(() => {
     const saved = localStorage.getItem('pmcc-show-info');
     return saved !== 'false'; // Default to true if not set

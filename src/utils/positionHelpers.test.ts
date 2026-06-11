@@ -72,8 +72,7 @@ const shortCall = (
  * A short call that is NOT PMCC-eligible: strike ≤ LEAPS strike (80) so the
  * allocator keeps it on the stock parent.
  */
-const stockOnlyCall = (id: string): CallOption =>
-  shortCall(id, 70, 1); // strike 70 < LEAPS strike 80
+const stockOnlyCall = (id: string): CallOption => shortCall(id, 70, 1); // strike 70 < LEAPS strike 80
 
 /** Short put (cash secured put) */
 const shortPut = (id: string, strike = 95): PutOption => ({
@@ -93,8 +92,7 @@ const shortPut = (id: string, strike = 95): PutOption => ({
 });
 
 /** Naked short call (no stock/LEAPS backing it) */
-const nakedCall = (id: string, strike = 130): CallOption =>
-  shortCall(id, strike); // no stock/LEAPS in the test will cover it
+const nakedCall = (id: string, strike = 130): CallOption => shortCall(id, strike); // no stock/LEAPS in the test will cover it
 
 const ticker = (symbol: string, price: number): Ticker => ({
   symbol,
@@ -159,7 +157,7 @@ describe('buildLeapsSection', () => {
     expect(groups[0].assigned.map((c) => c.id)).toContain('cLeaps');
     expect(groups[0].assigned.map((c) => c.id)).not.toContain('cStock');
 
-    expect(sectionIds.has('l1')).toBe(true);    // LEAPS always in
+    expect(sectionIds.has('l1')).toBe(true); // LEAPS always in
     expect(sectionIds.has('cLeaps')).toBe(true); // assigned to LEAPS
     expect(sectionIds.has('cStock')).toBe(false); // assigned to stock → NOT in set
   });
@@ -217,7 +215,11 @@ describe('buildLeapsSection', () => {
   });
 
   it('groups and sectionIds are always in sync (assigned call in group ↔ in sectionIds)', () => {
-    const positions: Position[] = [leaps('l1', 80, 2), shortCall('c1', 110, 1), shortCall('c2', 115, 1)];
+    const positions: Position[] = [
+      leaps('l1', 80, 2),
+      shortCall('c1', 110, 1),
+      shortCall('c2', 115, 1),
+    ];
     const { groups, sectionIds } = buildLeapsSection(positions, [ticker('AAPL', 100)]);
 
     expect(groups).toHaveLength(1);
@@ -259,10 +261,7 @@ describe('buildPortfolioSections', () => {
   it('stock + covered call → call appears in stockGroups[].assigned and in sectionIds', () => {
     const s1 = stock('s1', 100);
     const c1 = shortCall('c1', 110, 1);
-    const { stockGroups, sectionIds } = buildPortfolioSections(
-      [s1, c1],
-      [ticker('AAPL', 100)]
-    );
+    const { stockGroups, sectionIds } = buildPortfolioSections([s1, c1], [ticker('AAPL', 100)]);
 
     expect(stockGroups).toHaveLength(1);
     expect(stockGroups[0].assigned.map((c) => c.id)).toContain('c1');
@@ -341,7 +340,10 @@ describe('buildPortfolioSections', () => {
     );
 
     const knownIds = new Set<string>([
-      ...stockGroups.flatMap((sg) => [...sg.lots.map((l) => l.id), ...sg.assigned.map((c) => c.id)]),
+      ...stockGroups.flatMap((sg) => [
+        ...sg.lots.map((l) => l.id),
+        ...sg.assigned.map((c) => c.id),
+      ]),
       ...leapsGroups.flatMap((lg) => [lg.leap.id, ...lg.assigned.map((c) => c.id)]),
     ]);
 

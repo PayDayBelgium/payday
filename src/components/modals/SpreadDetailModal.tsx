@@ -265,7 +265,9 @@ export const SpreadDetailModal: React.FC<SpreadDetailModalProps> = ({
                     </p>
                   </div>
                   <div className="flex flex-col">
-                    <p className="text-ink-500 dark:text-ink-400 mb-1">{t('modalsA.spreadWidth')}</p>
+                    <p className="text-ink-500 dark:text-ink-400 mb-1">
+                      {t('modalsA.spreadWidth')}
+                    </p>
                     <p className="font-semibold text-base text-ink-900 dark:text-white">
                       ${formatNumber(spreadWidth, 2)}
                     </p>

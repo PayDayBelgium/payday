@@ -184,7 +184,9 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
 
               {/* Total P&L (realized + unrealized) */}
               <div className="text-right">
-                <p className="text-xs text-ink-500 dark:text-ink-400">{t('widgetsA.totalProfit')}</p>
+                <p className="text-xs text-ink-500 dark:text-ink-400">
+                  {t('widgetsA.totalProfit')}
+                </p>
                 {(() => {
                   // Calculate total P&L: realized from closed positions + unrealized from active option
                   let totalPnL = campaign.totalRealizedPnL;
@@ -221,7 +223,9 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
             <>
               {/* Purchase cost - for non-Wheel campaigns */}
               <div className="text-right">
-                <p className="text-xs text-ink-500 dark:text-ink-400">{t('widgetsA.purchaseCost')}</p>
+                <p className="text-xs text-ink-500 dark:text-ink-400">
+                  {t('widgetsA.purchaseCost')}
+                </p>
                 <p className="font-semibold text-ink-900 dark:text-white">
                   {formatCurrency(campaign.root.originalCostBasis, currencySymbol)}
                 </p>
@@ -588,7 +592,8 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
                           <div>{t('widgetsA.colProfitLoss')}</div>
                           <div>{t('widgetsA.colCollateral')}</div>
                           <div></div> {/* Spacer */}
-                          <div className="text-right">{t('widgetsA.colActions')}</div> {/* Actions */}
+                          <div className="text-right">{t('widgetsA.colActions')}</div>{' '}
+                          {/* Actions */}
                         </div>
                       </div>
                       {campaign.activeOptions.map((opt) => {

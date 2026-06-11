@@ -23,7 +23,15 @@ function portfolio(id: string, name = `Portfolio ${id}`): Portfolio {
 }
 
 function event<T extends DomainEvent['type']>(type: T, payload: unknown): DomainEvent {
-  return { id: 'e', seq: 0, type, payload, timestamp: 't', actor: 'a', schemaVersion: 1 } as DomainEvent;
+  return {
+    id: 'e',
+    seq: 0,
+    type,
+    payload,
+    timestamp: 't',
+    actor: 'a',
+    schemaVersion: 1,
+  } as DomainEvent;
 }
 
 // ---------------------------------------------------------------------------
@@ -61,7 +69,10 @@ describe('applyPortfolioEvent', () => {
   it('PortfolioEdited is a no-op for unknown id', () => {
     const p1 = portfolio('p1');
     const initial = [p1];
-    const next = applyPortfolioEvent(initial, event('PortfolioEdited', { portfolio: portfolio('unknown') }));
+    const next = applyPortfolioEvent(
+      initial,
+      event('PortfolioEdited', { portfolio: portfolio('unknown') })
+    );
     expect(next[0]).toBe(p1);
   });
 

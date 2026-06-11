@@ -61,7 +61,10 @@ describe('applyTickerEvent — TickerAdded', () => {
     const t1 = makeTicker('AAPL');
     let tickers = applyTickerEvent([], event('TickerAdded', { ticker: t1 }));
     const before = tickers;
-    tickers = applyTickerEvent(tickers, event('TickerAdded', { ticker: makeTicker('AAPL', { name: 'Different' }) }));
+    tickers = applyTickerEvent(
+      tickers,
+      event('TickerAdded', { ticker: makeTicker('AAPL', { name: 'Different' }) })
+    );
     expect(tickers).toBe(before); // same reference
     expect(tickers).toHaveLength(1);
     expect(tickers[0].name).toBe('AAPL Corp'); // original kept
@@ -81,7 +84,9 @@ describe('applyTickerEvent — TickerUpdated', () => {
     const tickers = [makeTicker('AAPL')];
     const result = applyTickerEvent(
       tickers,
-      event('TickerUpdated', { ticker: { symbol: 'AAPL', name: 'Apple Updated', optionsAvailable: false } })
+      event('TickerUpdated', {
+        ticker: { symbol: 'AAPL', name: 'Apple Updated', optionsAvailable: false },
+      })
     );
     expect(result[0].name).toBe('Apple Updated');
     expect(result[0].optionsAvailable).toBe(false);
@@ -170,10 +175,7 @@ describe('applyTickerEvent — AddedToWatchlist', () => {
   });
 
   it('appends a new ticker as watchlist when symbol does not exist', () => {
-    const result = applyTickerEvent(
-      [],
-      event('AddedToWatchlist', { ticker: makeTicker('AAPL') })
-    );
+    const result = applyTickerEvent([], event('AddedToWatchlist', { ticker: makeTicker('AAPL') }));
     expect(result).toHaveLength(1);
     expect(result[0].symbol).toBe('AAPL');
     expect(result[0].isWatchlist).toBe(true);
@@ -196,19 +198,13 @@ describe('applyTickerEvent — AddedToWatchlist', () => {
 describe('applyTickerEvent — RemovedFromWatchlist', () => {
   it('clears the isWatchlist flag on an existing ticker', () => {
     const tickers = [makeTicker('AAPL', { isWatchlist: true })];
-    const result = applyTickerEvent(
-      tickers,
-      event('RemovedFromWatchlist', { symbol: 'AAPL' })
-    );
+    const result = applyTickerEvent(tickers, event('RemovedFromWatchlist', { symbol: 'AAPL' }));
     expect(result[0].isWatchlist).toBe(false);
   });
 
   it('is a no-op for unknown symbol', () => {
     const tickers = [makeTicker('AAPL', { isWatchlist: true })];
-    const result = applyTickerEvent(
-      tickers,
-      event('RemovedFromWatchlist', { symbol: 'MSFT' })
-    );
+    const result = applyTickerEvent(tickers, event('RemovedFromWatchlist', { symbol: 'MSFT' }));
     expect(result[0].isWatchlist).toBe(true);
     expect(result).toHaveLength(1);
   });
@@ -225,10 +221,7 @@ describe('applyTickerEvent — unrelated events', () => {
 
   it('returns the same reference for strategy events', () => {
     const tickers = [makeTicker('AAPL')];
-    const result = applyTickerEvent(
-      tickers,
-      event('TradingStrategyCreated', { strategy: {} })
-    );
+    const result = applyTickerEvent(tickers, event('TradingStrategyCreated', { strategy: {} }));
     expect(result).toBe(tickers);
   });
 });

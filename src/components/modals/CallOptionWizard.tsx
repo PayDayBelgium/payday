@@ -358,7 +358,8 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
             (p) => p.type === 'call' && (p as CallOption).action === 'sell'
           ) as CallOption[];
           const groupLeaps = groupPositions.filter(
-            (p) => p.type === 'call' && (p as CallOption).action === 'buy' && isLEAPS(p as CallOption)
+            (p) =>
+              p.type === 'call' && (p as CallOption).action === 'buy' && isLEAPS(p as CallOption)
           ) as CallOption[];
           const parent = pickParentForNewShortCall(
             {
@@ -472,7 +473,16 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
         }
       }
     }
-  }, [isOpen, initialAction, initialTicker, initialStep, initialWheelId, initialWheel, initialStrike, initialExpiration]);
+  }, [
+    isOpen,
+    initialAction,
+    initialTicker,
+    initialStep,
+    initialWheelId,
+    initialWheel,
+    initialStrike,
+    initialExpiration,
+  ]);
 
   // Effect to sync contracts when wheel selection changes
   React.useEffect(() => {
@@ -1344,7 +1354,9 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
         resetForm();
       }}
       title={
-        selectedTicker ? `${t('callWizard.title')} · ${selectedTicker.symbol}` : t('callWizard.title')
+        selectedTicker
+          ? `${t('callWizard.title')} · ${selectedTicker.symbol}`
+          : t('callWizard.title')
       }
       steps={steps}
       onComplete={handleComplete}

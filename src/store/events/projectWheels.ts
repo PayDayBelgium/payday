@@ -131,7 +131,9 @@ export function applyWheelEvent(
     case 'WheelClosed': {
       const { id, endDate } = event.payload as WheelClosedPayload;
       const next = wheels.map((w) =>
-        w.id === id ? { ...w, status: 'completed' as const, phase: 'completed' as const, endDate } : w
+        w.id === id
+          ? { ...w, status: 'completed' as const, phase: 'completed' as const, endDate }
+          : w
       );
       return next.some((w, i) => w !== wheels[i]) ? { ...state, wheels: next } : state;
     }
@@ -161,8 +163,7 @@ export function applyWheelEvent(
       // but the index must follow wheel-link changes so a later buyback books
       // to the right wheel (or none).
       const { position } = event.payload as PositionEditedPayload;
-      const wheelId =
-        position.status === 'open' ? asWheelSoldOption(position)?.wheelId : undefined;
+      const wheelId = position.status === 'open' ? asWheelSoldOption(position)?.wheelId : undefined;
       if (openSoldOptions[position.id] === wheelId) return state;
       const nextIndex = wheelId
         ? { ...openSoldOptions, [position.id]: wheelId }
@@ -221,9 +222,7 @@ export function applyWheelEvent(
 
       if (payload.kind === 'put') {
         // Put assigned → stock acquired. Transition wheel phase to 'stock'.
-        const next = wheels.map((w) =>
-          w.id === wheelId ? { ...w, phase: 'stock' as const } : w
-        );
+        const next = wheels.map((w) => (w.id === wheelId ? { ...w, phase: 'stock' as const } : w));
         const nextWheels = next.some((w, i) => w !== wheels[i]) ? next : wheels;
         return nextWheels === wheels && nextIndex === openSoldOptions
           ? state

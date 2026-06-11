@@ -80,7 +80,9 @@ describe('journal entry commands', () => {
     expect(entries[1].id).toBe('e1');
 
     const log = getLog(store.getState());
-    const evt = log.find((e: any) => e.type === 'JournalEntryWritten' && e.payload.entry.id === 'e1');
+    const evt = log.find(
+      (e: any) => e.type === 'JournalEntryWritten' && e.payload.entry.id === 'e1'
+    );
     expect(evt).toBeDefined();
     expect(evt.actor).toBe('alice');
   });

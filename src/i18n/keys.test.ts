@@ -30,14 +30,18 @@ describe('i18n key integrity', () => {
         seen.add(id);
         // exists() does not account for i18next plural suffixes, so accept a key
         // when its _one/_other plural variants are present.
-        const resolves = inst.exists(key) || inst.exists(`${key}_one`) || inst.exists(`${key}_other`);
+        const resolves =
+          inst.exists(key) || inst.exists(`${key}_one`) || inst.exists(`${key}_other`);
         if (!resolves) missing.push({ file: path.replace('../', 'src/'), key });
       }
     }
 
     if (missing.length) {
       // eslint-disable-next-line no-console
-      console.log(`MISSING i18n KEYS (${missing.length}):\n` + missing.map((x) => `  ${x.key}  (${x.file})`).join('\n'));
+      console.log(
+        `MISSING i18n KEYS (${missing.length}):\n` +
+          missing.map((x) => `  ${x.key}  (${x.file})`).join('\n')
+      );
     }
     expect(missing).toEqual([]);
   });

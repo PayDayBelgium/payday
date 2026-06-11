@@ -23,9 +23,8 @@ export const updateStrategy =
 /**
  * Delete a trading strategy by id. Emits TradingStrategyDeleted.
  */
-export const deleteStrategy =
-  (id: string, timestamp: string) => (dispatch: AppDispatch) =>
-    dispatch(commit([createEvent('TradingStrategyDeleted', { id }, timestamp)]));
+export const deleteStrategy = (id: string, timestamp: string) => (dispatch: AppDispatch) =>
+  dispatch(commit([createEvent('TradingStrategyDeleted', { id }, timestamp)]));
 
 /**
  * Link a position to a strategy. Idempotent (fold ignores duplicate links).
@@ -43,9 +42,7 @@ export const linkPositionToStrategy =
 export const unlinkPositionFromStrategy =
   (strategyId: string, positionId: string, timestamp: string) => (dispatch: AppDispatch) =>
     dispatch(
-      commit([
-        createEvent('PositionUnlinkedFromStrategy', { strategyId, positionId }, timestamp),
-      ])
+      commit([createEvent('PositionUnlinkedFromStrategy', { strategyId, positionId }, timestamp)])
     );
 
 /**
@@ -53,18 +50,14 @@ export const unlinkPositionFromStrategy =
  */
 export const setStrategyPositions =
   (strategyId: string, positionIds: string[], timestamp: string) => (dispatch: AppDispatch) =>
-    dispatch(
-      commit([createEvent('StrategyPositionsSet', { strategyId, positionIds }, timestamp)])
-    );
+    dispatch(commit([createEvent('StrategyPositionsSet', { strategyId, positionIds }, timestamp)]));
 
 /**
  * Remove all strategies belonging to a portfolio. Emits PortfolioStrategiesCleared.
  */
 export const clearPortfolioStrategies =
   (portfolio: string, timestamp: string) => (dispatch: AppDispatch) =>
-    dispatch(
-      commit([createEvent('PortfolioStrategiesCleared', { portfolio }, timestamp)])
-    );
+    dispatch(commit([createEvent('PortfolioStrategiesCleared', { portfolio }, timestamp)]));
 
 /**
  * Create a new strategy rule. The caller is responsible for constructing the full
@@ -84,13 +77,11 @@ export const updateStrategyRule =
 /**
  * Delete a strategy rule by id. Emits StrategyRuleDeleted.
  */
-export const deleteStrategyRule =
-  (id: string, timestamp: string) => (dispatch: AppDispatch) =>
-    dispatch(commit([createEvent('StrategyRuleDeleted', { id }, timestamp)]));
+export const deleteStrategyRule = (id: string, timestamp: string) => (dispatch: AppDispatch) =>
+  dispatch(commit([createEvent('StrategyRuleDeleted', { id }, timestamp)]));
 
 /**
  * Toggle a strategy rule's enabled flag. Emits StrategyRuleToggled.
  */
-export const toggleStrategyRule =
-  (id: string, timestamp: string) => (dispatch: AppDispatch) =>
-    dispatch(commit([createEvent('StrategyRuleToggled', { id }, timestamp)]));
+export const toggleStrategyRule = (id: string, timestamp: string) => (dispatch: AppDispatch) =>
+  dispatch(commit([createEvent('StrategyRuleToggled', { id }, timestamp)]));

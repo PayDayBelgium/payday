@@ -264,7 +264,10 @@ describe('positionValueMiddleware', () => {
     store.dispatch(openPosition(shortPut()));
     assertCacheParity();
     store.dispatch(
-      appendEvents({ events: [makeEvent('e-stock', 2, 'PositionOpened', { position: stockPos })], positionsBefore: [] })
+      appendEvents({
+        events: [makeEvent('e-stock', 2, 'PositionOpened', { position: stockPos })],
+        positionsBefore: [],
+      })
     );
     assertCacheParity();
 
@@ -313,7 +316,9 @@ describe('positionValueMiddleware', () => {
 
     // 4. More ticks after the ledger change.
     store.dispatch(
-      updateMultiplePositionValues([{ id: 'stock1', currentValue: 30 * 49.99, currentPrice: 49.99 }])
+      updateMultiplePositionValues([
+        { id: 'stock1', currentValue: 30 * 49.99, currentPrice: 49.99 },
+      ])
     );
     assertCacheParity();
     store.dispatch(updatePositionValue({ id: 'pos1', currentValue: -180.25 }));

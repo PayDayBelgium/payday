@@ -68,9 +68,7 @@ export function applyJournalEvent(state: JournalState, event: DomainEvent): Jour
       const { id, completedAt } = event.payload as GoalCompletedPayload;
       return {
         ...state,
-        goals: state.goals.map((g) =>
-          g.id === id ? { ...g, completed: true, completedAt } : g
-        ),
+        goals: state.goals.map((g) => (g.id === id ? { ...g, completed: true, completedAt } : g)),
       };
     }
 

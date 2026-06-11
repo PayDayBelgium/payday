@@ -289,7 +289,10 @@ describe('applyStrategiesEvent — cross-slice', () => {
       strategies: [makeStrategy('s1')],
       strategyRules: [],
     };
-    const next = applyStrategiesEvent(initial, event('StrategyRuleCreated', { rule: makeRule('r1') }));
+    const next = applyStrategiesEvent(
+      initial,
+      event('StrategyRuleCreated', { rule: makeRule('r1') })
+    );
     expect(next.strategies).toBe(initial.strategies);
   });
 });

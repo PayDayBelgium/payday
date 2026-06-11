@@ -36,7 +36,10 @@ describe('applyRuleEvent', () => {
 
   it('TradingRuleUpdated replaces the matching rule by id', () => {
     const initial = [rule('r1'), rule('r2')];
-    const updated = rule('r1', { name: 'Updated name', parameters: { days: 7, severity: 'critical' } });
+    const updated = rule('r1', {
+      name: 'Updated name',
+      parameters: { days: 7, severity: 'critical' },
+    });
     const next = applyRuleEvent(initial, event('TradingRuleUpdated', { rule: updated }));
     expect(next).toHaveLength(2);
     expect(next[0].name).toBe('Updated name');

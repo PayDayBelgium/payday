@@ -10,9 +10,24 @@ import type { DomainEvent } from './types';
 
 const opened = (seq: number, id: string): DomainEvent =>
   ({
-    id: `e${seq}`, seq, type: 'PositionOpened',
-    payload: { position: { id, type: 'stock', ticker: 'AAPL', portfolio: 'Main', status: 'open', openDate: '2026-01-01', shares: 1, purchasePrice: 1 } },
-    timestamp: 't', actor: 'a', schemaVersion: 1,
+    id: `e${seq}`,
+    seq,
+    type: 'PositionOpened',
+    payload: {
+      position: {
+        id,
+        type: 'stock',
+        ticker: 'AAPL',
+        portfolio: 'Main',
+        status: 'open',
+        openDate: '2026-01-01',
+        shares: 1,
+        purchasePrice: 1,
+      },
+    },
+    timestamp: 't',
+    actor: 'a',
+    schemaVersion: 1,
   }) as DomainEvent;
 
 describe('bootstrapFromEventStore', () => {

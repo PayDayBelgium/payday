@@ -24,10 +24,7 @@ import { BackupWarning } from '../../components/widgets/BackupWarning';
 import { PortfolioValueChart } from '../../components/widgets/PortfolioValueChart';
 import { MultiPortfolioChart } from '../../components/widgets/MultiPortfolioChart';
 import { PortfolioOverview } from '../../components/widgets/PortfolioOverview';
-import {
-  selectPortfolioSummaries,
-  selectEquitySeries,
-} from '../../store/slices/portfoliosSlice';
+import { selectPortfolioSummaries, selectEquitySeries } from '../../store/slices/portfoliosSlice';
 import { formatCurrency } from '../../utils/numberFormat';
 import logo from '../../assets/app/logo.png';
 

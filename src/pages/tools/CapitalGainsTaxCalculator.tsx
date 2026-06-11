@@ -43,7 +43,9 @@ export const CapitalGainsTaxCalculator: React.FC = () => {
         <button
           onClick={() => setShowInfo(!showInfo)}
           className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-[var(--line)] text-sm text-ink-700 hover:bg-surface-subtle transition-colors"
-          title={showInfo ? t('toolsPages.cgt.hideExplanation') : t('toolsPages.cgt.showExplanation')}
+          title={
+            showInfo ? t('toolsPages.cgt.hideExplanation') : t('toolsPages.cgt.showExplanation')
+          }
         >
           <Info
             className={`w-4 h-4 ${showInfo ? 'text-caution-600 dark:text-caution-500' : 'text-ink-400'}`}

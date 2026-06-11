@@ -8,7 +8,6 @@ import type {
   CallOption,
   PutOption,
   Ticker,
-
   CurrencyType,
   UserLevel,
 } from '../../types';
@@ -312,7 +311,6 @@ export const executeReadTool = (name: string, getState: () => RootState): string
 // ---------------------------------------------------------------------------
 let seq = 0;
 const uid = (prefix: string): string => `${prefix}-${Date.now()}-${++seq}`;
-
 
 const ensureTickerInStore = (
   getState: () => RootState,
