@@ -91,9 +91,7 @@ export const Analytics: React.FC = () => {
           <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
             {t('pagesA.analytics.riskTitle')}
           </h3>
-          <p className="text-ink-600 dark:text-ink-400">
-            {t('pagesA.analytics.riskComingSoon')}
-          </p>
+          <p className="text-ink-600 dark:text-ink-400">{t('pagesA.analytics.riskComingSoon')}</p>
         </div>
       )}
     </div>

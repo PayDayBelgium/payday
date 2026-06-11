@@ -177,10 +177,7 @@ describe('sanitizeWebSocketConfig', () => {
 
   it('rejects out-of-range or non-integer maxReconnectAttempts', () => {
     for (const bad of [-1, 101, 2.5, NaN, '10']) {
-      const { config, rejected } = sanitizeWebSocketConfig(
-        { maxReconnectAttempts: bad },
-        fallback
-      );
+      const { config, rejected } = sanitizeWebSocketConfig({ maxReconnectAttempts: bad }, fallback);
       expect(config.maxReconnectAttempts).toBe(fallback.maxReconnectAttempts);
       expect(rejected).toEqual(['maxReconnectAttempts']);
     }

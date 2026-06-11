@@ -21,7 +21,13 @@ import wheelsReducer from '../slices/wheelsSlice';
 import tickersReducer from '../slices/tickersSlice';
 import { positionValueMiddleware } from '../middleware/positionValueMiddleware';
 import { createPortfolio } from '../commands/portfolioCommands';
-import { deposit, withdraw, chargeFee, recordDividend, adjustValue } from '../commands/cashCommands';
+import {
+  deposit,
+  withdraw,
+  chargeFee,
+  recordDividend,
+  adjustValue,
+} from '../commands/cashCommands';
 import { openPosition, closePosition } from '../commands/positionCommands';
 import { startWheelCampaign } from '../commands/wheelCommands';
 import { rollOption, recordAssignment } from '../commands/rollCommands';
@@ -42,8 +48,7 @@ function makeStore() {
       wheels: wheelsReducer,
       tickers: tickersReducer,
     },
-    middleware: (gdm) =>
-      gdm({ serializableCheck: false }).concat(positionValueMiddleware),
+    middleware: (gdm) => gdm({ serializableCheck: false }).concat(positionValueMiddleware),
   });
   (store.dispatch as AppDispatch)(setActor('test'));
   return store;
@@ -56,12 +61,12 @@ type TestStore = ReturnType<typeof makeStore>;
 // ---------------------------------------------------------------------------
 
 const sel = {
-  positions:    (s: TestStore) => s.getState().positions.positions,
+  positions: (s: TestStore) => s.getState().positions.positions,
   transactions: (s: TestStore) => s.getState().portfolios.transactions,
-  portfolios:   (s: TestStore) => s.getState().portfolios.portfolios,
-  wheels:       (s: TestStore) => s.getState().wheels.wheels,
-  trades:       (s: TestStore) => s.getState().trades.trades,
-  portfolio:    (s: TestStore, name: string) =>
+  portfolios: (s: TestStore) => s.getState().portfolios.portfolios,
+  wheels: (s: TestStore) => s.getState().wheels.wheels,
+  trades: (s: TestStore) => s.getState().trades.trades,
+  portfolio: (s: TestStore, name: string) =>
     s.getState().portfolios.portfolios.find((p) => p.name === name),
 };
 
@@ -144,7 +149,7 @@ describe('Scenario 1: open + close a stock', () => {
       name: 'Apple Inc.',
       portfolio: 'TestPF',
       shares: 100,
-      costBasis: 5000,       // 100 * 50
+      costBasis: 5000, // 100 * 50
       purchasePrice: 50,
       currentPrice: 50,
       currentValue: 5000,
@@ -243,7 +248,7 @@ describe('Scenario 2: sell a put (CSP) — premium_collected ledger + neutral po
       expiration: '2026-07-18',
       contracts: 1,
       premium: 2,
-      costBasis: -200,       // -(2 * 1 * 100)
+      costBasis: -200, // -(2 * 1 * 100)
       currentValue: -200,
       status: 'open',
       openDate: '2026-06-02',
@@ -255,7 +260,7 @@ describe('Scenario 2: sell a put (CSP) — premium_collected ledger + neutral po
     const txns = sel.transactions(store);
     expect(txns).toHaveLength(1);
     expect(txns[0].type).toBe('premium_collected');
-    expect(txns[0].amount).toBe(200);  // |costBasis|
+    expect(txns[0].amount).toBe(200); // |costBasis|
     expect(txns[0].portfolio).toBe('TestPF');
     expect(txns[0].relatedPositionId).toBe('put-aapl-1');
   });
@@ -312,7 +317,7 @@ describe('Scenario 3: roll a short option', () => {
       expiration: '2026-07-18',
       contracts: 1,
       premium: 3,
-      costBasis: -300,        // -(3 * 1 * 100)
+      costBasis: -300, // -(3 * 1 * 100)
       currentValue: -300,
       status: 'open',
       openDate: '2026-06-02',
@@ -357,7 +362,7 @@ describe('Scenario 3: roll a short option', () => {
     const newPos = openPositions[0] as CallOption;
     expect(newPos.type).toBe('call');
     expect(newPos.action).toBe('sell');
-    expect(newPos.costBasis).toBe(-250);         // -(2.5 * 1 * 100)
+    expect(newPos.costBasis).toBe(-250); // -(2.5 * 1 * 100)
     expect(newPos.currentValue).toBe(-250);
     expect(newPos.strike).toBe(57);
     expect(newPos.expiration).toBe('2026-08-15');
@@ -369,11 +374,11 @@ describe('Scenario 3: roll a short option', () => {
     // PositionOpened → premium_collected +300
     // OptionRolled → option_roll +150
     const premiumTxns = txns.filter((t) => t.type === 'premium_collected');
-    const rollTxns    = txns.filter((t) => t.type === 'option_roll');
-    const closeTxns   = txns.filter((t) => t.type === 'position_sell');
-    expect(premiumTxns).toHaveLength(1);  // from PositionOpened
-    expect(rollTxns).toHaveLength(1);     // from OptionRolled — single entry
-    expect(closeTxns).toHaveLength(0);    // no double-counted close
+    const rollTxns = txns.filter((t) => t.type === 'option_roll');
+    const closeTxns = txns.filter((t) => t.type === 'position_sell');
+    expect(premiumTxns).toHaveLength(1); // from PositionOpened
+    expect(rollTxns).toHaveLength(1); // from OptionRolled — single entry
+    expect(closeTxns).toHaveLength(0); // no double-counted close
     expect(rollTxns[0].amount).toBe(150);
     expect(rollTxns[0].portfolio).toBe('TestPF');
     expect(rollTxns[0].relatedPositionId).toBe(newPositionId);
@@ -453,7 +458,7 @@ describe('Scenario 3: roll a short option', () => {
 describe('Scenario 4: put assignment → stock (wheel)', () => {
   let store: TestStore;
   const WHEEL_ID = 'wheel-1';
-  const PUT_ID   = 'put-aapl-assign';
+  const PUT_ID = 'put-aapl-assign';
 
   beforeEach(() => {
     store = makeStore();
@@ -482,10 +487,7 @@ describe('Scenario 4: put assignment → stock (wheel)', () => {
     dispatch(openPosition(shortPut, T1));
 
     dispatch(
-      recordAssignment(
-        { optionId: PUT_ID, assignmentDate: '2026-07-18', assignmentPrice: 48 },
-        T2
-      )
+      recordAssignment({ optionId: PUT_ID, assignmentDate: '2026-07-18', assignmentPrice: 48 }, T2)
     );
   });
 
@@ -571,9 +573,9 @@ describe('Scenario 4: put assignment → stock (wheel)', () => {
 
 describe('Scenario 5: call assignment full (wheel)', () => {
   let store: TestStore;
-  const WHEEL_ID   = 'wheel-5';
-  const STOCK_ID   = 'stock-aapl-5';
-  const CALL_ID    = 'call-aapl-5';
+  const WHEEL_ID = 'wheel-5';
+  const STOCK_ID = 'stock-aapl-5';
+  const CALL_ID = 'call-aapl-5';
 
   beforeEach(() => {
     store = makeStore();
@@ -618,7 +620,7 @@ describe('Scenario 5: call assignment full (wheel)', () => {
       expiration: '2026-07-18',
       contracts: 1,
       premium: 1,
-      costBasis: -100,        // -(1 * 1 * 100)
+      costBasis: -100, // -(1 * 1 * 100)
       currentValue: -100,
       status: 'open',
       openDate: '2026-06-02',
@@ -627,10 +629,7 @@ describe('Scenario 5: call assignment full (wheel)', () => {
     dispatch(openPosition(shortCall, T2));
 
     dispatch(
-      recordAssignment(
-        { optionId: CALL_ID, assignmentDate: '2026-07-18', assignmentPrice: 56 },
-        T3
-      )
+      recordAssignment({ optionId: CALL_ID, assignmentDate: '2026-07-18', assignmentPrice: 56 }, T3)
     );
   });
 
@@ -645,7 +644,7 @@ describe('Scenario 5: call assignment full (wheel)', () => {
     const positions = sel.positions(store);
     const stock = positions.find((p) => p.id === STOCK_ID);
     expect(stock?.status).toBe('closed');
-    expect(stock?.realizedPnL).toBe(700);  // 5500 - 4800
+    expect(stock?.realizedPnL).toBe(700); // 5500 - 4800
     expect(stock?.closePrice).toBe(55);
   });
 
@@ -670,8 +669,10 @@ describe('Scenario 5: call assignment full (wheel)', () => {
 
   it('two trades created: option trade + stock trade', () => {
     const trades = sel.trades(store);
-    const optionTrade = trades.find((t) => t.strategy.includes('Call') || t.strategy.includes('call'));
-    const stockTrade  = trades.find((t) => t.strategy === 'Aandelen');
+    const optionTrade = trades.find(
+      (t) => t.strategy.includes('Call') || t.strategy.includes('call')
+    );
+    const stockTrade = trades.find((t) => t.strategy === 'Aandelen');
     expect(optionTrade).toBeDefined();
     expect(stockTrade).toBeDefined();
     expect(trades).toHaveLength(2);
@@ -719,21 +720,16 @@ describe('Scenario 5: call assignment full (wheel)', () => {
 
 describe('Scenario 6: call assignment partial (200 shares, 1-contract call)', () => {
   let store: TestStore;
-  const WHEEL_ID   = 'wheel-6';
-  const STOCK_ID   = 'stock-aapl-6';
-  const CALL_ID    = 'call-aapl-6';
+  const WHEEL_ID = 'wheel-6';
+  const STOCK_ID = 'stock-aapl-6';
+  const CALL_ID = 'call-aapl-6';
 
   beforeEach(() => {
     store = makeStore();
     const dispatch = store.dispatch as AppDispatch;
 
     dispatch(createPortfolio(makePortfolio(), T0));
-    dispatch(
-      startWheelCampaign(
-        makeWheel({ id: WHEEL_ID, ticker: 'AAPL', phase: 'stock' }),
-        T0
-      )
-    );
+    dispatch(startWheelCampaign(makeWheel({ id: WHEEL_ID, ticker: 'AAPL', phase: 'stock' }), T0));
 
     const stock: StockPosition = {
       id: STOCK_ID,
@@ -742,10 +738,10 @@ describe('Scenario 6: call assignment partial (200 shares, 1-contract call)', ()
       name: 'Apple Inc.',
       portfolio: 'TestPF',
       shares: 200,
-      costBasis: 9600,           // 200 * 48
+      costBasis: 9600, // 200 * 48
       purchasePrice: 48,
       currentPrice: 54,
-      currentValue: 10800,       // 200 * 54
+      currentValue: 10800, // 200 * 54
       optionsSupported: true,
       status: 'open',
       openDate: '2026-05-01',
@@ -773,10 +769,7 @@ describe('Scenario 6: call assignment partial (200 shares, 1-contract call)', ()
     dispatch(openPosition(shortCall, T2));
 
     dispatch(
-      recordAssignment(
-        { optionId: CALL_ID, assignmentDate: '2026-07-18', assignmentPrice: 56 },
-        T3
-      )
+      recordAssignment({ optionId: CALL_ID, assignmentDate: '2026-07-18', assignmentPrice: 56 }, T3)
     );
   });
 
@@ -821,8 +814,8 @@ describe('Scenario 6: call assignment partial (200 shares, 1-contract call)', ()
     const stkTrade = trades.find((t) => t.id.endsWith('-stock'));
     expect(optTrade).toBeDefined();
     expect(stkTrade).toBeDefined();
-    expect(stkTrade!.quantity).toBe(100);             // 1 contract × 100 shares
-    expect(stkTrade!.realizedPnL).toBe(700);          // strike(55)×100 − avgCost(48)×100
+    expect(stkTrade!.quantity).toBe(100); // 1 contract × 100 shares
+    expect(stkTrade!.realizedPnL).toBe(700); // strike(55)×100 − avgCost(48)×100
     expect(stkTrade!.ticker).toBe('AAPL');
   });
 
@@ -854,7 +847,7 @@ describe('Scenario 7: cash events', () => {
   beforeEach(() => {
     store = makeStore();
     const dispatch = store.dispatch as AppDispatch;
-    dispatch(createPortfolio(makePortfolio(), T0));  // initialCapital = 10000
+    dispatch(createPortfolio(makePortfolio(), T0)); // initialCapital = 10000
   });
 
   it('deposit +500 → currentValue = 10500', () => {
@@ -880,10 +873,10 @@ describe('Scenario 7: cash events', () => {
 
     const txns = sel.transactions(store);
     const feeTxn = txns.find((t) => t.type === 'fee');
-    expect(feeTxn?.amount).toBe(-25);  // ledger stores as negative
+    expect(feeTxn?.amount).toBe(-25); // ledger stores as negative
 
     const pf = sel.portfolio(store, 'TestPF');
-    expect(pf?.currentValue).toBe(9975);  // 10000 + (-25)
+    expect(pf?.currentValue).toBe(9975); // 10000 + (-25)
   });
 
   it('dividend +150 → currentValue = 10150 (dividend now INCLUDED — cash bug fix)', () => {

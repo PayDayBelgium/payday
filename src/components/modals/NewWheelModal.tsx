@@ -147,10 +147,13 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({ isOpen, onClose, p
       const stock = existingPositions.stocks.find((p) => p.id === selectedPositionId);
       if (stock) {
         dispatch(
-          editPosition({
-            ...stock,
-            wheelId,
-          } as Position, new Date().toISOString())
+          editPosition(
+            {
+              ...stock,
+              wheelId,
+            } as Position,
+            new Date().toISOString()
+          )
         );
       }
     } else if (startOption === 'existing-csp' && selectedPositionId) {
@@ -158,10 +161,13 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({ isOpen, onClose, p
       const csp = existingPositions.csps.find((p) => p.id === selectedPositionId);
       if (csp) {
         dispatch(
-          editPosition({
-            ...csp,
-            wheelId,
-          } as Position, new Date().toISOString())
+          editPosition(
+            {
+              ...csp,
+              wheelId,
+            } as Position,
+            new Date().toISOString()
+          )
         );
       }
     }

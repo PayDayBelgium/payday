@@ -379,7 +379,9 @@ const Quiz: React.FC<QuizProps> = ({ quiz, onComplete }) => {
           <p
             className={`text-sm ${isCorrect ? 'text-positive-700 dark:text-positive-500' : 'text-caution-600 dark:text-amber-200'}`}
           >
-            <strong>{isCorrect ? t('learnFeat.quizCorrect') : t('learnFeat.quizExplanation')}</strong>{' '}
+            <strong>
+              {isCorrect ? t('learnFeat.quizCorrect') : t('learnFeat.quizExplanation')}
+            </strong>{' '}
             {question.explanation}
           </p>
         </div>

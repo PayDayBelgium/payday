@@ -75,9 +75,7 @@ describe('priceWebSocketService.updateConfig', () => {
   it('returns false and keeps the old value for an invalid reconnectInterval', () => {
     const accepted = priceWebSocketService.updateConfig({ reconnectInterval: 1 });
     expect(accepted).toBe(false);
-    expect(priceWebSocketService.getConfig().reconnectInterval).toBe(
-      DEFAULTS.reconnectInterval
-    );
+    expect(priceWebSocketService.getConfig().reconnectInterval).toBe(DEFAULTS.reconnectInterval);
   });
 
   it('returns true and persists a valid config', () => {

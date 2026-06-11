@@ -109,8 +109,7 @@ export const TickerAutocomplete: React.FC<TickerAutocompleteProps> = ({
       {/* Ticker Input with Autocomplete */}
       <div ref={wrapperRef} className="relative">
         <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-1">
-          {t('compCommon.tickerSymbol')}{' '}
-          {required && <span className="text-negative-600">*</span>}
+          {t('compCommon.tickerSymbol')} {required && <span className="text-negative-600">*</span>}
         </label>
         <div className="relative">
           <input

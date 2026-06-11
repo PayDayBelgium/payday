@@ -669,7 +669,9 @@ export const PnLCurve: React.FC<PnLCurveProps> = ({
               className="w-8 h-0.5 bg-ink-600 dark:bg-purple-400"
               style={{ borderTop: '2px dashed' }}
             />
-            <span className="text-ink-600 dark:text-ink-400">{t('widgetsB.currentPriceLegend')}</span>
+            <span className="text-ink-600 dark:text-ink-400">
+              {t('widgetsB.currentPriceLegend')}
+            </span>
           </div>
         )}
         <div className="flex items-center gap-2">

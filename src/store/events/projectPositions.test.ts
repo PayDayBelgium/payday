@@ -34,7 +34,15 @@ const option = (id: string, portfolio = 'Main'): Position =>
   }) as unknown as Position;
 
 function event<T extends DomainEvent['type']>(type: T, payload: any): DomainEvent {
-  return { id: 'e', seq: 0, type, payload, timestamp: 't', actor: 'a', schemaVersion: 1 } as DomainEvent;
+  return {
+    id: 'e',
+    seq: 0,
+    type,
+    payload,
+    timestamp: 't',
+    actor: 'a',
+    schemaVersion: 1,
+  } as DomainEvent;
 }
 
 describe('applyPositionEvent', () => {
@@ -62,7 +70,10 @@ describe('applyPositionEvent', () => {
   });
 
   it('PositionsPortfolioRenamed rewrites the portfolio key', () => {
-    const opened = applyPositionEvent([], event('PositionOpened', { position: stock('p1', 'Old') }));
+    const opened = applyPositionEvent(
+      [],
+      event('PositionOpened', { position: stock('p1', 'Old') })
+    );
     const next = applyPositionEvent(
       opened,
       event('PositionsPortfolioRenamed', { oldName: 'Old', newName: 'New' })
@@ -83,7 +94,10 @@ describe('applyPositionEvent', () => {
   });
 
   it('PortfolioRenamed is a no-op when no position matches oldName', () => {
-    const opened = applyPositionEvent([], event('PositionOpened', { position: stock('p1', 'Main') }));
+    const opened = applyPositionEvent(
+      [],
+      event('PositionOpened', { position: stock('p1', 'Main') })
+    );
     const next = applyPositionEvent(
       opened,
       event('PortfolioRenamed', { oldName: 'DoesNotExist', newName: 'New' })
@@ -336,9 +350,18 @@ describe('applyPositionEvent', () => {
         premiumReceived: 200,
         stockClose: { fullClose: true, closePrice: 110, stockRealizedPnL: 100 }, // legacy — ignored on new path
         lotCloses: [
-          { stockId: 'lot1', fullClose: true, sharesSold: 99, closePrice: 110, lotCostBasisForShares: 9900 },
           {
-            stockId: 'lot2', fullClose: false, sharesSold: 1, closePrice: 110,
+            stockId: 'lot1',
+            fullClose: true,
+            sharesSold: 99,
+            closePrice: 110,
+            lotCostBasisForShares: 9900,
+          },
+          {
+            stockId: 'lot2',
+            fullClose: false,
+            sharesSold: 1,
+            closePrice: 110,
             lotCostBasisForShares: 110,
             remainingShares: 49,
             remainingCostBasis: 110 * 49,
@@ -382,9 +405,19 @@ describe('applyPositionEvent', () => {
   it('OptionAssigned call new-path: total shares removed is exactly sharesSold', () => {
     // 3 lots: 40+40+40 = 120 shares; assign 100 → 40+40+20 removed, 20 remaining in lot3
     const makeLot = (id: string, shares: number): Position =>
-      ({ ...stock(id), shares, costBasis: shares * 100, currentValue: shares * 110 }) as unknown as Position;
+      ({
+        ...stock(id),
+        shares,
+        costBasis: shares * 100,
+        currentValue: shares * 110,
+      }) as unknown as Position;
 
-    const initialPositions = [option('opt1'), makeLot('l1', 40), makeLot('l2', 40), makeLot('l3', 40)];
+    const initialPositions = [
+      option('opt1'),
+      makeLot('l1', 40),
+      makeLot('l2', 40),
+      makeLot('l3', 40),
+    ];
 
     const next = applyPositionEvent(
       initialPositions,
@@ -399,9 +432,30 @@ describe('applyPositionEvent', () => {
         premiumReceived: 200,
         stockClose: { fullClose: true, closePrice: 105, stockRealizedPnL: 500 }, // legacy
         lotCloses: [
-          { stockId: 'l1', fullClose: true, sharesSold: 40, closePrice: 105, lotCostBasisForShares: 4000 },
-          { stockId: 'l2', fullClose: true, sharesSold: 40, closePrice: 105, lotCostBasisForShares: 4000 },
-          { stockId: 'l3', fullClose: false, sharesSold: 20, closePrice: 105, lotCostBasisForShares: 2000, remainingShares: 20, remainingCostBasis: 2000, remainingCurrentValue: 2200 },
+          {
+            stockId: 'l1',
+            fullClose: true,
+            sharesSold: 40,
+            closePrice: 105,
+            lotCostBasisForShares: 4000,
+          },
+          {
+            stockId: 'l2',
+            fullClose: true,
+            sharesSold: 40,
+            closePrice: 105,
+            lotCostBasisForShares: 4000,
+          },
+          {
+            stockId: 'l3',
+            fullClose: false,
+            sharesSold: 20,
+            closePrice: 105,
+            lotCostBasisForShares: 2000,
+            remainingShares: 20,
+            remainingCostBasis: 2000,
+            remainingCurrentValue: 2200,
+          },
         ],
         sharesSold: 100,
         stockRealizedPnL: 500,

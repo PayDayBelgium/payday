@@ -17,8 +17,7 @@ export const modalsA = {
     contractsToClose: 'Number of contracts to Close *',
     contractsPlaceholderAll: '{{total}} (all)',
     contractsOf: '{{closing}} of {{total}} contracts (= {{shares}} shares)',
-    leaveEmptyContracts:
-      'Leave empty to close all {{total}} contracts (= {{shares}} shares)',
+    leaveEmptyContracts: 'Leave empty to close all {{total}} contracts (= {{shares}} shares)',
     closeSpreadPremium: 'Close Premium per share *',
     sellPremiumLabel: 'Sale Premium per share *',
     buybackPremiumLabel: 'Buyback Premium per share *',
@@ -37,13 +36,10 @@ export const modalsA = {
     cancel: 'Cancel',
 
     // AssignmentModal
-    putBuyDescription:
-      'You buy {{shares}} shares {{ticker}} at ${{strike}} per share',
-    callSellDescription:
-      'You sell {{shares}} shares {{ticker}} at ${{strike}} per share',
+    putBuyDescription: 'You buy {{shares}} shares {{ticker}} at ${{strike}} per share',
+    callSellDescription: 'You sell {{shares}} shares {{ticker}} at ${{strike}} per share',
     assignment: 'Assignment',
-    optionClosedAddedRemoved:
-      'The option is closed and the shares are {{action}} your portfolio.',
+    optionClosedAddedRemoved: 'The option is closed and the shares are {{action}} your portfolio.',
     addedTo: 'added to',
     removedFrom: 'removed from',
     positionDetails: 'Position Details',
@@ -78,15 +74,13 @@ export const modalsA = {
     rollIntro:
       'A roll is the simultaneous <0>closing</0> of your current option position and the <1>opening</1> of a new position. This may seem like a new term, but it is really just closing and opening in one move.',
     rollInTime: 'Rolling in time:',
-    rollInTimeDesc:
-      'Move to a later expiration to buy more time (e.g. from November to December).',
+    rollInTimeDesc: 'Move to a later expiration to buy more time (e.g. from November to December).',
     rollForPremium: 'Rolling for premium:',
     rollForPremiumDesc:
       'Open a new position with the same or a different strike for extra premium (can be for credit or debit).',
     rollUpDown: 'Rolling up/down:',
     rollUpDownDesc: 'Change the strike price to adjust your position to the market.',
-    rollTip:
-      'Tip: A credit roll means you receive money, a debit roll means you pay.',
+    rollTip: 'Tip: A credit roll means you receive money, a debit roll means you pay.',
     currentPosition: 'Current Position',
     expiration: 'Expiration:',
     premiumLabel: 'Premium:',
@@ -118,14 +112,11 @@ export const modalsA = {
     spreadRollIntro:
       'With a spread roll you close both legs of your spread and simultaneously open a new spread. You typically do this to buy more time or to adjust your strikes to the market.',
     rollToLaterExpiration: 'Roll to later expiration:',
-    rollToLaterExpirationDesc:
-      'Move both legs to a later date to manage your position.',
+    rollToLaterExpirationDesc: 'Move both legs to a later date to manage your position.',
     sameWidth: 'Same width:',
-    sameWidthDesc:
-      'Usually keep the same spread width for consistent risk/reward.',
+    sameWidthDesc: 'Usually keep the same spread width for consistent risk/reward.',
     strikeAdjustment: 'Strike adjustment:',
-    strikeAdjustmentDesc:
-      'Adjust the strikes if the underlying stock has moved significantly.',
+    strikeAdjustmentDesc: 'Adjust the strikes if the underlying stock has moved significantly.',
     closePremium: 'Close Premium',
     newStrike: 'New Strike',
     newExp: 'New Exp',
@@ -184,8 +175,7 @@ export const modalsA = {
     currentPremium: 'Current Premium',
     difference: 'Difference',
     collateralCashReserved: 'Collateral (Cash Reserved)',
-    cashAvailableForAssignment:
-      'This cash must be available for a possible assignment',
+    cashAvailableForAssignment: 'This cash must be available for a possible assignment',
     numberOfShares: 'Number of Shares',
     purchasePrice: 'Purchase price',
     perShareSuffix: 'per share',
@@ -198,8 +188,7 @@ export const modalsA = {
     yes: 'Yes',
     no: 'No',
     notesComment: 'Notes / Comments',
-    positionNotesPlaceholder:
-      'Add notes about this position, strategy, goals, etc...',
+    positionNotesPlaceholder: 'Add notes about this position, strategy, goals, etc...',
     openedOn: 'Opened on',
     closedOn: 'Closed on',
   },
@@ -241,10 +230,8 @@ export const modalsA = {
     cancel: 'Annuleren',
 
     // AssignmentModal
-    putBuyDescription:
-      'Je koopt {{shares}} aandelen {{ticker}} tegen ${{strike}} per aandeel',
-    callSellDescription:
-      'Je verkoopt {{shares}} aandelen {{ticker}} tegen ${{strike}} per aandeel',
+    putBuyDescription: 'Je koopt {{shares}} aandelen {{ticker}} tegen ${{strike}} per aandeel',
+    callSellDescription: 'Je verkoopt {{shares}} aandelen {{ticker}} tegen ${{strike}} per aandeel',
     assignment: 'Assignment',
     optionClosedAddedRemoved:
       'De optie wordt gesloten en de aandelen worden {{action}} je portfolio.',
@@ -288,8 +275,7 @@ export const modalsA = {
     rollForPremiumDesc:
       'Open een nieuwe positie met dezelfde of andere strike voor extra premie (kan voor credit of debit).',
     rollUpDown: 'Rollen up/down:',
-    rollUpDownDesc:
-      'Verander de strike prijs om je positie aan te passen aan de markt.',
+    rollUpDownDesc: 'Verander de strike prijs om je positie aan te passen aan de markt.',
     rollTip:
       'Tip: Een credit roll betekent dat je geld ontvangt, een debit roll betekent dat je betaalt.',
     currentPosition: 'Huidige Positie',
@@ -326,11 +312,9 @@ export const modalsA = {
     rollToLaterExpirationDesc:
       'Verplaats beide legs naar een latere datum om je positie te beheren.',
     sameWidth: 'Dezelfde breedte:',
-    sameWidthDesc:
-      'Houd meestal dezelfde spread breedte aan voor consistente risk/reward.',
+    sameWidthDesc: 'Houd meestal dezelfde spread breedte aan voor consistente risk/reward.',
     strikeAdjustment: 'Strike aanpassing:',
-    strikeAdjustmentDesc:
-      'Pas de strikes aan als de onderliggende aandeel significant is bewogen.',
+    strikeAdjustmentDesc: 'Pas de strikes aan als de onderliggende aandeel significant is bewogen.',
     closePremium: 'Sluit Premie',
     newStrike: 'Nieuwe Strike',
     newExp: 'Nieuwe Exp',
@@ -389,8 +373,7 @@ export const modalsA = {
     currentPremium: 'Huidige Premie',
     difference: 'Verschil',
     collateralCashReserved: 'Onderpand (Cash Gereserveerd)',
-    cashAvailableForAssignment:
-      'Deze cash moet beschikbaar zijn voor mogelijke assignment',
+    cashAvailableForAssignment: 'Deze cash moet beschikbaar zijn voor mogelijke assignment',
     numberOfShares: 'Aantal Aandelen',
     purchasePrice: 'Aankoopprijs',
     perShareSuffix: 'per aandeel',
@@ -403,8 +386,7 @@ export const modalsA = {
     yes: 'Ja',
     no: 'Nee',
     notesComment: 'Notities / Commentaar',
-    positionNotesPlaceholder:
-      'Voeg notities toe over deze positie, strategie, doelen, etc...',
+    positionNotesPlaceholder: 'Voeg notities toe over deze positie, strategie, doelen, etc...',
     openedOn: 'Geopend op',
     closedOn: 'Gesloten op',
   },
@@ -446,10 +428,8 @@ export const modalsA = {
     cancel: 'Annuler',
 
     // AssignmentModal
-    putBuyDescription:
-      'Vous achetez {{shares}} actions {{ticker}} à ${{strike}} par action',
-    callSellDescription:
-      'Vous vendez {{shares}} actions {{ticker}} à ${{strike}} par action',
+    putBuyDescription: 'Vous achetez {{shares}} actions {{ticker}} à ${{strike}} par action',
+    callSellDescription: 'Vous vendez {{shares}} actions {{ticker}} à ${{strike}} par action',
     assignment: 'Assignation',
     optionClosedAddedRemoved:
       "L'option est fermée et les actions sont {{action}} votre portefeuille.",
@@ -462,10 +442,8 @@ export const modalsA = {
     sharesLabel: 'Actions :',
     assignmentDate: "Date d'assignation",
     effectivePricePerShare: 'Prix Effectif par Action',
-    normallyEqualToStrike:
-      "Normalement égal au prix d'exercice (${{strike}})",
-    notesPlaceholderAssignment:
-      'Ex. assignation anticipée, ex-dividende, etc.',
+    normallyEqualToStrike: "Normalement égal au prix d'exercice (${{strike}})",
+    notesPlaceholderAssignment: 'Ex. assignation anticipée, ex-dividende, etc.',
     calculation: 'Calcul',
     purchaseCost: "Coût d'achat ({{shares}} x ${{strike}}) :",
     premiumReceivedPlain: 'Prime reçue :',
@@ -481,7 +459,7 @@ export const modalsA = {
     confirmAssignment: "Confirmer l'Assignation",
 
     // RollOptionModal
-    rollOption: "Roll Option",
+    rollOption: 'Roll Option',
     long: 'Long',
     short: 'Short',
     whatIsRolling: "Qu'est-ce que le rolling ?",
@@ -490,15 +468,14 @@ export const modalsA = {
       "Un roll consiste à <0>fermer</0> simultanément votre position d'option actuelle et à <1>ouvrir</1> une nouvelle position. Cela peut sembler être un nouveau terme, mais ce n'est en réalité que fermer et ouvrir en un seul mouvement.",
     rollInTime: 'Rouler dans le temps :',
     rollInTimeDesc:
-      "Déplacez vers une expiration ultérieure pour acheter plus de temps (ex. de novembre à décembre).",
+      'Déplacez vers une expiration ultérieure pour acheter plus de temps (ex. de novembre à décembre).',
     rollForPremium: 'Rouler pour la prime :',
     rollForPremiumDesc:
-      "Ouvrez une nouvelle position avec le même strike ou un autre pour une prime supplémentaire (peut être en crédit ou en débit).",
+      'Ouvrez une nouvelle position avec le même strike ou un autre pour une prime supplémentaire (peut être en crédit ou en débit).',
     rollUpDown: 'Rouler up/down :',
-    rollUpDownDesc:
-      "Modifiez le prix d'exercice pour adapter votre position au marché.",
+    rollUpDownDesc: "Modifiez le prix d'exercice pour adapter votre position au marché.",
     rollTip:
-      'Astuce : Un roll en crédit signifie que vous recevez de l\'argent, un roll en débit signifie que vous payez.',
+      "Astuce : Un roll en crédit signifie que vous recevez de l'argent, un roll en débit signifie que vous payez.",
     currentPosition: 'Position Actuelle',
     expiration: 'Expiration :',
     premiumLabel: 'Prime :',
@@ -528,13 +505,12 @@ export const modalsA = {
     debit: 'Débit',
     whatIsSpreadRoll: "Qu'est-ce qu'un roll de spread ?",
     spreadRollIntro:
-      "Avec un roll de spread, vous fermez les deux jambes de votre spread et ouvrez simultanément un nouveau spread. Vous faites cela généralement pour acheter plus de temps ou pour adapter vos strikes au marché.",
+      'Avec un roll de spread, vous fermez les deux jambes de votre spread et ouvrez simultanément un nouveau spread. Vous faites cela généralement pour acheter plus de temps ou pour adapter vos strikes au marché.',
     rollToLaterExpiration: 'Roll vers une expiration ultérieure :',
     rollToLaterExpirationDesc:
       'Déplacez les deux jambes vers une date ultérieure pour gérer votre position.',
     sameWidth: 'Même largeur :',
-    sameWidthDesc:
-      'Conservez généralement la même largeur de spread pour un risk/reward cohérent.',
+    sameWidthDesc: 'Conservez généralement la même largeur de spread pour un risk/reward cohérent.',
     strikeAdjustment: 'Ajustement du strike :',
     strikeAdjustmentDesc:
       "Ajustez les strikes si l'action sous-jacente a bougé de manière significative.",
@@ -596,8 +572,7 @@ export const modalsA = {
     currentPremium: 'Prime Actuelle',
     difference: 'Différence',
     collateralCashReserved: 'Garantie (Cash Réservé)',
-    cashAvailableForAssignment:
-      'Ce cash doit être disponible pour une éventuelle assignation',
+    cashAvailableForAssignment: 'Ce cash doit être disponible pour une éventuelle assignation',
     numberOfShares: "Nombre d'Actions",
     purchasePrice: "Prix d'achat",
     perShareSuffix: 'par action',
@@ -610,8 +585,7 @@ export const modalsA = {
     yes: 'Oui',
     no: 'Non',
     notesComment: 'Notes / Commentaires',
-    positionNotesPlaceholder:
-      'Ajoutez des notes sur cette position, stratégie, objectifs, etc...',
+    positionNotesPlaceholder: 'Ajoutez des notes sur cette position, stratégie, objectifs, etc...',
     openedOn: 'Ouvert le',
     closedOn: 'Fermé le',
   },

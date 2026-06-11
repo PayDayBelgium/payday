@@ -359,7 +359,7 @@ describe('rollOption — CSP collateral preservation', () => {
     ...SHORT_PUT_CSP,
     id: 'opt-csp-coll',
     cashReserved: 30000, // 300 * 1 * 100
-    breakEven: 298.5,    // 300 - 1.5
+    breakEven: 298.5, // 300 - 1.5
   };
 
   it('rolled short put carries cashReserved = newStrike × newContracts × 100 and a recomputed breakEven', () => {
@@ -416,8 +416,8 @@ describe('rollOption — CSP collateral preservation', () => {
       currentValue: 50000,
     };
 
-    const positionsBefore = (store.getState() as { positions: { positions: Position[] } })
-      .positions.positions;
+    const positionsBefore = (store.getState() as { positions: { positions: Position[] } }).positions
+      .positions;
     const before = calculatePortfolioFreeCash(portfolio, positionsBefore);
 
     // Same strike (300), same premium (1.5), same contracts (1) — pure calendar roll
@@ -436,8 +436,8 @@ describe('rollOption — CSP collateral preservation', () => {
       )
     );
 
-    const positionsAfter = (store.getState() as { positions: { positions: Position[] } })
-      .positions.positions;
+    const positionsAfter = (store.getState() as { positions: { positions: Position[] } }).positions
+      .positions;
     const after = calculatePortfolioFreeCash(portfolio, positionsAfter);
 
     expect(after.allocatedCash).toBe(before.allocatedCash);
@@ -574,7 +574,7 @@ describe('rollSpread', () => {
     expect(legs[0].realizedPnL).toBe(-200);
     expect(legs[0].newPosition.strike).toBe(505);
     expect(legs[0].newPosition.action).toBe('buy');
-    expect(legs[0].newPosition.costBasis).toBe(700);  // 3.5 * 2 * 100
+    expect(legs[0].newPosition.costBasis).toBe(700); // 3.5 * 2 * 100
     expect(legs[0].newPosition.currentValue).toBe(700);
 
     expect(legs[1].oldPositionId).toBe('leg-short1');
@@ -604,14 +604,20 @@ describe('rollSpread', () => {
           longLegId: 'leg-long1',
           shortLegId: 'leg-short1',
           longLeg: { closePremium: 1, newStrike: 502, newExpiration: '2026-10-17', newPremium: 2 },
-          shortLeg: { closePremium: 0.5, newStrike: 512, newExpiration: '2026-10-17', newPremium: 1 },
+          shortLeg: {
+            closePremium: 0.5,
+            newStrike: 512,
+            newExpiration: '2026-10-17',
+            newPremium: 1,
+          },
         },
         TS
       )
     );
 
     const log = getLog(store.getState());
-    const payload = (log[logBefore] as { payload: { legs: Array<{ newPosition: CallOption }> } }).payload;
+    const payload = (log[logBefore] as { payload: { legs: Array<{ newPosition: CallOption }> } })
+      .payload;
     const [longNew, shortNew] = payload.legs.map((l) => l.newPosition);
     expect(longNew.id).toMatch(/^pos-/);
     expect(shortNew.id).toMatch(/^pos-/);
@@ -710,11 +716,7 @@ describe('recordAssignment — call assigned, full stock close', () => {
     dispatch(setActor('test'));
     // Stock: 100 shares, costBasis=28000, currentValue=30000
     // Call: 1 contract, strike=310, costBasis=-200
-    seedPositions(
-      store,
-      MSFT_STOCK as unknown as Position,
-      SHORT_CALL_CC as unknown as Position
-    );
+    seedPositions(store, MSFT_STOCK as unknown as Position, SHORT_CALL_CC as unknown as Position);
 
     const logBefore = getLog(store.getState()).length;
 
@@ -767,7 +769,7 @@ describe('recordAssignment — call assigned, full stock close', () => {
     expect(p.stockClose.stockRealizedPnL).toBe(3000);
   });
 
-  it('closes the stock in the OPTION\'s portfolio, not a same-ticker stock in another portfolio', () => {
+  it("closes the stock in the OPTION's portfolio, not a same-ticker stock in another portfolio", () => {
     const store = makeStore();
     const dispatch = store.dispatch as AppDispatch;
     dispatch(setActor('test'));
@@ -786,7 +788,10 @@ describe('recordAssignment — call assigned, full stock close', () => {
 
     const logBefore = getLog(store.getState()).length;
     dispatch(
-      recordAssignment({ optionId: 'opt-cc1', assignmentDate: '2026-07-18', assignmentPrice: 312 }, TS)
+      recordAssignment(
+        { optionId: 'opt-cc1', assignmentDate: '2026-07-18', assignmentPrice: 312 },
+        TS
+      )
     );
 
     const event = getLog(store.getState())[logBefore] as { payload: { stockId: string } };
@@ -919,7 +924,15 @@ describe('rollOption — error cases', () => {
     expect(() =>
       dispatch(
         rollOption(
-          { positionId: 'nonexistent', closePremium: 1, closeDate: '2026-06-10', newContracts: 1, newStrike: 200, newExpiration: '2026-08-15', newPremium: 2 },
+          {
+            positionId: 'nonexistent',
+            closePremium: 1,
+            closeDate: '2026-06-10',
+            newContracts: 1,
+            newStrike: 200,
+            newExpiration: '2026-08-15',
+            newPremium: 2,
+          },
           TS
         )
       )
@@ -934,7 +947,15 @@ describe('rollOption — error cases', () => {
     expect(() =>
       dispatch(
         rollOption(
-          { positionId: 'stock-msft1', closePremium: 1, closeDate: '2026-06-10', newContracts: 1, newStrike: 200, newExpiration: '2026-08-15', newPremium: 2 },
+          {
+            positionId: 'stock-msft1',
+            closePremium: 1,
+            closeDate: '2026-06-10',
+            newContracts: 1,
+            newStrike: 200,
+            newExpiration: '2026-08-15',
+            newPremium: 2,
+          },
           TS
         )
       )
@@ -948,7 +969,12 @@ describe('recordAssignment — error cases', () => {
     const dispatch = store.dispatch as AppDispatch;
 
     expect(() =>
-      dispatch(recordAssignment({ optionId: 'nonexistent', assignmentDate: '2026-07-18', assignmentPrice: 300 }, TS))
+      dispatch(
+        recordAssignment(
+          { optionId: 'nonexistent', assignmentDate: '2026-07-18', assignmentPrice: 300 },
+          TS
+        )
+      )
     ).toThrow('option not found');
   });
 
@@ -959,7 +985,12 @@ describe('recordAssignment — error cases', () => {
     seedPositions(store, SHORT_CALL_CC as unknown as Position);
 
     expect(() =>
-      dispatch(recordAssignment({ optionId: 'opt-cc1', assignmentDate: '2026-07-18', assignmentPrice: 312 }, TS))
+      dispatch(
+        recordAssignment(
+          { optionId: 'opt-cc1', assignmentDate: '2026-07-18', assignmentPrice: 312 },
+          TS
+        )
+      )
     ).toThrow('no open stock position found');
   });
 });
@@ -977,11 +1008,22 @@ describe('recordAssignment — single-lot new-path fields', () => {
     seedPositions(store, MSFT_STOCK as unknown as Position, SHORT_CALL_CC as unknown as Position);
 
     const logBefore = getLog(store.getState()).length;
-    dispatch(recordAssignment({ optionId: 'opt-cc1', assignmentDate: '2026-07-18', assignmentPrice: 312 }, TS));
+    dispatch(
+      recordAssignment(
+        { optionId: 'opt-cc1', assignmentDate: '2026-07-18', assignmentPrice: 312 },
+        TS
+      )
+    );
 
     const event = getLog(store.getState())[logBefore] as {
       payload: {
-        lotCloses: Array<{ stockId: string; fullClose: boolean; sharesSold: number; closePrice: number; lotCostBasisForShares: number }>;
+        lotCloses: Array<{
+          stockId: string;
+          fullClose: boolean;
+          sharesSold: number;
+          closePrice: number;
+          lotCostBasisForShares: number;
+        }>;
         sharesSold: number;
         stockRealizedPnL: number;
       };
@@ -1013,7 +1055,7 @@ describe('recordAssignment — multi-lot FIFO', () => {
     name: 'Microsoft',
     portfolio: 'Main',
     shares: 99,
-    costBasis: 19800,   // 99 * 200
+    costBasis: 19800, // 99 * 200
     purchasePrice: 200,
     currentPrice: 210,
     currentValue: 20790, // 99 * 210
@@ -1030,7 +1072,7 @@ describe('recordAssignment — multi-lot FIFO', () => {
     name: 'Microsoft',
     portfolio: 'Main',
     shares: 50,
-    costBasis: 11000,    // 50 * 220
+    costBasis: 11000, // 50 * 220
     purchasePrice: 220,
     currentPrice: 230,
     currentValue: 11500, // 50 * 230
@@ -1052,17 +1094,32 @@ describe('recordAssignment — multi-lot FIFO', () => {
     const dispatch = store.dispatch as AppDispatch;
     dispatch(setActor('test'));
     // Seed LOT2 FIRST to verify FIFO is by openDate (not array order)
-    seedPositions(store, LOT2 as unknown as Position, LOT1 as unknown as Position, CC_MULTI as unknown as Position);
+    seedPositions(
+      store,
+      LOT2 as unknown as Position,
+      LOT1 as unknown as Position,
+      CC_MULTI as unknown as Position
+    );
 
     const logBefore = getLog(store.getState()).length;
-    dispatch(recordAssignment({ optionId: 'opt-cc-multi', assignmentDate: '2026-07-18', assignmentPrice: 312 }, TS));
+    dispatch(
+      recordAssignment(
+        { optionId: 'opt-cc-multi', assignmentDate: '2026-07-18', assignmentPrice: 312 },
+        TS
+      )
+    );
 
     const event = getLog(store.getState())[logBefore] as {
       payload: {
         lotCloses: Array<{
-          stockId: string; fullClose: boolean; sharesSold: number;
-          remainingShares?: number; remainingCostBasis?: number; remainingCurrentValue?: number;
-          closePrice: number; lotCostBasisForShares: number;
+          stockId: string;
+          fullClose: boolean;
+          sharesSold: number;
+          remainingShares?: number;
+          remainingCostBasis?: number;
+          remainingCurrentValue?: number;
+          closePrice: number;
+          lotCostBasisForShares: number;
         }>;
         sharesSold: number;
         stockRealizedPnL: number;
@@ -1096,10 +1153,20 @@ describe('recordAssignment — multi-lot FIFO', () => {
     const store = makeStore();
     const dispatch = store.dispatch as AppDispatch;
     dispatch(setActor('test'));
-    seedPositions(store, LOT1 as unknown as Position, LOT2 as unknown as Position, CC_MULTI as unknown as Position);
+    seedPositions(
+      store,
+      LOT1 as unknown as Position,
+      LOT2 as unknown as Position,
+      CC_MULTI as unknown as Position
+    );
 
     const logBefore = getLog(store.getState()).length;
-    dispatch(recordAssignment({ optionId: 'opt-cc-multi', assignmentDate: '2026-07-18', assignmentPrice: 312 }, TS));
+    dispatch(
+      recordAssignment(
+        { optionId: 'opt-cc-multi', assignmentDate: '2026-07-18', assignmentPrice: 312 },
+        TS
+      )
+    );
 
     const event = getLog(store.getState())[logBefore] as { payload: { stockRealizedPnL: number } };
 
@@ -1107,7 +1174,7 @@ describe('recordAssignment — multi-lot FIFO', () => {
     // avgCost = 30800 / 149 ≈ 206.711...
     // stockRealizedPnL = 310*100 − avgCost*100 = 31000 − 20671.14... ≈ 10328.86
     const totalCostBasis = 19800 + 11000; // 30800
-    const totalShares = 99 + 50;          // 149
+    const totalShares = 99 + 50; // 149
     const avgCost = totalCostBasis / totalShares;
     const expected = 310 * 100 - avgCost * 100;
 
@@ -1123,7 +1190,12 @@ describe('recordAssignment — multi-lot FIFO', () => {
     seedPositions(store, smallLot as unknown as Position, CC_MULTI as unknown as Position);
 
     expect(() =>
-      dispatch(recordAssignment({ optionId: 'opt-cc-multi', assignmentDate: '2026-07-18', assignmentPrice: 312 }, TS))
+      dispatch(
+        recordAssignment(
+          { optionId: 'opt-cc-multi', assignmentDate: '2026-07-18', assignmentPrice: 312 },
+          TS
+        )
+      )
     ).toThrow('insufficient open shares');
   });
 
@@ -1132,10 +1204,20 @@ describe('recordAssignment — multi-lot FIFO', () => {
     const dispatch = store.dispatch as AppDispatch;
     dispatch(setActor('test'));
     // Insert LOT2 (newer) before LOT1 (older) in the store
-    seedPositions(store, LOT2 as unknown as Position, LOT1 as unknown as Position, CC_MULTI as unknown as Position);
+    seedPositions(
+      store,
+      LOT2 as unknown as Position,
+      LOT1 as unknown as Position,
+      CC_MULTI as unknown as Position
+    );
 
     const logBefore = getLog(store.getState()).length;
-    dispatch(recordAssignment({ optionId: 'opt-cc-multi', assignmentDate: '2026-07-18', assignmentPrice: 312 }, TS));
+    dispatch(
+      recordAssignment(
+        { optionId: 'opt-cc-multi', assignmentDate: '2026-07-18', assignmentPrice: 312 },
+        TS
+      )
+    );
 
     const event = getLog(store.getState())[logBefore] as {
       payload: { lotCloses: Array<{ stockId: string }> };

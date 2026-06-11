@@ -109,9 +109,7 @@ export function buildLeapsSection(
     const shortCalls = group.filter(
       (p) => p.type === 'call' && (p as CallOption).action === 'sell'
     ) as CallOption[];
-    const stocks = group.filter(
-      (p) => p.type === 'stock' || p.type === 'etf'
-    ) as StockPosition[];
+    const stocks = group.filter((p) => p.type === 'stock' || p.type === 'etf') as StockPosition[];
     const leaps = group.filter(
       (p) =>
         p.type === 'call' &&
@@ -202,9 +200,7 @@ export function buildPortfolioSections(
       (p) => p.type === 'call' && (p as CallOption).action === 'sell'
     ) as CallOption[];
 
-    const stocks = group.filter(
-      (p) => p.type === 'stock' || p.type === 'etf'
-    ) as StockPosition[];
+    const stocks = group.filter((p) => p.type === 'stock' || p.type === 'etf') as StockPosition[];
 
     const leaps = group.filter(
       (p) =>

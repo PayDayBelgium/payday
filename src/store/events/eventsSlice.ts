@@ -40,9 +40,7 @@ const eventsSlice = createSlice({
     /** Cold-boot replace of the whole log (projections fold the same action). */
     replayEvents: (state, action: PayloadAction<DomainEvent[]>) => {
       state.log = action.payload;
-      state.nextSeq = action.payload.length
-        ? action.payload[action.payload.length - 1].seq + 1
-        : 0;
+      state.nextSeq = action.payload.length ? action.payload[action.payload.length - 1].seq + 1 : 0;
     },
     setActor: (state, action: PayloadAction<string>) => {
       state.actor = action.payload;

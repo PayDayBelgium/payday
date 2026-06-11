@@ -82,7 +82,9 @@ export const UpcomingEvents: React.FC = () => {
     <div className="bg-white dark:bg-trading-dark-800 rounded-lg border border-surface-line dark:border-trading-dark-600 p-6">
       <div className="flex items-center gap-2 mb-4">
         <Calendar className="w-5 h-5 text-primary-700 dark:text-primary-300" />
-        <h3 className="text-lg font-semibold text-ink-900 dark:text-white">{t('widgetsB.upcomingEventsTitle')}</h3>
+        <h3 className="text-lg font-semibold text-ink-900 dark:text-white">
+          {t('widgetsB.upcomingEventsTitle')}
+        </h3>
       </div>
 
       <div className="space-y-3">

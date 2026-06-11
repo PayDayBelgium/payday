@@ -2,10 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
-import {
-  selectActiveTodos,
-  selectCompletedTodos,
-} from '../../store/slices/todosSlice';
+import { selectActiveTodos, selectCompletedTodos } from '../../store/slices/todosSlice';
 import {
   addTodo,
   toggleTodo,
@@ -38,10 +35,7 @@ export const Todos: React.FC = () => {
     if (newTodoText.trim()) {
       const now = new Date().toISOString();
       dispatch(
-        addTodo(
-          { id: uuid(), text: newTodoText.trim(), completed: false, createdAt: now },
-          now
-        )
+        addTodo({ id: uuid(), text: newTodoText.trim(), completed: false, createdAt: now }, now)
       );
       setNewTodoText('');
     }

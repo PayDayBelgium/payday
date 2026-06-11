@@ -64,7 +64,6 @@ const rulesSlice = createSlice({
 
 // Selectors
 export const selectRules = (state: RootState) => state.rules.rules;
-export const selectEnabledRules = (state: RootState) =>
-  state.rules.rules.filter((r) => r.enabled);
+export const selectEnabledRules = (state: RootState) => state.rules.rules.filter((r) => r.enabled);
 
 export default rulesSlice.reducer;

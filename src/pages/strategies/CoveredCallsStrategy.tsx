@@ -29,8 +29,7 @@ export const CoveredCallsStrategy: React.FC = () => {
   const navigate = useNavigate();
   const { pushNavigation } = useNavigation();
   const portfolios = useAppSelector(selectPortfolios);
-  const currency: CurrencyType =
-    portfolios.find((p) => p.name === portfolio)?.currency ?? 'USD';
+  const currency: CurrencyType = portfolios.find((p) => p.name === portfolio)?.currency ?? 'USD';
   const [activeTab, setActiveTab] = useState<'positions' | 'rules' | 'info'>('positions');
   const {
     strategyRules,

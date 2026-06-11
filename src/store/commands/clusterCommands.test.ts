@@ -9,19 +9,8 @@ import {
   deletePortfolio,
   reorderPortfolios,
 } from './portfolioCommands';
-import {
-  deposit,
-  withdraw,
-  chargeFee,
-  recordDividend,
-  adjustValue,
-} from './cashCommands';
-import {
-  startWheelCampaign,
-  editWheel,
-  closeWheel,
-  deleteWheel,
-} from './wheelCommands';
+import { deposit, withdraw, chargeFee, recordDividend, adjustValue } from './cashCommands';
+import { startWheelCampaign, editWheel, closeWheel, deleteWheel } from './wheelCommands';
 import type { Portfolio, WheelCampaign } from '../../types';
 import type { AppDispatch } from '../index';
 
@@ -332,11 +321,6 @@ describe('wheelCommands', () => {
     dispatch(deleteWheel('w1', TS2));
 
     const types = getLog(store.getState()).map((e: any) => e.type);
-    expect(types).toEqual([
-      'WheelCampaignStarted',
-      'WheelEdited',
-      'WheelClosed',
-      'WheelDeleted',
-    ]);
+    expect(types).toEqual(['WheelCampaignStarted', 'WheelEdited', 'WheelClosed', 'WheelDeleted']);
   });
 });

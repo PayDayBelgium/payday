@@ -13,46 +13,23 @@ export interface CashCommandInput {
 }
 
 /** Record a cash deposit. Emits CashDeposited. */
-export const deposit =
-  (input: CashCommandInput, timestamp: string) => (dispatch: AppDispatch) =>
-    dispatch(
-      commit([
-        createEvent('CashDeposited', { id: uuid(), ...input }, timestamp),
-      ])
-    );
+export const deposit = (input: CashCommandInput, timestamp: string) => (dispatch: AppDispatch) =>
+  dispatch(commit([createEvent('CashDeposited', { id: uuid(), ...input }, timestamp)]));
 
 /** Record a cash withdrawal. Emits CashWithdrawn. */
-export const withdraw =
-  (input: CashCommandInput, timestamp: string) => (dispatch: AppDispatch) =>
-    dispatch(
-      commit([
-        createEvent('CashWithdrawn', { id: uuid(), ...input }, timestamp),
-      ])
-    );
+export const withdraw = (input: CashCommandInput, timestamp: string) => (dispatch: AppDispatch) =>
+  dispatch(commit([createEvent('CashWithdrawn', { id: uuid(), ...input }, timestamp)]));
 
 /** Record a fee charge. Emits FeeCharged. */
-export const chargeFee =
-  (input: CashCommandInput, timestamp: string) => (dispatch: AppDispatch) =>
-    dispatch(
-      commit([
-        createEvent('FeeCharged', { id: uuid(), ...input }, timestamp),
-      ])
-    );
+export const chargeFee = (input: CashCommandInput, timestamp: string) => (dispatch: AppDispatch) =>
+  dispatch(commit([createEvent('FeeCharged', { id: uuid(), ...input }, timestamp)]));
 
 /** Record a dividend received. Emits DividendReceived. */
 export const recordDividend =
   (input: CashCommandInput, timestamp: string) => (dispatch: AppDispatch) =>
-    dispatch(
-      commit([
-        createEvent('DividendReceived', { id: uuid(), ...input }, timestamp),
-      ])
-    );
+    dispatch(commit([createEvent('DividendReceived', { id: uuid(), ...input }, timestamp)]));
 
 /** Record a value adjustment. Emits ValueAdjusted. */
 export const adjustValue =
   (input: CashCommandInput, timestamp: string) => (dispatch: AppDispatch) =>
-    dispatch(
-      commit([
-        createEvent('ValueAdjusted', { id: uuid(), ...input }, timestamp),
-      ])
-    );
+    dispatch(commit([createEvent('ValueAdjusted', { id: uuid(), ...input }, timestamp)]));

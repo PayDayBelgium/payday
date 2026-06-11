@@ -119,7 +119,8 @@ export const sanitizeWebSocketConfig = (
     else rejected.push('url');
   }
   if (c.reconnectInterval !== undefined) {
-    if (isValidReconnectInterval(c.reconnectInterval)) config.reconnectInterval = c.reconnectInterval;
+    if (isValidReconnectInterval(c.reconnectInterval))
+      config.reconnectInterval = c.reconnectInterval;
     else rejected.push('reconnectInterval');
   }
   if (c.maxReconnectAttempts !== undefined) {

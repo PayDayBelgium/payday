@@ -227,14 +227,17 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
     if (!positionToClose) return;
 
     dispatch(
-      closePosition({
-        id: positionToClose.id,
-        closeDate: closeData.closeDate,
-        closePremium: closeData.closePremium,
-        closePrice: closeData.closePrice,
-        realizedPnL: closeData.realizedPnL,
-        notes: closeData.notes,
-      }, new Date().toISOString())
+      closePosition(
+        {
+          id: positionToClose.id,
+          closeDate: closeData.closeDate,
+          closePremium: closeData.closePremium,
+          closePrice: closeData.closePrice,
+          realizedPnL: closeData.realizedPnL,
+          notes: closeData.notes,
+        },
+        new Date().toISOString()
+      )
     );
 
     setPositionToClose(null);

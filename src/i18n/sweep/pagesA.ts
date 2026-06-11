@@ -24,8 +24,7 @@ export const pagesA = {
       },
       account: {
         nationality: 'Nationality',
-        nationalityHelp:
-          'For tax rules and reporting (e.g. Belgian capital gains tax from 2026)',
+        nationalityHelp: 'For tax rules and reporting (e.g. Belgian capital gains tax from 2026)',
         countryBE: 'Belgium (BE)',
         countryNL: 'Netherlands (NL)',
         countryFR: 'France (FR)',
@@ -109,8 +108,7 @@ export const pagesA = {
         sysPutPositionName: 'Put Position Alert',
         sysPutPositionDesc: 'Alert when stock price drops below the strike of a short put',
         sysPutSpreadName: 'Put Spread Alert',
-        sysPutSpreadDesc:
-          'Alert when stock price drops below the short strike of a put spread',
+        sysPutSpreadDesc: 'Alert when stock price drops below the short strike of a put spread',
         sysCoveredCallName: 'Covered Call Opportunity',
         sysCoveredCallDesc: 'Opportunity to sell covered calls on a stock position',
         sysPmccName: 'PMCC Opportunity',
@@ -176,8 +174,7 @@ export const pagesA = {
         styleCoaching: 'Coaching (periodic reviews)',
         styleAsync: 'Asynchronous (messages/feedback)',
         requestSentTitle: 'Your request has been sent',
-        requestSentBody:
-          'We have received your mentorship request. A mentor will contact you.',
+        requestSentBody: 'We have received your mentorship request. A mentor will contact you.',
         focus: 'Focus',
         level: 'Level',
         style: 'Style',
@@ -205,8 +202,7 @@ export const pagesA = {
         tabAllocation: 'Allocation',
         tabRisk: 'Risk Analysis',
         allocationTitle: 'Allocation Analysis',
-        allocationComingSoon:
-          'Coming soon: portfolio allocation by strategy, ticker, and sector',
+        allocationComingSoon: 'Coming soon: portfolio allocation by strategy, ticker, and sector',
         riskTitle: 'Risk Analysis',
         riskComingSoon: 'Coming soon: risk metrics, concentration analysis, and stress testing',
       },
@@ -219,8 +215,7 @@ export const pagesA = {
         emptyTitle: 'No tickers found',
         emptyDesc: 'Add positions to your portfolios or add tickers to your watchlist',
         deleteTitle: 'Delete Ticker',
-        deleteMessage:
-          'Are you sure you want to remove {{symbol}} ({{name}}) from your watchlist?',
+        deleteMessage: 'Are you sure you want to remove {{symbol}} ({{name}}) from your watchlist?',
       },
     },
   },
@@ -504,8 +499,7 @@ export const pagesA = {
         strategyGeneral: 'Général',
         assetStocksEtfsDesc: 'Règles pour les positions en actions et ETF',
         assetOptionsDesc: "Règles pour les positions d'options (Calls, Puts, LEAPS, etc.)",
-        assetGeneralDesc:
-          'Règles générales pour le suivi du portefeuille (cash libre, etc.)',
+        assetGeneralDesc: 'Règles générales pour le suivi du portefeuille (cash libre, etc.)',
         newRuleFor: 'Nouvelle règle pour {{assetType}}',
         configureRuleSettings: 'Configurez les paramètres de la règle',
         ruleName: 'Nom de la règle',
@@ -533,8 +527,7 @@ export const pagesA = {
         generalInfo:
           'Les règles générales sont vérifiées automatiquement au niveau du portefeuille. Par exemple : alerte quand le cash libre est négatif.',
         systemRulesTitle: 'Règles système',
-        systemRulesDesc:
-          'Ces règles sont toujours actives et évaluées automatiquement',
+        systemRulesDesc: 'Ces règles sont toujours actives et évaluées automatiquement',
         systemBadge: 'Système',
         statusActive: 'Actif',
         statusInactive: 'Inactif',
@@ -554,14 +547,12 @@ export const pagesA = {
         sysNegativeCashName: 'Cash libre négatif',
         sysNegativeCashDesc: 'Alerte quand le cash libre du portefeuille est négatif',
         sysPutPositionName: 'Alerte position put',
-        sysPutPositionDesc:
-          "Alerte quand le prix de l'action passe sous le strike d'un put vendu",
+        sysPutPositionDesc: "Alerte quand le prix de l'action passe sous le strike d'un put vendu",
         sysPutSpreadName: 'Alerte put spread',
         sysPutSpreadDesc:
           "Alerte quand le prix de l'action passe sous le strike court d'un put spread",
         sysCoveredCallName: 'Opportunité Covered Call',
-        sysCoveredCallDesc:
-          'Opportunité de vendre des covered calls sur une position en actions',
+        sysCoveredCallDesc: 'Opportunité de vendre des covered calls sur une position en actions',
         sysPmccName: 'Opportunité PMCC',
         sysPmccDesc: 'Opportunité de vendre des covered calls sur des positions LEAPS',
         sysKachingName: 'Opportunité KaChing',
@@ -581,11 +572,11 @@ export const pagesA = {
         glossaryLeapText:
           "Long-term Equity Anticipation Securities. Options call ou put avec une durée de plus d'un an. Souvent utilisées comme alternative moins chère à l'achat d'actions.",
         glossaryWheelText:
-          'Une stratégie cyclique : vendez des Cash Secured Puts jusqu\'à assignation, puis écrivez des Covered Calls sur les actions acquises jusqu\'à la vente, et répétez. Revenu de primes continu.',
+          "Une stratégie cyclique : vendez des Cash Secured Puts jusqu'à assignation, puis écrivez des Covered Calls sur les actions acquises jusqu'à la vente, et répétez. Revenu de primes continu.",
         glossaryKachingText:
           'Une stratégie de revenu protégé. Achetez un put de protection à plus longue échéance (6+ semaines) et vendez des puts hebdomadaires au-dessus de ce strike pour récupérer le coût de la protection.',
         glossaryAssignmentText:
-          "Quand une option est exercée. Avec une assignation put, vous achetez les actions au prix strike. Avec une assignation call, vous vendez les actions au prix strike.",
+          'Quand une option est exercée. Avec une assignation put, vous achetez les actions au prix strike. Avec une assignation call, vous vendez les actions au prix strike.',
         glossaryStrikeText:
           "Le prix auquel vous pouvez acheter les actions (put) ou les vendre (call) si l'option est exercée.",
         glossaryPremiumText:
@@ -599,7 +590,7 @@ export const pagesA = {
         glossaryIronCondorText:
           "Une combinaison d'un bear call spread et d'un bull put spread sur le même sous-jacent. Gagne si le cours reste dans une certaine fourchette.",
         glossaryCollateralText:
-          'La valeur qui doit être réservée pour ouvrir une position. Pour un Cash Secured Put, c\'est strike × 100. Pour un spread, c\'est la différence entre les strikes × 100.',
+          "La valeur qui doit être réservée pour ouvrir une position. Pour un Cash Secured Put, c'est strike × 100. Pour un spread, c'est la différence entre les strikes × 100.",
         glossaryCostBasisText:
           "Votre investissement total dans une position. Pour les actions : prix d'achat × quantité. Peut être réduit par la prime reçue des covered calls.",
         glossaryRollText:
@@ -610,7 +601,7 @@ export const pagesA = {
       mentorship: {
         pageSubtitle: 'Formation & accompagnement sur mesure',
         intro:
-          "Demandez un accompagnement personnel. Un mentor expérimenté vous aide à progresser dans les stratégies et thèmes que vous choisissez — indépendamment des crédits et niveaux.",
+          'Demandez un accompagnement personnel. Un mentor expérimenté vous aide à progresser dans les stratégies et thèmes que vous choisissez — indépendamment des crédits et niveaux.',
         focusOptions: "Stratégies d'options",
         focusRisk: 'Gestion du risque',
         focusPsychology: 'Psychologie du trading',
@@ -625,8 +616,7 @@ export const pagesA = {
         styleCoaching: 'Coaching (revues périodiques)',
         styleAsync: 'Asynchrone (messages/feedback)',
         requestSentTitle: 'Votre demande a été envoyée',
-        requestSentBody:
-          'Nous avons reçu votre demande de mentorat. Un mentor vous contactera.',
+        requestSentBody: 'Nous avons reçu votre demande de mentorat. Un mentor vous contactera.',
         focus: 'Focus',
         level: 'Niveau',
         style: 'Style',

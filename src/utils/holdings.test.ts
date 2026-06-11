@@ -140,9 +140,7 @@ describe('groupHoldings', () => {
 
     // With the ticker price the ~15% OTM target (25 × 1.15 = 28.75) prefers
     // the strike-30 call — the same allocation the dashboard shows.
-    const withPrice = groupHoldings(positions, 'Test', [
-      { symbol: 'TSLA', currentPrice: 25 },
-    ])[0];
+    const withPrice = groupHoldings(positions, 'Test', [{ symbol: 'TSLA', currentPrice: 25 }])[0];
     expect(withPrice.freeContracts).toBe(0);
     expect(withPrice.canWriteCoveredCall).toBe(false);
   });

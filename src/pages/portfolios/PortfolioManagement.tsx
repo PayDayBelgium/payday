@@ -360,7 +360,12 @@ export const PortfolioManagement: React.FC = () => {
     const [draggedPortfolio] = newPortfolios.splice(draggedIndex, 1);
     newPortfolios.splice(targetIndex, 0, draggedPortfolio);
 
-    dispatch(reorderPortfoliosCmd(newPortfolios.map((p) => p.id), new Date().toISOString()));
+    dispatch(
+      reorderPortfoliosCmd(
+        newPortfolios.map((p) => p.id),
+        new Date().toISOString()
+      )
+    );
     setDraggedPortfolioId(null);
     setDragOverPortfolioId(null);
   };

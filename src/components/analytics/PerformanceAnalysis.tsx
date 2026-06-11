@@ -543,7 +543,9 @@ export const PerformanceAnalysis: React.FC = () => {
               <div className="space-y-3">
                 <div>
                   <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="text-ink-500 dark:text-ink-400">{t('compCommon.winners')}</span>
+                    <span className="text-ink-500 dark:text-ink-400">
+                      {t('compCommon.winners')}
+                    </span>
                     <span className="font-semibold tabular-nums text-positive-700 dark:text-positive-500">
                       {stats.wins}
                     </span>
@@ -745,7 +747,9 @@ export const PerformanceAnalysis: React.FC = () => {
               <table className="w-full text-sm">
                 <thead className="bg-surface-subtle dark:bg-trading-dark-700/40 text-[11px] uppercase tracking-[0.08em] text-ink-500 dark:text-ink-400">
                   <tr>
-                    <th className="text-left px-5 py-2.5 font-semibold">{t('compCommon.thDate')}</th>
+                    <th className="text-left px-5 py-2.5 font-semibold">
+                      {t('compCommon.thDate')}
+                    </th>
                     <th className="text-left px-5 py-2.5 font-semibold">
                       {t('compCommon.thTicker')}
                     </th>
@@ -755,10 +759,18 @@ export const PerformanceAnalysis: React.FC = () => {
                     <th className="text-right px-5 py-2.5 font-semibold">
                       {t('compCommon.thQuantity')}
                     </th>
-                    <th className="text-right px-5 py-2.5 font-semibold">{t('compCommon.thEntry')}</th>
-                    <th className="text-right px-5 py-2.5 font-semibold">{t('compCommon.thExit')}</th>
-                    <th className="text-right px-5 py-2.5 font-semibold">{t('compCommon.thFees')}</th>
-                    <th className="text-right px-5 py-2.5 font-semibold">{t('compCommon.thPnl')}</th>
+                    <th className="text-right px-5 py-2.5 font-semibold">
+                      {t('compCommon.thEntry')}
+                    </th>
+                    <th className="text-right px-5 py-2.5 font-semibold">
+                      {t('compCommon.thExit')}
+                    </th>
+                    <th className="text-right px-5 py-2.5 font-semibold">
+                      {t('compCommon.thFees')}
+                    </th>
+                    <th className="text-right px-5 py-2.5 font-semibold">
+                      {t('compCommon.thPnl')}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>

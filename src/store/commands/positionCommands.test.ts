@@ -14,7 +14,16 @@ function makeStore() {
 }
 
 const stock = (id: string): Position =>
-  ({ id, type: 'stock', ticker: 'AAPL', portfolio: 'Main', status: 'open', openDate: '2026-01-01', shares: 10, purchasePrice: 100 }) as unknown as Position;
+  ({
+    id,
+    type: 'stock',
+    ticker: 'AAPL',
+    portfolio: 'Main',
+    status: 'open',
+    openDate: '2026-01-01',
+    shares: 10,
+    purchasePrice: 100,
+  }) as unknown as Position;
 
 describe('position commands', () => {
   it('openPosition emits PositionOpened and updates the projection', () => {
@@ -36,7 +45,12 @@ describe('position commands', () => {
     const store = makeStore();
     const dispatch = store.dispatch as AppDispatch;
     dispatch(openPosition(stock('p1'), '2026-06-07T10:00:00.000Z'));
-    dispatch(closePosition({ id: 'p1', closeDate: '2026-06-08', realizedPnL: 50 }, '2026-06-08T10:00:00.000Z'));
+    dispatch(
+      closePosition(
+        { id: 'p1', closeDate: '2026-06-08', realizedPnL: 50 },
+        '2026-06-08T10:00:00.000Z'
+      )
+    );
 
     const state = store.getState() as any;
     expect(selectPositions(state)[0].status).toBe('closed');

@@ -11,10 +11,8 @@ export const updatePriceAlertRule =
   (rule: PriceAlertRule, timestamp: string) => (dispatch: AppDispatch) =>
     dispatch(commit([createEvent('PriceAlertRuleUpdated', { rule }, timestamp)]));
 
-export const deletePriceAlertRule =
-  (id: string, timestamp: string) => (dispatch: AppDispatch) =>
-    dispatch(commit([createEvent('PriceAlertRuleDeleted', { id }, timestamp)]));
+export const deletePriceAlertRule = (id: string, timestamp: string) => (dispatch: AppDispatch) =>
+  dispatch(commit([createEvent('PriceAlertRuleDeleted', { id }, timestamp)]));
 
-export const togglePriceAlertRule =
-  (id: string, timestamp: string) => (dispatch: AppDispatch) =>
-    dispatch(commit([createEvent('PriceAlertRuleToggled', { id }, timestamp)]));
+export const togglePriceAlertRule = (id: string, timestamp: string) => (dispatch: AppDispatch) =>
+  dispatch(commit([createEvent('PriceAlertRuleToggled', { id }, timestamp)]));

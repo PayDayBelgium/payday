@@ -121,8 +121,18 @@ describe('applyTradeEvent', () => {
       const event = makeEvent('SpreadRolled', {
         rollDate: '2026-02-20',
         legs: [
-          { oldPositionId: 'long-1', closePremium: 2, realizedPnL: -50, newPosition: sellCall('long-2') },
-          { oldPositionId: 'short-1', closePremium: 1, realizedPnL: 120, newPosition: sellCall('short-2') },
+          {
+            oldPositionId: 'long-1',
+            closePremium: 2,
+            realizedPnL: -50,
+            newPosition: sellCall('long-2'),
+          },
+          {
+            oldPositionId: 'short-1',
+            closePremium: 1,
+            realizedPnL: 120,
+            newPosition: sellCall('short-2'),
+          },
         ],
         netCashFlow: 70,
       });
@@ -138,8 +148,18 @@ describe('applyTradeEvent', () => {
       const event = makeEvent('SpreadRolled', {
         rollDate: '2026-02-20',
         legs: [
-          { oldPositionId: 'long-1', closePremium: 2, realizedPnL: -50, newPosition: sellCall('long-2') },
-          { oldPositionId: 'ghost', closePremium: 1, realizedPnL: 120, newPosition: sellCall('short-2') },
+          {
+            oldPositionId: 'long-1',
+            closePremium: 2,
+            realizedPnL: -50,
+            newPosition: sellCall('long-2'),
+          },
+          {
+            oldPositionId: 'ghost',
+            closePremium: 1,
+            realizedPnL: 120,
+            newPosition: sellCall('short-2'),
+          },
         ],
         netCashFlow: 70,
       });
@@ -239,7 +259,13 @@ describe('applyTradeEvent', () => {
         premiumReceived: 300,
         stockClose: { fullClose: true, closePrice: 200, stockRealizedPnL: 3000 }, // legacy
         lotCloses: [
-          { stockId: 'stk-1', fullClose: true, sharesSold: 100, closePrice: 200, lotCostBasisForShares: 17000 },
+          {
+            stockId: 'stk-1',
+            fullClose: true,
+            sharesSold: 100,
+            closePrice: 200,
+            lotCostBasisForShares: 17000,
+          },
         ],
         sharesSold: 100,
         stockRealizedPnL: 3000,
@@ -260,8 +286,18 @@ describe('applyTradeEvent', () => {
 
     it('new-path multi-lot partial → ONE option trade + ONE aggregate stock trade (quantity = sharesSold)', () => {
       // Two lots: lot1(99sh) fully consumed + lot2(50sh) partially consumed (1 share).
-      const lot1Pos = { ...stock('lot-1'), shares: 99, costBasis: 9900, openDate: '2026-01-01' } as unknown as Position;
-      const lot2Pos = { ...stock('lot-2'), shares: 50, costBasis: 11000, openDate: '2026-02-01' } as unknown as Position;
+      const lot1Pos = {
+        ...stock('lot-1'),
+        shares: 99,
+        costBasis: 9900,
+        openDate: '2026-01-01',
+      } as unknown as Position;
+      const lot2Pos = {
+        ...stock('lot-2'),
+        shares: 50,
+        costBasis: 11000,
+        openDate: '2026-02-01',
+      } as unknown as Position;
 
       const evt = makeEvent('OptionAssigned', {
         kind: 'call',
@@ -274,10 +310,22 @@ describe('applyTradeEvent', () => {
         premiumReceived: 300,
         stockClose: { fullClose: true, closePrice: 310, stockRealizedPnL: 10000 }, // legacy
         lotCloses: [
-          { stockId: 'lot-1', fullClose: true, sharesSold: 99, closePrice: 310, lotCostBasisForShares: 9900 },
           {
-            stockId: 'lot-2', fullClose: false, sharesSold: 1, closePrice: 310,
-            lotCostBasisForShares: 220, remainingShares: 49, remainingCostBasis: 10780, remainingCurrentValue: 11270,
+            stockId: 'lot-1',
+            fullClose: true,
+            sharesSold: 99,
+            closePrice: 310,
+            lotCostBasisForShares: 9900,
+          },
+          {
+            stockId: 'lot-2',
+            fullClose: false,
+            sharesSold: 1,
+            closePrice: 310,
+            lotCostBasisForShares: 220,
+            remainingShares: 49,
+            remainingCostBasis: 10780,
+            remainingCurrentValue: 11270,
           },
         ],
         sharesSold: 100,

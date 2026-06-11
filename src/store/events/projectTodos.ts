@@ -27,9 +27,7 @@ export function applyTodoEvent(todos: Todo[], event: DomainEvent): Todo[] {
 
     case 'TodoCompleted': {
       const { id, completedAt } = event.payload as TodoCompletedPayload;
-      return todos.map((t) =>
-        t.id === id ? { ...t, completed: true, completedAt } : t
-      );
+      return todos.map((t) => (t.id === id ? { ...t, completed: true, completedAt } : t));
     }
 
     case 'TodoReopened': {

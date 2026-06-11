@@ -1,10 +1,4 @@
-import type {
-  Trade,
-  Position,
-  StockPosition,
-  CallOption,
-  PutOption,
-} from '../../types';
+import type { Trade, Position, StockPosition, CallOption, PutOption } from '../../types';
 import type {
   DomainEvent,
   PositionClosedPayload,
@@ -103,7 +97,12 @@ export function applyTradeEvent(
     if (!position) return trades;
     const trade = buildTrade(
       position,
-      { id: payload.oldPositionId, closeDate: payload.closeDate, closePremium: payload.closePremium, realizedPnL: payload.realizedPnL },
+      {
+        id: payload.oldPositionId,
+        closeDate: payload.closeDate,
+        closePremium: payload.closePremium,
+        realizedPnL: payload.realizedPnL,
+      },
       event.id
     );
     return trade ? [...trades, trade] : trades;
@@ -117,7 +116,12 @@ export function applyTradeEvent(
       if (!position) return;
       const trade = buildTrade(
         position,
-        { id: leg.oldPositionId, closeDate: payload.rollDate, closePremium: leg.closePremium, realizedPnL: leg.realizedPnL },
+        {
+          id: leg.oldPositionId,
+          closeDate: payload.rollDate,
+          closePremium: leg.closePremium,
+          realizedPnL: leg.realizedPnL,
+        },
         `${event.id}-${index}`
       );
       if (trade) newTrades.push(trade);
@@ -134,7 +138,12 @@ export function applyTradeEvent(
       if (position) {
         const trade = buildTrade(
           position,
-          { id: payload.optionId, closeDate: payload.assignmentDate, closePremium: 0, realizedPnL: payload.optionRealizedPnL },
+          {
+            id: payload.optionId,
+            closeDate: payload.assignmentDate,
+            closePremium: 0,
+            realizedPnL: payload.optionRealizedPnL,
+          },
           `${event.id}-option`
         );
         if (trade) newTrades.push(trade);
@@ -145,7 +154,12 @@ export function applyTradeEvent(
       if (optionPosition) {
         const trade = buildTrade(
           optionPosition,
-          { id: payload.optionId, closeDate: payload.assignmentDate, closePremium: 0, realizedPnL: payload.optionRealizedPnL },
+          {
+            id: payload.optionId,
+            closeDate: payload.assignmentDate,
+            closePremium: 0,
+            realizedPnL: payload.optionRealizedPnL,
+          },
           `${event.id}-option`
         );
         if (trade) newTrades.push(trade);
@@ -156,7 +170,8 @@ export function applyTradeEvent(
         // NEW PATH — multi-lot FIFO: emit exactly ONE aggregate stock trade.
         // Build it directly from the payload (do NOT look up a single lot).
         // -----------------------------------------------------------------------
-        const sharesSold = payload.sharesSold ?? payload.lotCloses.reduce((s, lc) => s + lc.sharesSold, 0);
+        const sharesSold =
+          payload.sharesSold ?? payload.lotCloses.reduce((s, lc) => s + lc.sharesSold, 0);
         const strike = payload.lotCloses[0].closePrice; // all lot closes use the same strike
         const exitPrice = sharesSold > 0 ? payload.totalProceeds / sharesSold : strike;
         const aggregateRealizedPnL = payload.stockRealizedPnL ?? 0;
@@ -204,7 +219,12 @@ export function applyTradeEvent(
         if (stockPosition) {
           const trade = buildTrade(
             stockPosition,
-            { id: payload.stockId, closeDate: payload.assignmentDate, closePrice: payload.stockClose.closePrice, realizedPnL: payload.stockClose.stockRealizedPnL },
+            {
+              id: payload.stockId,
+              closeDate: payload.assignmentDate,
+              closePrice: payload.stockClose.closePrice,
+              realizedPnL: payload.stockClose.stockRealizedPnL,
+            },
             `${event.id}-stock`
           );
           if (trade) newTrades.push(trade);

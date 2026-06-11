@@ -62,7 +62,12 @@ const shortPut: Position = {
   cashReserved: 2000,
 } as unknown as Position;
 
-const makeEvent = (id: string, seq: number, type: DomainEvent['type'], payload: unknown): DomainEvent =>
+const makeEvent = (
+  id: string,
+  seq: number,
+  type: DomainEvent['type'],
+  payload: unknown
+): DomainEvent =>
   ({
     id,
     seq,

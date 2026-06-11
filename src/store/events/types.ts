@@ -1,4 +1,17 @@
-import type { Position, PriceAlertRule, Trade, PortfolioName, TradingRule, JournalEntry, JournalGoal, TradingStrategy, StrategyRule, Ticker, Portfolio, WheelCampaign } from '../../types';
+import type {
+  Position,
+  PriceAlertRule,
+  Trade,
+  PortfolioName,
+  TradingRule,
+  JournalEntry,
+  JournalGoal,
+  TradingStrategy,
+  StrategyRule,
+  Ticker,
+  Portfolio,
+  WheelCampaign,
+} from '../../types';
 import type { Todo } from '../slices/todosSlice';
 import { uuid } from '../../utils/uuid';
 
@@ -488,4 +501,18 @@ export interface OptionAssignedCallPayload {
 export type OptionAssignedPayload = OptionAssignedPutPayload | OptionAssignedCallPayload;
 
 // Re-export domain aliases used by payloads for convenience.
-export type { Position, PriceAlertRule, Trade, PortfolioName, Todo, TradingRule, JournalEntry, JournalGoal, TradingStrategy, StrategyRule, Ticker, Portfolio, WheelCampaign };
+export type {
+  Position,
+  PriceAlertRule,
+  Trade,
+  PortfolioName,
+  Todo,
+  TradingRule,
+  JournalEntry,
+  JournalGoal,
+  TradingStrategy,
+  StrategyRule,
+  Ticker,
+  Portfolio,
+  WheelCampaign,
+};

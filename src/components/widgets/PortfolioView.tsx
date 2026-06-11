@@ -1,18 +1,10 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import {
-  TrendingUp,
-  Target,
-  AlertCircle,
-  Lightbulb,
-  Filter,
-} from 'lucide-react';
+import { TrendingUp, Target, AlertCircle, Lightbulb, Filter } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
-import {
-  selectAllPriceAlerts,
-} from '../../store/slices/positionsSlice';
+import { selectAllPriceAlerts } from '../../store/slices/positionsSlice';
 import { closePosition, editPosition } from '../../store/commands/positionCommands';
 import { selectUnlockedLevels, isFeatureAvailable } from '../../store/slices/userProgressSlice';
 import { selectAllTickers } from '../../store/slices/tickersSlice';
@@ -421,23 +413,29 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
       const purchasePricePerShare = positionToClose.costBasis / positionToClose.shares;
 
       dispatch(
-        editPosition({
-          ...positionToClose,
-          shares: remainingShares,
-          costBasis: remainingCostBasis,
-          currentValue: remainingShares * purchasePricePerShare,
-        }, new Date().toISOString())
+        editPosition(
+          {
+            ...positionToClose,
+            shares: remainingShares,
+            costBasis: remainingCostBasis,
+            currentValue: remainingShares * purchasePricePerShare,
+          },
+          new Date().toISOString()
+        )
       );
     } else {
       dispatch(
-        closePosition({
-          id: positionToClose.id,
-          closeDate: closeData.closeDate,
-          closePrice: closeData.closePrice,
-          closePremium: closeData.closePremium,
-          realizedPnL,
-          notes: closeData.notes,
-        }, new Date().toISOString())
+        closePosition(
+          {
+            id: positionToClose.id,
+            closeDate: closeData.closeDate,
+            closePrice: closeData.closePrice,
+            closePremium: closeData.closePremium,
+            realizedPnL,
+            notes: closeData.notes,
+          },
+          new Date().toISOString()
+        )
       );
     }
 
@@ -475,13 +473,16 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
       });
 
       dispatch(
-        closePosition({
-          id: leg.id,
-          closeDate: closeData.closeDate,
-          closePremium,
-          realizedPnL,
-          notes: closeData.notes,
-        }, new Date().toISOString())
+        closePosition(
+          {
+            id: leg.id,
+            closeDate: closeData.closeDate,
+            closePremium,
+            realizedPnL,
+            notes: closeData.notes,
+          },
+          new Date().toISOString()
+        )
       );
     });
 
@@ -900,25 +901,20 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   const remainingPositions = useMemo(() => {
     return filteredPositions.filter(
       (p) =>
-        !sectionIds.has(p.id) &&
-        !spreadLegIds.has(p.id) &&
-        p.type !== 'stock' &&
-        p.type !== 'etf'
+        !sectionIds.has(p.id) && !spreadLegIds.has(p.id) && p.type !== 'stock' && p.type !== 'etf'
     );
   }, [filteredPositions, sectionIds, spreadLegIds]);
 
   /** Cash Secured Puts: short puts that are not spread legs. */
   const cspPositions = useMemo(
-    () =>
-      remainingPositions.filter(
-        (p) => p.type === 'put' && (p as PutOption).action === 'sell'
-      ),
+    () => remainingPositions.filter((p) => p.type === 'put' && (p as PutOption).action === 'sell'),
     [remainingPositions]
   );
 
   /** Everything else: long options, naked short calls, KaChing protective puts, etc. */
   const overigePositions = useMemo(
-    () => remainingPositions.filter((p) => !(p.type === 'put' && (p as PutOption).action === 'sell')),
+    () =>
+      remainingPositions.filter((p) => !(p.type === 'put' && (p as PutOption).action === 'sell')),
     [remainingPositions]
   );
 
@@ -1104,7 +1100,6 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
 
       {/* Position List - Scrollable */}
       <div className="divide-y divide-surface-line dark:divide-trading-dark-600 flex-1 overflow-y-auto">
-
         {/* ── Section 1: Aandelen & ETF's ─────────────────────────────── */}
         {stockLots.length > 0 && (
           <CollapsibleSection

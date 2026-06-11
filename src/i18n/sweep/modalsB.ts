@@ -4,7 +4,7 @@ export const modalsB = {
     newWheel: {
       title: 'Start new wheel',
       infoText:
-        "A Wheel is a cyclical strategy: sell CSPs until assignment, then write covered calls until the shares are called away, and repeat.",
+        'A Wheel is a cyclical strategy: sell CSPs until assignment, then write covered calls until the shares are called away, and repeat.',
       newTickerHeading: 'New ticker:',
       companyName: 'Company name',
       companyPlaceholder: 'E.g. {{symbol}} Inc.',
@@ -26,8 +26,7 @@ export const modalsB = {
       enter: 'Enter',
       numberOfContracts: 'Number of contracts',
       equalsShares: '= {{shares}} shares',
-      contractsHelpCsp:
-        'This determines how many CSPs you write and how many shares you may buy.',
+      contractsHelpCsp: 'This determines how many CSPs you write and how many shares you may buy.',
       contractsHelpStock:
         'This determines how many shares you hold and how many covered calls you can write.',
       stockInfo: 'Shares information',
@@ -56,8 +55,7 @@ export const modalsB = {
       warningTitle: 'Warning!',
       warningTextBefore: 'This action will ',
       warningTextStrong: 'replace all current data',
-      warningTextAfter:
-        ' with the data from the backup. This change cannot be undone.',
+      warningTextAfter: ' with the data from the backup. This change cannot be undone.',
       backupDate: 'Backup date:',
       backupTime: 'Backup time:',
       confirmQuestion: 'Are you sure you want to continue?',
@@ -178,8 +176,7 @@ export const modalsB = {
         'There is an active Wheel for {{ticker}} in this portfolio. Do you want to link this CSP to a Wheel?',
       wheelFoundPlural:
         'There are {{count}} active Wheels for {{ticker}} in this portfolio. Do you want to link this CSP to a Wheel?',
-      wheelInfo:
-        '{{contracts}} contracts • Cycles: {{cycles}} • Premium: {{premium}}',
+      wheelInfo: '{{contracts}} contracts • Cycles: {{cycles}} • Premium: {{premium}}',
       dontLink: "Don't link",
       dontLinkDesc: 'This CSP will become a standalone position',
     },
@@ -364,8 +361,7 @@ export const modalsB = {
         'Er is een actieve Wheel voor {{ticker}} in dit portfolio. Wil je deze CSP koppelen aan een Wheel?',
       wheelFoundPlural:
         'Er zijn {{count}} actieve Wheels voor {{ticker}} in dit portfolio. Wil je deze CSP koppelen aan een Wheel?',
-      wheelInfo:
-        '{{contracts}} contracten • Cycli: {{cycles}} • Premium: {{premium}}',
+      wheelInfo: '{{contracts}} contracten • Cycli: {{cycles}} • Premium: {{premium}}',
       dontLink: 'Niet koppelen',
       dontLinkDesc: 'Deze CSP wordt een standalone positie',
     },
@@ -550,8 +546,7 @@ export const modalsB = {
         'Il y a un Wheel actif pour {{ticker}} dans ce portefeuille. Voulez-vous lier ce CSP à un Wheel ?',
       wheelFoundPlural:
         'Il y a {{count}} Wheels actifs pour {{ticker}} dans ce portefeuille. Voulez-vous lier ce CSP à un Wheel ?',
-      wheelInfo:
-        '{{contracts}} contrats • Cycles : {{cycles}} • Prime : {{premium}}',
+      wheelInfo: '{{contracts}} contrats • Cycles : {{cycles}} • Prime : {{premium}}',
       dontLink: 'Ne pas lier',
       dontLinkDesc: 'Ce CSP deviendra une position autonome',
     },

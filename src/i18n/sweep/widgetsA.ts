@@ -30,8 +30,7 @@ export const widgetsA = {
       kindEtf: 'ETF',
       coveredCallLeapsDesc:
         'This call is covered by your LEAPS call option. The LEAPS acts as collateral instead of shares.',
-      kachingPutDesc:
-        'This put requires {{amount}} cash as collateral for possible assignment.',
+      kachingPutDesc: 'This put requires {{amount}} cash as collateral for possible assignment.',
       wheelCspDesc:
         'This Cash Secured Put requires {{amount}} cash as collateral for possible assignment.',
       wheelCallDesc:
@@ -76,16 +75,14 @@ export const widgetsA = {
       // CampaignFilterTabs
       newWheel: 'New wheel',
       // StockRow
-      writeCoveredCallsOpportunity:
-        'Opportunity: Sell {{count}} covered call(s) for extra income',
+      writeCoveredCallsOpportunity: 'Opportunity: Sell {{count}} covered call(s) for extra income',
       opportunity: 'Opportunity',
       stockBadge: 'STOCK',
       // StockETFCard
       priceAlertsTitle: 'Price alerts - The price has changed significantly',
       ruleAlertsTitle: 'Alerts - Rules that require attention',
       ruleOpportunitiesTitle: 'Opportunities - Possibilities to trade',
-      coveredCallPossibleTitle:
-        'Covered Calls possible - Enough shares to write covered calls',
+      coveredCallPossibleTitle: 'Covered Calls possible - Enough shares to write covered calls',
       close: 'Close',
       deleteAlertTitle: 'Delete Alert',
       deleteAlertMessage:
@@ -135,8 +132,7 @@ export const widgetsA = {
       kindEtf: 'ETF',
       coveredCallLeapsDesc:
         'Deze call is gedekt door je LEAPS call optie. De LEAPS fungeert als onderpand in plaats van aandelen.',
-      kachingPutDesc:
-        'Deze put vereist {{amount}} cash als onderpand voor mogelijke assignment.',
+      kachingPutDesc: 'Deze put vereist {{amount}} cash als onderpand voor mogelijke assignment.',
       wheelCspDesc:
         'Deze Cash Secured Put vereist {{amount}} cash als onderpand voor mogelijke assignment.',
       wheelCallDesc:
@@ -239,11 +235,11 @@ export const widgetsA = {
       kindShares: 'actions',
       kindEtf: 'ETF',
       coveredCallLeapsDesc:
-        "Ce call est couvert par votre option call LEAPS. Le LEAPS sert de garantie au lieu des actions.",
+        'Ce call est couvert par votre option call LEAPS. Le LEAPS sert de garantie au lieu des actions.',
       kachingPutDesc:
-        "Ce put nécessite {{amount}} en cash comme garantie pour une assignation possible.",
+        'Ce put nécessite {{amount}} en cash comme garantie pour une assignation possible.',
       wheelCspDesc:
-        "Ce Cash Secured Put nécessite {{amount}} en cash comme garantie pour une assignation possible.",
+        'Ce Cash Secured Put nécessite {{amount}} en cash comme garantie pour une assignation possible.',
       wheelCallDesc:
         "Ce covered call est couvert par vos actions. À l'assignation vous livrez les actions.",
       history: 'Historique',
@@ -259,7 +255,7 @@ export const widgetsA = {
       buyShares: 'Acheter des actions',
       noPmcc: "Aucun Poor Man's Covered Call",
       noPmccDesc:
-        "Achetez un call LEAPS et écrivez des calls à court terme. Le LEAPS sert de garantie moins chère que les actions.",
+        'Achetez un call LEAPS et écrivez des calls à court terme. Le LEAPS sert de garantie moins chère que les actions.',
       noPmccRisk:
         'Risque : Votre LEAPS peut expirer sans valeur. Perte limitée = coût du LEAPS - primes reçues.',
       buyLeaps: 'Acheter un LEAPS',

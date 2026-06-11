@@ -117,8 +117,18 @@ describe('selectEquitySeries', () => {
   });
 
   it('handles multiple portfolios independently', () => {
-    const p1 = makePortfolio({ id: 'p1', name: 'Alpha', initialCapital: 5_000, currentValue: 6_000 });
-    const p2 = makePortfolio({ id: 'p2', name: 'Beta', initialCapital: 8_000, currentValue: 8_500 });
+    const p1 = makePortfolio({
+      id: 'p1',
+      name: 'Alpha',
+      initialCapital: 5_000,
+      currentValue: 6_000,
+    });
+    const p2 = makePortfolio({
+      id: 'p2',
+      name: 'Beta',
+      initialCapital: 8_000,
+      currentValue: 8_500,
+    });
 
     const transactions: PortfolioTransaction[] = [
       txn({ type: 'deposit', amount: 1_000, date: '2024-03-01', portfolio: 'Alpha' }),
@@ -144,7 +154,7 @@ describe('selectEquitySeries', () => {
     const portfolio = makePortfolio({ initialCapital: 10_000, currentValue: 9_500 });
 
     const transactions: PortfolioTransaction[] = [
-      txn({ type: 'fee', amount: -100, date: '2024-04-01' }),       // fee: add the signed amount → -100
+      txn({ type: 'fee', amount: -100, date: '2024-04-01' }), // fee: add the signed amount → -100
       txn({ type: 'withdrawal', amount: 400, date: '2024-04-02' }), // withdrawal: subtract amount → -400
     ];
 

@@ -41,21 +41,18 @@ export const widgetsB = {
       groupShort: 'Short',
       groupNoExpiration: 'No expiration',
       txnPartialSell: 'Sell {{quantity}} {{ticker}} (partial)',
-      txnPartialSellNotes:
-        'Sold {{quantity}} of {{total}} shares. Realized P&L: {{pnl}}',
+      txnPartialSellNotes: 'Sold {{quantity}} of {{total}} shares. Realized P&L: {{pnl}}',
       txnClose: 'Close {{type}}: {{ticker}}',
       txnRealizedPnl: 'Realized P&L: {{pnl}}',
       txnCloseSpread: 'Close {{type}} spread: {{ticker}}',
       txnSpreadClosedNotes: 'Spread closed. Realized P&L: {{pnl}}',
-      rolledFrom:
-        'Rolled from {{strike}} strike ({{date}})',
+      rolledFrom: 'Rolled from {{strike}} strike ({{date}})',
       rollHorizontal: 'Horizontal (+{{days}}d)',
       rollVertical: 'Vertical {{direction}}',
       rollDiagonal: 'Diagonal {{direction}} (+{{days}}d)',
       rollNotesDays: ' • +{{days}} days',
       txnAssignmentSell: 'Assignment: Sell {{shares}} {{ticker}} @ ${{strike}}',
-      opportunityMaxProfit:
-        'Opportunity: {{percent}}% of max profit - consider closing the spread',
+      opportunityMaxProfit: 'Opportunity: {{percent}}% of max profit - consider closing the spread',
       spreadExpired: 'Spread has expired - close this position',
       spreadExpiresInDays: 'Spread expires within {{days}} days',
       optionExpired: 'Option has expired - close this position',
@@ -67,8 +64,7 @@ export const widgetsB = {
         'This call is covered by your LEAPS call option. The LEAPS acts as collateral instead of shares (PMCC strategy).',
       protectedByLongPut:
         'Protected by long put @ ${{strike}}. Max loss: ${{width}} × 100 × {{contracts}} = ${{total}}.',
-      putRequiresCash:
-        'This put requires {{amount}} cash as collateral for a possible assignment.',
+      putRequiresCash: 'This put requires {{amount}} cash as collateral for a possible assignment.',
       // PortfolioOverview
       portfolios: 'Portfolios',
       onePortfolio: 'portfolio',
@@ -91,8 +87,7 @@ export const widgetsB = {
       ruleWarningsTitle: 'Warnings - Rules that need attention',
       opportunitiesTitle: 'Opportunities - Trading possibilities',
       writeCoveredCallTitle: 'Write a covered call on these shares',
-      coveredCallsPossibleTitle:
-        'Covered Calls possible - Enough shares to write covered calls',
+      coveredCallsPossibleTitle: 'Covered Calls possible - Enough shares to write covered calls',
       firstPositionOn: 'First position on',
       quantity: 'Quantity',
       averageCost: 'Avg. cost',
@@ -236,8 +231,8 @@ export const widgetsB = {
       valueTooltip: 'Value',
       portfolioValueSeries: 'Portfolio value',
       // GroupedLeapsList
-      sectionStocksEtfs: "Stocks & ETFs",
-      sectionLeaps: "LEAPS",
+      sectionStocksEtfs: 'Stocks & ETFs',
+      sectionLeaps: 'LEAPS',
       sectionCashSecuredPuts: 'Cash Secured Puts',
       sectionSpreads: 'Spreads',
       sectionOther: 'Other',
@@ -302,8 +297,7 @@ export const widgetsB = {
       groupShort: 'Short',
       groupNoExpiration: 'Geen expiratie',
       txnPartialSell: 'Verkoop {{quantity}} {{ticker}} (gedeeltelijk)',
-      txnPartialSellNotes:
-        'Verkocht {{quantity}} van {{total}} aandelen. Realized P&L: {{pnl}}',
+      txnPartialSellNotes: 'Verkocht {{quantity}} van {{total}} aandelen. Realized P&L: {{pnl}}',
       txnClose: 'Close {{type}}: {{ticker}}',
       txnRealizedPnl: 'Realized P&L: {{pnl}}',
       txnCloseSpread: 'Close {{type}} spread: {{ticker}}',
@@ -314,8 +308,7 @@ export const widgetsB = {
       rollDiagonal: 'Diagonaal {{direction}} (+{{days}}d)',
       rollNotesDays: ' • +{{days}} dagen',
       txnAssignmentSell: 'Assignment: Verkoop {{shares}} {{ticker}} @ ${{strike}}',
-      opportunityMaxProfit:
-        'Opportunity: {{percent}}% van max winst - overweeg spread te sluiten',
+      opportunityMaxProfit: 'Opportunity: {{percent}}% van max winst - overweeg spread te sluiten',
       spreadExpired: 'Spread is verlopen - sluit deze positie',
       spreadExpiresInDays: 'Spread verloopt binnen {{days}} dagen',
       optionExpired: 'Optie is vervallen - sluit deze positie',
@@ -327,8 +320,7 @@ export const widgetsB = {
         'Deze call is gedekt door je LEAPS call optie. De LEAPS fungeert als onderpand in plaats van aandelen (PMCC strategie).',
       protectedByLongPut:
         'Beschermd door long put @ ${{strike}}. Max verlies: ${{width}} × 100 × {{contracts}} = ${{total}}.',
-      putRequiresCash:
-        'Deze put vereist {{amount}} cash als onderpand voor mogelijke assignment.',
+      putRequiresCash: 'Deze put vereist {{amount}} cash als onderpand voor mogelijke assignment.',
       // PortfolioOverview
       portfolios: 'Portefeuilles',
       onePortfolio: 'portefeuille',
@@ -497,7 +489,7 @@ export const widgetsB = {
       portfolioValueSeries: 'Portfolio waarde',
       // GroupedLeapsList
       sectionStocksEtfs: "Aandelen & ETF's",
-      sectionLeaps: "LEAPS",
+      sectionLeaps: 'LEAPS',
       sectionCashSecuredPuts: 'Cash Secured Puts',
       sectionSpreads: 'Spreads',
       sectionOther: 'Overige',
@@ -562,8 +554,7 @@ export const widgetsB = {
       groupShort: 'Short',
       groupNoExpiration: 'Sans expiration',
       txnPartialSell: 'Vente {{quantity}} {{ticker}} (partielle)',
-      txnPartialSellNotes:
-        'Vendu {{quantity}} sur {{total}} actions. P&L réalisé : {{pnl}}',
+      txnPartialSellNotes: 'Vendu {{quantity}} sur {{total}} actions. P&L réalisé : {{pnl}}',
       txnClose: 'Clôture {{type}} : {{ticker}}',
       txnRealizedPnl: 'P&L réalisé : {{pnl}}',
       txnCloseSpread: 'Clôture spread {{type}} : {{ticker}}',
@@ -733,8 +724,7 @@ export const widgetsB = {
       portfolioComparison: 'Comparaison de portefeuilles',
       portfolioComparisonSubtitle: 'Comparez l’évolution de vos différents portefeuilles',
       noHistoricalData: 'Pas encore de données historiques',
-      addTransactionsToCompare:
-        'Ajoutez des transactions à vos portefeuilles pour les comparer',
+      addTransactionsToCompare: 'Ajoutez des transactions à vos portefeuilles pour les comparer',
       oneDatapoint: 'point de données',
       multipleDatapoints: 'points de données',
       // StatCard
@@ -757,14 +747,14 @@ export const widgetsB = {
       valueTooltip: 'Valeur',
       portfolioValueSeries: 'Valeur du portefeuille',
       // GroupedLeapsList
-      sectionStocksEtfs: "Actions & ETF",
-      sectionLeaps: "LEAPS",
+      sectionStocksEtfs: 'Actions & ETF',
+      sectionLeaps: 'LEAPS',
       sectionCashSecuredPuts: 'Cash Secured Puts',
       sectionSpreads: 'Spreads',
       sectionOther: 'Autres',
       leapsWriteShortCallTitle: 'Écrire un short call contre ce LEAPS (PMCC)',
       leapsNoShortCallsYet: "Aucun short call écrit contre ce LEAPS pour l'instant.",
-      stockNoCoveredCallsYet: "Aucun covered call encore écrit sur ces actions.",
+      stockNoCoveredCallsYet: 'Aucun covered call encore écrit sur ces actions.',
       // CommunityWidget
       conversations: 'Conversations',
       community: 'Communauté',

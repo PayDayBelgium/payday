@@ -87,12 +87,10 @@ describe('eventStore', () => {
 
     it('serializes writes through navigator.locks when available', async () => {
       const requestedNames: string[] = [];
-      const request = vi.fn(
-        (name: string, cb: () => Promise<unknown>): Promise<unknown> => {
-          requestedNames.push(name);
-          return Promise.resolve().then(cb);
-        }
-      );
+      const request = vi.fn((name: string, cb: () => Promise<unknown>): Promise<unknown> => {
+        requestedNames.push(name);
+        return Promise.resolve().then(cb);
+      });
       vi.stubGlobal('navigator', { locks: { request } });
 
       const store = createEventStore('lock-user');

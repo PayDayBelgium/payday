@@ -11,7 +11,13 @@ const seedFlagKey = (username: string) => `payday-tickers-seeded-${username}`;
  */
 const DEFAULT_SEED_TICKERS: Omit<Ticker, 'createdAt'>[] = [
   { symbol: 'TSLA', name: 'Tesla', type: 'stock', optionsAvailable: true, hasDividend: false },
-  { symbol: 'HIMS', name: 'Hims & Hers', type: 'stock', optionsAvailable: true, hasDividend: false },
+  {
+    symbol: 'HIMS',
+    name: 'Hims & Hers',
+    type: 'stock',
+    optionsAvailable: true,
+    hasDividend: false,
+  },
   { symbol: 'SOFI', name: 'SoFi', type: 'stock', optionsAvailable: true, hasDividend: false },
   { symbol: 'NBIS', name: 'Nebius', type: 'stock', optionsAvailable: true, hasDividend: false },
   { symbol: 'PLTR', name: 'Palantir', type: 'stock', optionsAvailable: true, hasDividend: false },

@@ -383,7 +383,9 @@ export const Header: React.FC<HeaderProps> = ({
                           {username || 'Trader'}
                         </h3>
                         <div className="flex items-center gap-2">
-                          <p className="text-xs text-ink-500 dark:text-ink-400">{t('header.optionsTrader')}</p>
+                          <p className="text-xs text-ink-500 dark:text-ink-400">
+                            {t('header.optionsTrader')}
+                          </p>
                           {/* Credits Badge */}
                           <div className="flex items-center gap-1 px-1.5 py-0.5 bg-caution-50 dark:bg-caution-600/25 rounded-full">
                             <Star className="w-2.5 h-2.5 text-caution-600 dark:text-caution-500" />
