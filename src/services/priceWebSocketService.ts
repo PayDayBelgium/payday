@@ -8,7 +8,7 @@ import {
   setOptionsSubscribed,
 } from '../store/slices/connectivitySlice';
 import type { ConnectionStatus, DataMode } from '../types';
-import { isAllowedWebSocketUrl, isValidPriceMessage } from './websocketValidation';
+import { isValidPriceMessage, sanitizeWebSocketConfig } from './websocketValidation';
 
 // Re-export types for backwards compatibility
 export type { ConnectionStatus, DataMode } from '../types';
@@ -126,44 +126,52 @@ class PriceWebSocketService {
   private logHandlers: Set<LogHandler> = new Set();
   private subscribedTickers: Set<string> = new Set();
   private subscribedOptions: Map<string, OptionIdentifier> = new Map();
-  // Warn only once per malformed message type to avoid console storms.
+  // Warn only once per malformed message type to avoid console storms; capped
+  // so a server emitting endlessly varying bogus types cannot grow this set
+  // without bound.
   private warnedInvalidTypes: Set<string> = new Set();
+  private static readonly MAX_WARNED_INVALID_TYPES = 20;
 
   getConfig(): WebSocketConfig {
     return { ...this.config };
   }
 
-  updateConfig(newConfig: Partial<WebSocketConfig>): void {
-    // Reject unsafe endpoint URLs (only wss://, or ws:// against localhost).
-    if (newConfig.url !== undefined && !isAllowedWebSocketUrl(newConfig.url)) {
+  /**
+   * Apply a (partial) config update. Every field is validated; invalid fields
+   * keep their current value. Returns true when ALL provided fields were
+   * accepted, false otherwise — callers should surface a failure to the user.
+   */
+  updateConfig(newConfig: Partial<WebSocketConfig>): boolean {
+    const { config, rejected } = sanitizeWebSocketConfig(newConfig, this.config);
+    if (rejected.length > 0) {
       console.warn(
-        `[WebSocket] Rejected unsafe WebSocket URL "${newConfig.url}" — keeping "${this.config.url}"`
+        `[WebSocket] Rejected invalid config field(s): ${rejected.join(', ')} — keeping current values`
       );
-      newConfig = { ...newConfig, url: this.config.url };
     }
-    this.config = { ...this.config, ...newConfig };
+    this.config = config;
     // Save to localStorage
     localStorage.setItem('priceWebSocketConfig', JSON.stringify(this.config));
+    return rejected.length === 0;
   }
 
   loadConfig(): void {
-    const defaultUrl = this.config.url;
     const saved = localStorage.getItem('priceWebSocketConfig');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        this.config = { ...this.config, ...parsed };
-      } catch {
-        // Ignore parse errors
+    if (!saved) return;
+    // A persisted config is attacker-influenceable (localStorage): validate
+    // EVERY field and fall back per-field to the defaults — an unsafe URL, a
+    // sub-second reconnect interval, an absurd attempt count or an unknown
+    // data mode must never make it into the runtime config.
+    try {
+      const parsed: unknown = JSON.parse(saved);
+      const { config, rejected } = sanitizeWebSocketConfig(parsed, this.config);
+      if (rejected.length > 0) {
+        console.warn(
+          `[WebSocket] Ignoring invalid persisted config field(s): ${rejected.join(', ')} — using defaults`
+        );
       }
-    }
-    // A persisted config is attacker-influenceable (localStorage): never
-    // accept an unsafe endpoint URL from it — fall back to the default.
-    if (!isAllowedWebSocketUrl(this.config.url)) {
-      console.warn(
-        `[WebSocket] Ignoring unsafe persisted WebSocket URL "${this.config.url}" — using default "${defaultUrl}"`
-      );
-      this.config.url = defaultUrl;
+      this.config = config;
+    } catch {
+      // Ignore parse errors — keep the defaults.
     }
   }
 
@@ -304,7 +312,10 @@ class PriceWebSocketService {
                 typeof parsed === 'object' && parsed !== null
                   ? String((parsed as Record<string, unknown>).type)
                   : 'non-object';
-              if (!this.warnedInvalidTypes.has(type)) {
+              if (
+                !this.warnedInvalidTypes.has(type) &&
+                this.warnedInvalidTypes.size < PriceWebSocketService.MAX_WARNED_INVALID_TYPES
+              ) {
                 this.warnedInvalidTypes.add(type);
                 console.warn(
                   `[WebSocket] Dropping invalid message of type "${type}" (further occurrences will not be logged)`

@@ -5,7 +5,9 @@ import {
   isValidIBMessage,
   isValidPort,
   isValidPriceMessage,
+  sanitizeWebSocketConfig,
 } from './websocketValidation';
+import type { WebSocketConfig } from './priceWebSocketService';
 
 describe('isLocalHostname', () => {
   it('accepts loopback hosts', () => {
@@ -127,6 +129,103 @@ describe('isValidPriceMessage', () => {
     expect(isValidPriceMessage(null)).toBe(false);
     expect(isValidPriceMessage('ticker_price')).toBe(false);
     expect(isValidPriceMessage([])).toBe(false);
+  });
+});
+
+describe('sanitizeWebSocketConfig', () => {
+  const fallback: WebSocketConfig = {
+    url: 'ws://localhost:5000/ws/prices',
+    reconnectInterval: 5000,
+    maxReconnectAttempts: 10,
+    dataMode: 'demo',
+  };
+
+  it('accepts a fully valid candidate', () => {
+    const candidate = {
+      url: 'wss://prices.example.com/ws',
+      reconnectInterval: 2000,
+      maxReconnectAttempts: 5,
+      dataMode: 'live',
+    };
+    const { config, rejected } = sanitizeWebSocketConfig(candidate, fallback);
+    expect(config).toEqual(candidate);
+    expect(rejected).toEqual([]);
+  });
+
+  it('keeps fallback values for fields that are absent', () => {
+    const { config, rejected } = sanitizeWebSocketConfig({ reconnectInterval: 3000 }, fallback);
+    expect(config).toEqual({ ...fallback, reconnectInterval: 3000 });
+    expect(rejected).toEqual([]);
+  });
+
+  it('rejects an unsafe url and keeps the fallback', () => {
+    const { config, rejected } = sanitizeWebSocketConfig(
+      { url: 'ws://evil.example.com/ws' },
+      fallback
+    );
+    expect(config.url).toBe(fallback.url);
+    expect(rejected).toEqual(['url']);
+  });
+
+  it('rejects a too-small, non-numeric or absurd reconnectInterval', () => {
+    for (const bad of [5, 0, -1000, NaN, Infinity, '5000', 999, 24 * 60 * 60 * 1000]) {
+      const { config, rejected } = sanitizeWebSocketConfig({ reconnectInterval: bad }, fallback);
+      expect(config.reconnectInterval).toBe(fallback.reconnectInterval);
+      expect(rejected).toEqual(['reconnectInterval']);
+    }
+  });
+
+  it('rejects out-of-range or non-integer maxReconnectAttempts', () => {
+    for (const bad of [-1, 101, 2.5, NaN, '10']) {
+      const { config, rejected } = sanitizeWebSocketConfig(
+        { maxReconnectAttempts: bad },
+        fallback
+      );
+      expect(config.maxReconnectAttempts).toBe(fallback.maxReconnectAttempts);
+      expect(rejected).toEqual(['maxReconnectAttempts']);
+    }
+  });
+
+  it('accepts the boundary values', () => {
+    const { config, rejected } = sanitizeWebSocketConfig(
+      { reconnectInterval: 1000, maxReconnectAttempts: 0 },
+      fallback
+    );
+    expect(config.reconnectInterval).toBe(1000);
+    expect(config.maxReconnectAttempts).toBe(0);
+    expect(rejected).toEqual([]);
+  });
+
+  it('rejects an unknown dataMode and keeps the fallback', () => {
+    const { config, rejected } = sanitizeWebSocketConfig({ dataMode: 'evil-mode' }, fallback);
+    expect(config.dataMode).toBe('demo');
+    expect(rejected).toEqual(['dataMode']);
+  });
+
+  it('accepts all known data modes', () => {
+    for (const mode of ['demo', 'demo-feed', 'live'] as const) {
+      const { config, rejected } = sanitizeWebSocketConfig({ dataMode: mode }, fallback);
+      expect(config.dataMode).toBe(mode);
+      expect(rejected).toEqual([]);
+    }
+  });
+
+  it('collects multiple rejected fields and never mutates the fallback', () => {
+    const frozen = Object.freeze({ ...fallback });
+    const { config, rejected } = sanitizeWebSocketConfig(
+      { url: 'http://x', reconnectInterval: 1, maxReconnectAttempts: 9999, dataMode: 'x' },
+      frozen
+    );
+    expect(config).toEqual(fallback);
+    expect(rejected).toEqual(['url', 'reconnectInterval', 'maxReconnectAttempts', 'dataMode']);
+  });
+
+  it('rejects a non-object candidate wholesale', () => {
+    for (const bad of [null, 'cfg', 42, []]) {
+      const { config, rejected } = sanitizeWebSocketConfig(bad, fallback);
+      expect(config).toEqual(fallback);
+      expect(rejected).toEqual(['config']);
+    }
   });
 });
 

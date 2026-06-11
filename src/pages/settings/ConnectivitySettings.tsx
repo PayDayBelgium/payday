@@ -22,6 +22,7 @@ import {
 } from '../../services/priceWebSocketService';
 import { selectAllTickers } from '../../store/slices/tickersSlice';
 import { selectActivePositions } from '../../store/slices/positionsSlice';
+import { useToast } from '../../contexts/ToastContext';
 import type { Position } from '../../types';
 
 const DATA_MODE_OPTIONS: { value: DataMode; label: string; descriptionKey: string }[] = [
@@ -40,6 +41,7 @@ const DATA_MODE_OPTIONS: { value: DataMode; label: string; descriptionKey: strin
 
 export const ConnectivitySettings: React.FC = () => {
   const { t } = useTranslation();
+  const toast = useToast();
   const tickers = useSelector(selectAllTickers);
   const activePositions = useSelector(selectActivePositions);
   const [config, setConfig] = useState(priceWebSocketService.getConfig());
@@ -47,10 +49,6 @@ export const ConnectivitySettings: React.FC = () => {
   const [status, setStatus] = useState<ConnectionStatus>(priceWebSocketService.getStatus());
   const [logs, setLogs] = useState<WebSocketLogEntry[]>([]);
   const [isSaving, setIsSaving] = useState(false);
-  const [saveMessage, setSaveMessage] = useState<{
-    type: 'success' | 'error';
-    text: string;
-  } | null>(null);
   const [subscribeSymbol, setSubscribeSymbol] = useState('');
   const [subscribedTickers, setSubscribedTickers] = useState<string[]>(
     priceWebSocketService.getSubscribedTickers()
@@ -105,13 +103,18 @@ export const ConnectivitySettings: React.FC = () => {
 
   const handleSaveConfig = () => {
     setIsSaving(true);
-    setSaveMessage(null);
 
     try {
-      priceWebSocketService.updateConfig(config);
-      setSaveMessage({ type: 'success', text: 'Configuration saved!' });
+      const accepted = priceWebSocketService.updateConfig(config);
+      // Reflect what the service actually accepted (rejected fields revert).
+      setConfig(priceWebSocketService.getConfig());
+      if (accepted) {
+        toast.success(t('pagesA.connectivity.configSaved'));
+      } else {
+        toast.error(t('pagesA.connectivity.configRejected'));
+      }
     } catch {
-      setSaveMessage({ type: 'error', text: 'Failed to save configuration' });
+      toast.error(t('pagesA.connectivity.configSaveFailed'));
     } finally {
       setIsSaving(false);
     }
@@ -126,7 +129,6 @@ export const ConnectivitySettings: React.FC = () => {
     };
     setConfig(defaultConfig);
     setDataMode('demo');
-    setSaveMessage(null);
   };
 
   const handleDataModeChange = (mode: DataMode) => {
@@ -404,18 +406,6 @@ export const ConnectivitySettings: React.FC = () => {
                   Reset
                 </button>
               </div>
-
-              {saveMessage && (
-                <div
-                  className={`p-2 rounded-lg text-sm ${
-                    saveMessage.type === 'success'
-                      ? 'bg-positive-50 dark:bg-positive-700/25 text-positive-700 dark:text-positive-500'
-                      : 'bg-negative-50 dark:bg-negative-700/25 text-negative-700 dark:text-negative-500'
-                  }`}
-                >
-                  {saveMessage.text}
-                </div>
-              )}
             </div>
           </div>
 
