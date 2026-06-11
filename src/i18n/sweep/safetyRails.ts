@@ -14,6 +14,9 @@ export const safetyRails = {
     cspCashWarnMessage:
       'Selling this put reserves {{required}} as cash collateral, but this portfolio only has {{freeCash}} free ({{shortfall}} short). A cash-secured put should be fully covered by cash — if the put is assigned you must buy the shares. Create it anyway?',
     cspCashWarnConfirm: 'Create anyway',
+    campaignUnlockHint: 'This strategy unlocks at the {{slope}} ({{level}} level).',
+    campaignOpportunityLocked:
+      'More options for this campaign unlock at the {{slope}} ({{level}} level). Your positions stay fully visible.',
   },
   nl: {
     nakedCallAlert:
@@ -28,6 +31,9 @@ export const safetyRails = {
     cspCashWarnMessage:
       'Deze put verkopen reserveert {{required}} als cash-onderpand, maar deze portefeuille heeft slechts {{freeCash}} vrij ({{shortfall}} tekort). Een cash-secured put hoort volledig door cash gedekt te zijn — bij assignment moet je de aandelen kopen. Toch aanmaken?',
     cspCashWarnConfirm: 'Toch aanmaken',
+    campaignUnlockHint: 'Deze strategie ontgrendel je op de {{slope}} (niveau {{level}}).',
+    campaignOpportunityLocked:
+      'Meer mogelijkheden voor deze campagne ontgrendel je op de {{slope}} (niveau {{level}}). Je posities blijven volledig zichtbaar.',
   },
   fr: {
     nakedCallAlert:
@@ -42,5 +48,8 @@ export const safetyRails = {
     cspCashWarnMessage:
       "Vendre ce put réserve {{required}} en garantie de liquidités, mais ce portefeuille ne dispose que de {{freeCash}} libres (il manque {{shortfall}}). Un put cash-secured doit être entièrement couvert par des liquidités — en cas d'assignation vous devez acheter les actions. Le créer quand même ?",
     cspCashWarnConfirm: 'Créer quand même',
+    campaignUnlockHint: 'Cette stratégie se débloque sur la {{slope}} (niveau {{level}}).',
+    campaignOpportunityLocked:
+      'Plus de possibilités pour cette campagne se débloquent sur la {{slope}} (niveau {{level}}). Vos positions restent entièrement visibles.',
   },
 };

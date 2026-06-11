@@ -15,7 +15,16 @@ import {
   RefreshCw,
   Trash2,
   ArrowUpCircle,
+  Lock,
 } from 'lucide-react';
+import { useAppSelector } from '../../hooks/useAppSelector';
+import {
+  selectUnlockedLevels,
+  isFeatureAvailable,
+  getFeatureRequiredLevel,
+  getLevelConfig,
+} from '../../store/slices/userProgressSlice';
+import { getCampaignOpportunityRequiredFeature } from '../../utils/opportunityGating';
 import type { Campaign, CampaignType } from '../../utils/campaignDetector';
 import { getCampaignTypeName, getCampaignTypeDescription } from '../../utils/campaignDetector';
 import type { Ticker, CallOption, PutOption, Position } from '../../types';
@@ -117,6 +126,18 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
   const { t } = useTranslation();
   const color = getCampaignColor(campaign.type);
 
+  // Level gating for the opportunity block (advice message + quick-create).
+  // The campaign itself — existing positions and their risk — always renders;
+  // only the coaching is replaced by a neutral unlock hint below the level.
+  // Mapping is consistent with the dashboard's opportunity gating.
+  const unlockedLevels = useAppSelector(selectUnlockedLevels);
+  const opportunityFeature = getCampaignOpportunityRequiredFeature(campaign.type);
+  const opportunityUnlocked = isFeatureAvailable(opportunityFeature, unlockedLevels);
+  const opportunityLevelConfig = (() => {
+    const level = getFeatureRequiredLevel(opportunityFeature);
+    return level ? getLevelConfig(level) : null;
+  })();
+
   return (
     <div className="p-4">
       {/* Campaign Header */}
@@ -138,7 +159,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
               >
                 {getCampaignTypeName(campaign.type)}
               </span>
-              {campaign.hasOpportunity && (
+              {campaign.hasOpportunity && opportunityUnlocked && (
                 <Lightbulb
                   className="w-4 h-4 text-positive-600"
                   aria-label={campaign.opportunityMessage}
@@ -678,30 +699,43 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
               );
             })()}
 
-          {/* Opportunity indicator with action button */}
-          {campaign.hasOpportunity && (
-            <div className="flex items-center justify-between gap-2 p-3 bg-positive-50 dark:bg-positive-700/15 rounded-lg border border-positive-500/20 dark:border-positive-700/30">
-              <div className="flex items-center gap-2">
-                <Lightbulb className="w-5 h-5 text-positive-600 dark:text-positive-500 flex-shrink-0" />
-                <p className="text-sm text-positive-700 dark:text-positive-500">
-                  {campaign.opportunityMessage}
+          {/* Opportunity indicator with action button — level-gated: below the
+              required level the advice + quick-create is replaced by a neutral
+              unlock hint (the positions themselves stay fully visible). */}
+          {campaign.hasOpportunity &&
+            (opportunityUnlocked ? (
+              <div className="flex items-center justify-between gap-2 p-3 bg-positive-50 dark:bg-positive-700/15 rounded-lg border border-positive-500/20 dark:border-positive-700/30">
+                <div className="flex items-center gap-2">
+                  <Lightbulb className="w-5 h-5 text-positive-600 dark:text-positive-500 flex-shrink-0" />
+                  <p className="text-sm text-positive-700 dark:text-positive-500">
+                    {campaign.opportunityMessage}
+                  </p>
+                </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onOpportunityAction(campaign);
+                  }}
+                  className="flex items-center gap-1 px-3 py-1.5 bg-positive-600 hover:bg-positive-700 text-white text-sm font-medium rounded-lg transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                  {campaign.type === 'kaching' ||
+                  (campaign.type === 'wheel' && campaign.root.type === 'protective-put')
+                    ? 'Put'
+                    : 'Call'}
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 p-3 bg-surface-subtle dark:bg-trading-dark-700/50 rounded-lg border border-surface-line dark:border-trading-dark-600">
+                <Lock className="w-4 h-4 text-ink-400 dark:text-ink-500 flex-shrink-0" />
+                <p className="text-sm text-ink-500 dark:text-ink-400">
+                  {t('safetyRails.campaignOpportunityLocked', {
+                    slope: opportunityLevelConfig?.slopeName ?? '',
+                    level: opportunityLevelConfig?.name ?? '',
+                  })}
                 </p>
               </div>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onOpportunityAction(campaign);
-                }}
-                className="flex items-center gap-1 px-3 py-1.5 bg-positive-600 hover:bg-positive-700 text-white text-sm font-medium rounded-lg transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                {campaign.type === 'kaching' ||
-                (campaign.type === 'wheel' && campaign.root.type === 'protective-put')
-                  ? 'Put'
-                  : 'Call'}
-              </button>
-            </div>
-          )}
+            ))}
 
           {/* History Toggle - always show for Wheel, toggle for others */}
           {campaign.historicalOptions.length > 0 && (

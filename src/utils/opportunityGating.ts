@@ -1,6 +1,7 @@
 import type { FeatureId, UserLevel } from '../types';
 import { isFeatureAvailable } from '../store/slices/userProgressSlice';
 import type { AlertItem } from './alertEvaluator';
+import type { CampaignType } from './campaignDetector';
 
 /**
  * Maps an opportunity to the feature the user must unlock first
@@ -28,6 +29,47 @@ export const getOpportunityRequiredFeature = (opportunityId: string): FeatureId 
 
   // Unknown / price-based (stocks-etfs rules): no gating, always show.
   return null;
+};
+
+/**
+ * Feature required to USE a campaign type as a strategy: filter tabs,
+ * empty-state coaching ("Buy LEAPS", "Buy protective put") and creation CTAs.
+ *
+ * Note: campaign DISPLAY of existing positions is never gated — the user
+ * owns those positions and hiding their risk would violate the alert rule.
+ * Only advice/creation surfaces should consult this mapping.
+ */
+export const getCampaignTypeRequiredFeature = (type: CampaignType): FeatureId => {
+  switch (type) {
+    case 'pmcc':
+      return 'pmcc'; // senior
+    case 'kaching':
+      return 'kaching'; // expert
+    case 'wheel':
+      return 'wheel_strategy'; // medior
+    case 'covered-call':
+      return 'covered_calls'; // medior
+  }
+};
+
+/**
+ * Feature required to show a campaign's OPPORTUNITY block (advice message +
+ * quick-create button). Kept consistent with `getOpportunityRequiredFeature`
+ * so the campaign card never shows advice the dashboard hides: a PMCC
+ * campaign's opportunity is "write a call against your LEAPS", which is
+ * deliberately part of covered calls (medior) — see the leaps-cc mapping.
+ */
+export const getCampaignOpportunityRequiredFeature = (type: CampaignType): FeatureId => {
+  switch (type) {
+    case 'pmcc':
+      return 'covered_calls'; // same as leaps-cc-opportunity (medior)
+    case 'kaching':
+      return 'kaching'; // expert
+    case 'wheel':
+      return 'wheel_strategy'; // medior
+    case 'covered-call':
+      return 'covered_calls'; // medior
+  }
 };
 
 /**

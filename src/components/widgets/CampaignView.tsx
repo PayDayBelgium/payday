@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TrendingUp, Layers, Zap, X as XIcon, RefreshCw, Trash2 } from 'lucide-react';
+import { TrendingUp, Layers, Zap, X as XIcon, RefreshCw, Trash2, Lock } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { closePosition, editPosition } from '../../store/commands/positionCommands';
@@ -8,6 +8,13 @@ import { rollOption, recordAssignment } from '../../store/commands/rollCommands'
 import { deleteWheel } from '../../store/commands/wheelCommands';
 import { selectAllTickers } from '../../store/slices/tickersSlice';
 import { selectWheelsByPortfolio } from '../../store/slices/wheelsSlice';
+import {
+  selectUnlockedLevels,
+  isFeatureAvailable,
+  getFeatureRequiredLevel,
+  getLevelConfig,
+} from '../../store/slices/userProgressSlice';
+import { getCampaignTypeRequiredFeature } from '../../utils/opportunityGating';
 import { detectCampaigns, buildWheelCampaign } from '../../utils/campaignDetector';
 import type { Campaign, CampaignType } from '../../utils/campaignDetector';
 import type {
@@ -59,6 +66,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
   const wheels = useAppSelector((state: RootState) =>
     selectWheelsByPortfolio(state, portfolioName as PortfolioName)
   );
+  const unlockedLevels = useAppSelector(selectUnlockedLevels);
   const [filter, setFilter] = useState<FilterType>(initialFilter);
   const [expandedCampaigns, setExpandedCampaigns] = useState<Set<string>>(new Set());
   const [showHistory, setShowHistory] = useState<Set<string>>(new Set());
@@ -326,6 +334,28 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
     }
   };
 
+  // Level gating for the empty-state coaching/CTAs. Display of existing
+  // campaigns (real positions + their risk) is never gated; only the
+  // didactic advice and quick-create buttons below are.
+  const isTypeUnlocked = (type: FilterType): boolean =>
+    isFeatureAvailable(getCampaignTypeRequiredFeature(type), unlockedLevels);
+
+  // Neutral hint shown instead of the coaching text + wizard button when the
+  // strategy is still above the user's level.
+  const renderUnlockHint = (type: FilterType) => {
+    const level = getFeatureRequiredLevel(getCampaignTypeRequiredFeature(type));
+    const config = level ? getLevelConfig(level) : null;
+    return (
+      <p className="text-sm text-ink-500 dark:text-ink-400 flex items-center justify-center gap-1.5">
+        <Lock className="w-4 h-4 flex-shrink-0" />
+        {t('safetyRails.campaignUnlockHint', {
+          slope: config?.slopeName ?? '',
+          level: config?.name ?? '',
+        })}
+      </p>
+    );
+  };
+
   // Helper function to render empty state for each campaign type
   const renderEmptyState = (type: FilterType) => {
     switch (type) {
@@ -339,18 +369,24 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
                 {t('widgetsA.noCoveredCalls')}
               </h3>
-              <p className="text-sm text-ink-500 dark:text-ink-400 mb-4">
-                {t('widgetsA.noCoveredCallsDesc')}
-              </p>
-              <p className="text-xs text-ink-400 dark:text-ink-500 mb-4 italic">
-                {t('widgetsA.noCoveredCallsRisk')}
-              </p>
-              <button
-                onClick={() => setShowStockWizard(true)}
-                className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-700 hover:bg-primary-800 dark:bg-primary-500 dark:hover:bg-primary-700 rounded-lg transition-colors"
-              >
-                {t('widgetsA.buyShares')}
-              </button>
+              {isTypeUnlocked('covered-call') ? (
+                <>
+                  <p className="text-sm text-ink-500 dark:text-ink-400 mb-4">
+                    {t('widgetsA.noCoveredCallsDesc')}
+                  </p>
+                  <p className="text-xs text-ink-400 dark:text-ink-500 mb-4 italic">
+                    {t('widgetsA.noCoveredCallsRisk')}
+                  </p>
+                  <button
+                    onClick={() => setShowStockWizard(true)}
+                    className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-700 hover:bg-primary-800 dark:bg-primary-500 dark:hover:bg-primary-700 rounded-lg transition-colors"
+                  >
+                    {t('widgetsA.buyShares')}
+                  </button>
+                </>
+              ) : (
+                renderUnlockHint('covered-call')
+              )}
             </div>
           </div>
         );
@@ -364,18 +400,24 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
                 {t('widgetsA.noPmcc')}
               </h3>
-              <p className="text-sm text-ink-500 dark:text-ink-400 mb-4">
-                {t('widgetsA.noPmccDesc')}
-              </p>
-              <p className="text-xs text-ink-400 dark:text-ink-500 mb-4 italic">
-                {t('widgetsA.noPmccRisk')}
-              </p>
-              <button
-                onClick={() => setShowCallWizard(true)}
-                className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-ink-700 hover:bg-purple-700 dark:bg-ink-600 dark:hover:bg-ink-700 rounded-lg transition-colors"
-              >
-                {t('widgetsA.buyLeaps')}
-              </button>
+              {isTypeUnlocked('pmcc') ? (
+                <>
+                  <p className="text-sm text-ink-500 dark:text-ink-400 mb-4">
+                    {t('widgetsA.noPmccDesc')}
+                  </p>
+                  <p className="text-xs text-ink-400 dark:text-ink-500 mb-4 italic">
+                    {t('widgetsA.noPmccRisk')}
+                  </p>
+                  <button
+                    onClick={() => setShowCallWizard(true)}
+                    className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-ink-700 hover:bg-purple-700 dark:bg-ink-600 dark:hover:bg-ink-700 rounded-lg transition-colors"
+                  >
+                    {t('widgetsA.buyLeaps')}
+                  </button>
+                </>
+              ) : (
+                renderUnlockHint('pmcc')
+              )}
             </div>
           </div>
         );
@@ -389,18 +431,24 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
                 {t('widgetsA.noKaching')}
               </h3>
-              <p className="text-sm text-ink-500 dark:text-ink-400 mb-4">
-                {t('widgetsA.noKachingDesc')}
-              </p>
-              <p className="text-xs text-ink-400 dark:text-ink-500 mb-4 italic">
-                {t('widgetsA.noKachingRisk')}
-              </p>
-              <button
-                onClick={() => setShowPutWizard(true)}
-                className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-caution-600 hover:bg-caution-600 dark:bg-caution-500 dark:hover:bg-caution-600 rounded-lg transition-colors"
-              >
-                {t('widgetsA.buyProtectivePut')}
-              </button>
+              {isTypeUnlocked('kaching') ? (
+                <>
+                  <p className="text-sm text-ink-500 dark:text-ink-400 mb-4">
+                    {t('widgetsA.noKachingDesc')}
+                  </p>
+                  <p className="text-xs text-ink-400 dark:text-ink-500 mb-4 italic">
+                    {t('widgetsA.noKachingRisk')}
+                  </p>
+                  <button
+                    onClick={() => setShowPutWizard(true)}
+                    className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-caution-600 hover:bg-caution-600 dark:bg-caution-500 dark:hover:bg-caution-600 rounded-lg transition-colors"
+                  >
+                    {t('widgetsA.buyProtectivePut')}
+                  </button>
+                </>
+              ) : (
+                renderUnlockHint('kaching')
+              )}
             </div>
           </div>
         );
@@ -414,18 +462,24 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               <h3 className="text-lg font-semibold text-ink-900 dark:text-white mb-2">
                 {t('widgetsA.noWheel')}
               </h3>
-              <p className="text-sm text-ink-500 dark:text-ink-400 mb-4">
-                {t('widgetsA.noWheelDesc')}
-              </p>
-              <p className="text-xs text-ink-400 dark:text-ink-500 mb-4 italic">
-                {t('widgetsA.noWheelRisk')}
-              </p>
-              <button
-                onClick={() => setShowNewWheelModal(true)}
-                className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 dark:bg-teal-500 dark:hover:bg-teal-600 rounded-lg transition-colors"
-              >
-                {t('widgetsA.startWheel')}
-              </button>
+              {isTypeUnlocked('wheel') ? (
+                <>
+                  <p className="text-sm text-ink-500 dark:text-ink-400 mb-4">
+                    {t('widgetsA.noWheelDesc')}
+                  </p>
+                  <p className="text-xs text-ink-400 dark:text-ink-500 mb-4 italic">
+                    {t('widgetsA.noWheelRisk')}
+                  </p>
+                  <button
+                    onClick={() => setShowNewWheelModal(true)}
+                    className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 dark:bg-teal-500 dark:hover:bg-teal-600 rounded-lg transition-colors"
+                  >
+                    {t('widgetsA.startWheel')}
+                  </button>
+                </>
+              ) : (
+                renderUnlockHint('wheel')
+              )}
             </div>
           </div>
         );

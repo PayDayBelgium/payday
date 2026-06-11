@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { getOpportunityRequiredFeature, filterOpportunitiesByAccess } from './opportunityGating';
+import {
+  getOpportunityRequiredFeature,
+  getCampaignTypeRequiredFeature,
+  getCampaignOpportunityRequiredFeature,
+  filterOpportunitiesByAccess,
+} from './opportunityGating';
 import type { AlertItem } from './alertEvaluator';
 import type { UserLevel } from '../types';
 
@@ -41,6 +46,26 @@ describe('getOpportunityRequiredFeature', () => {
   it('geeft null voor prijs-gebaseerde / onbekende opportunities (basisniveau)', () => {
     expect(getOpportunityRequiredFeature('pos-123-rule-456')).toBeNull();
     expect(getOpportunityRequiredFeature('iets-anders')).toBeNull();
+  });
+});
+
+describe('getCampaignTypeRequiredFeature', () => {
+  it('maps each campaign type to the feature that unlocks the strategy', () => {
+    expect(getCampaignTypeRequiredFeature('covered-call')).toBe('covered_calls'); // medior
+    expect(getCampaignTypeRequiredFeature('pmcc')).toBe('pmcc'); // senior
+    expect(getCampaignTypeRequiredFeature('kaching')).toBe('kaching'); // expert
+    expect(getCampaignTypeRequiredFeature('wheel')).toBe('wheel_strategy'); // medior
+  });
+});
+
+describe('getCampaignOpportunityRequiredFeature', () => {
+  it('maps campaign opportunities consistently with the dashboard opportunity gating', () => {
+    expect(getCampaignOpportunityRequiredFeature('covered-call')).toBe('covered_calls');
+    // Writing a call against a LEAPS is part of covered calls (medior),
+    // same as the leaps-cc-opportunity prefix mapping above.
+    expect(getCampaignOpportunityRequiredFeature('pmcc')).toBe('covered_calls');
+    expect(getCampaignOpportunityRequiredFeature('kaching')).toBe('kaching');
+    expect(getCampaignOpportunityRequiredFeature('wheel')).toBe('wheel_strategy');
   });
 });
 
