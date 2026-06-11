@@ -10,7 +10,13 @@ import { openPosition } from '../../store/commands/positionCommands';
 import { selectAllTickers } from '../../store/slices/tickersSlice';
 import { ensureTicker } from '../../store/commands/tickerCommands';
 import { selectActiveWheels } from '../../store/slices/wheelsSlice';
-import { selectUnlockedLevels, isFeatureAvailable } from '../../store/slices/userProgressSlice';
+import {
+  selectUnlockedLevels,
+  isFeatureAvailable,
+  getFeatureRequiredLevel,
+  getLevelConfig,
+} from '../../store/slices/userProgressSlice';
+import { useToast } from '../../contexts/ToastContext';
 import { getOptionActionFeature } from '../../utils/optionFeatureAccess';
 import { calculatePortfolioFreeCash } from '../../utils/alertEvaluator';
 import { getCurrencySymbol } from '../../utils/currency';
@@ -66,6 +72,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
 }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const { showToast } = useToast();
 
   // Get active wheels for potential linking
   const activeWheels = useSelector((state: RootState) => selectActiveWheels(state));
@@ -81,6 +88,20 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
   // wizard and defensively blocked on completion.
   const canUseAction = (a: OptionAction): boolean =>
     isFeatureAvailable(getOptionActionFeature('put', a), unlockedLevels);
+
+  // When the defensive completion guard blocks a locked action, tell the
+  // user what unlocks it instead of silently doing nothing.
+  const notifyActionLocked = (a: OptionAction): void => {
+    const level = getFeatureRequiredLevel(getOptionActionFeature('put', a));
+    const config = level ? getLevelConfig(level) : null;
+    showToast(
+      'warning',
+      t('safetyRails.featureLockedToast', {
+        slope: config?.slopeName ?? '',
+        level: config?.name ?? '',
+      })
+    );
+  };
 
   // Step 1: Action selection
   const [action, setAction] = useState<OptionAction>(initialAction || 'buy');
@@ -187,7 +208,10 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
   const handleComplete = () => {
     if (!selectedTicker) return;
     // Safety net: block creation of a not-yet-unlocked option action.
-    if (!canUseAction(action)) return;
+    if (!canUseAction(action)) {
+      notifyActionLocked(action);
+      return;
+    }
 
     // Soft didactic rail: selling a CSP reserves strike × 100 × contracts as
     // collateral. When the portfolio's free cash (which already discounts the
@@ -212,7 +236,10 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
   // the normal path, or from the insufficient-cash warning's explicit confirm.
   const createPosition = () => {
     if (!selectedTicker) return;
-    if (!canUseAction(action)) return;
+    if (!canUseAction(action)) {
+      notifyActionLocked(action);
+      return;
+    }
 
     const { costBasis, currentValue, cashReserved } = calculateValues();
     const dte = calculateDTE(isSpread ? longLeg.expiration : longLeg.expiration);

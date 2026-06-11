@@ -9,7 +9,13 @@ import { openPosition } from '../../store/commands/positionCommands';
 import { selectAllTickers } from '../../store/slices/tickersSlice';
 import { ensureTicker } from '../../store/commands/tickerCommands';
 import { selectActiveWheels } from '../../store/slices/wheelsSlice';
-import { selectUnlockedLevels, isFeatureAvailable } from '../../store/slices/userProgressSlice';
+import {
+  selectUnlockedLevels,
+  isFeatureAvailable,
+  getFeatureRequiredLevel,
+  getLevelConfig,
+} from '../../store/slices/userProgressSlice';
+import { useToast } from '../../contexts/ToastContext';
 import { getOptionActionFeature } from '../../utils/optionFeatureAccess';
 import { pickParentForNewShortCall, type CallCoverageInput } from '../../utils/coverageAllocation';
 import { isLEAPS } from '../../utils/campaignDetector';
@@ -86,6 +92,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
 }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const { showToast } = useToast();
   const allPositions = useAppSelector(selectPositions);
   const activeWheels = useAppSelector((state: RootState) => selectActiveWheels(state));
   const allWheels = useAppSelector((state: RootState) => state.wheels.wheels);
@@ -97,6 +104,20 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
   // wizard and defensively blocked on completion.
   const canUseAction = (a: OptionAction): boolean =>
     isFeatureAvailable(getOptionActionFeature('call', a), unlockedLevels);
+
+  // When the defensive completion guard blocks a locked action, tell the
+  // user what unlocks it instead of silently doing nothing.
+  const notifyActionLocked = (a: OptionAction): void => {
+    const level = getFeatureRequiredLevel(getOptionActionFeature('call', a));
+    const config = level ? getLevelConfig(level) : null;
+    showToast(
+      'warning',
+      t('safetyRails.featureLockedToast', {
+        slope: config?.slopeName ?? '',
+        level: config?.name ?? '',
+      })
+    );
+  };
 
   // Get the initial wheel if provided
   const initialWheel = useMemo(() => {
@@ -286,7 +307,10 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
   const handleComplete = () => {
     if (!selectedTicker) return;
     // Safety net: block creation of a not-yet-unlocked option action.
-    if (!canUseAction(action)) return;
+    if (!canUseAction(action)) {
+      notifyActionLocked(action);
+      return;
+    }
 
     // Soft didactic rail: completing a SELL call that no shares or LEAPS can
     // cover asks for explicit confirmation first (unlimited loss risk).
@@ -311,7 +335,10 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
   // the normal path, or from the naked-call warning's explicit confirm.
   const createPosition = () => {
     if (!selectedTicker) return;
-    if (!canUseAction(action)) return;
+    if (!canUseAction(action)) {
+      notifyActionLocked(action);
+      return;
+    }
 
     const { costBasis, currentValue, cashReserved } = calculateValues();
     const dte = calculateDTE(isSpread ? longLeg.expiration : longLeg.expiration);

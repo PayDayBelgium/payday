@@ -17,6 +17,8 @@ export const safetyRails = {
     campaignUnlockHint: 'This strategy unlocks at the {{slope}} ({{level}} level).',
     campaignOpportunityLocked:
       'More options for this campaign unlock at the {{slope}} ({{level}} level). Your positions stay fully visible.',
+    tradeIdeaLocked: 'Unlock this strategy at the {{slope}} ({{level}} level) to place this trade.',
+    featureLockedToast: 'This action is locked — unlock it at the {{slope}} ({{level}} level).',
   },
   nl: {
     nakedCallAlert:
@@ -34,6 +36,10 @@ export const safetyRails = {
     campaignUnlockHint: 'Deze strategie ontgrendel je op de {{slope}} (niveau {{level}}).',
     campaignOpportunityLocked:
       'Meer mogelijkheden voor deze campagne ontgrendel je op de {{slope}} (niveau {{level}}). Je posities blijven volledig zichtbaar.',
+    tradeIdeaLocked:
+      'Ontgrendel deze strategie op de {{slope}} (niveau {{level}}) om deze trade te plaatsen.',
+    featureLockedToast:
+      'Deze actie is vergrendeld — ontgrendel ze op de {{slope}} (niveau {{level}}).',
   },
   fr: {
     nakedCallAlert:
@@ -51,5 +57,9 @@ export const safetyRails = {
     campaignUnlockHint: 'Cette stratégie se débloque sur la {{slope}} (niveau {{level}}).',
     campaignOpportunityLocked:
       'Plus de possibilités pour cette campagne se débloquent sur la {{slope}} (niveau {{level}}). Vos positions restent entièrement visibles.',
+    tradeIdeaLocked:
+      'Débloquez cette stratégie sur la {{slope}} (niveau {{level}}) pour passer ce trade.',
+    featureLockedToast:
+      'Cette action est verrouillée — débloquez-la sur la {{slope}} (niveau {{level}}).',
   },
 };

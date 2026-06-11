@@ -3,8 +3,10 @@ import {
   getOpportunityRequiredFeature,
   getCampaignTypeRequiredFeature,
   getCampaignOpportunityRequiredFeature,
+  getTradeIdeaRequiredFeature,
   filterOpportunitiesByAccess,
 } from './opportunityGating';
+import { isFeatureAvailable } from '../store/slices/userProgressSlice';
 import type { AlertItem } from './alertEvaluator';
 import type { UserLevel } from '../types';
 
@@ -66,6 +68,23 @@ describe('getCampaignOpportunityRequiredFeature', () => {
     expect(getCampaignOpportunityRequiredFeature('pmcc')).toBe('covered_calls');
     expect(getCampaignOpportunityRequiredFeature('kaching')).toBe('kaching');
     expect(getCampaignOpportunityRequiredFeature('wheel')).toBe('wheel_strategy');
+  });
+});
+
+describe('getTradeIdeaRequiredFeature', () => {
+  it('uses the idea strategy as the gate feature', () => {
+    expect(getTradeIdeaRequiredFeature({ strategy: 'covered_calls' })).toBe('covered_calls');
+    expect(getTradeIdeaRequiredFeature({ strategy: 'cash_secured_puts' })).toBe(
+      'cash_secured_puts'
+    );
+    expect(getTradeIdeaRequiredFeature({ strategy: 'pmcc' })).toBe('pmcc');
+    expect(getTradeIdeaRequiredFeature({ strategy: 'spreads' })).toBe('spreads');
+  });
+
+  it('blocks a covered-call idea for a beginner but allows it at medior', () => {
+    const feature = getTradeIdeaRequiredFeature({ strategy: 'covered_calls' });
+    expect(isFeatureAvailable(feature, ['beginner'])).toBe(false);
+    expect(isFeatureAvailable(feature, ['beginner', 'medior'])).toBe(true);
   });
 });
 

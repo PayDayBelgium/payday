@@ -1,4 +1,4 @@
-import type { FeatureId, UserLevel } from '../types';
+import type { FeatureId, TradeIdea, UserLevel } from '../types';
 import { isFeatureAvailable } from '../store/slices/userProgressSlice';
 import type { AlertItem } from './alertEvaluator';
 import type { CampaignType } from './campaignDetector';
@@ -71,6 +71,16 @@ export const getCampaignOpportunityRequiredFeature = (type: CampaignType): Featu
       return 'covered_calls'; // medior
   }
 };
+
+/**
+ * Feature required to ACT on a community trade idea ("Place trade").
+ * `TradeIdea.strategy` is already a `FeatureId` by type; this helper locks
+ * that contract in one place so the actionable surfaces cannot silently
+ * drift if the type ever changes. The idea CARD itself is educational
+ * content and stays visible at any level — only the action is gated.
+ */
+export const getTradeIdeaRequiredFeature = (idea: Pick<TradeIdea, 'strategy'>): FeatureId =>
+  idea.strategy;
 
 /**
  * Filters opportunities based on the user's unlocked levels.
