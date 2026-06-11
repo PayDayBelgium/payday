@@ -1,16 +1,13 @@
 import { createSlice, createSelector } from '@reduxjs/toolkit';
-import type { WheelCampaign, PortfolioName } from '../../types';
+import type { PortfolioName } from '../../types';
 import { appendEvents, replayEvents } from '../events/eventsSlice';
-import { applyWheelEvent } from '../events/projectWheels';
+import { applyWheelEvent, emptyWheelsProjection } from '../events/projectWheels';
+import type { WheelsProjectionState } from '../events/projectWheels';
 import type { DomainEvent } from '../events/types';
 
-interface WheelsState {
-  wheels: WheelCampaign[];
-}
+type WheelsState = WheelsProjectionState;
 
-const initialState: WheelsState = {
-  wheels: [],
-};
+const initialState: WheelsState = emptyWheelsProjection();
 
 const wheelsSlice = createSlice({
   name: 'wheels',
@@ -21,15 +18,23 @@ const wheelsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(appendEvents, (state, action) => {
+      let projection: WheelsProjectionState = {
+        wheels: state.wheels,
+        openSoldOptions: state.openSoldOptions,
+      };
       for (const event of action.payload.events as DomainEvent[]) {
-        state.wheels = applyWheelEvent(state.wheels, event);
+        projection = applyWheelEvent(projection, event);
       }
+      state.wheels = projection.wheels;
+      state.openSoldOptions = projection.openSoldOptions;
     });
     builder.addCase(replayEvents, (state, action) => {
-      state.wheels = [];
+      let projection = emptyWheelsProjection();
       for (const event of action.payload as DomainEvent[]) {
-        state.wheels = applyWheelEvent(state.wheels, event);
+        projection = applyWheelEvent(projection, event);
       }
+      state.wheels = projection.wheels;
+      state.openSoldOptions = projection.openSoldOptions;
     });
   },
 });

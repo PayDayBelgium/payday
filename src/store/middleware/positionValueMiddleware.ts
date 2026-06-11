@@ -55,8 +55,10 @@ const computePositionsValue = (state: RootState, portfolioName: string): number 
     } else if (pos.type === 'call' || pos.type === 'put') {
       const option = pos as CallOption | PutOption;
       if (option.action === 'buy') {
-        // Long options: positive cost basis (money paid)
-        totalCurrentValue += Math.abs(option.currentValue || option.costBasis);
+        // Long options: positive cost basis (money paid).
+        // Use ?? (not ||) so an option marked to exactly 0 (worthless) counts
+        // as 0 instead of falling back to its cost basis.
+        totalCurrentValue += Math.abs(option.currentValue ?? option.costBasis);
       } else {
         // Short options: negative cost basis (money received)
         // Current value is also negative (liability)

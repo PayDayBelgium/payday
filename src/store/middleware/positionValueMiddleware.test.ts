@@ -155,6 +155,35 @@ describe('positionValueMiddleware', () => {
     expect(portfolioValue()).toBe(10050);
   });
 
+  // Regression: a long option marked to exactly $0 must contribute 0 to the
+  // portfolio value — not silently fall back to its cost basis (the old
+  // `currentValue || costBasis` treated 0 as "missing" and inflated the value).
+  it('values a worthless long option at 0, not at cost basis', () => {
+    const longCall = {
+      id: 'long1',
+      ticker: 'XYZ',
+      portfolio: 'Test',
+      openDate: '2026-01-01',
+      status: 'open',
+      type: 'call',
+      action: 'buy',
+      strike: 100,
+      expiration: '2026-12-31',
+      contracts: 1,
+      costBasis: 500,
+      currentValue: 500,
+    } as unknown as Position;
+
+    store.dispatch(openPosition(longCall));
+    const baseline = portfolioValue();
+
+    // The option expires worthless: marked to exactly 0.
+    store.dispatch(updatePositionValue({ id: 'long1', currentValue: 0 }));
+
+    // The full 500 of option value must be gone (cash is unchanged by a tick).
+    expect(portfolioValue()).toBe(baseline - 500);
+  });
+
   // Cash-balance tests: transaction events now flow through events/appendEvents
   // (CashDeposited, DividendReceived, FeeCharged, OptionRolled via OptionRolled event).
   // The ledger projection folds them into state.portfolios.transactions, which the

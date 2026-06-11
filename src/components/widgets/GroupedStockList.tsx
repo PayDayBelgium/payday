@@ -321,10 +321,16 @@ export const GroupedStockList: React.FC<GroupedStockListProps> = ({
                     p.ticker === group.ticker &&
                     isLEAPS(p as CallOption)
                 );
+            // Thread the ticker price so the allocator's tight-capacity
+            // tie-break matches the dashboard (campaignDetector/alertEvaluator).
+            const groupTickerPrice = tickers?.find(
+              (tk) => tk.symbol.toUpperCase() === group.ticker.toUpperCase()
+            )?.currentPrice;
             const ccCapacity = computeCoveredCallCapacity(
               group.positions as StockPosition[],
               groupSoldCalls,
-              groupLeaps
+              groupLeaps,
+              groupTickerPrice
             );
             const canWriteCoveredCalls =
               portfolioSupportsOptions && ccCapacity.canWriteCoveredCall && canUseCoveredCalls;

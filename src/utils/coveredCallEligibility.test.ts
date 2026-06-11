@@ -132,4 +132,26 @@ describe('computeCoveredCallCapacity – allocator consistency', () => {
     expect(cap.maxContracts).toBe(0);
     expect(cap.canWriteCoveredCall).toBe(false);
   });
+
+  it('threads currentPrice into the allocator tie-break (parity with the dashboard)', () => {
+    // Tight capacity: 200 shares = 2 contracts, break-even 10.
+    // Candidates: a 1-contract strike-12 call and a 2-contract strike-30 call.
+    const lots = [lot(200)];
+    const calls = [
+      soldCall(1, { id: 'near', strike: 12 }),
+      soldCall(2, { id: 'otm', strike: 30 }),
+    ];
+
+    // Without a price the allocator orders by distance to break-even: the
+    // strike-12 call is assigned first and the 2-contract call no longer fits.
+    const withoutPrice = computeCoveredCallCapacity(lots, calls);
+    expect(withoutPrice.coveredContracts).toBe(1);
+    expect(withoutPrice.freeContracts).toBe(1);
+
+    // With the price the ~15% OTM target (25 × 1.15 = 28.75) prefers the
+    // strike-30 call — the SAME answer campaignDetector/alertEvaluator compute.
+    const withPrice = computeCoveredCallCapacity(lots, calls, [], 25);
+    expect(withPrice.coveredContracts).toBe(2);
+    expect(withPrice.freeContracts).toBe(0);
+  });
 });

@@ -1,10 +1,12 @@
-import { differenceInDays, parseISO } from 'date-fns';
+import { differenceInDays, format, parseISO } from 'date-fns';
 
 /**
- * Get today's date in YYYY-MM-DD format for HTML date inputs
+ * Get today's date in YYYY-MM-DD format for HTML date inputs.
+ * Uses the LOCAL calendar date — `toISOString()` would return the UTC date,
+ * which is yesterday before ~01:00/02:00 in Belgium (UTC+1/+2).
  */
 export const getTodayDateString = (): string => {
-  return new Date().toISOString().split('T')[0];
+  return format(new Date(), 'yyyy-MM-dd');
 };
 
 /**

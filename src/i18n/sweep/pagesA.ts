@@ -46,6 +46,10 @@ export const pagesA = {
         liveWarningLabel: 'Note:',
         liveWarningText:
           'Live mode requires an active Interactive Brokers connection via the backend service.',
+        configSaved: 'Configuration saved',
+        configRejected:
+          'Invalid settings were not saved — check the URL (wss:// or ws://localhost) and the reconnect values',
+        configSaveFailed: 'Saving the configuration failed',
       },
       rules: {
         appliesToAll: 'These rules apply to all portfolios',
@@ -264,6 +268,10 @@ export const pagesA = {
         liveWarningLabel: 'Let op:',
         liveWarningText:
           'Live mode vereist een actieve Interactive Brokers connectie via de backend service.',
+        configSaved: 'Configuratie opgeslagen',
+        configRejected:
+          'Ongeldige instellingen zijn niet opgeslagen — controleer de URL (wss:// of ws://localhost) en de reconnect-waarden',
+        configSaveFailed: 'Configuratie opslaan is mislukt',
       },
       rules: {
         appliesToAll: 'Deze regels worden toegepast op alle portfolios',
@@ -482,6 +490,10 @@ export const pagesA = {
         liveWarningLabel: 'Attention :',
         liveWarningText:
           'Le mode live nécessite une connexion Interactive Brokers active via le service backend.',
+        configSaved: 'Configuration enregistrée',
+        configRejected:
+          "Les paramètres non valides n'ont pas été enregistrés — vérifiez l'URL (wss:// ou ws://localhost) et les valeurs de reconnexion",
+        configSaveFailed: "L'enregistrement de la configuration a échoué",
       },
       rules: {
         appliesToAll: "Ces règles s'appliquent à tous les portefeuilles",

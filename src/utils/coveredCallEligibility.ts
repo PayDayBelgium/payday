@@ -29,11 +29,18 @@ export interface CoveredCallCapacity {
  *                  by its long leg, not by shares.
  * @param leaps Open long LEAPS calls of the same ticker+portfolio, so short calls
  *              the allocator assigns to a LEAPS do not consume share capacity.
+ * @param currentPrice Current price of the underlying. The allocator's
+ *              tight-capacity tie-break targets ~15% OTM when a price is
+ *              available; campaignDetector/alertEvaluator always pass it, so
+ *              callers should too whenever a ticker price is at hand —
+ *              otherwise the wizard's freeContracts can diverge from the
+ *              dashboard under tight capacity.
  */
 export function computeCoveredCallCapacity(
   lots: StockPosition[],
   soldCalls: CallOption[],
-  leaps: CallOption[] = []
+  leaps: CallOption[] = [],
+  currentPrice?: number
 ): CoveredCallCapacity {
   const ccLots = lots.filter((l) => !l.wheelId);
   const ccCalls = soldCalls.filter((c) => !c.wheelId);
@@ -48,6 +55,7 @@ export function computeCoveredCallCapacity(
     stocks: ccLots,
     leaps: ccLeaps,
     shortCalls: ccCalls,
+    currentPrice,
   });
 
   const maxContracts = allocation.stock?.capacity ?? 0;
