@@ -4,6 +4,7 @@ import {
   getCampaignTypeRequiredFeature,
   getCampaignOpportunityRequiredFeature,
   getTradeIdeaRequiredFeature,
+  canStartWheelCampaign,
   filterOpportunitiesByAccess,
 } from './opportunityGating';
 import { isFeatureAvailable } from '../store/slices/userProgressSlice';
@@ -85,6 +86,13 @@ describe('getTradeIdeaRequiredFeature', () => {
     const feature = getTradeIdeaRequiredFeature({ strategy: 'covered_calls' });
     expect(isFeatureAvailable(feature, ['beginner'])).toBe(false);
     expect(isFeatureAvailable(feature, ['beginner', 'medior'])).toBe(true);
+  });
+});
+
+describe('canStartWheelCampaign', () => {
+  it('blocks beginners and allows medior (wheel_strategy + cash_secured_puts)', () => {
+    expect(canStartWheelCampaign(['beginner'])).toBe(false);
+    expect(canStartWheelCampaign(['beginner', 'medior'])).toBe(true);
   });
 });
 

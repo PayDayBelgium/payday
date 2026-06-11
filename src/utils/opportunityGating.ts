@@ -73,6 +73,15 @@ export const getCampaignOpportunityRequiredFeature = (type: CampaignType): Featu
 };
 
 /**
+ * Whether the user may START a wheel campaign. A wheel manages a CSP leg,
+ * so it requires both `wheel_strategy` and `cash_secured_puts` (both medior
+ * today; checking both keeps the gate correct if the mapping ever changes).
+ */
+export const canStartWheelCampaign = (unlockedLevels: UserLevel[]): boolean =>
+  isFeatureAvailable('wheel_strategy', unlockedLevels) &&
+  isFeatureAvailable('cash_secured_puts', unlockedLevels);
+
+/**
  * Feature required to ACT on a community trade idea ("Place trade").
  * `TradeIdea.strategy` is already a `FeatureId` by type; this helper locks
  * that contract in one place so the actionable surfaces cannot silently

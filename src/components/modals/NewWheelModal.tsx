@@ -4,8 +4,15 @@ import { parseCountInput } from '../../utils/inputFormat';
 import { X, RefreshCw, Info, ArrowLeft, TrendingUp, Building2, Plus } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
+import { useToast } from '../../contexts/ToastContext';
 import { startWheelCampaign } from '../../store/commands/wheelCommands';
 import { selectPositions } from '../../store/slices/positionsSlice';
+import {
+  selectUnlockedLevels,
+  getFeatureRequiredLevel,
+  getLevelConfig,
+} from '../../store/slices/userProgressSlice';
+import { canStartWheelCampaign } from '../../utils/opportunityGating';
 import { openPosition, editPosition } from '../../store/commands/positionCommands';
 import { ensureTicker } from '../../store/commands/tickerCommands';
 import { TickerSelector } from '../widgets/TickerSelector';
@@ -28,7 +35,9 @@ interface NewWheelModalProps {
 export const NewWheelModal: React.FC<NewWheelModalProps> = ({ isOpen, onClose, portfolioName }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const { showToast } = useToast();
   const allPositions = useAppSelector(selectPositions);
+  const unlockedLevels = useAppSelector(selectUnlockedLevels);
 
   const [selectedTicker, setSelectedTicker] = useState<Ticker | null>(null);
   const [targetContracts, setTargetContracts] = useState(1);
@@ -83,6 +92,22 @@ export const NewWheelModal: React.FC<NewWheelModalProps> = ({ isOpen, onClose, p
     e.preventDefault();
 
     if (!selectedTicker || !startOption || targetContracts < 1) return;
+
+    // Explicit level gate at the creation path: until now this modal was
+    // only accidentally shielded by being reachable from medior-only
+    // screens. Same feedback pattern as the option wizards (no silent no-op).
+    if (!canStartWheelCampaign(unlockedLevels)) {
+      const level = getFeatureRequiredLevel('wheel_strategy');
+      const config = level ? getLevelConfig(level) : null;
+      showToast(
+        'warning',
+        t('safetyRails.featureLockedToast', {
+          slope: config?.slopeName ?? '',
+          level: config?.name ?? '',
+        })
+      );
+      return;
+    }
 
     const wheelId = `wheel-${Date.now()}`;
     const shares = targetContracts * 100;
