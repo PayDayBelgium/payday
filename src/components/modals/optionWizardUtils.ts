@@ -6,6 +6,7 @@
 import type { Ticker, PortfolioName, CurrencyType } from '../../types';
 import { getDaysToExpiration } from '../../utils/dateHelpers';
 import { getDecimalSeparator, getThousandSeparator } from '../../utils/numberFormat';
+import { pickParentForNewShortCall, type CallCoverageInput } from '../../utils/coverageAllocation';
 
 // ============ TYPES ============
 
@@ -71,6 +72,28 @@ export const validateNumberInput = (value: string): boolean => {
   if (decimals > 1) return false;
 
   return true;
+};
+
+/**
+ * Decide whether completing a SELL call should trigger the naked-call
+ * warning: the new short call would get no parent (no free share capacity,
+ * no eligible LEAPS) per the shared coverage allocator. Soft rail — the
+ * wizard warns and lets the user confirm; it never blocks.
+ *
+ * Wheel-linked calls belong to their wheel campaign, and an explicit
+ * initiator (opened from a stock/LEAPS suggestion badge) is honoured as the
+ * parent, so neither case warns.
+ */
+export const isNewShortCallNaked = (params: {
+  isShortCall: boolean;
+  linkedToWheel: boolean;
+  explicitUnderlyingId?: string;
+  group: CallCoverageInput;
+  newCall: { strike: number; contracts: number };
+}): boolean => {
+  const { isShortCall, linkedToWheel, explicitUnderlyingId, group, newCall } = params;
+  if (!isShortCall || linkedToWheel || explicitUnderlyingId) return false;
+  return pickParentForNewShortCall(group, newCall) === null;
 };
 
 // ============ CALCULATION HELPERS ============

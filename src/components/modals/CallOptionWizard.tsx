@@ -11,9 +11,10 @@ import { ensureTicker } from '../../store/commands/tickerCommands';
 import { selectActiveWheels } from '../../store/slices/wheelsSlice';
 import { selectUnlockedLevels, isFeatureAvailable } from '../../store/slices/userProgressSlice';
 import { getOptionActionFeature } from '../../utils/optionFeatureAccess';
-import { pickParentForNewShortCall } from '../../utils/coverageAllocation';
+import { pickParentForNewShortCall, type CallCoverageInput } from '../../utils/coverageAllocation';
 import { isLEAPS } from '../../utils/campaignDetector';
 import { WizardModal, type WizardStep } from './WizardModal';
+import { ConfirmDialog } from './ConfirmDialog';
 import { TickerSelector } from '../widgets/TickerSelector';
 import { PnLCurve } from '../widgets/PnLCurve';
 import { FridayDatePicker } from '../common/FridayDatePicker';
@@ -37,6 +38,7 @@ import {
   calculateDTE,
   calculateCallBreakEven,
   calculateCallValues,
+  isNewShortCallNaked,
 } from './optionWizardUtils';
 
 // Wizard step order is fixed: action(0) → ticker(1) → details(2). A pre-filled
@@ -142,6 +144,10 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
 
   const [purchaseDate, setPurchaseDate] = useState(new Date().toISOString().split('T')[0]);
   const [notes, setNotes] = useState('');
+
+  // Soft naked-call rail: shown when completing a SELL call that no shares
+  // or LEAPS can cover; confirming proceeds anyway.
+  const [showNakedCallWarning, setShowNakedCallWarning] = useState(false);
 
   // Refs for autofocus
   const strikeInputRef = useRef<HTMLInputElement>(null);
@@ -252,9 +258,59 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
     return holding ? holding.freeContracts : Infinity;
   }, [action, selectedTicker, eligibleUnderlyings.stocks]);
 
+  // Build the ticker+portfolio coverage group for the allocator (same
+  // exclusions as the dashboard evaluators: open, non-wheel positions).
+  const buildCoverageGroupInput = (): CallCoverageInput => {
+    const tickerSym = selectedTicker?.symbol.toUpperCase() ?? '';
+    const groupPositions = allPositions.filter(
+      (p) =>
+        p.status === 'open' &&
+        p.portfolio === portfolio.name &&
+        p.ticker.toUpperCase() === tickerSym &&
+        !(p as { wheelId?: string }).wheelId
+    );
+    return {
+      stocks: groupPositions.filter(
+        (p) => p.type === 'stock' || p.type === 'etf'
+      ) as StockPosition[],
+      leaps: groupPositions.filter(
+        (p) => p.type === 'call' && (p as CallOption).action === 'buy' && isLEAPS(p as CallOption)
+      ) as CallOption[],
+      shortCalls: groupPositions.filter(
+        (p) => p.type === 'call' && (p as CallOption).action === 'sell'
+      ) as CallOption[],
+      currentPrice: currentTickerPrice ?? undefined,
+    };
+  };
+
   const handleComplete = () => {
     if (!selectedTicker) return;
     // Safety net: block creation of a not-yet-unlocked option action.
+    if (!canUseAction(action)) return;
+
+    // Soft didactic rail: completing a SELL call that no shares or LEAPS can
+    // cover asks for explicit confirmation first (unlimited loss risk).
+    if (
+      !isSpread &&
+      isNewShortCallNaked({
+        isShortCall: action === 'sell' || action === 'covered-call',
+        linkedToWheel: !!selectedWheelId,
+        explicitUnderlyingId: initialUnderlyingId,
+        group: buildCoverageGroupInput(),
+        newCall: { strike: longLeg.strike, contracts: longLeg.contracts },
+      })
+    ) {
+      setShowNakedCallWarning(true);
+      return;
+    }
+
+    createPosition();
+  };
+
+  // Actually create the position(s). Called directly from handleComplete for
+  // the normal path, or from the naked-call warning's explicit confirm.
+  const createPosition = () => {
+    if (!selectedTicker) return;
     if (!canUseAction(action)) return;
 
     const { costBasis, currentValue, cashReserved } = calculateValues();
@@ -343,33 +399,10 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
           // Explicit initiator wins — link to the initiating position.
           underlyingId = initialUnderlyingId;
         } else {
-          const tickerSym = selectedTicker.symbol.toUpperCase();
-          const groupPositions = allPositions.filter(
-            (p) =>
-              p.status === 'open' &&
-              p.portfolio === portfolio.name &&
-              p.ticker.toUpperCase() === tickerSym &&
-              !(p as { wheelId?: string }).wheelId
-          );
-          const groupStocks = groupPositions.filter(
-            (p) => p.type === 'stock' || p.type === 'etf'
-          ) as StockPosition[];
-          const groupShortCalls = groupPositions.filter(
-            (p) => p.type === 'call' && (p as CallOption).action === 'sell'
-          ) as CallOption[];
-          const groupLeaps = groupPositions.filter(
-            (p) =>
-              p.type === 'call' && (p as CallOption).action === 'buy' && isLEAPS(p as CallOption)
-          ) as CallOption[];
-          const parent = pickParentForNewShortCall(
-            {
-              stocks: groupStocks,
-              leaps: groupLeaps,
-              shortCalls: groupShortCalls,
-              currentPrice: currentTickerPrice ?? undefined,
-            },
-            { strike: longLeg.strike, contracts: longLeg.contracts }
-          );
+          const parent = pickParentForNewShortCall(buildCoverageGroupInput(), {
+            strike: longLeg.strike,
+            contracts: longLeg.contracts,
+          });
           underlyingId = parent?.parentId;
         }
       }
@@ -438,6 +471,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
     setNotes('');
     setSelectedWheelId(null);
     setCurrentStepIndex(0);
+    setShowNakedCallWarning(false);
   };
 
   // Effect to initialize values when wizard opens with initial values
@@ -1347,22 +1381,33 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
   );
 
   return (
-    <WizardModal
-      isOpen={isOpen}
-      onClose={() => {
-        onClose();
-        resetForm();
-      }}
-      title={
-        selectedTicker
-          ? `${t('callWizard.title')} · ${selectedTicker.symbol}`
-          : t('callWizard.title')
-      }
-      steps={steps}
-      onComplete={handleComplete}
-      completeButtonLabel={t('callWizard.completeButton')}
-      currentStepIndex={currentStepIndex}
-      onStepChange={setCurrentStepIndex}
-    />
+    <>
+      <WizardModal
+        isOpen={isOpen}
+        onClose={() => {
+          onClose();
+          resetForm();
+        }}
+        title={
+          selectedTicker
+            ? `${t('callWizard.title')} · ${selectedTicker.symbol}`
+            : t('callWizard.title')
+        }
+        steps={steps}
+        onComplete={handleComplete}
+        completeButtonLabel={t('callWizard.completeButton')}
+        currentStepIndex={currentStepIndex}
+        onStepChange={setCurrentStepIndex}
+      />
+      <ConfirmDialog
+        isOpen={showNakedCallWarning}
+        variant="warning"
+        title={t('safetyRails.nakedCallWarnTitle')}
+        message={t('safetyRails.nakedCallWarnMessage')}
+        confirmText={t('safetyRails.nakedCallWarnConfirm')}
+        onConfirm={createPosition}
+        onClose={() => setShowNakedCallWarning(false)}
+      />
+    </>
   );
 };
