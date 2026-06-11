@@ -19,6 +19,12 @@ export const safetyRails = {
       'More options for this campaign unlock at the {{slope}} ({{level}} level). Your positions stay fully visible.',
     tradeIdeaLocked: 'Unlock this strategy at the {{slope}} ({{level}} level) to place this trade.',
     featureLockedToast: 'This action is locked — unlock it at the {{slope}} ({{level}} level).',
+    errorBoundaryTitle: 'Something went wrong',
+    errorBoundaryMessage:
+      'An unexpected error occurred while displaying this page. Your data is safe — reloading usually fixes it.',
+    errorBoundaryChunkMessage:
+      'Part of the app failed to load. This usually happens after an update — reload to get the latest version.',
+    errorBoundaryReload: 'Reload',
   },
   nl: {
     nakedCallAlert:
@@ -40,6 +46,12 @@ export const safetyRails = {
       'Ontgrendel deze strategie op de {{slope}} (niveau {{level}}) om deze trade te plaatsen.',
     featureLockedToast:
       'Deze actie is vergrendeld — ontgrendel ze op de {{slope}} (niveau {{level}}).',
+    errorBoundaryTitle: 'Er ging iets mis',
+    errorBoundaryMessage:
+      'Er trad een onverwachte fout op bij het tonen van deze pagina. Je gegevens zijn veilig — herladen lost het meestal op.',
+    errorBoundaryChunkMessage:
+      'Een deel van de app kon niet geladen worden. Dit gebeurt meestal na een update — herlaad om de nieuwste versie op te halen.',
+    errorBoundaryReload: 'Herladen',
   },
   fr: {
     nakedCallAlert:
@@ -61,5 +73,11 @@ export const safetyRails = {
       'Débloquez cette stratégie sur la {{slope}} (niveau {{level}}) pour passer ce trade.',
     featureLockedToast:
       'Cette action est verrouillée — débloquez-la sur la {{slope}} (niveau {{level}}).',
+    errorBoundaryTitle: 'Une erreur est survenue',
+    errorBoundaryMessage:
+      "Une erreur inattendue s'est produite lors de l'affichage de cette page. Vos données sont en sécurité — recharger résout généralement le problème.",
+    errorBoundaryChunkMessage:
+      "Une partie de l'application n'a pas pu être chargée. Cela arrive généralement après une mise à jour — rechargez pour obtenir la dernière version.",
+    errorBoundaryReload: 'Recharger',
   },
 };

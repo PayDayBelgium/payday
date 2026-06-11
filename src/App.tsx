@@ -102,6 +102,8 @@ const UserDetail = lazy(() =>
 const AddUser = lazy(() => import('./pages/admin/AddUser').then((m) => ({ default: m.AddUser })));
 import { Layout } from './components/layout/Layout';
 import { LoadingOverlay } from './components/common/LoadingOverlay';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
+import { useTranslation } from 'react-i18next';
 import { FeatureGate } from './components/features/FeatureGate';
 import { useIBConnection } from './hooks/useIBConnection';
 import { useAppSelector } from './hooks/useAppSelector';
@@ -270,37 +272,42 @@ function AppContent() {
 }
 
 function App() {
+  const { t } = useTranslation();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const isAdminAuthenticated = useAppSelector((state) => state.adminAuth.isAuthenticated);
 
   return (
     <Router>
-      <Suspense fallback={<LoadingOverlay message="Laden..." />}>
-        <Routes>
-          {/* Admin Routes */}
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<Navigate to="/admin/dashboard" replace />} />
-            <Route path="dashboard" element={<AdminDashboard />} />
-            <Route path="users" element={<UsersList />} />
-            <Route path="users/add" element={<AddUser />} />
-            <Route path="users/:username" element={<UserDetail />} />
-          </Route>
+      {/* One render error or failed lazy-chunk fetch (stale deploy) used to
+          mean a white screen; the boundary shows a reload-recovery UI. */}
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingOverlay message={t('common.loading')} />}>
+          <Routes>
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<Navigate to="/admin/dashboard" replace />} />
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="users" element={<UsersList />} />
+              <Route path="users/add" element={<AddUser />} />
+              <Route path="users/:username" element={<UserDetail />} />
+            </Route>
 
-          {/* Regular App Routes */}
-          <Route
-            path="/*"
-            element={
-              isAdminAuthenticated ? (
-                <Navigate to="/admin/dashboard" replace />
-              ) : isAuthenticated ? (
-                <AppContent />
-              ) : (
-                <LoginPage />
-              )
-            }
-          />
-        </Routes>
-      </Suspense>
+            {/* Regular App Routes */}
+            <Route
+              path="/*"
+              element={
+                isAdminAuthenticated ? (
+                  <Navigate to="/admin/dashboard" replace />
+                ) : isAuthenticated ? (
+                  <AppContent />
+                ) : (
+                  <LoginPage />
+                )
+              }
+            />
+          </Routes>
+        </Suspense>
+      </ErrorBoundary>
     </Router>
   );
 }
