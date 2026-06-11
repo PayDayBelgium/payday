@@ -6,6 +6,7 @@ import { getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency } from '../../utils/numberFormat';
 import { getTodayDateString } from '../../utils/dateHelpers';
 import { FridayDatePicker } from '../common/FridayDatePicker';
+import { isExpirationInPast } from './optionWizardUtils';
 import { RollModalShell } from './RollModalShell';
 import { RollCalculationSummary } from './RollCalculationSummary';
 
@@ -106,7 +107,9 @@ export const SpreadRollModal: React.FC<SpreadRollModalProps> = ({
       !longNewPremium ||
       !shortClosePremium ||
       !shortNewExpiration ||
-      !shortNewPremium
+      !shortNewPremium ||
+      isExpirationInPast(longNewExpiration) ||
+      isExpirationInPast(shortNewExpiration)
     ) {
       return;
     }
@@ -455,7 +458,9 @@ export const SpreadRollModal: React.FC<SpreadRollModalProps> = ({
               !longNewPremium ||
               !shortClosePremium ||
               !shortNewExpiration ||
-              !shortNewPremium
+              !shortNewPremium ||
+              isExpirationInPast(longNewExpiration) ||
+              isExpirationInPast(shortNewExpiration)
             }
             className="px-4 py-2 bg-ink-700 hover:bg-purple-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
