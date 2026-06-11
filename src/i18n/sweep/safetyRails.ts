@@ -25,6 +25,7 @@ export const safetyRails = {
     errorBoundaryChunkMessage:
       'Part of the app failed to load. This usually happens after an update — reload to get the latest version.',
     errorBoundaryReload: 'Reload',
+    expirationInPast: 'This expiration is in the past — pick today or a later date.',
   },
   nl: {
     nakedCallAlert:
@@ -52,6 +53,7 @@ export const safetyRails = {
     errorBoundaryChunkMessage:
       'Een deel van de app kon niet geladen worden. Dit gebeurt meestal na een update — herlaad om de nieuwste versie op te halen.',
     errorBoundaryReload: 'Herladen',
+    expirationInPast: 'Deze expiratie ligt in het verleden — kies vandaag of een latere datum.',
   },
   fr: {
     nakedCallAlert:
@@ -79,5 +81,7 @@ export const safetyRails = {
     errorBoundaryChunkMessage:
       "Une partie de l'application n'a pas pu être chargée. Cela arrive généralement après une mise à jour — rechargez pour obtenir la dernière version.",
     errorBoundaryReload: 'Recharger',
+    expirationInPast:
+      "Cette échéance est dans le passé — choisissez aujourd'hui ou une date ultérieure.",
   },
 };

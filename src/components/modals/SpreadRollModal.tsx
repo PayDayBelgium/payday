@@ -4,6 +4,7 @@ import { Redo2, Calendar, DollarSign, TrendingUp } from 'lucide-react';
 import type { CallOption, PutOption, CurrencyType } from '../../types';
 import { getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency } from '../../utils/numberFormat';
+import { getTodayDateString } from '../../utils/dateHelpers';
 import { FridayDatePicker } from '../common/FridayDatePicker';
 import { RollModalShell } from './RollModalShell';
 import { RollCalculationSummary } from './RollCalculationSummary';
@@ -280,6 +281,7 @@ export const SpreadRollModal: React.FC<SpreadRollModalProps> = ({
                 <FridayDatePicker
                   value={longNewExpiration}
                   onChange={(date) => setLongNewExpiration(date)}
+                  min={getTodayDateString()}
                   className="w-full px-3 py-2 text-sm border border-primary-300 dark:border-primary-600 rounded-lg bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                 />
               </div>
@@ -383,6 +385,7 @@ export const SpreadRollModal: React.FC<SpreadRollModalProps> = ({
                 <FridayDatePicker
                   value={shortNewExpiration}
                   onChange={(date) => setShortNewExpiration(date)}
+                  min={getTodayDateString()}
                   className="w-full px-3 py-2 text-sm border border-caution-500/40 dark:border-caution-600 rounded-lg bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white focus:ring-2 focus:ring-caution-500"
                 />
               </div>

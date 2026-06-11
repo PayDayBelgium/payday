@@ -4,7 +4,7 @@
  */
 
 import type { Ticker, PortfolioName, CurrencyType } from '../../types';
-import { getDaysToExpiration } from '../../utils/dateHelpers';
+import { getDaysToExpiration, getTodayDateString } from '../../utils/dateHelpers';
 import { getDecimalSeparator, getThousandSeparator } from '../../utils/numberFormat';
 import { pickParentForNewShortCall, type CallCoverageInput } from '../../utils/coverageAllocation';
 
@@ -72,6 +72,17 @@ export const validateNumberInput = (value: string): boolean => {
   if (decimals > 1) return false;
 
   return true;
+};
+
+/**
+ * A NEW option's expiration must be today or later. Compares local calendar
+ * dates as YYYY-MM-DD strings (timezone-safe via getTodayDateString) —
+ * calculateDTE clamps to 0 and therefore cannot detect past dates.
+ * An empty value is NOT flagged: required-ness is a separate check.
+ */
+export const isExpirationInPast = (expiration: string): boolean => {
+  if (!expiration) return false;
+  return expiration < getTodayDateString();
 };
 
 /**

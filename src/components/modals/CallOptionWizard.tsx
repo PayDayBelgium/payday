@@ -44,8 +44,10 @@ import {
   calculateDTE,
   calculateCallBreakEven,
   calculateCallValues,
+  isExpirationInPast,
   isNewShortCallNaked,
 } from './optionWizardUtils';
+import { getTodayDateString } from '../../utils/dateHelpers';
 
 // Wizard step order is fixed: action(0) → ticker(1) → details(2). A pre-filled
 // open (ticker + action already chosen via a suggestion) jumps straight to details.
@@ -800,10 +802,12 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
         isValid: isSpread
           ? longLeg.strike > 0 &&
             longLeg.expiration !== '' &&
+            !isExpirationInPast(longLeg.expiration) &&
             longLeg.premium > 0 &&
             longLeg.contracts > 0 &&
             shortLeg.strike > 0 &&
             shortLeg.expiration !== '' &&
+            !isExpirationInPast(shortLeg.expiration) &&
             shortLeg.premium > 0 &&
             shortLeg.contracts > 0 &&
             (action === 'credit-spread'
@@ -811,6 +815,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
               : longLeg.strike < shortLeg.strike && longLeg.premium > shortLeg.premium) // Debit: long lower, premium validates net debit
           : longLeg.strike > 0 &&
             longLeg.expiration !== '' &&
+            !isExpirationInPast(longLeg.expiration) &&
             longLeg.premium > 0 &&
             longLeg.contracts > 0,
         component: (
@@ -972,9 +977,15 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                           setLongLeg({ ...longLeg, expiration: date });
                           setShortLeg({ ...shortLeg, expiration: date });
                         }}
+                        min={getTodayDateString()}
                         className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                       />
-                      {longLeg.expiration && (
+                      {isExpirationInPast(longLeg.expiration) && (
+                        <p className="text-xs text-negative-600 dark:text-negative-500 mt-1">
+                          {t('safetyRails.expirationInPast')}
+                        </p>
+                      )}
+                      {longLeg.expiration && !isExpirationInPast(longLeg.expiration) && (
                         <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
                           {t('callWizard.detailsStep.dte')} {calculateDTE(longLeg.expiration)}{' '}
                           {t('callWizard.detailsStep.days')}
@@ -1153,9 +1164,15 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
                     <FridayDatePicker
                       value={longLeg.expiration}
                       onChange={(date) => setLongLeg({ ...longLeg, expiration: date })}
+                      min={getTodayDateString()}
                       className="bg-surface border border-ink-200 text-ink-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-trading-dark-700 dark:border-trading-dark-500 dark:text-white"
                     />
-                    {longLeg.expiration && (
+                    {isExpirationInPast(longLeg.expiration) && (
+                      <p className="text-xs text-negative-600 dark:text-negative-500 mt-1">
+                        {t('safetyRails.expirationInPast')}
+                      </p>
+                    )}
+                    {longLeg.expiration && !isExpirationInPast(longLeg.expiration) && (
                       <p className="text-xs text-ink-500 dark:text-ink-400 mt-1">
                         {t('callWizard.detailsStep.dte')} {calculateDTE(longLeg.expiration)}{' '}
                         {t('callWizard.detailsStep.days')}

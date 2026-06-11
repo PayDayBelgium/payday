@@ -1,5 +1,10 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
-import { calculateDTE, checkCspCollateral, isNewShortCallNaked } from './optionWizardUtils';
+import {
+  calculateDTE,
+  checkCspCollateral,
+  isExpirationInPast,
+  isNewShortCallNaked,
+} from './optionWizardUtils';
 import type { CallOption, StockPosition } from '../../types';
 
 afterEach(() => {
@@ -28,6 +33,31 @@ describe('calculateDTE', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date(2026, 5, 11, 12, 0));
     expect(calculateDTE('2026-06-01')).toBe(0);
+  });
+});
+
+describe('isExpirationInPast', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('flags yesterday, accepts today and tomorrow (local date)', () => {
+    vi.useFakeTimers();
+    // Local-time construction is deterministic in any timezone.
+    vi.setSystemTime(new Date(2026, 5, 11, 12, 0)); // 2026-06-11 local
+    expect(isExpirationInPast('2026-06-10')).toBe(true);
+    expect(isExpirationInPast('2026-06-11')).toBe(false);
+    expect(isExpirationInPast('2026-06-12')).toBe(false);
+  });
+
+  it('still accepts today just after local midnight (UTC may be yesterday)', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 5, 11, 0, 30));
+    expect(isExpirationInPast('2026-06-11')).toBe(false);
+  });
+
+  it('treats an empty expiration as not-in-the-past (required-ness is a separate check)', () => {
+    expect(isExpirationInPast('')).toBe(false);
   });
 });
 

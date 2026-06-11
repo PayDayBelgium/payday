@@ -5,6 +5,7 @@ import type { CallOption, PutOption, CurrencyType } from '../../types';
 import { getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency } from '../../utils/numberFormat';
 import { calculateOptionRealizedPnL } from '../../utils/pnlCalculations';
+import { getTodayDateString } from '../../utils/dateHelpers';
 import { FridayDatePicker } from '../common/FridayDatePicker';
 import { RollModalShell } from './RollModalShell';
 import { RollCalculationSummary } from './RollCalculationSummary';
@@ -289,6 +290,7 @@ export const RollOptionModal: React.FC<RollOptionModalProps> = ({
               <FridayDatePicker
                 value={newExpiration}
                 onChange={(date) => setNewExpiration(date)}
+                min={getTodayDateString()}
                 className="w-full px-4 py-2 border border-ink-200 dark:border-trading-dark-500 rounded-lg bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white focus:ring-2 focus:ring-primary-500"
               />
             </div>
