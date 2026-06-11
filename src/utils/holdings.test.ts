@@ -124,4 +124,26 @@ describe('groupHoldings', () => {
     expect(h.freeContracts).toBe(1);
     expect(h.canWriteCoveredCall).toBe(true);
   });
+
+  it('threads the ticker price into the capacity tie-break (parity with the dashboard)', () => {
+    // Tight capacity: 200 shares = 2 contracts, break-even 10.
+    const positions: Position[] = [
+      lot(200, { id: 'a' }),
+      soldCall(1, { id: 'near', strike: 12 }),
+      soldCall(2, { id: 'otm', strike: 30 }),
+    ];
+
+    // Without a price: distance to break-even picks the strike-12 call, the
+    // 2-contract call no longer fits → 1 free contract.
+    const withoutPrice = groupHoldings(positions, 'Test')[0];
+    expect(withoutPrice.freeContracts).toBe(1);
+
+    // With the ticker price the ~15% OTM target (25 × 1.15 = 28.75) prefers
+    // the strike-30 call — the same allocation the dashboard shows.
+    const withPrice = groupHoldings(positions, 'Test', [
+      { symbol: 'TSLA', currentPrice: 25 },
+    ])[0];
+    expect(withPrice.freeContracts).toBe(0);
+    expect(withPrice.canWriteCoveredCall).toBe(false);
+  });
 });

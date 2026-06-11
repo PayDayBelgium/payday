@@ -226,9 +226,14 @@ export const selectOpenPositionsByPortfolio = (portfolioName: PortfolioName) =>
     positions.filter((p) => p.portfolio === portfolioName && p.status === 'open')
   );
 
-// Memoized selector: per-ticker Holdings (aggregated lots + covered-call capacity)
+// Memoized selector: per-ticker Holdings (aggregated lots + covered-call capacity).
+// Ticker prices are threaded in so the capacity allocator uses the same
+// price-aware tie-break as campaignDetector/alertEvaluator (dashboard parity).
 export const selectHoldingsByPortfolio = (portfolioName: PortfolioName) =>
-  createSelector([selectPositions], (positions) => groupHoldings(positions, portfolioName));
+  createSelector(
+    [selectPositions, (state: RootState) => state.tickers.tickers],
+    (positions, tickers) => groupHoldings(positions, portfolioName, tickers)
+  );
 
 // Price Alert Rule selectors
 export const selectAllPriceAlertRules = (state: RootState) => state.positions.priceAlertRules;

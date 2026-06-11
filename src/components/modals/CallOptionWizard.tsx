@@ -163,10 +163,14 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
       (p) => p.portfolio === portfolio.name && p.status === 'open'
     );
 
-    // Stocks/ETFs aggregated per ticker, with >= 1 free (uncovered) contract
-    const eligibleStocks: Holding[] = groupHoldings(portfolioPositions, portfolio.name).filter(
-      (h) => h.canWriteCoveredCall
-    );
+    // Stocks/ETFs aggregated per ticker, with >= 1 free (uncovered) contract.
+    // Ticker prices feed the allocator's price-aware tie-break so the wizard's
+    // free-contract count matches the dashboard (campaignDetector/alertEvaluator).
+    const eligibleStocks: Holding[] = groupHoldings(
+      portfolioPositions,
+      portfolio.name,
+      allTickers
+    ).filter((h) => h.canWriteCoveredCall);
 
     // LEAPs: long calls with expiry > 3 months (90 days)
     const today = new Date();
@@ -181,7 +185,7 @@ export const CallOptionWizard: React.FC<CallOptionWizardProps> = ({
     });
 
     return { stocks: eligibleStocks, leaps: eligibleLeaps };
-  }, [allPositions, portfolio.name]);
+  }, [allPositions, portfolio.name, allTickers]);
 
   // Check if covered call option should be available
   const hasCoveredCallEligible =

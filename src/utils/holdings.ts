@@ -22,11 +22,26 @@ export interface Holding {
 }
 
 /**
+ * Minimal ticker shape needed for the price lookup — callers can pass the
+ * full `Ticker[]` from tickersSlice (the single source for prices).
+ */
+export type TickerPriceSource = ReadonlyArray<{ symbol: string; currentPrice?: number }>;
+
+/**
  * Group a portfolio's open stock/ETF positions into one Holding per ticker.
  * Covered-call capacity is computed per ticker from the aggregated lots and the
  * portfolio's open sold calls for that ticker.
+ *
+ * @param tickers Optional ticker list used to thread the current price into
+ *   the capacity allocator's tight-capacity tie-break. Pass it whenever ticker
+ *   prices are available (store selector, wizards) so the wizard's
+ *   freeContracts matches the dashboard's price-aware allocation.
  */
-export function groupHoldings(positions: Position[], portfolio: PortfolioName): Holding[] {
+export function groupHoldings(
+  positions: Position[],
+  portfolio: PortfolioName,
+  tickers?: TickerPriceSource
+): Holding[] {
   const openInPortfolio = positions.filter((p) => p.portfolio === portfolio && p.status === 'open');
 
   const stockLots = openInPortfolio.filter(
@@ -51,6 +66,13 @@ export function groupHoldings(positions: Position[], portfolio: PortfolioName): 
     byTicker.set(lot.ticker, list);
   }
 
+  const priceBySymbol = new Map<string, number>();
+  for (const t of tickers ?? []) {
+    if (typeof t.currentPrice === 'number' && t.currentPrice > 0) {
+      priceBySymbol.set(t.symbol.toUpperCase(), t.currentPrice);
+    }
+  }
+
   const holdings: Holding[] = [];
   for (const [ticker, lots] of byTicker) {
     const sorted = [...lots].sort(
@@ -58,7 +80,12 @@ export function groupHoldings(positions: Position[], portfolio: PortfolioName): 
     );
     const tickerSoldCalls = soldCalls.filter((c) => c.ticker === ticker);
     const tickerLeaps = leapsCalls.filter((c) => c.ticker === ticker);
-    const capacity = computeCoveredCallCapacity(sorted, tickerSoldCalls, tickerLeaps);
+    const capacity = computeCoveredCallCapacity(
+      sorted,
+      tickerSoldCalls,
+      tickerLeaps,
+      priceBySymbol.get(ticker.toUpperCase())
+    );
 
     // Display totals cover ALL lots (incl. wheel-linked ones); the capacity
     // fields above deliberately exclude wheel-linked positions.
