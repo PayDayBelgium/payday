@@ -25,22 +25,33 @@ import { selectActivePositions } from '../../store/slices/positionsSlice';
 import { useToast } from '../../contexts/ToastContext';
 import type { Position } from '../../types';
 
-const DATA_MODE_OPTIONS: { value: DataMode; label: string; descriptionKey: string }[] = [
+const DATA_MODE_OPTIONS: { value: DataMode; labelKey: string; descriptionKey: string }[] = [
   {
     value: 'demo',
-    label: 'Demo (Manual)',
+    labelKey: 'pagesA.connectivity.dataModeDemoLabel',
     descriptionKey: 'pagesA.connectivity.dataModeDemoDesc',
   },
   {
     value: 'demo-feed',
-    label: 'Demo (Feed)',
+    labelKey: 'pagesA.connectivity.dataModeDemoFeedLabel',
     descriptionKey: 'pagesA.connectivity.dataModeDemoFeedDesc',
   },
-  { value: 'live', label: 'Live (IB)', descriptionKey: 'pagesA.connectivity.dataModeLiveDesc' },
+  {
+    value: 'live',
+    labelKey: 'pagesA.connectivity.dataModeLiveLabel',
+    descriptionKey: 'pagesA.connectivity.dataModeLiveDesc',
+  },
 ];
 
+const STATUS_LABEL_KEYS: Record<ConnectionStatus, string> = {
+  connected: 'pagesA.connectivity.statusConnected',
+  connecting: 'pagesA.connectivity.statusConnecting',
+  disconnected: 'pagesA.connectivity.statusDisconnected',
+  error: 'pagesA.connectivity.statusError',
+};
+
 export const ConnectivitySettings: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const toast = useToast();
   const tickers = useSelector(selectAllTickers);
   const activePositions = useSelector(selectActivePositions);
@@ -233,7 +244,7 @@ export const ConnectivitySettings: React.FC = () => {
   };
 
   const formatTimestamp = (date: Date) => {
-    return date.toLocaleTimeString('nl-NL', {
+    return date.toLocaleTimeString(i18n.language, {
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',
@@ -249,7 +260,7 @@ export const ConnectivitySettings: React.FC = () => {
           {/* Connection Status */}
           <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
             <h2 className="text-lg font-semibold text-ink-900 dark:text-white mb-4">
-              Connection Status
+              {t('pagesA.connectivity.connectionStatus')}
             </h2>
 
             <div className="flex items-center justify-between mb-4">
@@ -257,7 +268,9 @@ export const ConnectivitySettings: React.FC = () => {
                 <div
                   className={`w-3 h-3 rounded-full ${getStatusBgColor()} ${status === 'connecting' ? 'animate-pulse' : ''}`}
                 />
-                <span className={`font-medium capitalize ${getStatusColor()}`}>{status}</span>
+                <span className={`font-medium ${getStatusColor()}`}>
+                  {t(STATUS_LABEL_KEYS[status])}
+                </span>
               </div>
               <div className="flex gap-2">
                 {status === 'disconnected' || status === 'error' ? (
@@ -266,7 +279,7 @@ export const ConnectivitySettings: React.FC = () => {
                     className="flex items-center gap-2 px-3 py-1.5 bg-positive-600 hover:bg-positive-700 text-white rounded-lg text-sm font-medium transition-colors"
                   >
                     <Play className="w-4 h-4" />
-                    Connect
+                    {t('pagesA.connectivity.connect')}
                   </button>
                 ) : (
                   <button
@@ -274,7 +287,7 @@ export const ConnectivitySettings: React.FC = () => {
                     className="flex items-center gap-2 px-3 py-1.5 bg-negative-600 hover:bg-negative-700 text-white rounded-lg text-sm font-medium transition-colors"
                   >
                     <Square className="w-4 h-4" />
-                    Disconnect
+                    {t('pagesA.connectivity.disconnect')}
                   </button>
                 )}
               </div>
@@ -285,7 +298,9 @@ export const ConnectivitySettings: React.FC = () => {
           <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
             <div className="flex items-center gap-2 mb-4">
               <Radio className="w-5 h-5 text-ink-600 dark:text-ink-400" />
-              <h2 className="text-lg font-semibold text-ink-900 dark:text-white">Data Mode</h2>
+              <h2 className="text-lg font-semibold text-ink-900 dark:text-white">
+                {t('pagesA.connectivity.dataMode')}
+              </h2>
             </div>
 
             <div className="space-y-2">
@@ -314,7 +329,7 @@ export const ConnectivitySettings: React.FC = () => {
                           : 'text-ink-900 dark:text-white'
                       }`}
                     >
-                      {option.label}
+                      {t(option.labelKey)}
                     </span>
                     <p className="text-xs text-ink-500 dark:text-ink-400 mt-0.5">
                       {t(option.descriptionKey)}
@@ -337,13 +352,13 @@ export const ConnectivitySettings: React.FC = () => {
           {/* Configuration */}
           <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
             <h2 className="text-lg font-semibold text-ink-900 dark:text-white mb-4">
-              WebSocket Configuration
+              {t('pagesA.connectivity.wsConfiguration')}
             </h2>
 
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
-                  WebSocket URL
+                  {t('pagesA.connectivity.wsUrl')}
                 </label>
                 <input
                   type="text"
@@ -357,7 +372,7 @@ export const ConnectivitySettings: React.FC = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
-                    Reconnect Interval (ms)
+                    {t('pagesA.connectivity.reconnectIntervalLabel')}
                   </label>
                   <input
                     type="number"
@@ -373,7 +388,7 @@ export const ConnectivitySettings: React.FC = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2">
-                    Max Reconnect Attempts
+                    {t('pagesA.connectivity.maxReconnectAttemptsLabel')}
                   </label>
                   <input
                     type="number"
@@ -395,7 +410,7 @@ export const ConnectivitySettings: React.FC = () => {
                   className="flex items-center gap-2 px-3 py-1.5 bg-primary-700 hover:bg-primary-800 disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-colors"
                 >
                   <Save className="w-4 h-4" />
-                  {isSaving ? 'Saving...' : 'Save'}
+                  {isSaving ? t('pagesA.connectivity.saving') : t('pagesA.connectivity.save')}
                 </button>
 
                 <button
@@ -403,7 +418,7 @@ export const ConnectivitySettings: React.FC = () => {
                   className="flex items-center gap-2 px-3 py-1.5 bg-surface-muted dark:bg-trading-dark-700 hover:bg-ink-200 dark:hover:bg-trading-dark-600 text-ink-700 dark:text-ink-200 rounded-lg text-sm font-medium transition-colors"
                 >
                   <RotateCcw className="w-4 h-4" />
-                  Reset
+                  {t('pagesA.connectivity.reset')}
                 </button>
               </div>
             </div>
@@ -412,7 +427,7 @@ export const ConnectivitySettings: React.FC = () => {
           {/* Subscriptions */}
           <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 p-6">
             <h2 className="text-lg font-semibold text-ink-900 dark:text-white mb-4">
-              Subscriptions
+              {t('pagesA.connectivity.subscriptions')}
             </h2>
 
             {/* Ticker Subscription */}
@@ -441,13 +456,15 @@ export const ConnectivitySettings: React.FC = () => {
                 disabled={status !== 'connected' || tickers.length === 0}
                 className="w-full px-3 py-1.5 bg-primary-700 hover:bg-primary-800 disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-colors"
               >
-                Subscribe All Tickers ({tickers.length})
+                {t('pagesA.connectivity.subscribeAllTickers', { count: tickers.length })}
               </button>
 
               {/* Subscribed Tickers */}
               {subscribedTickers.length > 0 && (
                 <div className="mt-3">
-                  <p className="text-xs text-ink-500 dark:text-ink-400 mb-2">Subscribed tickers:</p>
+                  <p className="text-xs text-ink-500 dark:text-ink-400 mb-2">
+                    {t('pagesA.connectivity.subscribedTickers')}
+                  </p>
                   <div className="flex flex-wrap gap-1">
                     {subscribedTickers.map((symbol) => (
                       <span
@@ -472,10 +489,10 @@ export const ConnectivitySettings: React.FC = () => {
               <div className="border-t border-surface-line dark:border-trading-dark-600 pt-3 mt-3">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium text-ink-700 dark:text-ink-300">
-                    Options Prices
+                    {t('pagesA.connectivity.optionsPrices')}
                   </span>
                   <span className="text-xs text-ink-500 dark:text-ink-400">
-                    {optionPositions.length} position(s)
+                    {t('pagesA.connectivity.positionCount', { count: optionPositions.length })}
                   </span>
                 </div>
 
@@ -485,20 +502,22 @@ export const ConnectivitySettings: React.FC = () => {
                   className="w-full flex items-center justify-center gap-2 px-3 py-1.5 bg-ink-700 hover:bg-purple-700 disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-colors mb-2"
                 >
                   <TrendingUp className="w-4 h-4" />
-                  Subscribe All Options ({optionPositions.length})
+                  {t('pagesA.connectivity.subscribeAllOptions', { count: optionPositions.length })}
                 </button>
 
                 {/* Subscribed Options */}
                 {subscribedOptions.length > 0 && (
                   <div className="mt-2">
                     <div className="flex items-center justify-between mb-2">
-                      <p className="text-xs text-ink-500 dark:text-ink-400">Subscribed options:</p>
+                      <p className="text-xs text-ink-500 dark:text-ink-400">
+                        {t('pagesA.connectivity.subscribedOptions')}
+                      </p>
                       <button
                         onClick={handleUnsubscribeAllOptions}
                         disabled={status !== 'connected'}
                         className="text-xs text-negative-600 hover:text-negative-700 dark:text-negative-500 dark:hover:text-negative-500 disabled:opacity-50"
                       >
-                        Unsubscribe all
+                        {t('pagesA.connectivity.unsubscribeAll')}
                       </button>
                     </div>
                     <div className="space-y-1 max-h-32 overflow-y-auto">
@@ -530,7 +549,7 @@ export const ConnectivitySettings: React.FC = () => {
                 {/* Show available options if not all subscribed */}
                 {optionPositions.length > 0 && subscribedOptions.length === 0 && (
                   <div className="mt-2 p-2 bg-surface dark:bg-trading-dark-700/50 rounded text-xs text-ink-600 dark:text-ink-400">
-                    <p className="font-medium mb-1">Available options to subscribe:</p>
+                    <p className="font-medium mb-1">{t('pagesA.connectivity.availableOptions')}</p>
                     <ul className="space-y-0.5">
                       {optionPositions.slice(0, 5).map((pos) => (
                         <li key={pos.id}>
@@ -538,7 +557,11 @@ export const ConnectivitySettings: React.FC = () => {
                         </li>
                       ))}
                       {optionPositions.length > 5 && (
-                        <li className="text-ink-500">+{optionPositions.length - 5} more...</li>
+                        <li className="text-ink-500">
+                          {t('pagesA.connectivity.moreOptions', {
+                            count: optionPositions.length - 5,
+                          })}
+                        </li>
                       )}
                     </ul>
                   </div>
@@ -552,7 +575,9 @@ export const ConnectivitySettings: React.FC = () => {
         <div className="lg:col-span-2">
           <div className="bg-white dark:bg-trading-dark-800 rounded-lg shadow-sm border border-surface-line dark:border-trading-dark-600 h-full flex flex-col">
             <div className="flex items-center justify-between p-4 border-b border-surface-line dark:border-trading-dark-600">
-              <h2 className="text-lg font-semibold text-ink-900 dark:text-white">Message Log</h2>
+              <h2 className="text-lg font-semibold text-ink-900 dark:text-white">
+                {t('pagesA.connectivity.messageLog')}
+              </h2>
               <div className="flex items-center gap-3">
                 <label className="flex items-center gap-2 text-sm text-ink-600 dark:text-ink-400">
                   <input
@@ -561,14 +586,14 @@ export const ConnectivitySettings: React.FC = () => {
                     onChange={(e) => setAutoScroll(e.target.checked)}
                     className="rounded border-ink-200 dark:border-trading-dark-500"
                   />
-                  Auto-scroll
+                  {t('pagesA.connectivity.autoScroll')}
                 </label>
                 <button
                   onClick={handleClearLogs}
                   className="flex items-center gap-1 px-2 py-1 text-sm text-ink-600 dark:text-ink-400 hover:text-negative-600 dark:hover:text-negative-500 transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
-                  Clear
+                  {t('pagesA.connectivity.clearLog')}
                 </button>
               </div>
             </div>
@@ -582,13 +607,13 @@ export const ConnectivitySettings: React.FC = () => {
                   {status === 'disconnected' ? (
                     <>
                       <WifiOff className="w-12 h-12 mb-3 opacity-50" />
-                      <p>Not connected</p>
-                      <p className="text-xs mt-1">Click "Connect" to start receiving messages</p>
+                      <p>{t('pagesA.connectivity.notConnected')}</p>
+                      <p className="text-xs mt-1">{t('pagesA.connectivity.clickConnectHint')}</p>
                     </>
                   ) : (
                     <>
                       <Wifi className="w-12 h-12 mb-3 opacity-50" />
-                      <p>Waiting for messages...</p>
+                      <p>{t('pagesA.connectivity.waitingForMessages')}</p>
                     </>
                   )}
                 </div>
@@ -616,13 +641,15 @@ export const ConnectivitySettings: React.FC = () => {
             <div className="p-3 border-t border-surface-line dark:border-trading-dark-600 bg-surface dark:bg-trading-dark-800/50 text-xs">
               <div className="flex gap-4">
                 <span className="flex items-center gap-1">
-                  <span className="text-positive-500">&lt;&lt;</span> Incoming
+                  <span className="text-positive-500">&lt;&lt;</span>{' '}
+                  {t('pagesA.connectivity.legendIncoming')}
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="text-primary-500">&gt;&gt;</span> Outgoing
+                  <span className="text-primary-500">&gt;&gt;</span>{' '}
+                  {t('pagesA.connectivity.legendOutgoing')}
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="text-ink-400">--</span> System
+                  <span className="text-ink-400">--</span> {t('pagesA.connectivity.legendSystem')}
                 </span>
               </div>
             </div>
