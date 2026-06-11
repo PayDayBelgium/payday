@@ -1,10 +1,11 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import {
   calculatePortfolioFreeCash,
+  evaluateCallPositionAlerts,
   evaluateNakedCallAlerts,
   evaluateProfitOpportunities,
 } from './alertEvaluator';
-import type { Portfolio, Position } from '../types';
+import type { Portfolio, Position, Ticker } from '../types';
 
 // Clock-relative expiration (~6 months out) so the suite never expires:
 // evaluateProfitOpportunities computes daysToExpiration from new Date() and
@@ -127,6 +128,32 @@ describe('evaluateNakedCallAlerts', () => {
     // Wheel-linked short calls belong to their wheel campaign (consistent
     // with the CC evaluators, which exclude wheel positions as well).
     expect(evaluateNakedCallAlerts([shortCall({ wheelId: 'w1' })], new Set())).toHaveLength(0);
+  });
+});
+
+describe('evaluateCallPositionAlerts', () => {
+  const ticker = (currentPrice: number): Ticker =>
+    ({ symbol: 'XYZ', name: 'XYZ Corp', type: 'stock', currentPrice }) as Ticker;
+
+  it('alerts when a short call is ITM (price above strike)', () => {
+    const result = evaluateCallPositionAlerts([shortCall({ strike: 100 })], new Set(), undefined, [
+      ticker(120),
+    ]);
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe('call-position-alert-sc1');
+    expect(result[0].type).toBe('alert');
+  });
+
+  it('does not alert when the short call is OTM', () => {
+    expect(
+      evaluateCallPositionAlerts([shortCall({ strike: 100 })], new Set(), undefined, [ticker(90)])
+    ).toHaveLength(0);
+  });
+
+  it('does not alert for a long call that is ITM', () => {
+    expect(
+      evaluateCallPositionAlerts([longCall({ strike: 100 })], new Set(), undefined, [ticker(120)])
+    ).toHaveLength(0);
   });
 });
 

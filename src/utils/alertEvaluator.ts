@@ -843,6 +843,75 @@ export const evaluatePutPositionAlerts = (
   return alerts;
 };
 
+// Evaluate call position alerts (stock price above strike of a short call).
+// Mirror of evaluatePutPositionAlerts: an ITM short call is the assignment
+// risk for covered-call/PMCC writers. ALERT, not opportunity: always shown,
+// never filtered by opportunityGating.
+export const evaluateCallPositionAlerts = (
+  positions: Position[],
+  dismissedAlerts: Set<string>,
+  portfolioFilter?: string,
+  tickers?: Ticker[]
+): AlertItem[] => {
+  const alerts: AlertItem[] = [];
+
+  // Filter call options (exclude spread legs - spread itself handles alerts)
+  const callOptions = positions.filter(
+    (p) =>
+      p.status === 'open' &&
+      p.type === 'call' &&
+      (!portfolioFilter || p.portfolio === portfolioFilter) &&
+      !isSpreadLeg(p)
+  ) as CallOption[];
+
+  callOptions.forEach((call) => {
+    // For short calls: alert if stock price is above strike (ITM)
+    if (call.action !== 'sell') return;
+
+    const alertId = `call-position-alert-${call.id}`;
+    if (dismissedAlerts.has(alertId)) return;
+
+    const tickerData = findTicker(tickers, call.ticker);
+    const currentPrice = tickerData?.currentPrice;
+
+    // Check if call is ITM (stock price above strike)
+    if (currentPrice && currentPrice > call.strike) {
+      const intrinsicValue = (currentPrice - call.strike) * call.contracts * 100;
+
+      alerts.push({
+        id: alertId,
+        ticker: call.ticker,
+        portfolio: call.portfolio,
+        message: i18n.t('safetyRails.itmCallAlert', {
+          price: formatNumber(currentPrice, 2),
+          strike: call.strike,
+          intrinsic: formatNumber(intrinsicValue, 2),
+        }),
+        type: 'alert',
+        rule: {
+          id: 'call-position-alert',
+          strategyType: 'options',
+          portfolio: call.portfolio,
+          name: 'Call Position Alert',
+          description: 'Alert when the stock price rises above the strike of a short call',
+          category: 'alert',
+          trigger: 'time_based',
+          enabled: true,
+          parameters: {},
+          actions: {
+            showOnDashboard: true,
+            showOnPortfolioOverview: true,
+            showInList: true,
+          },
+          createdAt: new Date().toISOString(),
+        },
+      });
+    }
+  });
+
+  return alerts;
+};
+
 // Evaluate expiring spread alerts
 export const evaluateExpiringSpreadAlerts = (
   positions: Position[],
@@ -1326,6 +1395,12 @@ export const evaluateAllAlerts = (
     portfolioFilter,
     tickers
   );
+  const callPositionAlerts = evaluateCallPositionAlerts(
+    positions,
+    dismissedAlerts,
+    portfolioFilter,
+    tickers
+  );
   const putSpreadAlerts = evaluatePutSpreadAlerts(
     positions,
     dismissedAlerts,
@@ -1391,6 +1466,7 @@ export const evaluateAllAlerts = (
       ...expiringOptionsAlerts,
       ...expiringSpreadAlerts,
       ...putPositionAlerts,
+      ...callPositionAlerts,
       ...putSpreadAlerts,
       ...callSpreadAlerts,
       ...nakedCallAlerts,

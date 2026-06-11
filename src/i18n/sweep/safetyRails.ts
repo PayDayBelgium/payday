@@ -8,6 +8,8 @@ export const safetyRails = {
     nakedCallWarnMessage:
       'This call is not covered by shares or a LEAPS. A naked short call has unlimited loss risk if the stock rises. Create it anyway?',
     nakedCallWarnConfirm: 'Create anyway',
+    itmCallAlert:
+      'Short call is ITM: price ${{price}} > strike ${{strike}}\nAssignment risk — intrinsic value: ${{intrinsic}}',
   },
   nl: {
     nakedCallAlert:
@@ -16,6 +18,8 @@ export const safetyRails = {
     nakedCallWarnMessage:
       'Deze call is niet gedekt door aandelen of een LEAPS. Een naked short call heeft een onbeperkt verliesrisico als het aandeel stijgt. Toch aanmaken?',
     nakedCallWarnConfirm: 'Toch aanmaken',
+    itmCallAlert:
+      'Short call is ITM: koers ${{price}} > strike ${{strike}}\nAssignment-risico — intrinsieke waarde: ${{intrinsic}}',
   },
   fr: {
     nakedCallAlert:
@@ -24,5 +28,7 @@ export const safetyRails = {
     nakedCallWarnMessage:
       "Ce call n'est couvert ni par des actions ni par un LEAPS. Un call vendu à découvert présente un risque de perte illimité si l'action monte. Le créer quand même ?",
     nakedCallWarnConfirm: 'Créer quand même',
+    itmCallAlert:
+      "Call vendu ITM : cours {{price}} $ > strike {{strike}} $\nRisque d'assignation — valeur intrinsèque : {{intrinsic}} $",
   },
 };
