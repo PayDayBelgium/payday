@@ -3,14 +3,19 @@ import { useTranslation } from 'react-i18next';
 import { parseCountInput } from '../../utils/inputFormat';
 import { TrendingUp, TrendingDown, ArrowRightLeft, BarChart3, RefreshCw } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { useAppSelector } from '../../hooks/useAppSelector';
 import { useSelector } from 'react-redux';
+import { selectPositions } from '../../store/slices/positionsSlice';
 import { openPosition } from '../../store/commands/positionCommands';
 import { selectAllTickers } from '../../store/slices/tickersSlice';
 import { ensureTicker } from '../../store/commands/tickerCommands';
 import { selectActiveWheels } from '../../store/slices/wheelsSlice';
 import { selectUnlockedLevels, isFeatureAvailable } from '../../store/slices/userProgressSlice';
 import { getOptionActionFeature } from '../../utils/optionFeatureAccess';
+import { calculatePortfolioFreeCash } from '../../utils/alertEvaluator';
+import { getCurrencySymbol } from '../../utils/currency';
 import { WizardModal, type WizardStep } from './WizardModal';
+import { ConfirmDialog } from './ConfirmDialog';
 import { TickerSelector } from '../widgets/TickerSelector';
 import { PnLCurve } from '../widgets/PnLCurve';
 import { FridayDatePicker } from '../common/FridayDatePicker';
@@ -26,6 +31,8 @@ import {
   calculateDTE,
   calculatePutBreakEven,
   calculatePutValues,
+  checkCspCollateral,
+  type CspCollateralCheck,
 } from './optionWizardUtils';
 
 // Wizard step order is fixed: action(0) → ticker(1) → details(2). A pre-filled
@@ -66,6 +73,8 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
   // Get all tickers to find current price
   const allTickers = useSelector(selectAllTickers);
   const unlockedLevels = useSelector(selectUnlockedLevels);
+  const allPositions = useAppSelector(selectPositions);
+  const portfolios = useAppSelector((state) => state.portfolios.portfolios);
 
   // Level-gating: an option action may only be created once the corresponding
   // strategy is unlocked knowledge-wise. Locked actions are hidden in the
@@ -111,6 +120,10 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
 
   const [purchaseDate, setPurchaseDate] = useState(new Date().toISOString().split('T')[0]);
   const [notes, setNotes] = useState('');
+
+  // Soft cash rail: set when completing a SELL put whose collateral exceeds
+  // the portfolio's free cash; confirming proceeds anyway.
+  const [cashWarning, setCashWarning] = useState<CspCollateralCheck | null>(null);
 
   // Refs for autofocus
   const strikeInputRef = useRef<HTMLInputElement>(null);
@@ -174,6 +187,31 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
   const handleComplete = () => {
     if (!selectedTicker) return;
     // Safety net: block creation of a not-yet-unlocked option action.
+    if (!canUseAction(action)) return;
+
+    // Soft didactic rail: selling a CSP reserves strike × 100 × contracts as
+    // collateral. When the portfolio's free cash (which already discounts the
+    // collateral of existing CSPs/spreads) cannot cover it, ask for explicit
+    // confirmation instead of silently creating a negative-cash position.
+    if (action === 'sell' && !isSpread) {
+      const fullPortfolio = portfolios.find((p) => p.name === portfolio.name);
+      if (fullPortfolio) {
+        const { freeCash } = calculatePortfolioFreeCash(fullPortfolio, allPositions);
+        const check = checkCspCollateral(longLeg.strike, longLeg.contracts, freeCash);
+        if (!check.sufficient) {
+          setCashWarning(check);
+          return;
+        }
+      }
+    }
+
+    createPosition();
+  };
+
+  // Actually create the position(s). Called directly from handleComplete for
+  // the normal path, or from the insufficient-cash warning's explicit confirm.
+  const createPosition = () => {
+    if (!selectedTicker) return;
     if (!canUseAction(action)) return;
 
     const { costBasis, currentValue, cashReserved } = calculateValues();
@@ -310,6 +348,7 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
     setSelectedWheelId(null);
     setShowWheelLinking(false);
     setCurrentStepIndex(0);
+    setCashWarning(null);
   };
 
   // Effect to initialize values when wizard opens with initial values
@@ -1160,21 +1199,40 @@ export const PutOptionWizard: React.FC<PutOptionWizardProps> = ({
     ]
   );
 
+  const currencySymbol = getCurrencySymbol(portfolio.currency);
+
   return (
-    <WizardModal
-      isOpen={isOpen}
-      onClose={() => {
-        onClose();
-        resetForm();
-      }}
-      title={
-        selectedTicker ? `${t('putWizard.title')} · ${selectedTicker.symbol}` : t('putWizard.title')
-      }
-      steps={steps}
-      onComplete={handleComplete}
-      completeButtonLabel={t('putWizard.completeButton')}
-      currentStepIndex={currentStepIndex}
-      onStepChange={setCurrentStepIndex}
-    />
+    <>
+      <WizardModal
+        isOpen={isOpen}
+        onClose={() => {
+          onClose();
+          resetForm();
+        }}
+        title={
+          selectedTicker
+            ? `${t('putWizard.title')} · ${selectedTicker.symbol}`
+            : t('putWizard.title')
+        }
+        steps={steps}
+        onComplete={handleComplete}
+        completeButtonLabel={t('putWizard.completeButton')}
+        currentStepIndex={currentStepIndex}
+        onStepChange={setCurrentStepIndex}
+      />
+      <ConfirmDialog
+        isOpen={cashWarning !== null}
+        variant="warning"
+        title={t('safetyRails.cspCashWarnTitle')}
+        message={t('safetyRails.cspCashWarnMessage', {
+          required: `${currencySymbol}${formatNumber(cashWarning?.required ?? 0, 2)}`,
+          freeCash: `${currencySymbol}${formatNumber(cashWarning?.freeCash ?? 0, 2)}`,
+          shortfall: `${currencySymbol}${formatNumber(cashWarning?.shortfall ?? 0, 2)}`,
+        })}
+        confirmText={t('safetyRails.cspCashWarnConfirm')}
+        onConfirm={createPosition}
+        onClose={() => setCashWarning(null)}
+      />
+    </>
   );
 };

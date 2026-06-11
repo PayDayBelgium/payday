@@ -10,6 +10,10 @@ export const safetyRails = {
     nakedCallWarnConfirm: 'Create anyway',
     itmCallAlert:
       'Short call is ITM: price ${{price}} > strike ${{strike}}\nAssignment risk — intrinsic value: ${{intrinsic}}',
+    cspCashWarnTitle: 'Not enough free cash',
+    cspCashWarnMessage:
+      'Selling this put reserves {{required}} as cash collateral, but this portfolio only has {{freeCash}} free ({{shortfall}} short). A cash-secured put should be fully covered by cash — if the put is assigned you must buy the shares. Create it anyway?',
+    cspCashWarnConfirm: 'Create anyway',
   },
   nl: {
     nakedCallAlert:
@@ -20,6 +24,10 @@ export const safetyRails = {
     nakedCallWarnConfirm: 'Toch aanmaken',
     itmCallAlert:
       'Short call is ITM: koers ${{price}} > strike ${{strike}}\nAssignment-risico — intrinsieke waarde: ${{intrinsic}}',
+    cspCashWarnTitle: 'Onvoldoende vrije cash',
+    cspCashWarnMessage:
+      'Deze put verkopen reserveert {{required}} als cash-onderpand, maar deze portefeuille heeft slechts {{freeCash}} vrij ({{shortfall}} tekort). Een cash-secured put hoort volledig door cash gedekt te zijn — bij assignment moet je de aandelen kopen. Toch aanmaken?',
+    cspCashWarnConfirm: 'Toch aanmaken',
   },
   fr: {
     nakedCallAlert:
@@ -30,5 +38,9 @@ export const safetyRails = {
     nakedCallWarnConfirm: 'Créer quand même',
     itmCallAlert:
       "Call vendu ITM : cours {{price}} $ > strike {{strike}} $\nRisque d'assignation — valeur intrinsèque : {{intrinsic}} $",
+    cspCashWarnTitle: 'Liquidités libres insuffisantes',
+    cspCashWarnMessage:
+      "Vendre ce put réserve {{required}} en garantie de liquidités, mais ce portefeuille ne dispose que de {{freeCash}} libres (il manque {{shortfall}}). Un put cash-secured doit être entièrement couvert par des liquidités — en cas d'assignation vous devez acheter les actions. Le créer quand même ?",
+    cspCashWarnConfirm: 'Créer quand même',
   },
 };

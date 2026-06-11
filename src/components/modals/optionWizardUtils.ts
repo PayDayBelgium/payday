@@ -152,6 +152,33 @@ export const calculateCashReserved = (strike: number, contracts: number): number
   return strike * contracts * 100;
 };
 
+export interface CspCollateralCheck {
+  /** Collateral the new CSP requires (strike × 100 × contracts). */
+  required: number;
+  /** Free cash of the portfolio (may be negative). */
+  freeCash: number;
+  /** How much cash is missing (0 when sufficient). */
+  shortfall: number;
+  sufficient: boolean;
+}
+
+/**
+ * Soft cash-collateral check for selling a cash-secured put: compares the
+ * required collateral against the portfolio's free cash (which already
+ * accounts for cash reserved by existing CSPs/spreads, see
+ * calculatePortfolioFreeCash). Soft rail — the wizard warns and lets the
+ * user confirm; it never blocks.
+ */
+export const checkCspCollateral = (
+  strike: number,
+  contracts: number,
+  freeCash: number
+): CspCollateralCheck => {
+  const required = calculateCashReserved(strike, contracts);
+  const shortfall = Math.max(0, required - freeCash);
+  return { required, freeCash, shortfall, sufficient: shortfall === 0 };
+};
+
 // ============ SPREAD VALIDATION ============
 
 /**

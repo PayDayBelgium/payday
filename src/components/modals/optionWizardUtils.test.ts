@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
-import { calculateDTE, isNewShortCallNaked } from './optionWizardUtils';
+import { calculateDTE, checkCspCollateral, isNewShortCallNaked } from './optionWizardUtils';
 import type { CallOption, StockPosition } from '../../types';
 
 afterEach(() => {
@@ -28,6 +28,34 @@ describe('calculateDTE', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date(2026, 5, 11, 12, 0));
     expect(calculateDTE('2026-06-01')).toBe(0);
+  });
+});
+
+describe('checkCspCollateral', () => {
+  it('is sufficient when free cash covers strike x 100 x contracts (exact match counts)', () => {
+    expect(checkCspCollateral(100, 1, 10_000)).toEqual({
+      required: 10_000,
+      freeCash: 10_000,
+      shortfall: 0,
+      sufficient: true,
+    });
+  });
+
+  it('reports the shortfall when free cash is insufficient', () => {
+    expect(checkCspCollateral(50, 2, 4_000)).toEqual({
+      required: 10_000,
+      freeCash: 4_000,
+      shortfall: 6_000,
+      sufficient: false,
+    });
+  });
+
+  it('handles zero or negative free cash (full collateral missing)', () => {
+    expect(checkCspCollateral(20, 1, 0).shortfall).toBe(2_000);
+    expect(checkCspCollateral(20, 1, -500)).toMatchObject({
+      shortfall: 2_500,
+      sufficient: false,
+    });
   });
 });
 
