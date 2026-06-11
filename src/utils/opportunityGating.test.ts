@@ -1,5 +1,13 @@
 import { describe, it, expect } from 'vitest';
-import { getOpportunityRequiredFeature, filterOpportunitiesByAccess } from './opportunityGating';
+import {
+  getOpportunityRequiredFeature,
+  getCampaignTypeRequiredFeature,
+  getCampaignOpportunityRequiredFeature,
+  getTradeIdeaRequiredFeature,
+  canStartWheelCampaign,
+  filterOpportunitiesByAccess,
+} from './opportunityGating';
+import { isFeatureAvailable } from '../store/slices/userProgressSlice';
 import type { AlertItem } from './alertEvaluator';
 import type { UserLevel } from '../types';
 
@@ -41,6 +49,50 @@ describe('getOpportunityRequiredFeature', () => {
   it('geeft null voor prijs-gebaseerde / onbekende opportunities (basisniveau)', () => {
     expect(getOpportunityRequiredFeature('pos-123-rule-456')).toBeNull();
     expect(getOpportunityRequiredFeature('iets-anders')).toBeNull();
+  });
+});
+
+describe('getCampaignTypeRequiredFeature', () => {
+  it('maps each campaign type to the feature that unlocks the strategy', () => {
+    expect(getCampaignTypeRequiredFeature('covered-call')).toBe('covered_calls'); // medior
+    expect(getCampaignTypeRequiredFeature('pmcc')).toBe('pmcc'); // senior
+    expect(getCampaignTypeRequiredFeature('kaching')).toBe('kaching'); // expert
+    expect(getCampaignTypeRequiredFeature('wheel')).toBe('wheel_strategy'); // medior
+  });
+});
+
+describe('getCampaignOpportunityRequiredFeature', () => {
+  it('maps campaign opportunities consistently with the dashboard opportunity gating', () => {
+    expect(getCampaignOpportunityRequiredFeature('covered-call')).toBe('covered_calls');
+    // Writing a call against a LEAPS is part of covered calls (medior),
+    // same as the leaps-cc-opportunity prefix mapping above.
+    expect(getCampaignOpportunityRequiredFeature('pmcc')).toBe('covered_calls');
+    expect(getCampaignOpportunityRequiredFeature('kaching')).toBe('kaching');
+    expect(getCampaignOpportunityRequiredFeature('wheel')).toBe('wheel_strategy');
+  });
+});
+
+describe('getTradeIdeaRequiredFeature', () => {
+  it('uses the idea strategy as the gate feature', () => {
+    expect(getTradeIdeaRequiredFeature({ strategy: 'covered_calls' })).toBe('covered_calls');
+    expect(getTradeIdeaRequiredFeature({ strategy: 'cash_secured_puts' })).toBe(
+      'cash_secured_puts'
+    );
+    expect(getTradeIdeaRequiredFeature({ strategy: 'pmcc' })).toBe('pmcc');
+    expect(getTradeIdeaRequiredFeature({ strategy: 'spreads' })).toBe('spreads');
+  });
+
+  it('blocks a covered-call idea for a beginner but allows it at medior', () => {
+    const feature = getTradeIdeaRequiredFeature({ strategy: 'covered_calls' });
+    expect(isFeatureAvailable(feature, ['beginner'])).toBe(false);
+    expect(isFeatureAvailable(feature, ['beginner', 'medior'])).toBe(true);
+  });
+});
+
+describe('canStartWheelCampaign', () => {
+  it('blocks beginners and allows medior (wheel_strategy + cash_secured_puts)', () => {
+    expect(canStartWheelCampaign(['beginner'])).toBe(false);
+    expect(canStartWheelCampaign(['beginner', 'medior'])).toBe(true);
   });
 });
 

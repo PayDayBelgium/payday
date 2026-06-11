@@ -4,8 +4,9 @@
  */
 
 import type { Ticker, PortfolioName, CurrencyType } from '../../types';
-import { getDaysToExpiration } from '../../utils/dateHelpers';
+import { getDaysToExpiration, getTodayDateString } from '../../utils/dateHelpers';
 import { getDecimalSeparator, getThousandSeparator } from '../../utils/numberFormat';
+import { pickParentForNewShortCall, type CallCoverageInput } from '../../utils/coverageAllocation';
 
 // ============ TYPES ============
 
@@ -73,6 +74,39 @@ export const validateNumberInput = (value: string): boolean => {
   return true;
 };
 
+/**
+ * A NEW option's expiration must be today or later. Compares local calendar
+ * dates as YYYY-MM-DD strings (timezone-safe via getTodayDateString) —
+ * calculateDTE clamps to 0 and therefore cannot detect past dates.
+ * An empty value is NOT flagged: required-ness is a separate check.
+ */
+export const isExpirationInPast = (expiration: string): boolean => {
+  if (!expiration) return false;
+  return expiration < getTodayDateString();
+};
+
+/**
+ * Decide whether completing a SELL call should trigger the naked-call
+ * warning: the new short call would get no parent (no free share capacity,
+ * no eligible LEAPS) per the shared coverage allocator. Soft rail — the
+ * wizard warns and lets the user confirm; it never blocks.
+ *
+ * Wheel-linked calls belong to their wheel campaign, and an explicit
+ * initiator (opened from a stock/LEAPS suggestion badge) is honoured as the
+ * parent, so neither case warns.
+ */
+export const isNewShortCallNaked = (params: {
+  isShortCall: boolean;
+  linkedToWheel: boolean;
+  explicitUnderlyingId?: string;
+  group: CallCoverageInput;
+  newCall: { strike: number; contracts: number };
+}): boolean => {
+  const { isShortCall, linkedToWheel, explicitUnderlyingId, group, newCall } = params;
+  if (!isShortCall || linkedToWheel || explicitUnderlyingId) return false;
+  return pickParentForNewShortCall(group, newCall) === null;
+};
+
 // ============ CALCULATION HELPERS ============
 
 /**
@@ -127,6 +161,33 @@ export const calculateSpreadCollateral = (
  */
 export const calculateCashReserved = (strike: number, contracts: number): number => {
   return strike * contracts * 100;
+};
+
+export interface CspCollateralCheck {
+  /** Collateral the new CSP requires (strike × 100 × contracts). */
+  required: number;
+  /** Free cash of the portfolio (may be negative). */
+  freeCash: number;
+  /** How much cash is missing (0 when sufficient). */
+  shortfall: number;
+  sufficient: boolean;
+}
+
+/**
+ * Soft cash-collateral check for selling a cash-secured put: compares the
+ * required collateral against the portfolio's free cash (which already
+ * accounts for cash reserved by existing CSPs/spreads, see
+ * calculatePortfolioFreeCash). Soft rail — the wizard warns and lets the
+ * user confirm; it never blocks.
+ */
+export const checkCspCollateral = (
+  strike: number,
+  contracts: number,
+  freeCash: number
+): CspCollateralCheck => {
+  const required = calculateCashReserved(strike, contracts);
+  const shortfall = Math.max(0, required - freeCash);
+  return { required, freeCash, shortfall, sufficient: shortfall === 0 };
 };
 
 // ============ SPREAD VALIDATION ============

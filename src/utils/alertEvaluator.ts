@@ -1,3 +1,4 @@
+import i18n from '../i18n/config';
 import { getDaysToExpiration } from './dateHelpers';
 import { getCurrencySymbol } from './currency';
 import { formatNumber } from './numberFormat';
@@ -440,6 +441,69 @@ const buildCallCoverageGroups = (
 const priceFor = (tickers: Ticker[] | undefined, ticker: string): number | undefined =>
   findTicker(tickers, ticker)?.currentPrice;
 
+// Evaluate naked short call alerts (uncovered short calls per the shared
+// coverage allocator). This is an ALERT, not an opportunity: it flags
+// unlimited risk on an EXISTING position, so it is always shown and must
+// never be filtered by opportunityGating. Wheel-linked short calls are
+// excluded by buildCallCoverageGroups, consistent with the CC evaluators
+// (they belong to their wheel campaign).
+export const evaluateNakedCallAlerts = (
+  positions: Position[],
+  dismissedAlerts: Set<string>,
+  portfolioFilter?: string,
+  tickers?: Ticker[]
+): AlertItem[] => {
+  const alerts: AlertItem[] = [];
+
+  for (const g of buildCallCoverageGroups(positions, portfolioFilter)) {
+    if (g.shortCalls.length === 0) continue;
+
+    const price = priceFor(tickers, g.ticker);
+    const alloc = allocateCallCoverage({
+      stocks: g.stocks,
+      leaps: g.leaps,
+      shortCalls: g.shortCalls,
+      currentPrice: price,
+    });
+
+    for (const call of alloc.uncovered) {
+      const alertId = `naked-call-alert-${call.id}`;
+      if (dismissedAlerts.has(alertId)) continue;
+
+      alerts.push({
+        id: alertId,
+        ticker: g.ticker,
+        portfolio: g.portfolio,
+        message: i18n.t('safetyRails.nakedCallAlert', {
+          ticker: g.ticker,
+          strike: call.strike,
+          contracts: call.contracts,
+        }),
+        type: 'alert',
+        rule: {
+          id: 'naked-call-alert',
+          strategyType: 'options',
+          portfolio: g.portfolio,
+          name: 'Naked Call Alert',
+          description: 'Alert for short calls not covered by shares or a LEAPS',
+          category: 'alert',
+          trigger: 'time_based',
+          enabled: true,
+          parameters: {},
+          actions: {
+            showOnDashboard: true,
+            showOnPortfolioOverview: true,
+            showInList: true,
+          },
+          createdAt: new Date().toISOString(),
+        },
+      });
+    }
+  }
+
+  return alerts;
+};
+
 // Evaluate stock covered call opportunities (via the shared coverage allocator)
 export const evaluateStockCoveredCallOpportunities = (
   positions: Position[],
@@ -773,6 +837,75 @@ export const evaluatePutPositionAlerts = (
           });
         }
       }
+    }
+  });
+
+  return alerts;
+};
+
+// Evaluate call position alerts (stock price above strike of a short call).
+// Mirror of evaluatePutPositionAlerts: an ITM short call is the assignment
+// risk for covered-call/PMCC writers. ALERT, not opportunity: always shown,
+// never filtered by opportunityGating.
+export const evaluateCallPositionAlerts = (
+  positions: Position[],
+  dismissedAlerts: Set<string>,
+  portfolioFilter?: string,
+  tickers?: Ticker[]
+): AlertItem[] => {
+  const alerts: AlertItem[] = [];
+
+  // Filter call options (exclude spread legs - spread itself handles alerts)
+  const callOptions = positions.filter(
+    (p) =>
+      p.status === 'open' &&
+      p.type === 'call' &&
+      (!portfolioFilter || p.portfolio === portfolioFilter) &&
+      !isSpreadLeg(p)
+  ) as CallOption[];
+
+  callOptions.forEach((call) => {
+    // For short calls: alert if stock price is above strike (ITM)
+    if (call.action !== 'sell') return;
+
+    const alertId = `call-position-alert-${call.id}`;
+    if (dismissedAlerts.has(alertId)) return;
+
+    const tickerData = findTicker(tickers, call.ticker);
+    const currentPrice = tickerData?.currentPrice;
+
+    // Check if call is ITM (stock price above strike)
+    if (currentPrice && currentPrice > call.strike) {
+      const intrinsicValue = (currentPrice - call.strike) * call.contracts * 100;
+
+      alerts.push({
+        id: alertId,
+        ticker: call.ticker,
+        portfolio: call.portfolio,
+        message: i18n.t('safetyRails.itmCallAlert', {
+          price: formatNumber(currentPrice, 2),
+          strike: call.strike,
+          intrinsic: formatNumber(intrinsicValue, 2),
+        }),
+        type: 'alert',
+        rule: {
+          id: 'call-position-alert',
+          strategyType: 'options',
+          portfolio: call.portfolio,
+          name: 'Call Position Alert',
+          description: 'Alert when the stock price rises above the strike of a short call',
+          category: 'alert',
+          trigger: 'time_based',
+          enabled: true,
+          parameters: {},
+          actions: {
+            showOnDashboard: true,
+            showOnPortfolioOverview: true,
+            showInList: true,
+          },
+          createdAt: new Date().toISOString(),
+        },
+      });
     }
   });
 
@@ -1262,6 +1395,12 @@ export const evaluateAllAlerts = (
     portfolioFilter,
     tickers
   );
+  const callPositionAlerts = evaluateCallPositionAlerts(
+    positions,
+    dismissedAlerts,
+    portfolioFilter,
+    tickers
+  );
   const putSpreadAlerts = evaluatePutSpreadAlerts(
     positions,
     dismissedAlerts,
@@ -1269,6 +1408,12 @@ export const evaluateAllAlerts = (
     tickers
   );
   const callSpreadAlerts = evaluateCallSpreadAlerts(
+    positions,
+    dismissedAlerts,
+    portfolioFilter,
+    tickers
+  );
+  const nakedCallAlerts = evaluateNakedCallAlerts(
     positions,
     dismissedAlerts,
     portfolioFilter,
@@ -1321,8 +1466,10 @@ export const evaluateAllAlerts = (
       ...expiringOptionsAlerts,
       ...expiringSpreadAlerts,
       ...putPositionAlerts,
+      ...callPositionAlerts,
       ...putSpreadAlerts,
       ...callSpreadAlerts,
+      ...nakedCallAlerts,
     ],
     opportunities: [
       ...priceResults.opportunities,

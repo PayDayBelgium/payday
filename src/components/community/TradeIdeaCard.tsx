@@ -1,6 +1,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Lock } from 'lucide-react';
+import { useFeatureAccess } from '../../hooks/useFeatureAccess';
+import { getLevelConfig } from '../../store/slices/userProgressSlice';
+import { getTradeIdeaRequiredFeature } from '../../utils/opportunityGating';
 import type { TradeIdea } from '../../types';
 
 const STRATEGY_LABEL: Partial<Record<TradeIdea['strategy'], string>> = {
@@ -17,6 +20,11 @@ export const TradeIdeaCard: React.FC<{
   compact?: boolean;
 }> = ({ idea, onPlaceTrade, compact = false }) => {
   const { t } = useTranslation();
+  // The idea card is educational content and stays visible at any level,
+  // but ACTING on it is gated: below the strategy's level the place-trade
+  // button is replaced by an explicit unlock hint (no silent no-op).
+  const { hasAccess, requiredLevel } = useFeatureAccess(getTradeIdeaRequiredFeature(idea));
+  const requiredLevelConfig = requiredLevel ? getLevelConfig(requiredLevel) : null;
   const juiceLabel = (iv: number) =>
     iv >= 70
       ? t('learnFeat.tradeJuiceHigh')
@@ -84,15 +92,24 @@ export const TradeIdeaCard: React.FC<{
         </div>
       )}
 
-      {onPlaceTrade && (
-        <button
-          onClick={() => onPlaceTrade(idea)}
-          className="mt-3 inline-flex items-center gap-1.5 bg-positive-500 hover:bg-positive-600 text-white rounded-md px-3 py-1.5 text-xs font-bold transition-colors"
-        >
-          {t('learnFeat.tradePlace')}
-          <ArrowRight className="w-3.5 h-3.5" />
-        </button>
-      )}
+      {onPlaceTrade &&
+        (hasAccess ? (
+          <button
+            onClick={() => onPlaceTrade(idea)}
+            className="mt-3 inline-flex items-center gap-1.5 bg-positive-500 hover:bg-positive-600 text-white rounded-md px-3 py-1.5 text-xs font-bold transition-colors"
+          >
+            {t('learnFeat.tradePlace')}
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        ) : (
+          <p className="mt-3 inline-flex items-center gap-1.5 text-[11px] text-ink-500 dark:text-ink-400">
+            <Lock className="w-3.5 h-3.5 flex-shrink-0" />
+            {t('safetyRails.tradeIdeaLocked', {
+              slope: requiredLevelConfig?.slopeName ?? '',
+              level: requiredLevelConfig?.name ?? '',
+            })}
+          </p>
+        ))}
     </div>
   );
 };

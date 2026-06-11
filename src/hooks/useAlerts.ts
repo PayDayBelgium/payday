@@ -159,6 +159,10 @@ export const useAlerts = (portfolioFilter?: string) => {
         if (alert.id.startsWith(`${positionId}-`)) return true;
         // Put position alerts: put-position-alert-{positionId}
         if (alert.id === `put-position-alert-${positionId}`) return true;
+        // Naked call alerts: naked-call-alert-{positionId}
+        if (alert.id === `naked-call-alert-${positionId}`) return true;
+        // Call position (ITM short call) alerts: call-position-alert-{positionId}
+        if (alert.id === `call-position-alert-${positionId}`) return true;
         // Put spread alerts: put-spread-alert-{spreadId}
         // Call spread alerts: call-spread-alert-{spreadId}
         // Expiring spread alerts: expiring-spread-{spreadId}

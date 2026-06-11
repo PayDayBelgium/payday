@@ -1,6 +1,7 @@
-import type { FeatureId, UserLevel } from '../types';
+import type { FeatureId, TradeIdea, UserLevel } from '../types';
 import { isFeatureAvailable } from '../store/slices/userProgressSlice';
 import type { AlertItem } from './alertEvaluator';
+import type { CampaignType } from './campaignDetector';
 
 /**
  * Maps an opportunity to the feature the user must unlock first
@@ -29,6 +30,66 @@ export const getOpportunityRequiredFeature = (opportunityId: string): FeatureId 
   // Unknown / price-based (stocks-etfs rules): no gating, always show.
   return null;
 };
+
+/**
+ * Feature required to USE a campaign type as a strategy: filter tabs,
+ * empty-state coaching ("Buy LEAPS", "Buy protective put") and creation CTAs.
+ *
+ * Note: campaign DISPLAY of existing positions is never gated — the user
+ * owns those positions and hiding their risk would violate the alert rule.
+ * Only advice/creation surfaces should consult this mapping.
+ */
+export const getCampaignTypeRequiredFeature = (type: CampaignType): FeatureId => {
+  switch (type) {
+    case 'pmcc':
+      return 'pmcc'; // senior
+    case 'kaching':
+      return 'kaching'; // expert
+    case 'wheel':
+      return 'wheel_strategy'; // medior
+    case 'covered-call':
+      return 'covered_calls'; // medior
+  }
+};
+
+/**
+ * Feature required to show a campaign's OPPORTUNITY block (advice message +
+ * quick-create button). Kept consistent with `getOpportunityRequiredFeature`
+ * so the campaign card never shows advice the dashboard hides: a PMCC
+ * campaign's opportunity is "write a call against your LEAPS", which is
+ * deliberately part of covered calls (medior) — see the leaps-cc mapping.
+ */
+export const getCampaignOpportunityRequiredFeature = (type: CampaignType): FeatureId => {
+  switch (type) {
+    case 'pmcc':
+      return 'covered_calls'; // same as leaps-cc-opportunity (medior)
+    case 'kaching':
+      return 'kaching'; // expert
+    case 'wheel':
+      return 'wheel_strategy'; // medior
+    case 'covered-call':
+      return 'covered_calls'; // medior
+  }
+};
+
+/**
+ * Whether the user may START a wheel campaign. A wheel manages a CSP leg,
+ * so it requires both `wheel_strategy` and `cash_secured_puts` (both medior
+ * today; checking both keeps the gate correct if the mapping ever changes).
+ */
+export const canStartWheelCampaign = (unlockedLevels: UserLevel[]): boolean =>
+  isFeatureAvailable('wheel_strategy', unlockedLevels) &&
+  isFeatureAvailable('cash_secured_puts', unlockedLevels);
+
+/**
+ * Feature required to ACT on a community trade idea ("Place trade").
+ * `TradeIdea.strategy` is already a `FeatureId` by type; this helper locks
+ * that contract in one place so the actionable surfaces cannot silently
+ * drift if the type ever changes. The idea CARD itself is educational
+ * content and stays visible at any level — only the action is gated.
+ */
+export const getTradeIdeaRequiredFeature = (idea: Pick<TradeIdea, 'strategy'>): FeatureId =>
+  idea.strategy;
 
 /**
  * Filters opportunities based on the user's unlocked levels.

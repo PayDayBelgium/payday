@@ -113,6 +113,14 @@ export const getLevelConfig = (level: UserLevel): LevelConfig => {
   return LEVEL_CONFIGS.find((config) => config.level === level) || LEVEL_CONFIGS[0];
 };
 
+// Find the level that owns a feature (null for unknown features).
+export const getFeatureRequiredLevel = (feature: FeatureId): UserLevel | null => {
+  for (const config of LEVEL_CONFIGS) {
+    if (config.features.includes(feature)) return config.level;
+  }
+  return null;
+};
+
 // Credit price to unlock each optional module. 0 = free for now (so it can be
 // unlocked immediately); set real values here later. Purchasing spends the
 // credits and then activates the module.

@@ -5,7 +5,9 @@ import type { CallOption, PutOption, CurrencyType } from '../../types';
 import { getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency } from '../../utils/numberFormat';
 import { calculateOptionRealizedPnL } from '../../utils/pnlCalculations';
+import { getTodayDateString } from '../../utils/dateHelpers';
 import { FridayDatePicker } from '../common/FridayDatePicker';
+import { isExpirationInPast } from './optionWizardUtils';
 import { RollModalShell } from './RollModalShell';
 import { RollCalculationSummary } from './RollCalculationSummary';
 
@@ -98,7 +100,7 @@ export const RollOptionModal: React.FC<RollOptionModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!closePremium || !newExpiration || !newPremium) {
+    if (!closePremium || !newExpiration || !newPremium || isExpirationInPast(newExpiration)) {
       return;
     }
 
@@ -289,6 +291,7 @@ export const RollOptionModal: React.FC<RollOptionModalProps> = ({
               <FridayDatePicker
                 value={newExpiration}
                 onChange={(date) => setNewExpiration(date)}
+                min={getTodayDateString()}
                 className="w-full px-4 py-2 border border-ink-200 dark:border-trading-dark-500 rounded-lg bg-white dark:bg-trading-dark-700 text-ink-900 dark:text-white focus:ring-2 focus:ring-primary-500"
               />
             </div>
@@ -353,7 +356,9 @@ export const RollOptionModal: React.FC<RollOptionModalProps> = ({
           </button>
           <button
             type="submit"
-            disabled={!closePremium || !newExpiration || !newPremium}
+            disabled={
+              !closePremium || !newExpiration || !newPremium || isExpirationInPast(newExpiration)
+            }
             className="px-4 py-2 bg-primary-700 hover:bg-primary-800 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             <Redo2 className="w-4 h-4" />

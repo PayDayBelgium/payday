@@ -1,6 +1,11 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
-import { calculatePortfolioFreeCash, evaluateProfitOpportunities } from './alertEvaluator';
-import type { Portfolio, Position } from '../types';
+import {
+  calculatePortfolioFreeCash,
+  evaluateCallPositionAlerts,
+  evaluateNakedCallAlerts,
+  evaluateProfitOpportunities,
+} from './alertEvaluator';
+import type { Portfolio, Position, Ticker } from '../types';
 
 // Clock-relative expiration (~6 months out) so the suite never expires:
 // evaluateProfitOpportunities computes daysToExpiration from new Date() and
@@ -71,6 +76,86 @@ const longCall = (over: Record<string, unknown> = {}): Position =>
     currentValue: 100,
     ...over,
   }) as unknown as Position;
+
+const shortCall = (over: Record<string, unknown> = {}): Position =>
+  longCall({
+    id: 'sc1',
+    action: 'sell',
+    strike: 110,
+    costBasis: -100,
+    currentValue: -100,
+    ...over,
+  });
+
+describe('evaluateNakedCallAlerts', () => {
+  it('emits an alert for an uncovered (naked) short call', () => {
+    const result = evaluateNakedCallAlerts([shortCall()], new Set());
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe('naked-call-alert-sc1');
+    expect(result[0].type).toBe('alert');
+    expect(result[0].ticker).toBe('XYZ');
+    expect(result[0].message.toLowerCase()).toContain('naked call');
+  });
+
+  it('does not alert for a short call fully covered by shares', () => {
+    const result = evaluateNakedCallAlerts([stock(), shortCall()], new Set());
+    expect(result).toHaveLength(0);
+  });
+
+  it('does not alert for a short call covered by a LEAPS (PMCC)', () => {
+    // LEAPS qualifies via isLEAPS (>= 90 days between open and expiration)
+    // and the short call strike is above the LEAPS strike.
+    const leaps = longCall({ id: 'leap1', strike: 80 });
+    const result = evaluateNakedCallAlerts([leaps, shortCall({ strike: 110 })], new Set());
+    expect(result).toHaveLength(0);
+  });
+
+  it('alerts only for the uncovered call when partially covered (2 calls, 100 shares)', () => {
+    // 100 shares = capacity for 1 contract. The allocator assigns the call
+    // closest to break-even ($25/share) — strike 110 — leaving 120 naked.
+    const result = evaluateNakedCallAlerts(
+      [stock(), shortCall({ id: 'sc1', strike: 110 }), shortCall({ id: 'sc2', strike: 120 })],
+      new Set()
+    );
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe('naked-call-alert-sc2');
+  });
+
+  it('skips dismissed alerts and wheel-linked calls', () => {
+    expect(evaluateNakedCallAlerts([shortCall()], new Set(['naked-call-alert-sc1']))).toHaveLength(
+      0
+    );
+    // Wheel-linked short calls belong to their wheel campaign (consistent
+    // with the CC evaluators, which exclude wheel positions as well).
+    expect(evaluateNakedCallAlerts([shortCall({ wheelId: 'w1' })], new Set())).toHaveLength(0);
+  });
+});
+
+describe('evaluateCallPositionAlerts', () => {
+  const ticker = (currentPrice: number): Ticker =>
+    ({ symbol: 'XYZ', name: 'XYZ Corp', type: 'stock', currentPrice }) as Ticker;
+
+  it('alerts when a short call is ITM (price above strike)', () => {
+    const result = evaluateCallPositionAlerts([shortCall({ strike: 100 })], new Set(), undefined, [
+      ticker(120),
+    ]);
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe('call-position-alert-sc1');
+    expect(result[0].type).toBe('alert');
+  });
+
+  it('does not alert when the short call is OTM', () => {
+    expect(
+      evaluateCallPositionAlerts([shortCall({ strike: 100 })], new Set(), undefined, [ticker(90)])
+    ).toHaveLength(0);
+  });
+
+  it('does not alert for a long call that is ITM', () => {
+    expect(
+      evaluateCallPositionAlerts([longCall({ strike: 100 })], new Set(), undefined, [ticker(120)])
+    ).toHaveLength(0);
+  });
+});
 
 describe('evaluateProfitOpportunities', () => {
   describe('single options', () => {
